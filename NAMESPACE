@@ -1,0 +1,6 @@
+exportPattern("^[^\\.]")
+
+import("dplyr")
+import("Biostrings")
+import("pqsfinder")
+importFrom("plyr","ldply")
