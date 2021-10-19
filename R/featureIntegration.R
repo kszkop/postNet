@@ -174,7 +174,7 @@ featureIntegration <- function(ads,
   #
   tg2 <- gridExtra::tableGrob(tb2out,rows = NULL)
   
-  pdf(ifelse(is.null(pdfName),paste(RegMode,'featureIntegration.pdf',sep='_'), paste(pdfName, RegMode,'featureIntegration.pdf',sep='_')),width= dim(tg1)[2] + dim(tg2)[2],height=dim(tg1)[1], useDingbats = F)
+  pdf(ifelse(is.null(pdfName),paste(RegMode,'featureIntegration.pdf',sep='_'), paste(pdfName, RegMode,'featureIntegration.pdf',sep='_')),width= dim(tg1)[2] + dim(tg2)[2]+4,height=dim(tg1)[1]/2, useDingbats = F)
   gridExtra::grid.arrange(tg1, tg2, ncol = 2, nrow = 1)
   dev.off()
   
@@ -223,11 +223,12 @@ featureIntegration <- function(ads,
       mtext(side=1, line=4, featTmp, col="black", font=2, cex=1.7,at=(roundUpNice(xlim_min)+roundUpNice(xlim_max))/2)
       axis(side=1,seq(roundUpNice(xlim_min),roundUpNice(xlim_max),roundUpNice(roundUpNice(xlim_max) - roundUpNice(xlim_min))/5), font=2,lwd=2)
       
-      if(length(unique(set1))>2){
+      if(length(unique(set1))>2 & IQR(set1) > 0 & length(unique(set2))>3){
         f1 <-predict(smooth.spline(set1_te~set1))
         lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col=indColours1,lwd=4,lend=2)
         lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col='black',lwd=1,lend=2,lty=3)
-        
+      }
+      if(length(unique(set2))>2 & IQR(set2) > 0 & length(unique(set2))>3){
         f2 <-predict(smooth.spline(set2_te~set2))
         lines(f2$x[which(f2$x>xlim_min & f2$x<xlim_max)],f2$y[which(f2$x>xlim_min & f2$x<xlim_max)], col=indColours2,lwd=4,lend=2)
         lines(f2$x[which(f2$x>xlim_min & f2$x<xlim_max)],f2$y[which(f2$x>xlim_min & f2$x<xlim_max)], col='black',lwd=1,lend=2,lty=3)
