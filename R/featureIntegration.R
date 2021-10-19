@@ -1,10 +1,10 @@
 #function that do that
 featureIntegration <- function(ads, 
-                               contrast, 
-                               RegMode='translation', #to choose translatedmRNA, totalmRNA, translation, buffering
-                               features, 
-                               regOnly=TRUE,
-                               pdfName=NULL){
+                                  contrast, 
+                                  RegMode='translation', #to choose translatedmRNA, totalmRNA, translation, buffering
+                                  features, 
+                                  regOnly=TRUE,
+                                  pdfName=NULL){
   #
   scOut <- anota2seq::anota2seqGetOutput(ads, output = "singleDf", selContrast = contrast, getRVM = TRUE)
   #
@@ -30,15 +30,29 @@ featureIntegration <- function(ads,
     resTmp <- anota2seqGetDirectedRegulations(ads)[[contrast]]
     #
     if(RegMode=='translation'| RegMode=='translatedmRNA'){  
-      listSel <- as.character(unlist(resTmp[c(1,2)]))
+      listSel1 <- as.character(unlist(resTmp[c(1)]))
+      listSel2 <- as.character(unlist(resTmp[c(2)]))
     } else if (RegMode=='buffering'){
-      listSel <- as.character(unlist(resTmp[c(3,4)]))
+      listSel1 <- as.character(unlist(resTmp[c(3)]))
+      listSel2 <- as.character(unlist(resTmp[c(4)]))
     } else if (RegMode=='totalmRNA'){
-      listSel <- as.character(unlist(resTmp[c(5,6)]))
+      listSel1 <- as.character(unlist(resTmp[c(5)]))
+      listSel2 <- as.character(unlist(resTmp[c(6)]))
     }
-    dat <- dat[row.names(dat) %in% listSel,]
+    dat <- dat[row.names(dat) %in% c(listSel1,listSel2),]
   }
+  #Pre-run to remove features that are not significnt for univariate models
   #
+  #Start with univariate
+  pval_prerun <- list()
+  models_prerun <- lapply(colnames(dat)[-featPos], function(x) {
+    anova(lm(substitute(TE ~ i, list(i = as.name(x))), data = dat))
+  })
+  presel <- which(sapply(models_prerun , function(x) x[1,5])>0.05 | is.na(sapply(models_prerun , function(x) x[1,5])))
+  #remove this features
+  dat <- dat[,-presel]
+  featureName <- featureName[-presel]
+  featPos <- length(colnames(dat))
   #
   namesDf <- data.frame(originalNames=featureName,newNames=colnames(dat)[-featPos], stringsAsFactors = F)
   #
@@ -138,7 +152,9 @@ featureIntegration <- function(ads,
   tb1Out <- round(apply(tmp, 2 ,as.numeric),2)
   row.names(tb1Out) <- namesDf$originalNames[match(row.names(tmp), namesDf$newNames)]
   tb1Out[is.na(tb1Out)] <- ""
-  
+  #
+  colnames(tb1Out) <- paste('step',seq(1,ncol(tb1Out),1),sep='')
+  #
   #PLot table
   colours <- matrix("white", nrow(tb1Out), ncol(tb1Out))
   for(k in 1:ncol(colours)){
@@ -158,7 +174,79 @@ featureIntegration <- function(ads,
   #
   tg2 <- gridExtra::tableGrob(tb2out,rows = NULL)
   
-  pdf(ifelse(is.null(pdfName),paste(RegMode,'featureIntegration.pdf',sep='_'), paste(pdfName, RegMode,'featureIntegration.pdf',sep='_')),width= 24,height=6+(length(features)-1)/2, useDingbats = F)
+  pdf(ifelse(is.null(pdfName),paste(RegMode,'featureIntegration.pdf',sep='_'), paste(pdfName, RegMode,'featureIntegration.pdf',sep='_')),width= dim(tg1)[2] + dim(tg2)[2],height=dim(tg1)[1], useDingbats = F)
   gridExtra::grid.arrange(tg1, tg2, ncol = 2, nrow = 1)
   dev.off()
+  
+  if(isTRUE(regOnly)){
+    #Individual plots
+    AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
+    #
+    if(RegMode=='translation'| RegMode=='translatedmRNA'){  
+      indColours1 <- AnotaColours[1]
+      indColours2 <- AnotaColours[2]
+    } else if (RegMode=='buffering'){
+      indColours1 <- AnotaColours[5]
+      indColours2 <- AnotaColours[6]
+    } else if (RegMode=='totalmRNA'){
+      indColours1 <- AnotaColours[3]
+      indColours2 <- AnotaColours[4]
+    }
+    #
+    for(feat in bestSel){
+      print(feat)
+      #
+      featTmp <- namesDf[namesDf$newNames==feat,]$originalNames
+      featTmp <- gsub(' ','_',featTmp)
+      #
+      pdf(ifelse(is.null(pdfName),paste(RegMode,featTmp,'individually.pdf',sep='_'), paste(pdfName, RegMode,featTmp,'individually.pdf',sep='_')),width=8,height=8, useDingbats = F)
+      par(mar=c(9,5,5,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.7, cex.main=1.7,cex.lab=1.3)
+      
+      set1 <- dat[row.names(dat) %in% listSel1,colnames(dat)==feat]
+      set1_te <- dat$TE[row.names(dat) %in% listSel1]
+      set2 <- dat[row.names(dat) %in% listSel2,colnames(dat)==feat]
+      set2_te <- dat$TE[row.names(dat) %in% listSel2]
+      
+      #
+      #
+      xlim_max <- max(c(set1,set2))
+      xlim_min <- min(c(set1,set2))
+      ylim_max <- max(c(set1_te,set2_te))
+      #
+      
+      plot(set1,set1_te,col=indColours1,pch=20,cex=0.1,ylim=c(-roundUpNice(ylim_max),roundUpNice(ylim_max)),xlab='',ylab='',lwd=1,bty="n",xaxt="n",yaxt="n",font=2, xlim=c(xlim_min, xlim_max))
+      points(set2,set2_te,col=indColours2,pch=20,cex=0.1)
+      #
+      mtext(side=2, line=3, 'anota2seq translation efficency ', col="black", font=2, cex=1.7)
+      axis(side=2,seq(-roundUpNice(ylim_max),roundUpNice(ylim_max),2), font=2,las=2,lwd=2)
+      
+      mtext(side=1, line=4, featTmp, col="black", font=2, cex=1.7,at=(roundUpNice(xlim_min)+roundUpNice(xlim_max))/2)
+      axis(side=1,seq(roundUpNice(xlim_min),roundUpNice(xlim_max),roundUpNice(roundUpNice(xlim_max) - roundUpNice(xlim_min))/5), font=2,lwd=2)
+      
+      if(length(unique(set1))>2){
+        f1 <-predict(smooth.spline(set1_te~set1))
+        lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col=indColours1,lwd=4,lend=2)
+        lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col='black',lwd=1,lend=2,lty=3)
+        
+        f2 <-predict(smooth.spline(set2_te~set2))
+        lines(f2$x[which(f2$x>xlim_min & f2$x<xlim_max)],f2$y[which(f2$x>xlim_min & f2$x<xlim_max)], col=indColours2,lwd=4,lend=2)
+        lines(f2$x[which(f2$x>xlim_min & f2$x<xlim_max)],f2$y[which(f2$x>xlim_min & f2$x<xlim_max)], col='black',lwd=1,lend=2,lty=3)
+        
+      }
+      if(!is.na(as.numeric(coefficients(lm(set1_te~set1))[2]))){
+        plotrix::ablineclip(lm(set1_te~set1), col=indColours1,lwd=4,x1=xlim_min,x2=xlim_max)
+        plotrix::ablineclip(lm(set1_te~set1), col='black',lwd=1,x1=xlim_min,x2=xlim_max)
+        
+        text((roundUpNice(xlim_min)+roundUpNice(xlim_max))/2,ylim_max, paste('pvalue ',format(as.numeric(cor.test(set1,set1_te)[3]),scientific=T,digits=3),', r=',round(as.numeric(cor.test(set1,set1_te)[4]),3),sep=''), bty='n',col=indColours1,cex=1.25,font=2)
+      } 
+      #
+      if(!is.na(as.numeric(coefficients(lm(set2_te~set2))[2]))){
+        plotrix::ablineclip(lm(set2_te~set2), col=indColours2,lwd=4,x1=xlim_min,x2=xlim_max)
+        plotrix::ablineclip(lm(set2_te~set2), col='black',lwd=1,x1=xlim_min,x2=xlim_max)
+        
+        text((roundUpNice(xlim_min)+roundUpNice(xlim_max))/2,-ylim_max, paste('pvalue ',format(as.numeric(cor.test(set2,set2_te)[3]),scientific=T,digits=3),', r=',round(as.numeric(cor.test(set2,set2_te)[4]),3),sep=''), bty='n',col=indColours2,cex=1.25,font=2)    
+      }
+      dev.off()
+    }
+  }
 }
