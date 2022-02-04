@@ -2,3 +2,5 @@ exportPattern("^[^\\.]")
 
 import("dplyr")
 importFrom("plyr","ldply")
+importClassesFrom("Biostrings","DNAString")
+importFrom("Biostrings","reverseComplement")
