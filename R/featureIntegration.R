@@ -1,9 +1,10 @@
 #function that do that
-featureIntegration <- function(ads, 
-                                  contrast, 
+featureIntegration <- function(ads,
+                                  contrast,
                                   RegMode='translation', #to choose translatedmRNA, totalmRNA, translation, buffering
-                                  features, 
+                                  features,
                                   regOnly=TRUE,
+                                  allFeat=TRUE,
                                   pdfName=NULL){
   #
   scOut <- anota2seq::anota2seqGetOutput(ads, output = "singleDf", selContrast = contrast, getRVM = TRUE)
@@ -29,7 +30,7 @@ featureIntegration <- function(ads,
   if(isTRUE(regOnly)){
     resTmp <- anota2seqGetDirectedRegulations(ads)[[contrast]]
     #
-    if(RegMode=='translation'| RegMode=='translatedmRNA'){  
+    if(RegMode=='translation'| RegMode=='translatedmRNA'){
       listSel <- as.character(unlist(resTmp[c(1,2)]))
     } else if (RegMode=='buffering'){
       listSel <- as.character(unlist(resTmp[c(3,4)]))
@@ -45,10 +46,23 @@ featureIntegration <- function(ads,
   models_prerun <- lapply(colnames(dat)[-featPos], function(x) {
     anova(lm(substitute(TE ~ i, list(i = as.name(x))), data = dat))
   })
+  #Select the ones not significant after first step
   presel <- which(sapply(models_prerun , function(x) x[1,5])>0.05 | is.na(sapply(models_prerun , function(x) x[1,5])))
+  #
+  step1expl <- round(sapply(models_prerun , function(x) (x[1,2]/(sum(x[1,2], x[2,2])))*100),2)
+  names(step1expl) <- featureName
+  #
+  step1pval <- sapply(models_prerun , function(x) (x[1,5]))
+  names(step1pval) <- featureName
+  #remove not signigicant
+  step1expl <- step1expl[-presel]
+  step1pval <- step1pval[-presel]
+  #
   #remove this features
-  dat <- dat[,-presel]
-  featureName <- featureName[-presel]
+  if(!isTRUE(allFeat)){
+    dat <- dat[,-presel]
+    featureName <- featureName[-presel]
+  }
   featPos <- length(colnames(dat))
   #
   namesDf <- data.frame(originalNames=featureName,newNames=colnames(dat)[-featPos], stringsAsFactors = F)
@@ -139,6 +153,7 @@ featureIntegration <- function(ads,
     #  cat('    Non removed ','\n')
     #}
   }
+  
   #format
   tmp <- t(plyr::ldply(fval, rbind))
   tmp <- tmp[c(bestSel, rev(outSel)),]
@@ -165,14 +180,67 @@ featureIntegration <- function(ads,
   ##Calculate % varaince explained and plot output
   #Final model
   varExpl <- anova(lm(as.formula(paste('TE', paste(bestSel, collapse=" + "), sep="~")), data = dat))
-  varExplss <- varExpl$"Sum Sq"
+  varExpldepend <- numeric()
+  for(i in 1:length(bestSel)){
+    tmpFeatI <- bestSel[i]
+    #variance expl
+    varExpldepend[i] <- round((varExpl[i,2]/sum(varExpl$`Sum Sq`))*100,2)
+  }
+  names(varExpldepend) <- bestSel
+  ##CAalculate dependent variance explained loop through the sel features moving each to the end
+  #only features in final model
+  varExplIndepend <- numeric()
+  for(i in 1:length(bestSel)){
+    tmpFeat <- bestSel[i]
+    restFeat <- bestSel[-i]
+    #model
+    design <- as.formula(paste(paste('TE', paste(restFeat, collapse=" + "), sep="~"),tmpFeat,sep ='+'))
+    tmpM <-  anova(lm(design, data = dat))
+    
+    #variance expl
+    varExplIndepend[i] <- round((tmpM[nrow(tmpM)-1,2]/sum(tmpM$`Sum Sq`))*100,2)
+  }
+  names(varExplIndepend) <- bestSel
+  
+  #features significant after step1
+  varExplIndepend2 <- numeric()
+  #features aftet 1st
+  step1sel <- namesDf$newNames[-presel]
+  for(i in 1:length(step1sel)){
+    tmpFeat2 <- step1sel[i]
+    restFeat2<- step1sel[-i]
+    #model
+    design2 <- as.formula(paste(paste('TE', paste(restFeat2, collapse=" + "), sep="~"),tmpFeat2,sep ='+'))
+    tmpM2 <-  anova(lm(design2, data = dat))
+    
+    #variance expl
+    varExplIndepend2[i] <- round((tmpM2[nrow(tmpM2)-1,2]/sum(tmpM2$`Sum Sq`))*100,2)
+  }
+  names(varExplIndepend2) <- step1sel
+  
   #Outtable
-  tb2out <- data.frame(Features=namesDf$originalNames[match(bestSel, namesDf$newNames)],Pvalue=format(varExpl$`Pr(>F)`[1:length(bestSel)],scientific = T,digits = 2),VarianceExplained=round((varExplss/sum(varExplss)*100)[1:length(bestSel)],2))
-  #
+  tb2out <- data.frame(Features=namesDf$originalNames[match(bestSel, namesDf$newNames)],Pvalue=format(varExpl$`Pr(>F)`[1:length(bestSel)],scientific = T,digits = 2),VarianceExplained_Dependent=as.numeric(varExpldepend), VarianceExplained_Independent =as.numeric(varExplIndepend))
+  
   tg2 <- gridExtra::tableGrob(tb2out,rows = NULL)
   
-  pdf(ifelse(is.null(pdfName),paste(RegMode,'featureIntegration.pdf',sep='_'), paste(pdfName, RegMode,'featureIntegration.pdf',sep='_')),width= dim(tg1)[2] + dim(tg2)[2]+4,height=dim(tg1)[1]/2, useDingbats = F)
-  gridExtra::grid.arrange(tg1, tg2, ncol = 2, nrow = 1)
+  tb3out <- data.frame(Features=names(step1expl),Pvalue_Univariate=format(as.numeric(step1pval),scientific = T,digits = 2), VarianceExplained_Univariate=as.numeric(step1expl))
+  tb3out <- tb3out[with(tb3out,order(-tb3out$VarianceExplained_Univariate)),]
+  #
+  tg3 <- gridExtra::tableGrob(tb3out,rows = NULL)
+  
+  pdf(ifelse(is.null(pdfName),paste(RegMode,'featureIntegration.pdf',sep='_'), paste(pdfName, RegMode,'featureIntegration.pdf',sep='_')),width= dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2]+14.5,height=dim(tg1)[1]/2, useDingbats = F)
+  gridExtra::grid.arrange(tg3, tg1, tg2, ncol = 3, nrow = 1,padding=0, top=0, left=0)
+  grid::grid.text(paste('Total variance explained: ', sum(as.numeric(varExpldepend)),'%', sep=''), x = grid::unit(0.75, "npc"),  y = grid::unit(0.90, "npc"),gp = grid::gpar(fontsize=15))
+  dev.off()
+  
+  #Outtable
+  tb4out <- data.frame(Features=namesDf$originalNames[match(names(varExplIndepend2), namesDf$newNames)],VarianceExplained_IndependentAll=as.numeric(varExplIndepend2))
+  tb4out <- tb4out[with(tb4out,order(-tb4out$VarianceExplained_IndependentAll)),]
+  #
+  tg4 <- gridExtra::tableGrob(tb4out,rows = NULL)
+  
+  pdf(ifelse(is.null(pdfName),paste(RegMode,'featureIntegration_varexpl_independAll.pdf',sep='_'), paste(pdfName, RegMode,'featureIntegration_varexpl_independAll.pdf',sep='_')),width= dim(tg4)[2] + dim(tg4)[2]+4,height=dim(tg4)[1]/2, useDingbats = F)
+  gridExtra::grid.arrange(tg4, ncol = 1, nrow = 1)
   dev.off()
   
   #
@@ -185,6 +253,29 @@ featureIntegration <- function(ads,
       #
       set <- dat[row.names(dat) %in% listSel, colnames(dat)==feat]
       set_te <- dat$TE[row.names(dat) %in% listSel]
+      #
+      if(RegMode=='translation'| RegMode=='translatedmRNA'){
+        set1 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(1)])), colnames(dat)==feat]
+        set2 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(2)])), colnames(dat)==feat]
+        set_te1 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(1)]))]
+        set_te2 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(2)]))]
+        col1 <- AnotaColours[1]
+        col2 <- AnotaColours[2]
+      } else if (RegMode=='buffering'){
+        set1 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(3)])), colnames(dat)==feat]
+        set2 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(4)])), colnames(dat)==feat]
+        set_te1 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(3)]))]
+        set_te2 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(4)]))]
+        col1 <- AnotaColours[5]
+        col2 <- AnotaColours[6]
+      } else if (RegMode=='totalmRNA'){
+        set1 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(5)])), colnames(dat)==feat]
+        set2 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(6)])), colnames(dat)==feat]
+        set_te1 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(5)]))]
+        set_te2 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(6)]))]
+        col1 <- AnotaColours[3]
+        col2 <- AnotaColours[4]
+      }
       #
     } else {
       #
@@ -207,26 +298,28 @@ featureIntegration <- function(ads,
     ylim_max <- roundUpNice(abs(max(set_te)))
     #
     plot(set,set_te,col='#8A8683',pch=16,cex=1,ylim=c(-ylim_max,ylim_max),xlab='',ylab='',lwd=1,bty="n",xaxt="n",yaxt="n",font=2, xlim=c(xlim_min, xlim_max))
+    points(set1, set_te1, pch=16,col=col1)
+    points(set2, set_te2, pch=16,col=col2)
+    
     #
     mtext(side=2, line=3, RegMode, col="black", font=2, cex=1.7)
     axis(side=2,seq(-ylim_max,ylim_max,2), font=2,las=2,lwd=2)
-      
+    
     mtext(side=1, line=4, featTmp, col="black", font=2, cex=1.7,at=(xlim_min+xlim_max)/2)
     axis(side=1,seq(xlim_min,xlim_max,ifelse((xlim_max - xlim_min)/5 >=0 , roundUpNice((xlim_max - xlim_min)/5), -roundUpNice(abs((xlim_max - xlim_min)/5)))), font=2,lwd=2)
-      #
-      if(length(unique(set))>2 & IQR(set) > 0 & length(unique(set))>3){
-        f1 <-predict(smooth.spline(set_te~set))
-        lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col='#E4EBF2',lwd=4,lend=2)
-        lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col='black',lwd=1,lend=2,lty=3)
-      }
-      #
-      if(!is.na(as.numeric(coefficients(lm(set_te~set))[2]))){
-        plotrix::ablineclip(lm(set_te~set), col='#8ED3F4',lwd=4,x1=xlim_min,x2=xlim_max)
-        plotrix::ablineclip(lm(set_te~set), col='black',lwd=1,x1=xlim_min,x2=xlim_max)
-        
-        text((xlim_min+xlim_max)/2,ylim_max, paste('pvalue ',format(as.numeric(cor.test(set,set_te)[3]),scientific=T,digits=3),', r=',round(as.numeric(cor.test(set,set_te)[4]),3),sep=''), bty='n',col='black',cex=1.25,font=2)
-      } 
-      dev.off()
+    #
+    if(length(unique(set))>2 & IQR(set) > 0 & length(unique(set))>3){
+      f1 <-predict(smooth.spline(set_te~set))
+      lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col='#AFBADC',lwd=4,lend=2)
+      lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col='black',lwd=1,lend=2,lty=3)
     }
+    #
+    if(!is.na(as.numeric(coefficients(lm(set_te~set))[2]))){
+      plotrix::ablineclip(lm(set_te~set), col='#AFBADC',lwd=4,x1=xlim_min,x2=xlim_max)
+      plotrix::ablineclip(lm(set_te~set), col='black',lwd=1,x1=xlim_min,x2=xlim_max)
+      
+      text((xlim_min+xlim_max)/2,ylim_max, paste('pvalue ',format(as.numeric(cor.test(set,set_te)[3]),scientific=T,digits=3),', r=',round(as.numeric(cor.test(set,set_te)[4]),3),sep=''), bty='n',col='black',cex=1.25,font=2)
+    }
+    dev.off()
   }
 }
