@@ -119,8 +119,11 @@ goAnalysis <- function(ads,
 
   for(i in 1:length(GOtables)){
     print(i)
+    tmp <- GOtables[[i]]
+    ind <- which(tmp[,"Size"] <= maxSize & tmp[,"Size"] > minSize & tmp[,"Count"] > counts)
+    tmp <- tmp[ind,]
     
-    GOtables[[i]][,"Size"]
+    GOtables[[i]] <- tmp 
     
     #GOtables[[i]] <- GOtables[[i]][which(GOtables[[i]][,"Size"] <= maxSize & GOtables[[i]][,"Size"] > minSize& GOtables[[i]][,"Count"] > counts),]
   }
