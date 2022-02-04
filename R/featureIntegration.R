@@ -30,16 +30,13 @@ featureIntegration <- function(ads,
     resTmp <- anota2seqGetDirectedRegulations(ads)[[contrast]]
     #
     if(RegMode=='translation'| RegMode=='translatedmRNA'){  
-      listSel1 <- as.character(unlist(resTmp[c(1)]))
-      listSel2 <- as.character(unlist(resTmp[c(2)]))
+      listSel <- as.character(unlist(resTmp[c(1,2)]))
     } else if (RegMode=='buffering'){
-      listSel1 <- as.character(unlist(resTmp[c(3)]))
-      listSel2 <- as.character(unlist(resTmp[c(4)]))
+      listSel <- as.character(unlist(resTmp[c(3,4)]))
     } else if (RegMode=='totalmRNA'){
-      listSel1 <- as.character(unlist(resTmp[c(5)]))
-      listSel2 <- as.character(unlist(resTmp[c(6)]))
+      listSel <- as.character(unlist(resTmp[c(5,6)]))
     }
-    dat <- dat[row.names(dat) %in% c(listSel1,listSel2),]
+    dat <- dat[row.names(dat) %in% listSel,]
   }
   #Pre-run to remove features that are not significnt for univariate models
   #
@@ -178,75 +175,57 @@ featureIntegration <- function(ads,
   gridExtra::grid.arrange(tg1, tg2, ncol = 2, nrow = 1)
   dev.off()
   
-  if(isTRUE(regOnly)){
-    #Individual plots
-    AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
+  #
+  for(feat in bestSel){
     #
-    if(RegMode=='translation'| RegMode=='translatedmRNA'){  
-      indColours1 <- AnotaColours[1]
-      indColours2 <- AnotaColours[2]
-    } else if (RegMode=='buffering'){
-      indColours1 <- AnotaColours[5]
-      indColours2 <- AnotaColours[6]
-    } else if (RegMode=='totalmRNA'){
-      indColours1 <- AnotaColours[3]
-      indColours2 <- AnotaColours[4]
+    featTmp <- namesDf[namesDf$newNames==feat,]$originalNames
+    featTmp <- gsub(' ','_',featTmp)
+    #
+    if(isTRUE(regOnly)){
+      #
+      set <- dat[row.names(dat) %in% listSel, colnames(dat)==feat]
+      set_te <- dat$TE[row.names(dat) %in% listSel]
+      #
+    } else {
+      #
+      set <- dat[,colnames(dat)==feat]
+      set_te <- dat$TE
+      #
     }
+    pdf(ifelse(is.null(pdfName),paste(RegMode,featTmp,'individually.pdf',sep='_'), paste(pdfName, RegMode,featTmp,'individually.pdf',sep='_')),width=8,height=8, useDingbats = F)
+    par(mar=c(9,5,5,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.7, cex.main=1.7,cex.lab=1.3)
+    
     #
-    for(feat in bestSel){
-      print(feat)
-      #
-      featTmp <- namesDf[namesDf$newNames==feat,]$originalNames
-      featTmp <- gsub(' ','_',featTmp)
-      #
-      pdf(ifelse(is.null(pdfName),paste(RegMode,featTmp,'individually.pdf',sep='_'), paste(pdfName, RegMode,featTmp,'individually.pdf',sep='_')),width=8,height=8, useDingbats = F)
-      par(mar=c(9,5,5,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.7, cex.main=1.7,cex.lab=1.3)
+    xlim_max <- ifelse(max(set)>=0, roundUpNice(abs(max(set))),  -roundUpNice(abs(max(set))))
+    if(xlim_max < max(set)){
+      xlim_max <- ceiling(max(set))
+    }
+    xlim_min <- ifelse(min(set)>=0, roundUpNice(abs(min(set))),  -roundUpNice(abs(min(set))))
+    if(xlim_min > min(set)){
+      xlim_min <- floor(min(set))
+    }
+    ylim_max <- roundUpNice(abs(max(set_te)))
+    #
+    plot(set,set_te,col='#8A8683',pch=16,cex=1,ylim=c(-ylim_max,ylim_max),xlab='',ylab='',lwd=1,bty="n",xaxt="n",yaxt="n",font=2, xlim=c(xlim_min, xlim_max))
+    #
+    mtext(side=2, line=3, RegMode, col="black", font=2, cex=1.7)
+    axis(side=2,seq(-ylim_max,ylim_max,2), font=2,las=2,lwd=2)
       
-      set1 <- dat[row.names(dat) %in% listSel1,colnames(dat)==feat]
-      set1_te <- dat$TE[row.names(dat) %in% listSel1]
-      set2 <- dat[row.names(dat) %in% listSel2,colnames(dat)==feat]
-      set2_te <- dat$TE[row.names(dat) %in% listSel2]
-      
+    mtext(side=1, line=4, featTmp, col="black", font=2, cex=1.7,at=(xlim_min+xlim_max)/2)
+    axis(side=1,seq(xlim_min,xlim_max,ifelse((xlim_max - xlim_min)/5 >=0 , roundUpNice((xlim_max - xlim_min)/5), -roundUpNice(abs((xlim_max - xlim_min)/5)))), font=2,lwd=2)
       #
-      #
-      xlim_max <- max(c(set1,set2))
-      xlim_min <- min(c(set1,set2))
-      ylim_max <- max(c(set1_te,set2_te))
-      #
-      
-      plot(set1,set1_te,col=indColours1,pch=20,cex=0.1,ylim=c(-roundUpNice(ylim_max),roundUpNice(ylim_max)),xlab='',ylab='',lwd=1,bty="n",xaxt="n",yaxt="n",font=2, xlim=c(xlim_min, xlim_max))
-      points(set2,set2_te,col=indColours2,pch=20,cex=0.1)
-      #
-      mtext(side=2, line=3, 'anota2seq translation efficency ', col="black", font=2, cex=1.7)
-      axis(side=2,seq(-roundUpNice(ylim_max),roundUpNice(ylim_max),2), font=2,las=2,lwd=2)
-      
-      mtext(side=1, line=4, featTmp, col="black", font=2, cex=1.7,at=(roundUpNice(xlim_min)+roundUpNice(xlim_max))/2)
-      axis(side=1,seq(roundUpNice(xlim_min),roundUpNice(xlim_max),roundUpNice(roundUpNice(xlim_max) - roundUpNice(xlim_min))/5), font=2,lwd=2)
-      
-      if(length(unique(set1))>2 & IQR(set1) > 0 & length(unique(set2))>3){
-        f1 <-predict(smooth.spline(set1_te~set1))
-        lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col=indColours1,lwd=4,lend=2)
+      if(length(unique(set))>2 & IQR(set) > 0 & length(unique(set))>3){
+        f1 <-predict(smooth.spline(set_te~set))
+        lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col='#E4EBF2',lwd=4,lend=2)
         lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col='black',lwd=1,lend=2,lty=3)
       }
-      if(length(unique(set2))>2 & IQR(set2) > 0 & length(unique(set2))>3){
-        f2 <-predict(smooth.spline(set2_te~set2))
-        lines(f2$x[which(f2$x>xlim_min & f2$x<xlim_max)],f2$y[which(f2$x>xlim_min & f2$x<xlim_max)], col=indColours2,lwd=4,lend=2)
-        lines(f2$x[which(f2$x>xlim_min & f2$x<xlim_max)],f2$y[which(f2$x>xlim_min & f2$x<xlim_max)], col='black',lwd=1,lend=2,lty=3)
-        
-      }
-      if(!is.na(as.numeric(coefficients(lm(set1_te~set1))[2]))){
-        plotrix::ablineclip(lm(set1_te~set1), col=indColours1,lwd=4,x1=xlim_min,x2=xlim_max)
-        plotrix::ablineclip(lm(set1_te~set1), col='black',lwd=1,x1=xlim_min,x2=xlim_max)
-        
-        text((roundUpNice(xlim_min)+roundUpNice(xlim_max))/2,ylim_max, paste('pvalue ',format(as.numeric(cor.test(set1,set1_te)[3]),scientific=T,digits=3),', r=',round(as.numeric(cor.test(set1,set1_te)[4]),3),sep=''), bty='n',col=indColours1,cex=1.25,font=2)
-      } 
       #
-      if(!is.na(as.numeric(coefficients(lm(set2_te~set2))[2]))){
-        plotrix::ablineclip(lm(set2_te~set2), col=indColours2,lwd=4,x1=xlim_min,x2=xlim_max)
-        plotrix::ablineclip(lm(set2_te~set2), col='black',lwd=1,x1=xlim_min,x2=xlim_max)
+      if(!is.na(as.numeric(coefficients(lm(set_te~set))[2]))){
+        plotrix::ablineclip(lm(set_te~set), col='#8ED3F4',lwd=4,x1=xlim_min,x2=xlim_max)
+        plotrix::ablineclip(lm(set_te~set), col='black',lwd=1,x1=xlim_min,x2=xlim_max)
         
-        text((roundUpNice(xlim_min)+roundUpNice(xlim_max))/2,-ylim_max, paste('pvalue ',format(as.numeric(cor.test(set2,set2_te)[3]),scientific=T,digits=3),', r=',round(as.numeric(cor.test(set2,set2_te)[4]),3),sep=''), bty='n',col=indColours2,cex=1.25,font=2)    
-      }
+        text((xlim_min+xlim_max)/2,ylim_max, paste('pvalue ',format(as.numeric(cor.test(set,set_te)[3]),scientific=T,digits=3),', r=',round(as.numeric(cor.test(set,set_te)[4]),3),sep=''), bty='n',col='black',cex=1.25,font=2)
+      } 
       dev.off()
     }
   }

@@ -354,7 +354,24 @@ codonUsage <- function(ads,
       pdf(ifelse(is.null(pdfName),paste(analysis,'codon_oddratio_freq.pdf',sep=''), paste(pdfName,paste(analysis,'codon_oddratio_freq.pdf',sep=''),sep='_')),width= 8,height=8, useDingbats = F)
       par(mar=c(5,5,5,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.7, cex.main=1.7,cex.lab=1.3)
       plot(finalOut$statOut,finalOut$freq,col='black',pch=20,cex=0.1,xlab='',ylab='',lwd=1,bty="n",xaxt="n",yaxt="n",font=2,xlim=range(finalOut$statOut),ylim=range(finalOut$freq))
-      text(finalOut$statOut,finalOut$freq, finalOut$codon,col='black')
+      text(finalOut$statOut,finalOut$freq, finalOut$codon,col='black',font=2)
+      
+      #tmp KS
+      #text(finalOut[finalOut$codon %in% c('GAG','CTG','GTG','GAC','GCC'),]$statOut,finalOut[finalOut$codon %in% c('GAG','CTG','GTG','GAC','GCC'),]$freq, finalOut[finalOut$codon %in% c('GAG','CTG','GTG','GAC','GCC'),]$codon,col='brown1',font=2)
+      #text(finalOut[finalOut$codon %in% c('AAA','GAA','GAT','AAT','TTT','ATT'),]$statOut,finalOut[finalOut$codon %in% c('AAA','GAA','GAT','AAT','TTT','ATT'),]$freq, finalOut[finalOut$codon %in% c('AAA','GAA','GAT','AAT','TTT','ATT'),]$codon,col='dodgerblue1',font=2)
+      #legend(1.5,40, fill=c('brown1','dodgerblue1'),bty='n', c('codonsDown1','codonsDown2'))
+      #text(finalOut[finalOut$codon %in% c('AAG','ATC'),]$statOut,finalOut[finalOut$codon %in% c('AAG','ATC'),]$freq, finalOut[finalOut$codon %in% c('AAG','ATC'),]$codon,col='brown1',font=2)
+      #legend(0.8,80, fill=c('brown1'),bty='n', c('codonsUp'))
+      
+      #text(finalOut[finalOut$codon %in% c('CTG','GAG','AAG','CAG'),]$statOut,finalOut[finalOut$codon %in% c('CTG','GAG','AAG','CAG'),]$freq, finalOut[finalOut$codon %in% c('CTG','GAG','AAG','CAG'),]$codon,col='brown1',font=2)
+      #text(finalOut[finalOut$codon %in% c('AAA','GAA','GAT','CCT'),]$statOut,finalOut[finalOut$codon %in% c('AAA','GAA','GAT','CCT'),]$freq, finalOut[finalOut$codon %in% c('AAA','GAA','GAT','CCT'),]$codon,col='dodgerblue1',font=2)
+      #legend(1.5,40, fill=c('brown1','dodgerblue1'),bty='n', c('codonsUp','codonsDown'))
+      
+      text(finalOut[finalOut$codon %in% c('CTG','GAG','CAG'),]$statOut,finalOut[finalOut$codon %in% c('CTG','GAG','CAG'),]$freq, finalOut[finalOut$codon %in% c('CTG','GAG','CAG'),]$codon,col='dodgerblue1',font=2)
+      text(finalOut[finalOut$codon %in% c('AAA','GAA'),]$statOut,finalOut[finalOut$codon %in% c('AAA','GAA'),]$freq, finalOut[finalOut$codon %in% c('AAA','GAA'),]$codon,col='brown1',font=2)
+      legend(0.5,20, fill=c('dodgerblue1','brown1'),bty='n', c('codonsDown1','codonsDown2'))
+      
+      #tmp KS
       
       mtext(side=2, line=3, 'frequency ', col="black", font=2, cex=1.7)
       mtext(side=1, line=3, 'odd ratio', col="black", font=2, cex=1.7,at=25)
