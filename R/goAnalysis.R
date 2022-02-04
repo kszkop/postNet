@@ -106,7 +106,7 @@ goAnalysis <- function(ads,
     GOtables[[i]] <- summary(hgOver[[i]])
   }
   names(GOtables)<- names(hgOver)
-  
+  print('KS1')
   #for( i in 1:length(GOtables)){
   #  rownames(GOtables[[i]])<- GOtables[[i]][,"Term"]
   #}
@@ -120,7 +120,7 @@ goAnalysis <- function(ads,
   for(i in 1:length(GOtables)){
     GOtables[[i]] <- GOtables[[i]][which(GOtables[[i]][,"Size"] <= maxSize & GOtables[[i]][,"Size"] > minSize& GOtables[[i]][,"Count"] > counts),]
   }
-
+  print('KS2')
   ### Calculate FDRs for the output
   for ( i in 1:length(hgOver)){
     
@@ -128,7 +128,7 @@ goAnalysis <- function(ads,
     GOtables[[i]]<- cbind(GOtables[[i]],FDR)
   }
   
-  
+  print('KS3')
   # ### Add genes to GO terms...
   genesPerTerm <- list()
   
@@ -142,7 +142,7 @@ goAnalysis <- function(ads,
       genesPerTerm[[i]] <- genesPerTerm[[i]][GOtables[[i]][,paste("GO",category,"ID",sep='')]]
     }
   }
-  
+  print('KS4')
   #
   if(species=="human"){
     symbol2id <- as.list(org.Hs.eg.db::org.Hs.egSYMBOL2EG)
@@ -151,7 +151,7 @@ goAnalysis <- function(ads,
   }
   #
   id2symb <- as.list(setNames(names(symbol2id), symbol2id))
-  
+  print('KS5')
   geneNamesPerTerm <- genesPerTerm
   for(k  in 1:length(genesPerTerm)){
     for(l in 1:length(genesPerTerm[[k]])){
@@ -161,7 +161,7 @@ goAnalysis <- function(ads,
       }
     }
   }
-  
+  print('KS6')
   #
   for(i in 1:length(GOtables)){
     genes <- unlist(geneNamesPerTerm[[i]])
@@ -171,7 +171,7 @@ goAnalysis <- function(ads,
     #row.names(tmpTab) <- NULL
     GOtables[[i]] <- tmpTab 
   }
-  
+  print('KS7')
   WriteXLS::WriteXLS(GOtables,SheetNames = names(GOtables),ExcelFileName = paste(name, paste(category, '.xlsx',sep=''),sep='_'),row.names=FALSE)
   return(list(GOtables,hgOver))
 }
