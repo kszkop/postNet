@@ -107,10 +107,10 @@ goAnalysis <- function(ads,
   }
   names(GOtables)<- names(hgOver)
   print('KS1')
-  for( i in 1:length(GOtables)){
-    rownames(GOtables[[i]])<- GOtables[[i]][,"Term"]
-  }
-  print("KSextra")
+  #for( i in 1:length(GOtables)){
+  #  rownames(GOtables[[i]])<- GOtables[[i]][,"Term"]
+  #}
+  
   ### Filter go tables output 
   ### Size of the GO terms
   ### number of genes per GO term
@@ -118,7 +118,7 @@ goAnalysis <- function(ads,
   ###
 
   for(i in 1:length(GOtables)){
-    GOtables[[i]] <- GOtables[[i]][which(GOtables[[i]][,"Size"] <= maxSize & GOtables[[i]][,"Size"] > minSize& GOtables[[i]][,"Count"] > counts),]
+    GOtables[[i]] <- GOtables[[i]][which(GOtables[[i]][,"Size"] <= maxSize & GOtables[[i]][,"Size"] > minSize& GOtables[[i]][,"Count"] > counts),,drop=FALSE]
   }
 
   
