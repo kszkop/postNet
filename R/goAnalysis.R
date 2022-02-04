@@ -116,10 +116,11 @@ goAnalysis <- function(ads,
   ### number of genes per GO term
   ### OddsRatio
   ###
+
   for(i in 1:length(GOtables)){
     GOtables[[i]] <- GOtables[[i]][which(GOtables[[i]][,"Size"] <= maxSize & GOtables[[i]][,"Size"] > minSize& GOtables[[i]][,"Count"] > counts),]
   }
-  
+
   ### Calculate FDRs for the output
   for ( i in 1:length(hgOver)){
     
