@@ -117,9 +117,13 @@ goAnalysis <- function(ads,
   ### OddsRatio
   ###
 
+  #for(i in 1:length(GOtables)){
+  #  GOtables[[i]] <- GOtables[[i]][which(GOtables[[i]][,"Size"] <= maxSize & GOtables[[i]][,"Size"] > minSize& GOtables[[i]][,"Count"] > counts),]
+  #}
   for(i in 1:length(GOtables)){
-    GOtables[[i]] <- GOtables[[i]][which(GOtables[[i]][,"Size"] <= maxSize & GOtables[[i]][,"Size"] > minSize& GOtables[[i]][,"Count"] > counts),]
+    GOtables[[i]] <- GOtables[[i]][base::which(GOtables[[i]][,6] <= maxSize & GOtables[[i]][,6] > minSize & GOtables[[i]][,5] > counts),]
   }
+  
   print('KS2')
   ### Calculate FDRs for the output
   for ( i in 1:length(hgOver)){
