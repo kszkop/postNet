@@ -83,6 +83,7 @@ foldEnergyAnalysis <- function(source='load',#option to 'load' available or crea
   if(!isTRUE(onlyRun)){
     #Combine with annot
     energyInGene <- merge(energyIn, annot[,c(1,2)],by='id',all.x = T)
+    energyInGene <- na.omit(energyInGene)
     
     #Select per gene level
     if(selection=='shortest'){
