@@ -13,8 +13,7 @@ Encoding: UTF-8
 LazyData: true
 Depends: 
   R (>= 4.1.0),
-  dplyr (>= 1.0.7),
-  Category (>= 2.58.0)
+  dplyr (>= 1.0.7)
 Imports:
   gridExtra (>= 2.3),
   curl (>= 4.3.1),
