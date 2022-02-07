@@ -29,6 +29,4 @@ Imports:
   anota2seq (>= 1.14.0),
   memes (>= 1.0.0),
   GenomicRanges (>= 1.44.0),
-  WriteXLS (>= 6.3.0),
-  pqsfinder (>= 2.8.0),
-  Biostrings (>= 2.60.2)
+  WriteXLS (>= 6.3.0)
