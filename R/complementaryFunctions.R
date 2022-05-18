@@ -14,6 +14,14 @@ anota2seqGetDirectedRegulations <- function(ads){
       ads@selectedTranslation@selectedRvmData[[c]][,"apvEff"] < 0 &
         ads@selectedTranslation@selectedRvmData[[c]][,"singleRegMode"] == "translation",
       ]
+    translatedmRNAUp <- ads@selectedTranslatedmRNA@selectedRvmData[[c]][
+      ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"apvEff"] > 0 &
+        ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"singleRegMode"] == "translation",
+      ]
+    translatedmRNADown <-ads@selectedTranslatedmRNA@selectedRvmData[[c]][
+      ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"apvEff"] < 0 &
+        ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"singleRegMode"] == "translation",
+      ]
     bufferingmRNAUp <- ads@selectedBuffering@selectedRvmData[[c]][
       ads@selectedBuffering@selectedRvmData[[c]][,"apvEff"] > 0 &
         ads@selectedBuffering@selectedRvmData[[c]][,"singleRegMode"] == "buffering",
@@ -30,13 +38,26 @@ anota2seqGetDirectedRegulations <- function(ads){
       ads@mRNAAbundance@translatedmRNA[[c]][,"apvEff"] < 0 &
         ads@mRNAAbundance@translatedmRNA[[c]][,"singleRegMode"] == "abundance",
       ]
-    
+    totalmRNAUp <- ads@selectedTotalmRNA@selectedRvmData[[c]][
+        ads@selectedTotalmRNA@selectedRvmData[[c]][,"apvEff"] > 0 &
+          ads@selectedTotalmRNA@selectedRvmData[[c]][,"singleRegMode"] == "abundance",
+      ]
+    totalmRNADown <-ads@selectedTotalmRNA@selectedRvmData[[c]][
+      ads@selectedTotalmRNA@selectedRvmData[[c]][,"apvEff"] < 0 &
+        ads@selectedTotalmRNA@selectedRvmData[[c]][,"singleRegMode"] == "abundance",
+      ]
+      
+      
     regModeList[[c]] <- list("translationUp" = rownames(translationUp),
                              "translationDown" = rownames(translationDown),
+                             "translatedmRNAUp" = rownames(translatedmRNAUp),
+                             "translatedmRNADown" = rownames(translatedmRNADown),
                              "bufferingmRNAUp" = rownames(bufferingmRNAUp),
                              "bufferingmRNADown" = rownames(bufferingmRNADown),
                              "mRNAAbundanceUp" = rownames(mRNAAbundanceUp),
-                             "mRNAAbundanceDown" = rownames(mRNAAbundanceDown))#,
+                             "mRNAAbundanceDown" = rownames(mRNAAbundanceDown),
+                             "totalmRNAUp" = rownames(totalmRNAUp),
+                             "totalmRNADown" = rownames(totalmRNADown))#,
                              #"background" = setdiff(rownames(ads@dataP),c(rownames(translationUp),
                                                                           #rownames(translationDown),
                                                                           #rownames(bufferingmRNADown),

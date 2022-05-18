@@ -135,7 +135,7 @@ codonUsage <- function(ads,
   
     res <- vector("list", length = length(regulation))
     for(i in unique(contrast)){
-      resTmp <- results[[i]][names(results[[i]]) %in% regulation[which(contrast==i)]]
+      resTmp <- results[[i]][regulation[which(contrast==i)]]
       res[which(contrast==i)] <- resTmp
     }
   }
@@ -367,8 +367,8 @@ codonUsage <- function(ads,
       #text(finalOut[finalOut$codon %in% c('AAA','GAA','GAT','CCT'),]$statOut,finalOut[finalOut$codon %in% c('AAA','GAA','GAT','CCT'),]$freq, finalOut[finalOut$codon %in% c('AAA','GAA','GAT','CCT'),]$codon,col='dodgerblue1',font=2)
       #legend(1.5,40, fill=c('brown1','dodgerblue1'),bty='n', c('codonsUp','codonsDown'))
       
-      text(finalOut[finalOut$codon %in% c('CTG','GAG','CAG'),]$statOut,finalOut[finalOut$codon %in% c('CTG','GAG','CAG'),]$freq, finalOut[finalOut$codon %in% c('CTG','GAG','CAG'),]$codon,col='dodgerblue1',font=2)
-      text(finalOut[finalOut$codon %in% c('AAA','GAA'),]$statOut,finalOut[finalOut$codon %in% c('AAA','GAA'),]$freq, finalOut[finalOut$codon %in% c('AAA','GAA'),]$codon,col='brown1',font=2)
+      #text(finalOut[finalOut$codon %in% c('CTG','GAG','CAG'),]$statOut,finalOut[finalOut$codon %in% c('CTG','GAG','CAG'),]$freq, finalOut[finalOut$codon %in% c('CTG','GAG','CAG'),]$codon,col='dodgerblue1',font=2)
+      #text(finalOut[finalOut$codon %in% c('AAA','GAA'),]$statOut,finalOut[finalOut$codon %in% c('AAA','GAA'),]$freq, finalOut[finalOut$codon %in% c('AAA','GAA'),]$codon,col='brown1',font=2)
       legend(0.5,20, fill=c('dodgerblue1','brown1'),bty='n', c('codonsDown1','codonsDown2'))
       
       #tmp KS
