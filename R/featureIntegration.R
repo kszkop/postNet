@@ -1,9 +1,12 @@
-#function that do that
 featureIntegration <- function(ads,
                                   contrast,
                                   RegMode='translation', #to choose translatedmRNA, totalmRNA, translation, buffering
+                                  geneList=NULL,
+                                  geneListnames=NULL,
+                                  geneListcolours=NULL,
                                   features,
                                   regOnly=TRUE,
+                                  regulation=NULL, #required if regOnly is TRUE, to choose as it is in anota2seq
                                   allFeat=TRUE,
                                   pdfName=NULL){
   #
@@ -27,16 +30,21 @@ featureIntegration <- function(ads,
   dat <- tmpDf#[,1:(ncol(tmpDf))-1]
   colnames(dat) <- c(paste('a',seq(1,length(featureName),1),sep=''),'TE')
   #
-  if(isTRUE(regOnly)){
-    resTmp <- anota2seqGetDirectedRegulations(ads)[[contrast]]
+  if(is.null(geneList)){
     #
-    if(RegMode=='translation'| RegMode=='translatedmRNA'){
-      listSel <- as.character(unlist(resTmp[c(1,2)]))
-    } else if (RegMode=='buffering'){
-      listSel <- as.character(unlist(resTmp[c(3,4)]))
-    } else if (RegMode=='totalmRNA'){
-      listSel <- as.character(unlist(resTmp[c(5,6)]))
+    if(isTRUE(regOnly)){
+      resTmp <- anota2seqGetDirectedRegulations(ads)[[contrast]]
+      #
+      listSel <- as.character(unlist(resTmp[grepl(regulation,names(resTmp))]))
+      #
+      dat <- dat[row.names(dat) %in% listSel,]
     }
+  } else {
+    #
+    resTmp <- geneList
+    names(resTmp) <- geneListnames
+    #
+    listSel <- as.character(unlist(geneList))
     dat <- dat[row.names(dat) %in% listSel,]
   }
   #Pre-run to remove features that are not significnt for univariate models
@@ -54,9 +62,14 @@ featureIntegration <- function(ads,
   #
   step1pval <- sapply(models_prerun , function(x) (x[1,5]))
   names(step1pval) <- featureName
+  #add fdr test
+  step1pval_fdr <- p.adjust(step1pval)
+  names(step1pval_fdr) <- featureName
+  
   #remove not signigicant
   step1expl <- step1expl[-presel]
   step1pval <- step1pval[-presel]
+  step1pval_fdr <- step1pval_fdr[-presel]
   #
   #remove this features
   if(!isTRUE(allFeat)){
@@ -169,11 +182,22 @@ featureIntegration <- function(ads,
   #
   #PLot table
   colours <- matrix("white", nrow(tb1Out), ncol(tb1Out))
-  for(k in 1:ncol(colours)){
-    colours[k,k] <- 'seagreen1'
+  #colour warnings
+  for(k in 2:nrow(colours)){
+    trow <- as.numeric(na.omit(as.numeric(tb1Out[k,])))
+    #check whihch one is more than 50% drop
+    tsel <- which((lag(trow)/trow)>2)
+    #
+    colours[k,tsel] <- '#FDE0C5'
   }
-  colours[which(tmp_pval>0.05)] <- 'red3'
+  #
+  for(k in 1:ncol(colours)){
+    colours[k,k] <- '#B0F2BC'
+  }
+  #
+  colours[which(tmp_pval>0.05)] <- '#B14D8E'
   
+  #
   tt1 <- gridExtra::ttheme_default(core=list(fg_params=list(fontface=c(rep("plain",ncol(tb1Out)))), bg_params = list(fill =colours , col="black")))
   tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
   
@@ -223,7 +247,7 @@ featureIntegration <- function(ads,
   
   tg2 <- gridExtra::tableGrob(tb2out,rows = NULL)
   
-  tb3out <- data.frame(Features=names(step1expl),Pvalue_Univariate=format(as.numeric(step1pval),scientific = T,digits = 2), VarianceExplained_Univariate=as.numeric(step1expl))
+  tb3out <- data.frame(Features=names(step1expl),Pvalue_Univariate=format(as.numeric(step1pval),scientific = T,digits = 2), FDRvalue_Univariate=format(as.numeric(step1pval_fdr),scientific = T,digits = 2),VarianceExplained_Univariate=as.numeric(step1expl))
   tb3out <- tb3out[with(tb3out,order(-tb3out$VarianceExplained_Univariate)),]
   #
   tg3 <- gridExtra::tableGrob(tb3out,rows = NULL)
@@ -244,6 +268,10 @@ featureIntegration <- function(ads,
   dev.off()
   
   #
+  #Prepare plotting
+  AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
+  names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
+  #
   for(feat in bestSel){
     #
     featTmp <- namesDf[namesDf$newNames==feat,]$originalNames
@@ -254,27 +282,20 @@ featureIntegration <- function(ads,
       set <- dat[row.names(dat) %in% listSel, colnames(dat)==feat]
       set_te <- dat$TE[row.names(dat) %in% listSel]
       #
-      if(RegMode=='translation'| RegMode=='translatedmRNA'){
+      if(is.null(geneList)){
+        set1 <- dat[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]]), colnames(dat)==feat]
+        set2 <- dat[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]]), colnames(dat)==feat]
+        set_te1 <- dat$TE[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]])]
+        set_te2 <- dat$TE[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]])]
+        col1 <- as.character(AnotaColours[grepl(regulation,names(AnotaColours))][1])
+        col2 <- as.character(AnotaColours[grepl(regulation,names(AnotaColours))][2])
+      } else {
         set1 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(1)])), colnames(dat)==feat]
         set2 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(2)])), colnames(dat)==feat]
         set_te1 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(1)]))]
         set_te2 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(2)]))]
-        col1 <- AnotaColours[1]
-        col2 <- AnotaColours[2]
-      } else if (RegMode=='buffering'){
-        set1 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(3)])), colnames(dat)==feat]
-        set2 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(4)])), colnames(dat)==feat]
-        set_te1 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(3)]))]
-        set_te2 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(4)]))]
-        col1 <- AnotaColours[5]
-        col2 <- AnotaColours[6]
-      } else if (RegMode=='totalmRNA'){
-        set1 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(5)])), colnames(dat)==feat]
-        set2 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(6)])), colnames(dat)==feat]
-        set_te1 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(5)]))]
-        set_te2 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(6)]))]
-        col1 <- AnotaColours[3]
-        col2 <- AnotaColours[4]
+        col1 <- geneListcolours[1]
+        col2 <- geneListcolours[2] 
       }
       #
     } else {
