@@ -44,7 +44,6 @@ contentAnalysis <- function(ads,
   } else {
     annotBgSel <- as.data.frame(annotBg %>% group_by(geneID) %>% dplyr::slice_sample(n = 1))
   }
-  
   #
   if(!is.null(subregion)){
     #
