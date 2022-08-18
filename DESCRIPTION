@@ -2,9 +2,7 @@ Package: anota2seqUtils
 Type: Package
 Title: 
 Version: 0.0.0.9000
-Authors@R: 
-    person("Krzysztof","Szkop", email="krzysztof.szkop@ki.se",role=c("aut","cre")),
-    person("Ola","Larsson", email="ola.larsson@ki.se",role=c("aut","cre"))
+Author: Krzysztof Szkop <krzysztof.szkop@ki.se>, Ola Larsson <ola.larsson@ki.se>
 Maintainer: Krzysztof Szkop <krzysztof.szkop@ki.se>
 Description: What the package does (one paragraph).
 License: GPL-3
@@ -32,5 +30,5 @@ Imports:
   WriteXLS (>= 6.3.0),
   pqsfinder (>= 2.8.0),
   Biostrings (>= 2.60.2)
-Suggests: BiocStyle,knitr
+Suggests: BiocStyle, knitr
 VignetteBuilder: knitr
