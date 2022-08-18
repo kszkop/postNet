@@ -1,16 +1,16 @@
 Package: anota2seqUtils
-Title: Post-anota2seq analysis
+Type: Package
+Title: 
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
-           role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
+    person("Krzysztof","Szkop", email="krzysztof.szkop@ki.se",role=c("aut","cre")),
+    person("Ola","Larsson", email="ola.larsson@ki.se",role=c("aut","cre"))
+Maintainer: Krzysztof Szkop <krzysztof.szkop@ki.se>
 Description: What the package does (one paragraph).
-License: What license it uses
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
+LazyLoad: true
 Depends: 
   R (>= 4.1.0),
   dplyr (>= 1.0.7)
@@ -32,3 +32,5 @@ Imports:
   WriteXLS (>= 6.3.0),
   pqsfinder (>= 2.8.0),
   Biostrings (>= 2.60.2)
+Suggests: BiocStyle,knitr
+VignetteBuilder: knitr
