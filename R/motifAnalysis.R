@@ -11,9 +11,7 @@ motifAnalysis <- function(ads,
                           selection, #shortest, longest, random (default)
                           stremeThreshold = 0.05, #pvalue , max is 0.05 
                           minwidth=6, #min motif width (default for original software is 8 but thought I would reduce it a bit as 8 sounds bit harsh)
-                          stremeName=NULL, #name for output folder
-                          tomtomName=NULL,
-                          tomtom_database = NULL#path to .meme database of the choice. dowload from website
+                          stremeName=NULL #name for output folder
 ){
   #Subset annot for only expressed genes
   bg <- row.names(ads@dataP)
@@ -83,21 +81,21 @@ motifAnalysis <- function(ads,
   
   #Extract only these below threshold
   streme_out <- streme_out[streme_out$pval < stremeThreshold,]
-  if(!is.null(tomtom_database)){
-    if(nrow(streme_out)>0){
-      if(is.null(geneVec)){
-        outdirTmp2 <- ifelse(is.null(tomtomName),paste('tomtomOut_contrast', contrast, region, regulation, sep='_'),tomtomName)
-      } else {
-        outdirTmp2 <- ifelse(is.null(tomtomName),paste('tomtomOut', geneVecName, region, sep='_'),tomtomName)
-      }
-      #Run tomtom
-      tomtom_out <- memes::runTomTom(streme_out,database=tomtom_database, outdir = outdirTmp2)
-    } else {
-      tomtom_out <- streme_out
-    }
-    return(tomtom_out)
-  } else {
-    #
-    return(streme_out)
-  }
+#  if(!is.null(tomtom_database)){
+#    if(nrow(streme_out)>0){
+#      if(is.null(geneVec)){
+#        outdirTmp2 <- ifelse(is.null(tomtomName),paste('tomtomOut_contrast', contrast, region, regulation, sep='_'),tomtomName)
+#      } else {
+#        outdirTmp2 <- ifelse(is.null(tomtomName),paste('tomtomOut', geneVecName, region, sep='_'),tomtomName)
+#      }
+#      #Run tomtom
+#      tomtom_out <- memes::runTomTom(streme_out,database=tomtom_database, outdir = outdirTmp2)
+#    } else {
+#      tomtom_out <- streme_out
+#    }
+#    return(tomtom_out)
+#  } else {
+#    #
+  return(streme_out)
+#  }
 }
