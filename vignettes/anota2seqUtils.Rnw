@@ -102,7 +102,7 @@ uorf_strong <- uorf_analysis(ads = ads, annot = annot, regulation =  c("translat
 @
 
 <<motifAnalysis, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
-motifs_utr5 <- motifAnalysis(ads = ads, annot = annot, regulation = 'translationUp', contrast = 1, region = 'UTR5', selection ='random',  tomtom_database =list.files(system.file("extdata/motifs/human",package = "anota2seqUtils")))
+motifs_utr5 <- motifAnalysis(ads = ads, annot = annot, regulation = 'translationUp', contrast = 1, region = 'UTR5', selection ='random',  tomtom_database =list.files(system.file("extdata/motifs_rbpDB/human",package = "anota2seqUtils")))
 @
 
 
