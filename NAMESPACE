@@ -1,7 +1,7 @@
 exportPattern("^[^\\.]")
 
-import("dplyr")
-importFrom("plyr","ldply")
-importFrom("Biostrings","reverseComplement")
-importFrom("Biostrings","DNAString")
-importFrom("pqsfinder","PQSViews")
+import(dplyr)
+importFrom(plyr,ldply)
+importFrom(Biostrings,reverseComplement)
+importFrom(Biostrings,DNAString)
+importFrom(pqsfinder,PQSViews)
