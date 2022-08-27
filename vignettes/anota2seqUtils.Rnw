@@ -31,43 +31,120 @@ underlying post-transcriptional regulation of gene expression}
 \addcontentsline{toc}{section}{Introduction}
 \section*{Introduction}
 
-Post-transcriptional regulation of gene expression occurs at multiple levels including perturbations in mRNA stability and translation (REF). The selectivity of post-transcriptional regulatory mechanisms is chiefly achieved via the interplay between a plethora of cis- (i.e., mRNA elements and features) and trans-acting factors (e.g., RBPs, miRNAs) (REF). This allows transcript- and context-dependent alterations in mRNA abundance and/or translation efficiency thereby resulting in selective remodeling of the proteome that allows adaptation to various environmental challenges  [reviewed in (Jonas and Izaurralde, 2015; Hinnebusch, Ivanov and Sonenberg, 2016; Roux and Topisirovic, 2018)]. For example, 5’ untranslated region (5’UTR) GC content is negatively correlated with translational efficiency (Pelletier and Sonenberg, 1985; Manzella and Blackshear, 1990). The inhibitory effect of high 5’UTR GC content is thought to be a consequence of formation of secondary structures that impede scanning of the ribosome (Waldron, Raza and Le Quesne, 2018). Translation of mRNAs with high GC content in their 5’UTR critically depend on the activity of RNA helicases including eukaryotic translation initiation factor 4A (eIF4A) (Svitkin et al., 2001; Waldron, Raza and Le Quesne, 2018). eIF4A gains processivity within the eIF4F complex, which also includes 5’ cap-binding protein eIF4E and scaffold protein eIF4G (Sonenberg and Hinnebusch, 2009). eIF4F complex formation is stimulated by the mechanistic target of rapamycin (mTOR)  (Roux and Topisirovic, 2018). mTOR therefore controls translation of mRNAs with structured 5’UTRs (REF). Moreover, mTOR stimulates translation of mRNAs harboring short 5’UTRs (<30 nt) that are highly sensitive to alterations in eIF4E availability, but only marginally to changes in eIF4A levels and/or activity (REF). Finally, mTOR stimulates translation of mRNAs harboring 5’-terminal oligopyrimidine (TOP) motif via phosphorylation of La-related protein 1(LARP1) (REF). Notably, mRNAs that carry features that render their translation mTOR-sensitive appear to be highly functionally related (REF). Specifically, mRNAs with high GC content, short 5’UTRs and TOP motifs are highly enriched in those encoding factors involved in proliferation and survival, proteins with mitochondrial functions and components of the translation apparatus, respectively (REF). In response to a variety of stimuli mTOR can therefore engage different effectors to selectively modulate the composition of the proteome and drive proliferation, mitochondrial metabolism and energy production, and protein synthesis (REF). In addition to the properties of 5’UTR, translation is also affected by the composition of coding region and 3’UTR features (REF). Individual mRNAs, however, frequently harbor not just one, but many of the features that can impact on their regulation. This makes identification of RNA features underlying post-transcriptional programs challenging, and may lead to erroneous conclusions when RNA features covary across transcripts. Yet, to date, there are no in silico approaches to systematically identify, integrate and model how well RNA features associate with e.g. translational efficiencies obtained from transcriptome-wide studies of mRNA translation employing polysome- (Johannes et al., 1999) or ribosome-profiling (Ingolia et al., 2009). Therefore, we developed anota2seqUtils, a bioconductor package designed to systematically identify and integrate regulatory mRNA features. Anota2seqUtils includes methods to identify and quantify RNA features (e.g., GC content, length and folding energy of UTRs and CDS, RNA motifs, uORFs, codon composition etc.) associated with selective alterations in different steps of post-transcriptional regulation of gene expression (e.g., mRNA translation and stability). This is coupled with statistical analysis to assess how the compendium of identified features impacts on mRNA fate, while allowing establishment of the functional relationship between different features of mRNA. To evaluate the method, we investigated the effects of perturbations in mRNA abundance and translation efficiency under the conditions where cells were acutely exposed to insulin or different stressors (e.g., mTOR inhibitors, serum depletion, hypoxia).  Anota2seqUtils efficiently captured previously established features that modulate mRNA translation under these conditions, which verified its optimal performance. In addition, anota2seqUtils captured hitherto unappreciated 3’UTR features that render mRNAs susceptible to translational offsetting. Transcripts harboring these 3’UTR features exhibit longer half-lives than mRNAs that are not subjected to translational offsetting. This suggest that translational offsetting may be coupled with mRNA stability. In summary, we present anota2seqUtils for identification and integration of regulatory mRNA features on a transcriptome-wide scale and unravel previously undescribed transcript characteristics that underpin translational offsetting.
+Post-transcriptional regulation of gene expression occurs at multiple levels including perturbations in mRNA stability and translation. The selectivity of post-transcriptional regulatory mechanisms is chiefly achieved via the interplay between a plethora of cis- (i.e., mRNA elements and features) and trans-acting factors (e.g., RBPs, miRNAs). Individual mRNAs, however, frequently harbor not just one, but many of the features that can impact on their regulation. This makes identification of RNA features underlying post-transcriptional programs challenging, and may lead to erroneous conclusions when RNA features covary across transcripts. Here, we propose \emph{in silico} approach to systematically identify, integrate and model how well RNA features associate with e.g. translational efficiencies obtained from transcriptome-wide studies of mRNA translation employing polysome- or ribosome-profiling. Anota2seqUtils includes methods to identify and quantify RNA features (e.g., GC content, length and folding energy of UTRs and CDS, RNA motifs, uORFs, codon composition etc.) associated with selective alterations in different steps of post-transcriptional regulation of gene expression (e.g., mRNA translation and stability). This is coupled with statistical analysis to assess how the compendium of identified features impacts on mRNA fate, while allowing establishment of the functional relationship between different features of mRNA.
 
+The package was primarily designed as a post anota2seq translational efficiency analysis \cite{Oertlin} method, so it is sufficient to have an output of function \Rfunction{anota2seq::anota2seqRun} to perform all the steps. However, it is possible to expand analysis by inputing additional genes lists or even use own genes lists and own values that might not necessarily represent translational efficiences.
 
+\section{Quick start}
+anota2seqUtils provides a wrapper function \Rfunction{anota2seqUtilsRun} which performs complete analysis with relevant default parameters using the one-step procedure 
+<<Quick start, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
+library(anota2seqUtils)
+anota2seqUtilsRun()
+@
 
-#Gene expression is a multi-step process including transcription, mRNA-transport, -stability and -translation. Dysregulated mRNA translation is commonly observed in human diseases such as cancer and #understanding which mRNAs are differentially translated and the mechanisms that mediate such effects is therefore of high importance. Estimates of transcriptome-wide translational efficiency can be #obtained using polysome-profiling and ribosome-profiling. Both approaches are based on isolation of translated mRNA (polysome-associated mRNA or Ribosome Protected Fragments [RPF]) followed by #quantification using DNA-microarrays or RNA sequencing (RNAseq). A parallel total mRNA sample is also isolated and quantified in order to identify \emph{bona fide} changes in translational #efficiency. More details are found in \cite{larsson2008, piccirillo}. \\
+The analysis includes the following steps:
 
-#During analysis of the resulting data, three  modes for regulation of gene expression can be assessed: changes in mRNA abundance (i.e. similar changes in total mRNA levels and levels of translated #mRNA) and changes in translational efficiency leading to changes in protein levels (a change in the amount of translated mRNA that is not explained by a change in total mRNA) or buffering which #maintains constant levels of translated mRNA (and hence also protein levels) despite altered levels of total mRNA. Efficient separation of these modes for regulation of gene expression is necessary #to elucidate underlying regulatory mechanisms \cite{Oertlin}. Studies of changes in translational efficiency commonly apply per sample differences (log scale) between levels of translated mRNA and #total mRNA \cite{larsson2008} that are compared between treatments. However, as discussed in \cite{larsson2010} such translational efficiency scores and outputs from methods that use such scores #will show spurious correlations leading to elevated false positive findings \cite{larsson2010}.\\
-
-#This bias from spurious correlations can be avoided by using per-feature regression-based analysis between levels of translated mRNA and total mRNA. Such analysis produces residuals that are #uncorrelated with the total mRNA levels and changes in translational efficiency leading to altered protein levels or buffering can be identified using Analysis of Partial Variance (APV) #\cite{larsson2010}. Anota2seq allows for identification of all three gene expression modes from polysome- or ribosome- profiling data quantified by DNA-microarrays or RNAseq. It uses APV and #thereby eliminates spurious correlation bias. Here we illustrate the use of the anota2seq package.
-
-\section{Workflow}
-Analysis of translational activity using anota2seq includes the following steps:
 \begin{enumerate}
-\item Initialize an Anota2seqDataSet and pre-process RNA sequencing data using \Rfunction{anota2seqDataSetFromMatrix} or \Rfunction{anota2seqDataSetFromSE}. See section \ref{preproc}
-\item Assessment of model assumptions using \Rfunction{anota2seqPerformQC} and \Rfunction{ anota2seqResidOutlierTest}. See section \ref{qc}
-\item Analysis of changes in mRNA abundance and translational efficiency leading to altered protein levels or buffering using \Rfunction{anota2seqAnalyze}. See section \ref{analysis}
-\item Selection of features and classification into modes for regulation of gene expression using \Rfunction{anota2seqSelSigGenes} and \Rfunction{anota2seqRegModes}.  See section \ref{genesSection} and \ref{regModesSection}, respectively.
-\item Visualize the results using \Rfunction{anota2seqPlotPvalues}, \Rfunction{anota2seqPlotFC} and \Rfunction{anota2seqPlotGenes} See sections \ref{fcSection}, \ref{densitySection} and \ref{genesSection}, respectively.
+\item Obtaining reference sequences at transcript level for 5'UTRs, CDS and 3'UTRs \Rfunction{retrieveFormatData}. See section \ref{}
+\item Lengths analysis \Rfunction{lengthAnalysis}.
+\item Analysis of nucleotide composition of choice (eg. GC) content \Rfunction{contentAnalysis}.
+\item De novo discovery of motifs using streme \Rfunction{motifAnalysis}.
+\item Presence calculation of the discovered motifs in previous step or known motif of choice with additional possibility to predict presence of G-quadruplexes \Rfunction{contentMotifs}.
+\item Presence of gene signature \Rfunction{signCalc}.
+\item Analysis of fold energies \Rfunction{foldEnergyAnalysis}.
+\item Presence of uORFs \Rfunction{uorf_analysis}.
+\item Codon (or alternatively AA) usage analysis \Rfunction{codonUsage}, \Rfunction{codonCalc}.
+\item miRNA enrichment \Rfunction{}.
+\item feature Integration \Rfunction{featureIntegration}
 \end{enumerate}
 
-\section{Getting started}
+Each step outputs plots to working directory, in addition to final object containing all the outputs of each function.
 
-anota2seqUtils provides a wrapper function called \Rfunction{anota2seqUtilsRun} which performs all analysis steps with relevant default parameters. Here we show an overview of the whole workflow using this function. We illustrate an analysis using count data from an RNA sequencing experiment on total mRNA (called anota2seq\_data\_T here) and on translated mRNA (polysome-associated mRNA or Ribosome Protected Fragments, data called anota2seq\_data\_P) on conditions ("ctrl" and "treatment") and a vector of sample annotation (called anota2seq\_pheno\_vec). The following code performs normalization, assesses model assumptions and performs the analysis for the default contrast (treatment vs. control in this case):
+\section{Complete step by step analysis}
+Here we show an overview of the whole step by step workflow. We illustrate an analysis using anota2seq object (called ads) available with the package.
+
 <<load_library_and_data, echo=TRUE, eval = TRUE >>=
 library(anota2seqUtils)
-data(ads)
 @
 
-<<gettingStarted, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
-ads <- anota2seqDataSetFromMatrix(
-    dataP = anota2seq_data_P[1:1000,],
-    dataT = anota2seq_data_T[1:1000,],
-    phenoVec = anota2seq_pheno_vec,
-    dataType = "RNAseq",
-    normalize = TRUE)
-ads <- anota2seqRun(ads)
+Firstly, reference sequences are required. It is possible to use existing pre-prepared files based on RefSeq. At the moment these are only available for human and mouse. To check available versions please run function \R{checkAvailableVersions}:
+
+<<load_library_and_data, echo=TRUE, eval = TRUE >>=
+checkAvailableVersions(species='human')
 @
+
+It is possible to create new annotation files based on latest ncbi refseq release (option= 'create'). It is automatic process for human and mouse. For other species option = 'createFromFile' is required and files rna.fna.gz, rna.gbff.gz and genomic.gff.gz needs to be manually downloaded from ncbi refseq and provided. It is also possible to simply load (option='custom') your own version in appropriate format, i.e. data.frame for transcripts IDs, gene IDs, and sequences for 5'UTR, CDS and 3'UTR with respective column names: id, geneID, UTR5_seq, CDS_seq, UTR3_seq.
+
+
+<<retrieveFormatData, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
+annot <- retrieveFormatData(source='load', version='rel_109.20201120',species = 'human')
+@
+
+In addition, optionally, we provide [an option possibility to adjust these obtained sequences. As new technologies emerge, very often we are able to define UTRs more accurately for specific biological background based on 5' or 3' specific sequencing. Therefore, we provide function \Rfunction{adjustSeq} allowing adjustment of these sequences based on provided data.frame object with refseq transcript ids and sequences (with column names: 'id', 'sequence').
+
+<<adjustSeq, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
+annot_adj <- adjustSeq(annot=annot, region, adjObj, keepAll = FALSE, excl = FALSE)
+@
+
+\subsection{Lengths comparison}
+
+
+<<lengthAnalysis, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
+len_5UTR <- lengthAnalysis(ads=ads, annot=annot, regulation=c("translationUp","translationDown"), ,contrast = c(1,1), region = 'UTR5', selection='random', comparisons = list(c(0,1),c(0,2),c(1,2)), plotType='boxplot', pdfName=NULL)
+@
+
+<<contentAnalysis, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
+GC_utr5 <- contentAnalysis(ads = ads, annot = annot, regulation =  c("translationUp","translationDown"),contrast = c(1,1), region = 'UTR5', selection ='random',comparisons = list(c(0,1),c(0,2),c(1,2)), content='GC',plotType = 'vioplot', pdfName = NULL)
+@
+
+<<uorf_analysis, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
+uorf_strong <- uorf_analysis(ads = ads, annot = annot, regulation =  c("translationUp","translationDown"), contrast = c(1,1), selection ='random', comparisons = list(c(0,1),c(0,2),c(1,2)), onlyUTR5=FALSE, startCodon='ATG', KozakContext='strong')
+@
+
+<<motifAnalysis, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
+motifs_utr5 <- motifAnalysis(ads = ads, annot = annot, regulation = 'translationUp', contrast = 1, region = 'UTR5', selection ='random',  tomtom_database =list.files(system.file("extdata/motifs/human",package = "anota2seqUtils")))
+@
+
+
+
+
+
+
+\section{Complete analysis using the one-step procedure function \Rfunction{anota2seqUtilsRun}}\label{quickStart}
+In addition to application of each of the functions within anota2seq which provides the maximum flexibility, the anota2seq package provides the option to perform a one-step analysis of translated mRNA, total mRNA and changes in translational efficiency leading to altered protein levels or buffering. This analysis performs quality control followed by analysis of changes in translational efficiency affecting protein levels or buffering. A filtering is also performed (as in \Rfunction{anota2seqSelSigGenes}) as well as categorization into gene expression modes.
+<<wrapperFunction, echo=TRUE, eval = FALSE >>=
+ads <- anota2seqRun(
+    Anota2seqDataSet = ads,   
+    thresholds = list(   
+        maxPAdj = 0.05,
+        minEff = 1.5),
+    performQC = TRUE,         
+    performROT = TRUE,  
+    useRVM = TRUE)
+@
+
+The output of the \Rfunction{anota2seqRun} function can be supplied to the \Rfunction{anota2seqPlotPvalues}, \Rfunction{anota2seqPlotGenes} and \Rfunction{anota2seqPlotFC} functions for similar visualization of the results as in Fig. \ref{fig:pvalDensity}, \ref{fig:singleGeneRegressions_translation}, \ref{fig:singleGeneRegressions_buffering} and \ref{fig:fcPlot}.\\ 
+
+
+
+\section{Workflow}
+Analysis of RNA features using anota2seqUtils is designed primarily as a post anota2seq analysis method. Therefore, default approach starts with anota2seq object (output of function anota2seq::anota2seqRun) and includes the following steps:
+\begin{enumerate}
+\item Obtaining reference sequences at transcript level for 5'UTRs, CDS and 3'UTRs \Rfunction{retrieveFormatData}. See section \ref{}
+\item Lengths analysis \Rfunction{lengthAnalysis}.
+\item Analysis of nucleotide composition of choice (eg. GC) content \Rfunction{contentAnalysis}.
+\item De novo discovery of motifs using streme \Rfunction{motifAnalysis}.
+\item Presence calculation of the discovered motifs in previous step or known motif of choice with additional possibility to predict presence of G-quadruplexes \Rfunction{contentMotifs}.
+\item Presence of gene signature \Rfunction{signCalc}.
+\item Analysis of fold energies \Rfunction{foldEnergyAnalysis}.
+\item Presence of uORFs \Rfunction{uorf_analysis}.
+\item Codon (or alternatively AA) usage analysis.\Rfunction{codonUsage}, \Rfunction{codonCalc}.
+\item miRNA enrichment \Rfunction{}.
+
+\end{enumerate}
+Each step outputs plots and objects that are used as input for the final \Rfunction{featureIntegration} analysis.
+
+
 
 << echo = FALSE, message = FALSE, results = 'hide', eval = TRUE >>=
 unlink(c("ANOTA2SEQ_interaction_p_distribution.pdf", "ANOTA2SEQ_residual_distribution_summary.jpeg", "ANOTA2SEQ_residual_vs_fitted.jpeg", "ANOTA2SEQ_rvm_fit_for_all_contrasts_group.jpg", "ANOTA2SEQ_rvm_fit_for_interactions.jpg", "ANOTA2SEQ_rvm_fit_for_omnibus_group.jpg", "ANOTA2SEQ_simulated_vs_obt_dfbetas_without_interaction.pdf"))
