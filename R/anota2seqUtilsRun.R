@@ -1,7 +1,7 @@
-
 anota2seqUtilsRun <- function(source, 
                               species, 
-                              version=NULL, 
+                              version=NULL,
+                              
                               region, 
                               ads, 
                               contrast, 
@@ -32,10 +32,29 @@ anota2seqUtilsRun <- function(source,
                   plotType=plotType, 
                   pdfName=pdfName)
     
+    contentAnalysis(ads = ads, 
+                    annot = annot, 
+                    regulation =  regulation,
+                    contrast = contrast, 
+                    region = i, 
+                    selection = selection,
+                    comparisons = comparisons, 
+                    content = content,
+                    plotType = plotType, 
+                    pdfName = pdfName)
+    
     
   }
   
-  
+  uorf_analysis(ads = ads, 
+                annot = annot, 
+                regulation =  regulation, 
+                contrast = contrast, 
+                selection ='random', 
+                comparisons = list(c(0,1),c(0,2),c(1,2)), 
+                onlyUTR5=FALSE, 
+                startCodon='ATG', 
+                KozakContext='strong')
   
   
   
