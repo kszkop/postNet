@@ -12,7 +12,7 @@ anota2seqUtilsRun <- function(source,
                               pdfName){
   
   #
-  if(is.null(version){
+  if(is.null(version)){
     version <- checkAvailableVersions(species=species)
   }
   #
