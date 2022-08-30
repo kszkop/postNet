@@ -103,8 +103,8 @@ foldEnergyAnalysis <- function(source='load',#option to 'load' available or crea
     }
     
     #Prepare plotting
-    AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
-    names(AnotaColours) <- c("translationUp","translationDown", "mRNAAbundanceUp","mRNAAbundanceDown","bufferingmRNAUp","bufferingmRNADown")
+    AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
+    names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
     #
     #Extract all results
     results <- anota2seqGetDirectedRegulations(ads)

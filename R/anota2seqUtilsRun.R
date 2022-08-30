@@ -42,6 +42,50 @@ anota2seqUtilsRun <- function(source,
                     content = content,
                     plotType = plotType, 
                     pdfName = pdfName)
+    for(j in 1:length(regulation)){
+      motifAnalysis(ads = ads, 
+                    annot = annot, 
+                    regulation = regulation[i], 
+                    contrast = contrast[i],
+                    region = i, 
+                    selection = selection)
+    }
+    
+    ##combine all motifs for given region
+    motifsSel <- c(motifs_utr5_transUp$consensus,motifs_utr5_transDown$consensus)
+    motifsOut <- lapply(motifsSel, function(x) contentMotifs(ads = ads, annot = annot, regulation =  c("translationUp","translationDown"),contrast = c(1,1), motif=x,region = 'UTR5', len=1, selection ='random',comparisons = list(c(1,2))))
+    names(motifsOut) <- paste('UTR5', motifsSel, sep='_')
+    
+    if(i != 'UTR3'){
+        contentMotifs(ads = ads, 
+                      annot = annot, 
+                      regulation =  c("translationUp","translationDown"), 
+                      contrast = c(1,1), 
+                      motif='G4',
+                      region = 'UTR5', 
+                      len=1, 
+                      selection ='random', 
+                      comparisons = list(c(1,2)))
+    
+    }
+    
+    foldEnergyAnalysis(ads = ads, 
+                       annot = annot, 
+                       regulation = regulation, 
+                       contrast =  ccontrast, 
+                       region= i,
+                       selection = selection, 
+                       comparisons = comparisons, 
+                       source = source, 
+                       version = version,
+                       species = species, 
+                       resid = resid, 
+                       onlyRun = onlyRun, 
+                       plotType = plotType, 
+                       pdfName = NULL)
+    
+    
+    
     
     
   }

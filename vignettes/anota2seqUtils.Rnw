@@ -106,12 +106,27 @@ motifs_utr5_transUp <- motifAnalysis(ads = ads, annot = annot, regulation = 'tra
 motifs_utr5_transDown <- motifAnalysis(ads = ads, annot = annot, regulation = 'translationDown', contrast = 1, region = 'UTR5', selection ='random')
 
 motifsSel <- c(motifs_utr5_transUp$consensus,motifs_utr5_transDown$consensus)
-motifsOut <- lapply(motifsSel, function(x) contentMotifs(ads = ads, regulation =  c("translationUp","translationDown"),contrast = c(1,1), motif=x,region = 'UTR5', len=1, selection ='random', annot = annot,comparisons = list(c(1,2))))
+motifsOut <- lapply(motifsSel, function(x) contentMotifs(ads = ads, annot = annot, regulation =  c("translationUp","translationDown"),contrast = c(1,1), motif=x,region = 'UTR5', len=1, selection ='random',comparisons = list(c(1,2))))
 names(motifsOut) <- paste('UTR5', motifsSel, sep='_')
+
+G4_utr5 <- contentMotifs(ads = ads, annot = annot, regulation =  c("translationUp","translationDown"), contrast = c(1,1), motif='G4',region = 'UTR5', len=1, selection ='random', comparisons = list(c(1,2)))
+
+@
+
+<<foldEnergyAnalysis, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
+fe_utr5 <- foldEnergyAnalysis(ads=ads, annot=annot, regulation =  c("translationUp","translationDown"), contrast =  c(1,1), region='UTR5',selection='random', comparisons = list(c(0,1),c(0,2),c(1,2)), source='load', version='rel_109.20201120',species = 'human', resid = FALSE, onlyRun=FALSE, plotType='ecdf', pdfName= NULL)
+@
+
+
+<<codonUsage, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
+codonOut <- codonUsage(ads = ads, analysis='codon', regulation =  c("translationUp","translationDown"),contrast = c(1,1),type='sequence', comparisons = list(c(1,2)),annotType='ccds',source='load',selection='random', pAdj=0.01, plotHeatmap=TRUE, pdfName= NULL, species='human')
+
+selCodonOut1 <- codonCalc(codonIn=codonOut_c1_trans,analysis='codon', featsel=c('CTG','GAG','AAG','CAG'),unit='count',regulation =  c("totalmRNADown","translatedmRNAUp"),contrast = c(1,1), comparisons = list(c(1,2)),ads=adsVoom,pdfName = 'Up')
 @
 
 
 
+TOPmotif_sign <- signCalc(ads = adsVoom, signature=as.character(TOPmotifgenes))
 
 
 
