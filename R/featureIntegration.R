@@ -243,7 +243,7 @@ featureIntegration <- function(ads,
   names(varExplIndepend2) <- step1sel
   
   #Outtable
-  tb2out <- data.frame(Features=namesDf$originalNames[match(bestSel, namesDf$newNames)],Pvalue=format(varExpl$`Pr(>F)`[1:length(bestSel)],scientific = T,digits = 2),VarianceExplained_Finalmodel=as.numeric(varExpldepend), VarianceExplained_AdjustedModel =as.numeric(varExplIndepend))
+  tb2out <- data.frame(Features=namesDf$originalNames[match(bestSel, namesDf$newNames)],Pvalue=format(varExpl$`Pr(>F)`[1:length(bestSel)],scientific = T,digits = 2),VarianceExplained_Omnibus=as.numeric(varExpldepend), VarianceExplained_Adjusted =as.numeric(varExplIndepend))
   
   tg2 <- gridExtra::tableGrob(tb2out,rows = NULL)
   
