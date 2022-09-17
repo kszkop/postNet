@@ -12,6 +12,7 @@ contentMotifs <- function(ads,
                             subregionSel, #select or exclude , required if subregion is not null.
                             annot, 
                             selection, #shortest, longest, random (default)
+                            resid=FALSE,
                             pdfName=NULL
 ){
   #Subset annot for only expressed genes
@@ -48,6 +49,8 @@ contentMotifs <- function(ads,
     proseqtmp <- as.character(sapply(annotBgSel$seqTmp, function(x) seqinr::c2s(seqinr::translate(seqinr::s2c(x)))))
     #
     annotBgSel$seqTmp <- proseqtmp
+    #
+    annotBgSel$lenTmp <- annotBgSel$lenTmp/3
   }
   #
   if(!is.null(subregion)){
@@ -67,14 +70,24 @@ contentMotifs <- function(ads,
     if(seqType=='dna' | seqType=='rna'){
       motifTmp <- convertIUPAC(motif)
     } else {
-      motifTmp <- motif
+      motifTmp <- replaceProtAmbig(motif)
     }
     #calcuate distance
     len <- ifelse(len==1, length(seqinr::s2c(motifTmp)), (length(seqinr::s2c(motifTmp)))+(len-1))
     #
-    motifOut <- as.numeric(sapply(annotBgSel$seqTmp, calc_motif, motif=motifTmp, len=len))
-    names(motifOut) <- as.character(annotBgSel$geneID)
+    motifOutTmp <- as.numeric(sapply(annotBgSel$seqTmp, calc_motif, motif=motifTmp, len=len))
+    names(motifOutTmp) <- as.character(annotBgSel$geneID)
   }
+
+  #
+  if(isTRUE(resid)){
+    motifOut <- lm(as.numeric(motifOutTmp) ~ log2(as.numeric(annotBgSel$lenTmp)))$residuals
+    names(motifOut) <- names(motifOutTmp)
+  } else {
+    motifOut <- motifOutTmp
+  }
+  
+  
   #
   #Extract all results
   results <- anota2seqGetDirectedRegulations(ads)

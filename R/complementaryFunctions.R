@@ -194,6 +194,16 @@ convertIUPAC <- function(motif){
   return(tmpConv)
 }
 
+#prepprotein
+replaceProtAmbig <- function(motif){
+  #
+  tmpConv <- toupper(motif)
+  #Improve one day
+  tmpConv <- gsub('X','[ACDEFGHIKLMNPQRSTVWY]',tmpConv)
+  #
+  return(tmpConv)
+}
+
 #
 codonCount <- function(gene,seq){
   #
