@@ -113,12 +113,18 @@ contentMotifs <- function(ads,
     #Plot
     pdf(ifelse(is.null(pdfName),paste(region,motif,paste(regulation[compTmp],collapse='_'),'content.pdf',sep='_'), paste(pdfName,region,motif,paste(regulation[compTmp],collapse='_'),'content.pdf',sep='_')),width= 8,height=8, useDingbats = F)
     par(mar=c(5,5,8,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.4, cex.main=1.7,cex.lab=1.3)
-    plot(ecdf(as.numeric(motifOut)),col='grey45',main='',xlab='',ylab='',verticals=TRUE, do.p=FALSE,lwd=3,bty="n",yaxt="none",font=2, xlim=c(0,as.numeric(quantile(as.numeric(motifOut),0.99))),xaxt="none")
+    
+    #
+    xlim_min <- ifelse(isTRUE(resid),floor(as.numeric(quantile(as.numeric(motifOut),0.01))), 0)
+    xlim_max <- roundUpNice(abs(as.numeric(quantile(as.numeric(motifOut),0.99))))
+    
+    
+    plot(ecdf(as.numeric(motifOut)),col='grey45',main='',xlab='',ylab='',verticals=TRUE, do.p=FALSE,lwd=3,bty="n",yaxt="none",font=2, xlim=c(xlim_min,xlim_max),xaxt="none")
   
     mtext(side=1, line=4, paste('Number of motifs \n',motif,sep=''), col='black', font=2,cex=1.2)
     mtext(side=2, line=3, 'Fn(x)', col="black", font=2, cex=1.2)
   
-    axis(side=1,seq(0,as.numeric(quantile(as.numeric(motifOut),0.99)),1), font=2,lwd=2)
+    axis(side=1,seq(xlim_min ,xlim_max,1),font=2,lwd=2)
     axis(side=2,seq(0,1,0.2), font=2,las=2,lwd=2)
   
     #
@@ -146,7 +152,7 @@ contentMotifs <- function(ads,
       tableOut[i,4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
       tableOut[i,5] <- format(tmpSign[which(ecdfSign >= 0.75)[1]] - bg_075, digits = 2)
     }
-    plotrix::addtable2plot(0,1.01,tableOut,bty="n",display.rownames=FALSE,hlines=FALSE,vlines=TRUE,title="",cex = 1,bg=as.character(AnotaColours[regulation[compTmp]]),xpad=0.2,ypad=1.4)
+    plotrix::addtable2plot(xlim_set,1.01,tableOut,bty="n",display.rownames=FALSE,hlines=FALSE,vlines=TRUE,title="",cex = 1,bg=as.character(AnotaColours[regulation[compTmp]]),xpad=0.2,ypad=1.4)
     dev.off()
   }
   #
