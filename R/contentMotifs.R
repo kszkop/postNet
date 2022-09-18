@@ -152,7 +152,7 @@ contentMotifs <- function(ads,
       tableOut[i,4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
       tableOut[i,5] <- format(tmpSign[which(ecdfSign >= 0.75)[1]] - bg_075, digits = 2)
     }
-    plotrix::addtable2plot(xlim_set,1.01,tableOut,bty="n",display.rownames=FALSE,hlines=FALSE,vlines=TRUE,title="",cex = 1,bg=as.character(AnotaColours[regulation[compTmp]]),xpad=0.2,ypad=1.4)
+    plotrix::addtable2plot(xlim_min,1.01,tableOut,bty="n",display.rownames=FALSE,hlines=FALSE,vlines=TRUE,title="",cex = 1,bg=as.character(AnotaColours[regulation[compTmp]]),xpad=0.2,ypad=1.4)
     dev.off()
   }
   #
