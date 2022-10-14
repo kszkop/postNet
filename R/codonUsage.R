@@ -5,9 +5,10 @@ codonUsage <- function(ads,
                           contrast,
                           type='sequence',#option: 'sequence' or if ribosomal profiling 'riboSeq'
                           comparisons=NULL,
-                          annotType='ccds',#option: 'refseq' or 'ccds'
+                          annotType='ccds',#option: 'refseq' or 'ccds', 'custom
                           annot=NULL, #it is required for refseq, if ccds given leave it null. and give options for sourse, species,
-                          source='load',#option to 'load' available or create new 'create'or provide 'custom'
+                          source='load',#option to 'load' available or create new 'create'
+                          customFile=NULL,
                           species=NULL, #it is required for ccds
                           subregion=NULL, #number of nucleotides from start if positive or end if negative.
                           subregionSel, #select or exclude , required if subregion is not null.
@@ -83,11 +84,14 @@ codonUsage <- function(ads,
       if(species=='mouse'){
         annot <- read.delim(system.file(paste("extdata/annotation/ccds/mouse",sep='/'), "mouseDB_ccds.txt.gz", package = "anota2seqUtils"), stringsAsFactors=FALSE)  # }
       }
-    } else if (source=="custom"){
-      annot <- read.delim(customFile, stringsAsFactors=FALSE)
-    } else {
-      stop("No correct option for annotation file provided")
     }
+  } else if (annotType=='refSeq'){
+    annot <- annot[,c(1,2,4)]
+    colnames(annot) <- c('id','geneID','CDS_seq')
+  } else if (source=="custom"){
+      annot <- read.delim(customFile, stringsAsFactors=FALSE)
+  } else {
+      stop("No correct option for annotation file provided")
   }
   #Subset annot for only expressed genes
   bg <- row.names(ads@dataP)
@@ -359,7 +363,7 @@ codonUsage <- function(ads,
       mtext(side=2, line=3, 'frequency ', col="black", font=2, cex=1.7)
       mtext(side=1, line=3, 'odd ratio', col="black", font=2, cex=1.7,at=25)
       
-      axis(side=2,seq(floor(range(finalOut$freq)[1]),ceiling(range(finalOut$freq)[2]),10), font=2,las=2,lwd=2)
+      axis(side=2,seq(floor(range(finalOut$freq)[1]),ceiling(range(finalOut$freq)[2]),ifelse(ceiling(range(finalOut$freq)[2])>10, 10, 1)), font=2,las=2,lwd=2)
       axis(side=1,seq(floor(range(finalOut$statOut)[1]),ceiling(range(finalOut$statOut)[2]),0.25), font=2,lwd=2)
       dev.off()
     } else if(analysis=='AA'){
@@ -391,7 +395,7 @@ codonUsage <- function(ads,
       #
       
       pdf('AA_oddratio_freq.pdf',width= 8,height=8, useDingbats = F)
-      par(mar=c(5,5,5,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.7, cex.main=1.7,cex.lab=1.3)
+      par(mar=c(5,8,5,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.7, cex.main=1.7,cex.lab=1.3)
       plot(finalOut$statOut,finalOut$freq,col='black',pch=20,cex=0.1,xlab='',ylab='',lwd=1,bty="n",xaxt="n",yaxt="n",font=2,xlim=range(finalOut$statOut),ylim=range(finalOut$freq))
       text(finalOut$statOut,finalOut$freq, finalOut$AA,col='black')
       

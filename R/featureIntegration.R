@@ -50,7 +50,6 @@ featureIntegration <- function(ads,
   #Pre-run to remove features that are not significnt for univariate models
   #
   #Start with univariate
-  pval_prerun <- list()
   models_prerun <- lapply(colnames(dat)[-featPos], function(x) {
     anova(lm(substitute(TE ~ i, list(i = as.name(x))), data = dat))
   })
@@ -319,8 +318,11 @@ featureIntegration <- function(ads,
     ylim_max <- roundUpNice(abs(max(set_te)))
     #
     plot(set,set_te,col='#8A8683',pch=16,cex=1,ylim=c(-ylim_max,ylim_max),xlab='',ylab='',lwd=1,bty="n",xaxt="n",yaxt="n",font=2, xlim=c(xlim_min, xlim_max))
-    points(set1, set_te1, pch=16,col=col1)
-    points(set2, set_te2, pch=16,col=col2)
+    
+    if(isTRUE(regOnly)){
+      points(set1, set_te1, pch=16,col=col1)
+      points(set2, set_te2, pch=16,col=col2)
+    }
     
     #
     mtext(side=2, line=3, RegMode, col="black", font=2, cex=1.7)

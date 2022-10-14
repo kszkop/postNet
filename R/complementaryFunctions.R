@@ -15,12 +15,10 @@ anota2seqGetDirectedRegulations <- function(ads){
         ads@selectedTranslation@selectedRvmData[[c]][,"singleRegMode"] == "translation",
       ]
     translatedmRNAUp <- ads@selectedTranslatedmRNA@selectedRvmData[[c]][
-      ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"apvEff"] > 0 &
-        ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"singleRegMode"] == "translation",
+      ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"apvEff"] > 0,
       ]
     translatedmRNADown <-ads@selectedTranslatedmRNA@selectedRvmData[[c]][
-      ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"apvEff"] < 0 &
-        ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"singleRegMode"] == "translation",
+      ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"apvEff"] < 0,
       ]
     bufferingmRNAUp <- ads@selectedBuffering@selectedRvmData[[c]][
       ads@selectedBuffering@selectedRvmData[[c]][,"apvEff"] > 0 &
@@ -39,12 +37,10 @@ anota2seqGetDirectedRegulations <- function(ads){
         ads@mRNAAbundance@translatedmRNA[[c]][,"singleRegMode"] == "abundance",
       ]
     totalmRNAUp <- ads@selectedTotalmRNA@selectedRvmData[[c]][
-        ads@selectedTotalmRNA@selectedRvmData[[c]][,"apvEff"] > 0 &
-          ads@selectedTotalmRNA@selectedRvmData[[c]][,"singleRegMode"] == "abundance",
+        ads@selectedTotalmRNA@selectedRvmData[[c]][,"apvEff"] > 0,
       ]
     totalmRNADown <-ads@selectedTotalmRNA@selectedRvmData[[c]][
-      ads@selectedTotalmRNA@selectedRvmData[[c]][,"apvEff"] < 0 &
-        ads@selectedTotalmRNA@selectedRvmData[[c]][,"singleRegMode"] == "abundance",
+      ads@selectedTotalmRNA@selectedRvmData[[c]][,"apvEff"] < 0,
       ]
       
       

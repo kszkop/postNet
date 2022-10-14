@@ -63,8 +63,8 @@ contentMotifs <- function(ads,
   
   #Find given motif
   if(motif=="G4"){
-    motifOut <- as.numeric(sapply(annotBgSel$seqTmp, calc_g4, min_score = min_score))
-    names(motifOut) <- as.character(annotBgSel$geneID)
+    motifOutTmp <- as.numeric(sapply(annotBgSel$seqTmp, calc_g4, min_score = min_score))
+    names(motifOutTmp) <- as.character(annotBgSel$geneID)
   } else {
     motif <- toupper(motif)
     if(seqType=='dna' | seqType=='rna'){
