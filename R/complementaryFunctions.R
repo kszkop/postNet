@@ -410,3 +410,27 @@ writeExcel <- function(listOfData=NULL, listNames=NULL, fileName=NULL){
   names(listToWrite)<- listNames
   WriteXLS::WriteXLS(listToWrite,fileName,SheetNames =listNames, row.names=TRUE)
 }
+
+#For nodes sizes:
+rescale <- function(x,a,b,c,d){
+  c + (x-a)/(b-a)*(d-c)
+}
+
+#If the names are long, wrap them up
+wrapNames <- function(s,w){
+  as.character(sapply(s, FUN=function(x){
+    paste(strwrap(x, width=w), collapse="\n")
+  }))
+}
+
+
+layoutCalc <- function(Gobject, n){  
+  Gtmp <- Gobject
+  E(Gtmp)$weight <- 1
+  
+  attr <- cbind(id=1:vcount(Gtmp), val=n)
+  Gtmp <- Gtmp + vertices(unique(attr[,2])) + igraph::edges(unlist(t(attr)), weight=0.25)
+  
+  lOut <- layout(Gtmp, weights=E(Gtmp)$weight)[1:vcount(Gobject),]
+  return(lOut)
+}
