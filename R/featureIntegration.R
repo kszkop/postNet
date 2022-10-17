@@ -78,7 +78,7 @@ featureIntegration <- function(ads,
     
     #Plot importance
     #also apply to find relevant features
-    model1Imp <- Boruta(reg ~ ., data = TrainSet, doTrace = 0, maxRuns = 500,pValue = 0.001)
+    model1Imp <- Boruta::Boruta(reg ~ ., data = TrainSet, doTrace = 0, maxRuns = 500,pValue = 0.001)
     #selecct important once
     featComf <- row.names(attStats(model1Imp))[which(as.character(attStats(model1Imp)[,6]) ==  "Confirmed")]
     #featComf <- namesDf$originalNames[match(featComf, namesDf$newNames)]
