@@ -451,25 +451,25 @@ featureIntegration <- function(ads,
       set_te <- dat$TE[row.names(dat) %in% listSel]
       #
       if(is.null(geneList)){
-        set1 <- dat[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]]), colnames(dat)==feat]
-        set2 <- dat[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]]), colnames(dat)==feat]
-        set_te1 <- dat$TE[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]])]
-        set_te2 <- dat$TE[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]])]
+        set1 <- dataOrg[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]]), colnames(dataOrg)==feat]
+        set2 <- dataOrg[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]]), colnames(dataOrg)==feat]
+        set_te1 <- dataOrg$TE[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]])]
+        set_te2 <- dataOrg$TE[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]])]
         col1 <- as.character(AnotaColours[grepl(regulation,names(AnotaColours))][1])
         col2 <- as.character(AnotaColours[grepl(regulation,names(AnotaColours))][2])
       } else {
-        set1 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(1)])), colnames(dat)==feat]
-        set2 <- dat[row.names(dat) %in% as.character(unlist(resTmp[c(2)])), colnames(dat)==feat]
-        set_te1 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(1)]))]
-        set_te2 <- dat$TE[row.names(dat) %in% as.character(unlist(resTmp[c(2)]))]
+        set1 <- dataOrg[row.names(dataOrg) %in% as.character(unlist(resTmp[c(1)])), colnames(dataOrg)==feat]
+        set2 <- dataOrg[row.names(dataOrg) %in% as.character(unlist(resTmp[c(2)])), colnames(dataOrg)==feat]
+        set_te1 <- dataOrg$TE[row.names(dataOrg) %in% as.character(unlist(resTmp[c(1)]))]
+        set_te2 <- dataOrg$TE[row.names(dataOrg) %in% as.character(unlist(resTmp[c(2)]))]
         col1 <- geneListcolours[1]
         col2 <- geneListcolours[2] 
       }
       #
     } else {
       #
-      set <- dat[,colnames(dat)==feat]
-      set_te <- dat$TE
+      set <- dataOrg[,colnames(dataOrg)==feat]
+      set_te <- dataOrg$TE
       #
     }
     pdf(ifelse(is.null(pdfName),paste(RegMode,featTmp,'individually.pdf',sep='_'), paste(pdfName, RegMode,featTmp,'individually.pdf',sep='_')),width=8,height=8, useDingbats = F)
