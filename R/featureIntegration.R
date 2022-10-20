@@ -104,8 +104,8 @@ featureIntegration <- function(ads,
     
     #Mean Decrease Accuracy - How much the model accuracy decreases if we drop that variable.
     #Mean Decrease Gini - Measure of variable importance based on the Gini impurity index used for the calculation of splits in trees.
-    predValidc <- predict(model1, ValidSet, type = "class")
-    caret::confusionMatrix(predValidc , ValidSet$reg)
+    predValidc <- stats::predict(model1, ValidSet, type = "class")
+    
     #Accuracy
     #as.numeric(confusionMatrix(predValidc , ValidSet$reg)[[3]][1])
     #Sensitivity
@@ -113,21 +113,21 @@ featureIntegration <- function(ads,
     #Specificity
     #confusionMatrix(predValidc , ValidSet$reg)[[4]][2]
     #
-    predValid <- predict(model1, ValidSet, type = "prob")
+    predValid <- stats::predict(model1, ValidSet, type = "prob")
     #
-    perf = prediction(predValid[,2], as.numeric(ValidSet$reg))
+    perf = ROCR::prediction(predValid[,2], as.numeric(ValidSet$reg))
     # 1. Area under curve
-    auc = performance(perf, "auc")
+    auc = ROCR::performance(perf, "auc")
     # 2. True Positive and Negative Rate
-    predOut = performance(perf, "tpr","fpr")
+    predOut = ROCR::performance(perf, "tpr","fpr")
     # 3. Plot the ROC curve
-    plot(predOut,main=paste("ROC Curve for Random Forest \n Accuracy: ",round(as.numeric(confusionMatrix(predValidc , ValidSet$reg)[[3]][1]),3),sep=''),col='firebrick1',lwd=3,xlab='',ylab='',)
+    plot(predOut,main=paste("ROC Curve for Random Forest \n Accuracy: ",round(as.numeric(caret::confusionMatrix(predValidc , ValidSet$reg)[[3]][1]),3),sep=''),col='firebrick1',lwd=3,xlab='',ylab='',)
     abline(a=0,b=1,lwd=2,lty=2,col="gray")
     
     mtext(side=1, line=4, 'False positive rate', col='black', font=2,cex=1.2)
     mtext(side=2, line=3, 'True positive rate', col="black", font=2, cex=1.2)
-    text(0.8,0.2, font=2,cex=1.7,paste('Sensitivity: ',round(confusionMatrix(predValidc , ValidSet$reg)[[4]][1],2),sep=''))
-    text(0.8,0.1, font=2,cex=1.7,paste('Specificity: ',round(confusionMatrix(predValidc , ValidSet$reg)[[4]][2],2),sep=''))
+    text(0.8,0.2, font=2,cex=1.7,paste('Sensitivity: ',round(caret::confusionMatrix(predValidc , ValidSet$reg)[[4]][1],2),sep=''))
+    text(0.8,0.1, font=2,cex=1.7,paste('Specificity: ',round(caret::confusionMatrix(predValidc , ValidSet$reg)[[4]][2],2),sep=''))
     
     #axis(side=1,seq(0,1,0.25), font=2,lwd=2)
     #axis(side=2,seq(0,1,0.25), font=2,las=2,lwd=2)
