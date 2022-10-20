@@ -324,6 +324,8 @@ featureIntegration <- function(ads,
     #features aftet 1st
     if(length(presel)>0){
       step1sel <- namesDf$newNames[-presel]
+    } else {
+      step1sel <- namesDf$newNames
     }
     for(i in 1:length(step1sel)){
       tmpFeat2 <- step1sel[i]
