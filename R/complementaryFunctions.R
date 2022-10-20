@@ -426,11 +426,11 @@ wrapNames <- function(s,w){
 
 layoutCalc <- function(Gobject, n){  
   Gtmp <- Gobject
-  E(Gtmp)$weight <- 1
+  igraph::E(Gtmp)$weight <- 1
   
-  attr <- cbind(id=1:vcount(Gtmp), val=n)
-  Gtmp <- Gtmp + vertices(unique(attr[,2])) + igraph::edges(unlist(t(attr)), weight=0.25)
+  attr <- cbind(id=1:igraph::vcount(Gtmp), val=n)
+  Gtmp <- Gtmp + igraph::vertices(unique(attr[,2])) + igraph::edges(unlist(t(attr)), weight=0.25)
   
-  lOut <- layout(Gtmp, weights=E(Gtmp)$weight)[1:vcount(Gobject),]
+  lOut <- igraph::layout_nicely(Gtmp, weights=igraph::E(Gtmp)$weight)[1:igraph::vcount(Gobject),]
   return(lOut)
 }

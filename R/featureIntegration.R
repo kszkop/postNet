@@ -74,26 +74,26 @@ featureIntegration <- function(ads,
     ValidSet <- dat[-train,]
     ValidSet$reg <- as.factor(ValidSet$reg)
     #run model on training set
-    model1 <- randomForest(reg ~ ., data = TrainSet, importance = TRUE, ntree = 500)
+    model1 <- randomForest::randomForest(reg ~ ., data = TrainSet, importance = TRUE, ntree = 500)
     
     #Plot importance
     #also apply to find relevant features
     model1Imp <- Boruta::Boruta(reg ~ ., data = TrainSet, doTrace = 0, maxRuns = 500,pValue = 0.001)
     #selecct important once
-    featComf <- row.names(attStats(model1Imp))[which(as.character(attStats(model1Imp)[,6]) ==  "Confirmed")]
+    featComf <- row.names(Boruta::attStats(model1Imp))[which(as.character(Boruta::attStats(model1Imp)[,6]) ==  "Confirmed")]
     #featComf <- namesDf$originalNames[match(featComf, namesDf$newNames)]
     #pdf(ifelse(is.null(pdfName),paste(RegMode,'featureSel_randomForest.pdf',sep='_'), paste(pdfName, RegMode,'featureSel_randomForest.pdf',sep='_')),width=8,height=8, useDingbats = F)
     #plot(model1Imp, las = 2, cex.axis = 0.7)
     #dev.off()
     
     
-    varImpIn <- sort(importance(model1)[,3],decreasing=T)
+    varImpIn <- sort(randomForest::importance(model1)[,3],decreasing=T)
     #
     pdf(ifelse(is.null(pdfName),paste(RegMode,'randomForest.pdf',sep='_'), paste(pdfName, RegMode,'randomForest.pdf',sep='_')),width=16,height=8, useDingbats = F)
     par(mfrow=c(1,2),mar=c(9,5,10,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.3, cex.main=1.7,cex.lab=1)
-    colDot <- rep('black',length(importance(model1)[,3]))
-    colDot[which(names(sort(importance(model1)[,3],decreasing=F)) %in% featComf)] <- '#B0F2BC'
-    dotchart(sort(importance(model1)[,3],decreasing=F),cex=0.75, col=colDot,labels = namesDf$originalNames[match(names(sort(importance(model1)[,3],decreasing=F)), namesDf$newNames)],xlab='',xaxt='n',frame.plot=FALSE,pch=16)
+    colDot <- rep('black',length(randomForest::importance(model1)[,3]))
+    colDot[which(names(sort(randomForest::importance(model1)[,3],decreasing=F)) %in% featComf)] <- '#B0F2BC'
+    dotchart(sort(randomForest::importance(model1)[,3],decreasing=F),cex=0.75, col=colDot,labels = namesDf$originalNames[match(names(sort(randomForest::importance(model1)[,3],decreasing=F)), namesDf$newNames)],xlab='',xaxt='n',frame.plot=FALSE,pch=16)
     
     axis(side=1,seq(0,roundUpNice(max(varImpIn)),5), font=2,lwd=2)
     mtext(side=1, line=4, "Feature Importance \n (Mean Decrease Accuracy)", col='black', font=2,cex=1.2)
@@ -105,7 +105,7 @@ featureIntegration <- function(ads,
     #Mean Decrease Accuracy - How much the model accuracy decreases if we drop that variable.
     #Mean Decrease Gini - Measure of variable importance based on the Gini impurity index used for the calculation of splits in trees.
     predValidc <- predict(model1, ValidSet, type = "class")
-    confusionMatrix(predValidc , ValidSet$reg)
+    caret::confusionMatrix(predValidc , ValidSet$reg)
     #Accuracy
     #as.numeric(confusionMatrix(predValidc , ValidSet$reg)[[3]][1])
     #Sensitivity
@@ -154,12 +154,14 @@ featureIntegration <- function(ads,
     names(step1pval_fdr) <- featureName
     
     #remove not signigicant
-    step1expl <- step1expl[-presel]
-    step1pval <- step1pval[-presel]
-    step1pval_fdr <- step1pval_fdr[-presel]
+    if(length(presel)>0){
+      step1expl <- step1expl[-presel]
+      step1pval <- step1pval[-presel]
+      step1pval_fdr <- step1pval_fdr[-presel]
+    }
     #
     #remove this features
-    if(!isTRUE(allFeat)){
+    if(!isTRUE(allFeat) & length(presel)>0){
       dat <- dat[,-presel]
       featureName <- featureName[-presel]
     }
@@ -320,7 +322,9 @@ featureIntegration <- function(ads,
     #features significant after step1
     varExplIndepend2 <- numeric()
     #features aftet 1st
-    step1sel <- namesDf$newNames[-presel]
+    if(length(presel)>0){
+      step1sel <- namesDf$newNames[-presel]
+    }
     for(i in 1:length(step1sel)){
       tmpFeat2 <- step1sel[i]
       restFeat2<- step1sel[-i]
@@ -361,7 +365,6 @@ featureIntegration <- function(ads,
     #Plot network
     linkOut <- list()
     for(i in 2:ncol(linkIn)){
-      print(i)
       tmpIn <- linkIn[,i]
       #
       tmpOut <- as.numeric(tmpIn)[which(tmpIn>0)]
@@ -394,24 +397,24 @@ featureIntegration <- function(ads,
     #create igraph object
     net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed=T) 
     #rescale to size ans other attributes
-    lsize <-  rescale(V(net)$VarianceExplained_Omnibus, 0, 100, 0, 50)
+    lsize <-  rescale(igraph::V(net)$VarianceExplained_Omnibus, 0, 100, 0, 50)
     lsize[which(lsize>0)] <- lsize[which(lsize>0)] + 4
-    V(net)$size <- lsize
+    igraph::V(net)$size <- lsize
     lcol <- rep("black",nrow(nodeOutAll))
     lcol[which(nodeOutAll$omnibus==2)] <- "#B14D8E"
-    V(net)$label.color <-  lcol
-    V(net)$label <- wrap_strings(V(net)$Features,8)
+    igraph::V(net)$label.color <-  lcol
+    igraph::V(net)$label <- wrapNames(igraph::V(net)$Features,8)
     
     #colour nodes as in table
     colrs <- c('#B0F2BC','white')#"#B14D8E")
-    V(net)$color <- colrs[V(net)$omnibus]
+    igraph::V(net)$color <- colrs[igraph::V(net)$omnibus]
     
     # Set edges width based on weight:
-    E(net)$width <- rescale(E(net)$weight, 0, 50, 0, 5)
+    igraph::E(net)$width <- rescale(igraph::E(net)$weight, 0, 50, 0, 5)
     
     #change arrow size and edge color:
-    E(net)$arrow.size <- .0
-    E(net)$edge.color <- "gray75"
+    igraph::E(net)$arrow.size <- .0
+    igraph::E(net)$edge.color <- "gray75"
     
     # We can also override the attributes explicitly in the plot:
     pdf(ifelse(is.null(pdfName),paste(RegMode,'network.pdf',sep='_'), paste(pdfName, RegMode,'network.pdf',sep='_')),height=8,width=8, useDingbats = F)
