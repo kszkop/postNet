@@ -447,8 +447,8 @@ featureIntegration <- function(ads,
     #
     if(isTRUE(regOnly)){
       #
-      set <- dat[row.names(dat) %in% listSel, colnames(dat)==feat]
-      set_te <- dat$TE[row.names(dat) %in% listSel]
+      set <- dataOrg[row.names(dataOrg) %in% listSel, colnames(dataOrg)==feat]
+      set_te <- dataOrg$TE[row.names(dataOrg) %in% listSel]
       #
       if(is.null(geneList)){
         set1 <- dataOrg[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]]), colnames(dataOrg)==feat]
