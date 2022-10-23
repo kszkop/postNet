@@ -421,7 +421,7 @@ featureIntegration <- function(ads,
     # We can also override the attributes explicitly in the plot:
     pdf(ifelse(is.null(pdfName),paste(RegMode,'network.pdf',sep='_'), paste(pdfName, RegMode,'network.pdf',sep='_')),height=8,width=8, useDingbats = F)
     par(bty='l',font=2, font.axis=2, font.lab=2, cex.axis=0.9,cex.main=1.9,cex.lab=1.5)
-    par(mar=c(5,5,8,5),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.3, cex.main=1.7,cex.lab=1)
+    par(mar=c(5,5,5,5),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.3, cex.main=1.7,cex.lab=1)
     plot(net,shape ="sphere",vertex.label.font=2,vertex.label.cex=1,vertex.frame.color="white",layout=layoutCalc(net, n=2))
     
     legend("bottomleft", fill=c('#B0F2BC'), "In Omnibus model",cex=1.3,bty='n',xpd=T,inset=-0.1)
