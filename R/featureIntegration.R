@@ -405,7 +405,7 @@ featureIntegration <- function(ads,
     lcol <- rep("black",nrow(nodeOutAll))
     lcol[which(nodeOutAll$omnibus==2)] <- "#B14D8E"
     igraph::V(net)$label.color <-  lcol
-    igraph::V(net)$label <- wrapNames(igraph::V(net)$Features,8)
+    igraph::V(net)$label <- wrapNames(gsub(' 0%','',paste(igraph::V(net)$Features, paste(igraph::V(net)$VarianceExplained_Omnibus,'%',sep=''),sep=' ')),8)
     
     #colour nodes as in table
     colrs <- c('#B0F2BC','white')#"#B14D8E")
@@ -421,7 +421,7 @@ featureIntegration <- function(ads,
     # We can also override the attributes explicitly in the plot:
     pdf(ifelse(is.null(pdfName),paste(RegMode,'network.pdf',sep='_'), paste(pdfName, RegMode,'network.pdf',sep='_')),height=8,width=8, useDingbats = F)
     par(bty='l',font=2, font.axis=2, font.lab=2, cex.axis=0.9,cex.main=1.9,cex.lab=1.5)
-    #m <- layout(matrix(c(seq(1,nSample+3),rep(c(seq(1,nSample+2),nSample+4),3)), ncol=1), heights=c(1,3))
+    par(mar=c(5,5,8,5),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.3, cex.main=1.7,cex.lab=1)
     plot(net,shape ="sphere",vertex.label.font=2,vertex.label.cex=1,vertex.frame.color="white",layout=layoutCalc(net, n=2))
     
     legend("bottomleft", fill=c('#B0F2BC'), "In Omnibus model",cex=1.3,bty='n',xpd=T,inset=-0.1)
@@ -530,12 +530,12 @@ featureIntegration <- function(ads,
                     margins      = c(20, 50),
                     key =TRUE,
                     keysize      = 0.5,
-                    dendrogram   = "row", 
+                    dendrogram   = "both", 
                     trace        = "none", 
                     density.info = "none",
                     labCol       = colnames(heatOut),
                     key.par = list(cex=0.9),
-                    Colv         = NULL,
+                    #Colv         = NULL,
                     cexCol       = 1,
                     cexRow       = 0.025,
                     key.xlab     = "",
