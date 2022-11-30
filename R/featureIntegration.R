@@ -1,26 +1,31 @@
-featureIntegration <- function(ads,
-                               contrast,
-                               RegMode='translation', #to choose translatedmRNA, totalmRNA, translation, buffering
+featureIntegration <- function(ads=NULL,
+                               contrast=NULL,
+                               RegMode=NULL, #to choose translatedmRNA, totalmRNA, translation, buffering
                                geneList=NULL,
-                               geneListnames=NULL,
                                geneListcolours=NULL,
+                               effectMeasure=NULL,
+                               customBg=NULL,
                                features,
-                               regOnly=TRUE,
+                               regOnly=NULL,
                                regulation=NULL, #required if regOnly is TRUE, to choose as it is in anota2seq
                                allFeat=TRUE,
                                pdfName=NULL,
-                               type #lm (linear model), rf (random forest)
+                               type, #lm (linear model), rf (random forest)
+                               covarFilt = 20,
+                               NetModelSel= "Omnibus" #aternatively "Adjusted","Univariate"
 ){
   #
-  scOut <- anota2seq::anota2seqGetOutput(ads, output = "singleDf", selContrast = contrast, getRVM = TRUE)
-  #
-  TE <-  scOut[,grepl(paste(RegMode,'apvEff',sep='.'),colnames(scOut))]
-  names(TE) <- scOut$identifier
-  
+  if(!is.null(effectMeasure)){
+    effM <- effectMeasure
+  } else {
+    scOut <- anota2seq::anota2seqGetOutput(ads, output = "singleDf", selContrast = contrast, getRVM = TRUE)
+    effM <-  scOut[,grepl(paste(RegMode,'apvEff',sep='.'),colnames(scOut))]
+    names(effM) <- scOut$identifier
+  }
   ##Rename colnames but save original names
   featureName <- names(features)
   #
-  features <- append(features, list(TE))
+  features <- append(features, list(effM))
   featPos <- length(features)
   features <- unname(features)
   #
@@ -29,7 +34,7 @@ featureIntegration <- function(ads,
   #TE <- tmpDf[,ncol(tmpDf)]
   #
   dat <- tmpDf#[,1:(ncol(tmpDf))-1]
-  colnames(dat) <- c(paste('a',seq(1,length(featureName),1),sep=''),'TE')
+  colnames(dat) <- c(paste('a',seq(1,length(featureName),1),sep=''),'effM')
   #save original names and data
   namesDf <- data.frame(originalNames=featureName,newNames=colnames(dat)[-length(colnames(dat))], stringsAsFactors = F)
   dataOrg <- dat
@@ -46,7 +51,7 @@ featureIntegration <- function(ads,
   } else {
     #
     resTmp <- geneList
-    names(resTmp) <- geneListnames
+    names(resTmp) <- names(geneList)
     #
     listSel <- as.character(unlist(geneList))
     dat <- dat[row.names(dat) %in% listSel,]
@@ -54,19 +59,19 @@ featureIntegration <- function(ads,
   if(type=='rf'){
     if(isTRUE(regOnly)){
       #Change numeric TE to categorical 
-      dat$reg <- ifelse(dat$TE>0, 2, 1)
+      dat$reg <- ifelse(dat$effM>0, 'A', 'B')
     } else {
       if(is.null(geneList)){
         dat$reg <- 0
-        dat$reg[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]])] <- 2
-        dat$reg[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]])] <- 1
+        dat$reg[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]])] <- 'A'
+        dat$reg[row.names(dat) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]])] <- 'B'
       } else {
         dat$reg <- 0
-        dat$reg[row.names(dat) %in% as.character(unlist(resTmp[c(1)]))] <- 2
-        dat$reg[row.names(dat) %in% as.character(unlist(resTmp[c(2)]))] <- 1
+        dat$reg[row.names(dat) %in% as.character(unlist(resTmp[c(1)]))] <- 'A'
+        dat$reg[row.names(dat) %in% as.character(unlist(resTmp[c(2)]))] <- 'B'
       }
     }
-    dat <- dat[,colnames(dat) !='TE']
+    dat <- dat[,colnames(dat) !='effM']
     #Split to Train and Valid ( 70:30)
     train <- sample(nrow(dat), 0.7*nrow(dat), replace = FALSE)
     TrainSet <- dat[train,]
@@ -81,15 +86,37 @@ featureIntegration <- function(ads,
     model1Imp <- Boruta::Boruta(reg ~ ., data = TrainSet, doTrace = 0, maxRuns = 500,pValue = 0.001)
     #selecct important once
     featComf <- row.names(Boruta::attStats(model1Imp))[which(as.character(Boruta::attStats(model1Imp)[,6]) ==  "Confirmed")]
-    #featComf <- namesDf$originalNames[match(featComf, namesDf$newNames)]
-    #pdf(ifelse(is.null(pdfName),paste(RegMode,'featureSel_randomForest.pdf',sep='_'), paste(pdfName, RegMode,'featureSel_randomForest.pdf',sep='_')),width=8,height=8, useDingbats = F)
-    #plot(model1Imp, las = 2, cex.axis = 0.7)
-    #dev.off()
+    #featComf_names <- namesDf$originalNames[match(featComf, namesDf$newNames)]
+    #
+    pdf(ifelse(is.null(pdfName),paste(ifelse(is.null(RegMode),'custom',RegMode),'featureSel_randomForest.pdf',sep='_'), paste(pdfName, ifelse(is.null(RegMode),'custom',RegMode),'featureSel_randomForest.pdf',sep='_')),width=8,height=8, useDingbats = F)
+    par(mar=c(10,5,3,3),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.3, cex.main=1.7,cex.lab=1)
+    plot(model1Imp, las = 2, xlab = '', ylab='', yaxt='n',  xaxt='n',pch=20)
+    mtext(side=1, line=9, "Features", col='black', font=2,cex=1.2)
+    mtext(side=2, line=3, "Importance (Z-score)", col='black', font=2,cex=1.2)
+    axis(side=2,seq(0,roundUpNice(max(Boruta::attStats(model1Imp)[,4])),10), font=2,lwd=2, las=2,cex=0.75)
+    #
+    tmp <- lapply(1:ncol(model1Imp$ImpHistory),function(i) model1Imp$ImpHistory[is.finite(model1Imp$ImpHistory[,i]),i])
+    names(tmp) <- colnames(model1Imp$ImpHistory)
+    tmpNames <- names(sort(sapply(tmp,median)))
+    addNames <- c("shadowMin","shadowMax","shadowMean")
     
+    tmpNames <- c(namesDf$originalNames,addNames)[match(tmpNames, c(namesDf$newNames,addNames))]
+    coloursN <- rep('black', length(tmpNames))
+    coloursN[tmpNames %in% addNames] <- 'firebrick1' 
+    axis(side=1,  at=1:length(tmpNames),labels=F, font=2,lwd=2,las=2,cex.axis=0.5)
+    text(1:length(tmpNames), par("usr")[3] - 1.05,labels=tmpNames, col=coloursN, srt = 45,adj=1, cex=0.55, xpd=NA)
+    dev.off()
     
+    #rerun model with only confirmed ones
+    TrainSet <- TrainSet[,colnames(TrainSet) %in% c(featComf,'reg')]
+    ValidSet <- ValidSet[,colnames(ValidSet) %in% c(featComf,'reg')]
+  
+    #run model on training set
+    model2 <- randomForest::randomForest(reg ~ ., data = TrainSet, importance = TRUE, ntree = 500)
+    #
     varImpIn <- sort(randomForest::importance(model1)[,3],decreasing=T)
     #
-    pdf(ifelse(is.null(pdfName),paste(RegMode,'randomForest.pdf',sep='_'), paste(pdfName, RegMode,'randomForest.pdf',sep='_')),width=16,height=8, useDingbats = F)
+    pdf(ifelse(is.null(pdfName),paste(ifelse(is.null(RegMode),'custom',RegMode),'randomForest.pdf',sep='_'), paste(pdfName, ifelse(is.null(RegMode),'custom',RegMode),'randomForest.pdf',sep='_')),width=16,height=8, useDingbats = F)
     par(mfrow=c(1,2),mar=c(9,5,10,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.3, cex.main=1.7,cex.lab=1)
     colDot <- rep('black',length(randomForest::importance(model1)[,3]))
     colDot[which(names(sort(randomForest::importance(model1)[,3],decreasing=F)) %in% featComf)] <- '#B0F2BC'
@@ -98,22 +125,15 @@ featureIntegration <- function(ads,
     axis(side=1,seq(0,roundUpNice(max(varImpIn)),5), font=2,lwd=2)
     mtext(side=1, line=4, "Feature Importance \n (Mean Decrease Accuracy)", col='black', font=2,cex=1.2)
     
-    conf <- model1$confusion[,-ncol(model1$confusion)]
-    oob <- (1 - (sum(diag(conf))/sum(conf)))*100
-    mtext(side=3, line=3, paste('OOB estimate of  error rate: ',round(oob,2),sep=''), col="black", font=2, cex=1.7)
+    #conf <- model1$confusion[,-ncol(model1$confusion)]
+    #oob <- (1 - (sum(diag(conf))/sum(conf)))*100
+    #mtext(side=3, line=3, paste('OOB estimate of  error rate: ',round(oob,2),sep=''), col="black", font=2, cex=1.7)
     
     #Mean Decrease Accuracy - How much the model accuracy decreases if we drop that variable.
     #Mean Decrease Gini - Measure of variable importance based on the Gini impurity index used for the calculation of splits in trees.
-    predValidc <- stats::predict(model1, ValidSet, type = "class")
-    
-    #Accuracy
-    #as.numeric(confusionMatrix(predValidc , ValidSet$reg)[[3]][1])
-    #Sensitivity
-    #confusionMatrix(predValidc , ValidSet$reg)[[4]][1]
-    #Specificity
-    #confusionMatrix(predValidc , ValidSet$reg)[[4]][2]
+    predValidc <- stats::predict(model2, ValidSet, type = "class")
     #
-    predValid <- stats::predict(model1, ValidSet, type = "prob")
+    predValid <- stats::predict(model2, ValidSet, type = "prob")
     #
     perf = ROCR::prediction(predValid[,2], as.numeric(ValidSet$reg))
     # 1. Area under curve
@@ -121,7 +141,7 @@ featureIntegration <- function(ads,
     # 2. True Positive and Negative Rate
     predOut = ROCR::performance(perf, "tpr","fpr")
     # 3. Plot the ROC curve
-    plot(predOut,main=paste("ROC Curve for Random Forest \n Accuracy: ",round(as.numeric(caret::confusionMatrix(predValidc , ValidSet$reg)[[3]][1]),3),sep=''),col='firebrick1',lwd=3,xlab='',ylab='',)
+    plot(predOut,main=paste("ROC Curve for Random Forest \n AUC: ",round(auc@y.values[[1]],3),sep=''),col='firebrick1',lwd=3,xlab='',ylab='',)
     abline(a=0,b=1,lwd=2,lty=2,col="gray")
     
     mtext(side=1, line=4, 'False positive rate', col='black', font=2,cex=1.2)
@@ -139,10 +159,8 @@ featureIntegration <- function(ads,
     #
     #Start with univariate
     models_prerun <- lapply(colnames(dat)[-featPos], function(x) {
-      anova(lm(substitute(TE ~ i, list(i = as.name(x))), data = dat))
+      anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dat))
     })
-    #Select the ones not significant after first step
-    presel <- which(sapply(models_prerun , function(x) x[1,5])>0.05 | is.na(sapply(models_prerun , function(x) x[1,5])))
     #
     step1expl <- round(sapply(models_prerun , function(x) (x[1,2]/(sum(x[1,2], x[2,2])))*100),2)
     names(step1expl) <- featureName
@@ -152,6 +170,10 @@ featureIntegration <- function(ads,
     #add fdr test
     step1pval_fdr <- p.adjust(step1pval)
     names(step1pval_fdr) <- featureName
+    #
+    #Select the ones not significant after first step
+    #presel <- which(sapply(step1pval_fdr , function(x) x[1,5])>0.05 | is.na(sapply(models_prerun , function(x) x[1,5])))
+    presel <- as.numeric(which(step1pval_fdr> 0.05 | is.na(step1pval_fdr)))
     
     #remove not signigicant
     if(length(presel)>0){
@@ -175,7 +197,7 @@ featureIntegration <- function(ads,
     #
     #Start with univariate
     models <- lapply(colnames(dat)[-featPos], function(x) {
-      anova(lm(substitute(TE ~ i, list(i = as.name(x))), data = dat))
+      anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dat))
     })
     #Collect fvalues
     fvalTmp <- sapply(models, function(x) x[1,4])
@@ -221,7 +243,7 @@ featureIntegration <- function(ads,
       
       for(j in 1:(length(colnames(dat)[-featPos])-length(c(bestSel,outSel)))){
         varx <-  colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel,outSel)][j]
-        design <- as.formula(paste(paste('TE', paste(x_sel, collapse=" + "), sep="~"),varx,sep ='+'))
+        design <- as.formula(paste(paste('effM', paste(x_sel, collapse=" + "), sep="~"),varx,sep ='+'))
         models2[[j]] <-  anova(lm(design, data = dat))
       }
       #Collect fvalues
@@ -276,11 +298,12 @@ featureIntegration <- function(ads,
     for(k in 2:nrow(colours)){
       trow <- as.numeric(na.omit(as.numeric(tb1Out[k,])))
       #check whihch one is more than 50% drop
-      tsel <- which((lag(trow)/trow)>2)
-      tperc <- trow/lag(trow)*100
+      tsel_tab <- which((lag(trow)/trow)>2)
+      tsel_net <- lag(trow)-trow
+      #tperc <- trow/lag(trow)*100
       #
-      colours[k,tsel] <- '#FDE0C5'
-      linkIn[k,1:length(tperc)] <- tperc 
+      colours[k,tsel_tab] <- '#FDE0C5'
+      linkIn[k,1:length(tsel_net)] <- tsel_net 
     }
     #
     for(k in 1:ncol(colours)){
@@ -288,7 +311,7 @@ featureIntegration <- function(ads,
     }
     #
     colours[which(tmp_pval>0.05)] <- '#B14D8E'
-    linkIn[which(linkIn>50)] <- NA
+    linkIn[which(abs(linkIn)<covarFilt)] <- NA
     row.names(linkIn) <- row.names(tmp)
     #
     tt1 <- gridExtra::ttheme_default(core=list(fg_params=list(fontface=c(rep("plain",ncol(tb1Out)))), bg_params = list(fill =colours , col="black")))
@@ -296,7 +319,7 @@ featureIntegration <- function(ads,
     
     ##Calculate % varaince explained and plot output
     #Final model
-    varExpl <- anova(lm(as.formula(paste('TE', paste(bestSel, collapse=" + "), sep="~")), data = dat))
+    varExpl <- anova(lm(as.formula(paste('effM', paste(bestSel, collapse=" + "), sep="~")), data = dat))
     varExpldepend <- numeric()
     for(i in 1:length(bestSel)){
       tmpFeatI <- bestSel[i]
@@ -311,7 +334,7 @@ featureIntegration <- function(ads,
       tmpFeat <- bestSel[i]
       restFeat <- bestSel[-i]
       #model
-      design <- as.formula(paste(paste('TE', paste(restFeat, collapse=" + "), sep="~"),tmpFeat,sep ='+'))
+      design <- as.formula(paste(paste('effM', paste(restFeat, collapse=" + "), sep="~"),tmpFeat,sep ='+'))
       tmpM <-  anova(lm(design, data = dat))
       
       #variance expl
@@ -331,7 +354,7 @@ featureIntegration <- function(ads,
       tmpFeat2 <- step1sel[i]
       restFeat2<- step1sel[-i]
       #model
-      design2 <- as.formula(paste(paste('TE', paste(restFeat2, collapse=" + "), sep="~"),tmpFeat2,sep ='+'))
+      design2 <- as.formula(paste(paste('effM', paste(restFeat2, collapse=" + "), sep="~"),tmpFeat2,sep ='+'))
       tmpM2 <-  anova(lm(design2, data = dat))
       
       #variance expl
@@ -369,9 +392,9 @@ featureIntegration <- function(ads,
     for(i in 2:ncol(linkIn)){
       tmpIn <- linkIn[,i]
       #
-      tmpOut <- as.numeric(tmpIn)[which(tmpIn>0)]
+      tmpOut <- as.numeric(tmpIn)[which(!is.na(tmpIn))]
       if(length(tmpOut)>0){
-        names(tmpOut) <- paste(row.names(linkIn)[i-1], names(tmpIn)[which(tmpIn>0)],sep='_')
+        names(tmpOut) <- paste(row.names(linkIn)[i-1], names(tmpIn)[which(tmpIn!=0)],sep='_')
       }
       #
       linkOut[[i-1]] <- tmpOut
@@ -383,50 +406,67 @@ featureIntegration <- function(ads,
     linkOut <- linkOut[,c(2,3,1)] 
     
     ###tb3out
-    nodeOut <- tb2out[,c(1,3)]
+    if(NetModelSel=="Adjusted"){
+      nodeOut <- tb2out[,c(1,4)]
+    } else if(NetModelSel=='Univariate'){
+      nodeOut <- tb3out[,c(1,4)]
+    } else {
+      nodeOut <- tb2out[,c(1,3)]
+    }
+    colnames(nodeOut)[2] <- "VarianceExplained"
     nodeOut$ID <- namesDf$newNames[match(nodeOut$Features,namesDf$originalNames)]
     nodeOut <- nodeOut[,c(3,2,1)]
-    nodeOut$omnibus <- 1
+    nodeOut$varexpl <- 1
     
     #other tgat are connected but not significant
-    addAll <- data.frame(ID=unique(c(linkOut$from,linkOut$to)), VarianceExplained_Omnibus =0)
-    addAll$Features <- namesDf$originalNames[match(addAll$ID,namesDf$newNames)]
+    if(nrow(linkOut)>0){
+      addAll <- data.frame(ID=unique(c(linkOut$from,linkOut$to)), VarianceExplained =0)
+      addAll$Features <- namesDf$originalNames[match(addAll$ID,namesDf$newNames)]
     
-    addAll <- addAll[!addAll$ID %in% nodeOut$ID,]
-    addAll$omnibus <- 2
-    #
-    nodeOutAll <- rbind(nodeOut,addAll)
+      addAll <- addAll[!addAll$ID %in% nodeOut$ID,]
+      addAll$varexpl <- 2
+      #
+      nodeOutAll <- rbind(nodeOut,addAll)
+    } else {
+      nodeOutAll <- nodeOut
+    }
     #create igraph object
     net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed=T) 
     #rescale to size ans other attributes
-    lsize <-  rescale(igraph::V(net)$VarianceExplained_Omnibus, 0, 100, 0, 50)
-    lsize[which(lsize>0)] <- lsize[which(lsize>0)] + 4
+    lsize <-  rescale(igraph::V(net)$VarianceExplained, 0, 100, 0, 75)
+    lsize[which(lsize>0)] <- lsize[which(lsize>0)] + 2
     igraph::V(net)$size <- lsize
     lcol <- rep("black",nrow(nodeOutAll))
-    lcol[which(nodeOutAll$omnibus==2)] <- "#B14D8E"
+    lcol[which(nodeOutAll$varexpl==2)] <- "#B14D8E"
     igraph::V(net)$label.color <-  lcol
-    igraph::V(net)$label <- wrapNames(gsub(' 0%','',paste(igraph::V(net)$Features, paste(igraph::V(net)$VarianceExplained_Omnibus,'%',sep=''),sep=' ')),8)
+    igraph::V(net)$label <- wrapNames(gsub(' 0%','',paste(igraph::V(net)$Features, paste(igraph::V(net)$VarianceExplained,'%',sep=''),sep=' ')),8)
     
     #colour nodes as in table
-    colrs <- c('#B0F2BC','white')#"#B14D8E")
-    igraph::V(net)$color <- colrs[igraph::V(net)$omnibus]
+    #colrs <- c('#B0F2BC','white')#"#B14D8E")
+    colrs <- rep('#B0F2BC',nrow(nodeOutAll))
+    colrs[which(nodeOutAll$varexpl==2)] <- 'white'
+    igraph::V(net)$color <- colrs#colrs[igraph::V(net)]
     
     # Set edges width based on weight:
-    igraph::E(net)$width <- rescale(igraph::E(net)$weight, 0, 50, 0, 5)
+    if(length(igraph::E(net)$weight)>0){
+      igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 50, 0, 2.5)
+    }
     
     #change arrow size and edge color:
     igraph::E(net)$arrow.size <- .0
-    igraph::E(net)$edge.color <- "gray75"
+    ecolor <- rep("#D55E00",length(igraph::E(net)$width))
+    ecolor[which(igraph::E(net)$weight<0)] <-"#56B4E9"
+    igraph::E(net)$color <- ecolor
     
     # We can also override the attributes explicitly in the plot:
-    pdf(ifelse(is.null(pdfName),paste(RegMode,'network.pdf',sep='_'), paste(pdfName, RegMode,'network.pdf',sep='_')),height=8,width=8, useDingbats = F)
+    pdf(ifelse(is.null(pdfName),paste(ifelse(is.null(RegMode),'custom',RegMode),'network.pdf',sep='_'), paste(pdfName, ifelse(is.null(RegMode),'custom',RegMode),'network.pdf',sep='_')),height=8,width=8, useDingbats = F)
     par(bty='l',font=2, font.axis=2, font.lab=2, cex.axis=0.9,cex.main=1.9,cex.lab=1.5)
     par(mar=c(5,5,5,5),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.3, cex.main=1.7,cex.lab=1)
     plot(net,shape ="sphere",vertex.label.font=2,vertex.label.cex=1,vertex.frame.color="white",layout=layoutCalc(net, n=2))
     
     legend("bottomleft", fill=c('#B0F2BC'), "In Omnibus model",cex=1.3,bty='n',xpd=T,inset=-0.1)
-    legend(-1.5,1.5,lwd = c(7,5,3), col="gray75", title=c("Interaction strength"),c("","",""),bty='n',xpd=T)
-    legend(-0.8,1.5,pt.cex = c(4,3,2), pch=20,col="gray75", title=c("Variance explained"),c("","",""),bty='n',xpd=T)
+    legend(-1.5,1.5,lwd = c(7,3,3,7), col=c(rep("#D55E00",2),rep("#56B4E9",2)), title=c("Co-variance"),c("+","","","-"),bty='n',xpd=T)
+    legend(-0.8,1.5,pt.cex = c(4,3,2,1), pch=20,col="gray75", title=c("Variance explained"),c("","","",""),bty='n',xpd=T)
     
     dev.off()
   } else {
@@ -434,8 +474,7 @@ featureIntegration <- function(ads,
   }
   #
   #Prepare plotting
-  AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
-  names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
+  coloursOut <- coloursSel(ads=ads, regulation=regulation, geneList=geneList, geneListcolours=geneListcolours, customBg=customBg)
   #
   if(type=='rf'){
     bestSel <- featComf
@@ -445,34 +484,32 @@ featureIntegration <- function(ads,
     featTmp <- namesDf[namesDf$newNames==feat,]$originalNames
     featTmp <- gsub(' ','_',featTmp)
     #
-    if(isTRUE(regOnly)){
+    if(isTRUE(regOnly) | !is.null(geneList)){
       #
       set <- dataOrg[row.names(dataOrg) %in% listSel, colnames(dataOrg)==feat]
-      set_te <- dataOrg$TE[row.names(dataOrg) %in% listSel]
+      set_effm <- dataOrg$effM[row.names(dataOrg) %in% listSel]
       #
       if(is.null(geneList)){
         set1 <- dataOrg[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]]), colnames(dataOrg)==feat]
         set2 <- dataOrg[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]]), colnames(dataOrg)==feat]
-        set_te1 <- dataOrg$TE[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]])]
-        set_te2 <- dataOrg$TE[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]])]
-        col1 <- as.character(AnotaColours[grepl(regulation,names(AnotaColours))][1])
-        col2 <- as.character(AnotaColours[grepl(regulation,names(AnotaColours))][2])
+        set_effm1 <- dataOrg$effM[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[1]])]
+        set_effm2 <- dataOrg$effM[row.names(dataOrg) %in% as.character(resTmp[grepl(regulation,names(resTmp))][[2]])]
       } else {
         set1 <- dataOrg[row.names(dataOrg) %in% as.character(unlist(resTmp[c(1)])), colnames(dataOrg)==feat]
         set2 <- dataOrg[row.names(dataOrg) %in% as.character(unlist(resTmp[c(2)])), colnames(dataOrg)==feat]
-        set_te1 <- dataOrg$TE[row.names(dataOrg) %in% as.character(unlist(resTmp[c(1)]))]
-        set_te2 <- dataOrg$TE[row.names(dataOrg) %in% as.character(unlist(resTmp[c(2)]))]
-        col1 <- geneListcolours[1]
-        col2 <- geneListcolours[2] 
+        set_effm1 <- dataOrg$effM[row.names(dataOrg) %in% as.character(unlist(resTmp[c(1)]))]
+        set_effm2 <- dataOrg$effM[row.names(dataOrg) %in% as.character(unlist(resTmp[c(2)]))]
       }
+      col1 <-  coloursOut[1]
+      col2 <-  coloursOut[2]
       #
     } else {
       #
       set <- dataOrg[,colnames(dataOrg)==feat]
-      set_te <- dataOrg$TE
+      set_effm <- dataOrg$effM
       #
     }
-    pdf(ifelse(is.null(pdfName),paste(RegMode,featTmp,'individually.pdf',sep='_'), paste(pdfName, RegMode,featTmp,'individually.pdf',sep='_')),width=8,height=8, useDingbats = F)
+    pdf(ifelse(is.null(pdfName),paste(ifelse(is.null(RegMode),'custom',RegMode),featTmp,'individually.pdf',sep='_'), paste(pdfName, ifelse(is.null(RegMode),'custom',RegMode),featTmp,'individually.pdf',sep='_')),width=8,height=8, useDingbats = F)
     par(mar=c(9,5,5,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.7, cex.main=1.7,cex.lab=1.3)
     
     #
@@ -484,36 +521,37 @@ featureIntegration <- function(ads,
     if(xlim_min > min(set)){
       xlim_min <- floor(min(set))
     }
-    ylim_max <- roundUpNice(abs(max(set_te)))
+    ylim_max <- roundUpNice(abs(max(set_effm)))
     #
-    plot(set,set_te,col='#8A8683',pch=16,cex=1,ylim=c(-ylim_max,ylim_max),xlab='',ylab='',lwd=1,bty="n",xaxt="n",yaxt="n",font=2, xlim=c(xlim_min, xlim_max))
+    plot(set,set_effm,col='#8A8683',pch=16,cex=1,ylim=c(-ylim_max,ylim_max),xlab='',ylab='',lwd=1,bty="n",xaxt="n",yaxt="n",font=2, xlim=c(xlim_min, xlim_max))
     
-    if(isTRUE(regOnly)){
-      points(set1, set_te1, pch=16,col=col1)
-      points(set2, set_te2, pch=16,col=col2)
+    if(isTRUE(regOnly) | !is.null(geneList)){
+      points(set1, set_effm1, pch=16,col=col1)
+      points(set2, set_effm2, pch=16,col=col2)
     }
     
     #
-    mtext(side=2, line=3, RegMode, col="black", font=2, cex=1.7)
+    mtext(side=2, line=3, ifelse(is.null(RegMode),'custom',RegMode), col="black", font=2, cex=1.7)
     axis(side=2,seq(-ylim_max,ylim_max,2), font=2,las=2,lwd=2)
     
     mtext(side=1, line=4, featTmp, col="black", font=2, cex=1.7,at=(xlim_min+xlim_max)/2)
     axis(side=1,seq(xlim_min,xlim_max,ifelse((xlim_max - xlim_min)/5 >=0 , roundUpNice((xlim_max - xlim_min)/5), -roundUpNice(abs((xlim_max - xlim_min)/5)))), font=2,lwd=2)
     #
     if(length(unique(set))>2 & IQR(set) > 0 & length(unique(set))>3){
-      f1 <-predict(smooth.spline(set_te~set))
+      f1 <-predict(smooth.spline(set_effm~set))
       lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col='#AFBADC',lwd=4,lend=2)
       lines(f1$x[which(f1$x>xlim_min & f1$x<xlim_max)],f1$y[which(f1$x>xlim_min & f1$x<xlim_max)], col='black',lwd=1,lend=2,lty=3)
     }
     #
-    if(!is.na(as.numeric(coefficients(lm(set_te~set))[2]))){
-      plotrix::ablineclip(lm(set_te~set), col='#AFBADC',lwd=4,x1=xlim_min,x2=xlim_max)
-      plotrix::ablineclip(lm(set_te~set), col='black',lwd=1,x1=xlim_min,x2=xlim_max)
+    if(!is.na(as.numeric(coefficients(lm(set_effm~set))[2]))){
+      plotrix::ablineclip(lm(set_effm~set), col='#AFBADC',lwd=4,x1=xlim_min,x2=xlim_max)
+      plotrix::ablineclip(lm(set_effm~set), col='black',lwd=1,x1=xlim_min,x2=xlim_max)
       
-      text((xlim_min+xlim_max)/2,ylim_max, paste('pvalue ',format(as.numeric(cor.test(set,set_te)[3]),scientific=T,digits=3),', r=',round(as.numeric(cor.test(set,set_te)[4]),3),sep=''), bty='n',col='black',cex=1.25,font=2)
+      text((xlim_min+xlim_max)/2,ylim_max, paste('pvalue ',format(as.numeric(cor.test(set,set_effm)[3]),scientific=T,digits=3),', r=',round(as.numeric(cor.test(set,set_effm)[4]),3),sep=''), bty='n',col='black',cex=1.25,font=2)
     }
     dev.off()
   }
+
   #heatmap select only important/omnibus features
   heatIn <- dataOrg[,colnames(dataOrg) %in% c('TE',bestSel)]
   heatOut <- scale(heatIn, center = TRUE, scale = TRUE)
@@ -521,7 +559,7 @@ featureIntegration <- function(ads,
   colnames(heatOut) <-  namesDf$originalNames[match(colnames(heatOut),namesDf$newNames)]
   colnames(heatOut)[length(colnames(heatOut))] <- 'EffectMeasure'
   
-  pdf(ifelse(is.null(pdfName),paste(RegMode,featTmp,'heatmap.pdf',sep='_'), paste(pdfName, RegMode,featTmp,'heatmap.pdf',sep='_')), useDingbats = F,width= 20,height=24)
+  pdf(ifelse(is.null(pdfName),paste(ifelse(is.null(RegMode),'custom',RegMode),featTmp,'heatmap.pdf',sep='_'), paste(pdfName, ifelse(is.null(RegMode),'custom',RegMode),featTmp,'heatmap.pdf',sep='_')), useDingbats = F,width= 20,height=24)
   par(mar=c(8,5,8,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.7, cex.main=1.3,cex.lab=1.3)
   col <- colorRampPalette(c("blue","white", "red"))(256)
   gplots::heatmap.2(heatOut,

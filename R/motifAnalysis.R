@@ -5,6 +5,7 @@ motifAnalysis <- function(ads,
                           contrast=NULL,
                           geneVec=NULL,
                           geneVecName=NULL,
+                          customBg=NULL,
                           region, #UTR5, CDS, UTR3
                           subregion=NULL, #number of nucleotides from start if positive or end if negative.
                           subregionSel=NULL, #select or exclude , required if subregion is not null.
@@ -14,9 +15,14 @@ motifAnalysis <- function(ads,
                           stremeName=NULL #name for output folder
 ){
   #Subset annot for only expressed genes
-  bg <- row.names(ads@dataP)
-  annotBg <- annot[annot$geneID %in% bg,]
-  
+  if(!is.null(ads)){
+    #Subset annot for only expressed genes
+    bg <- row.names(ads@dataP)
+    annotBg <- annot[annot$geneID %in% bg,]
+  } else {
+    bg <- customBg
+    annotBg <- annot[annot$geneID %in% bg,]
+  }
   #Select region of interest
   if(region=='UTR5'){
     seqTmp <- annotBg$UTR5_seq

@@ -114,6 +114,119 @@ gffRead <- function(gffFile, nrows = -1){
   return(gff)
 }
 
+gSel <- function(annot,ads,customBg,geneList){
+  if(!is.null(ads)){
+    bg <- row.names(ads@dataP)
+    if(!is.null(geneList)){
+      bg <- unique(c(bg, as.character(unlist(geneList))))
+    }
+    annotOut <- annot[annot$geneID %in% bg,]
+  } else {
+    if(!is.null(customBg)){
+      #add here to be sure that all genelist are in bg
+      bg <- customBg
+      if(!is.null(geneList)){
+        bg <- unique(c(bg, as.character(unlist(geneList))))
+      }
+      annotOut <- annot[annot$geneID %in% bg,]
+    } else {
+      annotOut <- annot[annot$geneID %in% as.character(unlist(geneList)),]
+    }
+  }
+  return(annotOut)
+}
+
+regSel <- function(annot, region, ext=NULL){
+  nc <- grep(region, colnames(annot))
+  #
+  seqTmp <- annot[,nc]
+  lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
+  #
+  if(!is.null(ext)){
+    extSeq <- as.character(mapply(combSeq, annot$CDS_seq,annot$UTR3_seq))
+    annotOut <- cbind(annot[,c(1:2)], seqTmp,lenTmp,extSeq)
+  } else {
+    annotOut <- cbind(annot[,c(1:2)], seqTmp,lenTmp)
+  }
+  #
+  return(annotOut)
+}
+
+isoSel <- function(annot, method){
+  #Select per gene level
+  if(method=='shortest'){
+    annotOut <- as.data.frame(annot %>% group_by(geneID) %>% dplyr::slice(which.min(lenTmp)))
+  } else if(method=='longest'){
+    annotOut <- as.data.frame(annot %>% group_by(geneID) %>% dplyr::slice(which.max(lenTmp)))
+  } else {
+    annotOut <- as.data.frame(annot %>% group_by(geneID) %>% dplyr::slice_sample(n = 1))
+  }
+  return(annotOut)
+}
+
+resSel <- function(vIn, ads, regulation, contrast, customBg, geneList){
+  resOut <- list()
+  #Extract all results
+  if(!is.null(ads)){
+    results <- anota2seqGetDirectedRegulations(ads)
+    #
+    res <- vector("list", length = length(regulation))
+    for(i in unique(contrast)){
+      resTmp <- results[[i]][regulation[contrast==i]]
+      res[which(contrast==i)] <- resTmp
+    }
+    names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
+    if(!is.null(geneList)){
+      res <- append(res, geneList)
+    }
+    resOut[[1]] <- vIn
+    for(i in 1:length(res)){
+      resOut[[names(res)[i]]] <- vIn[names(vIn) %in% res[[i]]]
+    }
+    names(resOut)[1] <- 'background'
+  } else {
+    res <- geneList
+    if(!is.null(customBg)){
+      resOut[[1]] <- vIn
+      for(i in 1:length(res)){
+        resOut[[names(res)[i]]] <- vIn[names(vIn) %in% res[[i]]]
+      }
+      names(resOut)[1] <- 'background'
+    } else {
+      for(i in 1:length(res)){
+        resOut[[names(res)[i]]] <- vIn[names(vIn) %in% res[[i]]]
+      }
+    }
+  }
+  return(resOut)
+}
+
+coloursSel <- function(ads, regulation, geneList, geneListcolours, customBg){
+  coloursOut <- as.character()
+  if(!is.null(ads)){
+    AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
+    names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
+    coloursOut <- c('grey45', AnotaColours[regulation])
+    if(!is.null(geneList)){
+      coloursOut <- append(coloursOut, geneListcolours)
+    }
+  } else {
+    if(!is.null(customBg)){
+      coloursOut <- c('grey65', geneListcolours)
+    } else {
+      coloursOut <- geneListcolours
+    }
+  }
+  return(coloursOut)
+}
+
+antilog<-function(lx,base){ 
+  lbx<-lx/log(exp(1),base=base) 
+  result<-exp(lbx) 
+  result 
+} 
+
+
 #calculate desired content
 calc_content <- function(x, nuc){
   contTmp <- stringr::str_count(x, nuc)

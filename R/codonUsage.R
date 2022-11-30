@@ -1,8 +1,8 @@
 ##Run analysis length
-codonUsage <- function(ads,
+codonUsage <- function(ads=NULL,
                           analysis,
-                          regulation,
-                          contrast,
+                          regulation=NULL,
+                          contrast=NULL,
                           type='sequence',#option: 'sequence' or if ribosomal profiling 'riboSeq'
                           comparisons=NULL,
                           annotType='ccds',#option: 'refseq' or 'ccds', 'custom
@@ -13,8 +13,8 @@ codonUsage <- function(ads,
                           subregion=NULL, #number of nucleotides from start if positive or end if negative.
                           subregionSel, #select or exclude , required if subregion is not null.
                           geneList=NULL,
-                          geneListnames=NULL,
                           geneListcolours=NULL,
+                          customBg=NULL,
                           selection, #shortest, longest, random (default)
                           pAdj=0.01,
                           plotHeatmap=TRUE,
@@ -94,23 +94,12 @@ codonUsage <- function(ads,
       stop("No correct option for annotation file provided")
   }
   #Subset annot for only expressed genes
-  bg <- row.names(ads@dataP)
-  annotBg <- annot[annot$geneID %in% bg,]
-  
+  annotBg <- gSel(annot=annot, ads=ads, customBg=customBg, geneList=geneList)
+  #Select region of interest
+  annotTmp <- regSel(annot=annotBg, region='CDS')
+  #Per gene
+  annotBgSel <- isoSel(annot=annotTmp, method=selection)
   # 
-  seqTmp <- annotBg$CDS_seq
-  lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
-  annotBg <- cbind(annotBg[,c(1:2)], seqTmp, lenTmp)
-
-  #Select per gene level
-  if(selection=='shortest'){
-    annotBgSel <- as.data.frame(annotBg %>% group_by(geneID) %>% dplyr::slice(which.min(lenTmp)))
-  } else if(selection=='longest'){
-    annotBgSel <- as.data.frame(annotBg %>% group_by(geneID) %>% dplyr::slice(which.max(lenTmp)))
-  } else {
-    annotBgSel <- as.data.frame(annotBg %>% group_by(geneID) %>% dplyr::slice_sample(n = 1))
-  }
-  
   if(!is.null(subregion)){
     #
     subSeq <- as.character(sapply(annotBgSel$seqTmp, function(x) subset_seq(x, pos=subregion,subregionSel=subregionSel)))
@@ -118,7 +107,7 @@ codonUsage <- function(ads,
     annotBgSel$seqTmp <- subSeq
   }
   annotBgSel <- annotBgSel[!is.na(annotBgSel$seqTmp),]
-  
+  #
   if(type=='sequence'){
     codonTmp <- list()
     for(i in 1:nrow(annotBgSel)){
