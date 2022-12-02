@@ -126,7 +126,7 @@ foldEnergyAnalysis <- function(source='load',#option to 'load' available or crea
       #
       resOut <- resSel(vIn=feForAnalysisBg, ads=ads, regulation=regulation, contrast=contrast, customBg=customBg, geneList=geneList)
       #
-      coloursOut <- coloursSel(ads=ads, regulation=regulation, resOut=resOut, geneList=geneList, geneListcolours=geneListcolours,customBg=customBg)
+      coloursOut <- coloursSel(ads=ads, regulation=regulation, geneList=geneList, geneListcolours=geneListcolours,customBg=customBg)
       #
     
       #Plot

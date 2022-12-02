@@ -27,7 +27,7 @@ lengthAnalysis <- function(ads=NULL,
     #
     resOut <- resSel(vIn=lenForAnalysis, ads=ads, regulation=regulation, contrast=contrast, customBg=customBg, geneList=geneList)
     #
-    coloursOut <- coloursSel(ads=ads, regulation=regulation, resOut=resOut, geneList=geneList, geneListcolours=geneListcolours,customBg=customBg)
+    coloursOut <- coloursSel(ads=ads, regulation=regulation, geneList=geneList, geneListcolours=geneListcolours,customBg=customBg)
     #
     #Plot
     pdf(ifelse(is.null(pdfName),paste(region,plotType,'lengthAnalysis.pdf',sep='_'), paste(pdfName,region,plotType,'lengthAnalysis.pdf',sep='_')),width= 8,height=8, useDingbats = F)

@@ -48,7 +48,7 @@ uorf_analysis <- function(ads=NULL,
     #
     resOut <- resSel(vIn=uorfOut, ads=ads, regulation=regulation, contrast=contrast, customBg=customBg, geneList=geneList)
     #
-    coloursOut <- coloursSel(ads=ads, regulation=regulation, resOut=resOut, geneList=geneList, geneListcolours=geneListcolours,customBg=customBg)
+    coloursOut <- coloursSel(ads=ads, regulation=regulation, geneList=geneList, geneListcolours=geneListcolours,customBg=customBg)
     #
     resProp <- as.numeric()
     for(i in 1:length(resOut)){

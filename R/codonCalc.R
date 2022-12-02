@@ -33,7 +33,7 @@ codonCalc  <- function(codonIn, #output of codonUsage function
     #
     resOut <- resSel(vIn=codonCalcOut, ads=ads, regulation=regulation, contrast=contrast, customBg=customBg, geneList=geneList)
     #
-    coloursOut <- coloursSel(ads=ads, regulation=regulation, resOut=resOut, geneList=geneList, geneListcolours=geneListcolours,customBg=customBg)
+    coloursOut <- coloursSel(ads=ads, regulation=regulation, geneList=geneList, geneListcolours=geneListcolours,customBg=customBg)
     #
     pdf(ifelse(is.null(pdfName),'codonCalc.pdf', paste(pdfName,'codonCalc.pdf',sep='_')),width= 8,height=8, useDingbats = F)
     par(mar=c(5,5,8,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=1.4, cex.main=1.7,cex.lab=1.3)
