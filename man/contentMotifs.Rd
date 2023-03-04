@@ -15,7 +15,7 @@ contentMotifs(annot, motifsIn, seqType="dna", dist=1, min_score=47, unitOut="num
 \item{dist}{ Minimal distance between motifs. The default is 1. }
 \item{min_score}{ Threshold for the quality of the g-quadruplexes prediction. It is required for "G4" option. The default is 47. }
 \item{unitOut}{ Select whether the output should be a "number" of uORFs. It will be output as a vector and can be directly fed into feature integration step or "position". In that case list of uORFs positions per gene with be provided. The default is "number". }
-\item{resid}{ Residuals after correction for the length of the sequences should be used instead. It can be TRUE only if unitOut is "number". The default is FALSE.
+\item{resid}{ Residuals after correction for the length of the sequences should be used instead. It can be TRUE only if unitOut is "number". The default is FALSE.}
 \item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
 \item{regulation}{ If the anota2seq object is provided, desired names of regulation modes from the anota2seq object are to be compared. To choose from "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNAUp", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
 \item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
@@ -47,7 +47,7 @@ annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = 
 
 # If only the anota2seq object
 motifsNum <- contentMotifs(annot = annot, motifsIn=c("ACTG","G4"), seqType="dna", dist=1, min_score=47,, unitOut = "number", resid=FALSE, ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = contrast = c(1,1), selection = "random", region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)))
-}
+
 
 # If only the geneList
 motifsNum <- contentMotifs(annot = annot, motifsIn=c("ACTG","G4"), seqType="dna", dist=1, min_score=47,, unitOut = "number", resid=FALSE, geneList = inList, geneListcolours=c("#F2A104","#00743F"), selection = "random", region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)))

@@ -27,4 +27,4 @@ Filtering genes based on slopes calculated by anota2seq for translation and buff
 
 \examples{
 filtOutGenes <- slopeFilt(ads = anota2seqOutput, regulationGen="translation", contrastSel=1, minSlope=-1, maxSlope=2)
-                     
+}
