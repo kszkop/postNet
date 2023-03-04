@@ -5,7 +5,7 @@
 \title{ Calculation of folding energy}
 
 \usage{
-foldingEnergyAnalysis(annot, sourceFE = "load", version=NULL, species=NULL, fromFasta = FALSE, customFile = NULL, onlyRun = FALSE, residFE = FALSE, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, selection = "random", region=NULL, subregion=NULL, subregionSel=NULL, comparisons=NULL, plotOut = TRUE, pdfName = NULL )
+foldingEnergyAnalysis(annot, sourceFE = "load", version=NULL, species=NULL, fromFasta = FALSE, customFileFE = NULL, onlyRun = FALSE, residFE = FALSE, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, selection = "random", region=NULL, subregion=NULL, subregionSel=NULL, comparisons=NULL, plotOut = TRUE, pdfName = NULL )
 }
 
 \arguments{
@@ -15,7 +15,7 @@ foldingEnergyAnalysis(annot, sourceFE = "load", version=NULL, species=NULL, from
 \item{species}{ Select a specie of interest. It is required if sourceFE = "load". At the moment, it can be human or mouse only. }
 
 \item{fromFasta}{ If TRUE, it will calculate folding energy values with mfold on a custom fasta file. The default is FALSE. }
-\item{customFile}{ Name of a file including a path to the customFile. It is required for sourceFE=='custom' or if sourceFE=='create' and fromFasta==TRUE. In the former case, it must be the file with calculated folding energies in the format: transcript ID, folding energy, length of the sequence, or in the latter fasta files with sequences and transcript ids as names. }
+\item{customFileFE}{ Name of a file including a path to the customFile. It is required for sourceFE=='custom' or if sourceFE=='create' and fromFasta==TRUE. In the former case, it must be the file with calculated folding energies in the format: transcript ID, folding energy, length of the sequence, or in the latter fasta files with sequences and transcript ids as names. }
 \item{onlyRun}{ If TRUE, it will create a folding energy input file using mfold without running an analysis comparing different modes of regulation. It is relevant only if sourceFE == "create". The default is FALSE. }
 \item{residFE}{ Residuals after correction for the length of the sequences should be used instead. The default is FALSE,
 \item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }

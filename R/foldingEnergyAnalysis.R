@@ -3,7 +3,7 @@ foldingEnergyAnalysis <- function(annot,
                                   version = NULL,
                                   species = NULL,
                                   fromFasta = FALSE,
-                                  customFile = NULL,
+                                  customFileFE = NULL,
                                   onlyRun = FALSE,
                                   residFE = FALSE,
                                   ads = NULL,
@@ -21,10 +21,10 @@ foldingEnergyAnalysis <- function(annot,
   if (sourceFE == "create") {
     if (isTRUE(fromFasta)) {
       #
-      runMfold(customFile)
+      runMfold(customFileFE)
       #
       if (!isTRUE(onlyRun)) {
-        energyIn <- read.delim(gsub(".fa", "_foldEnergy.txt", customFile), stringsAsFactors = FALSE)
+        energyIn <- read.delim(gsub(".fa", "_foldEnergy.txt", customFileFE), stringsAsFactors = FALSE)
         energyIn <- energyIn[!grepl("NM_", energyIn$fold_energy), ]
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
@@ -81,7 +81,7 @@ foldingEnergyAnalysis <- function(annot,
     }
   } else if (sourceFE == "custom") {
     #
-    energyIn <- read.delim(customFile, stringsAsFactors = FALSE)
+    energyIn <- read.delim(customFileFE, stringsAsFactors = FALSE)
     energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
     colnames(energyIn) <- c("id", "fold_energy", "length")
   } else {

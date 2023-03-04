@@ -47,7 +47,7 @@ anota2seqUtilsRun <- function(source='load',
                               
                               sourceFE='load',
                               fromFasta=FALSE,
-                              customFile=NULL, 
+                              customFileFE=NULL, 
                               onlyRun=FALSE,
                               residFE=FALSE,
                               
