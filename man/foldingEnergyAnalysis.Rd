@@ -55,7 +55,7 @@ annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = 
 
 # If only the anota2seq object
 feOut <- foldingEnergyAnalysis(annot = annot, sourceFE = "load", version="rel_109.20201120", species = "human", residFE = FALSE, ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = contrast = c(1,1), selection = "random", region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE, plotType = "ecdf")
-}
+
 
 # If only the geneList
 feOut <- foldingEnergyAnalysis(annot = annot, sourceFE = "load", version="rel_109.20201120", species = "human", residFE = FALSE, geneList = inList, geneListcolours=c("#F2A104","#00743F"), selection = "random", region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE, plotType = "ecdf")

@@ -36,4 +36,4 @@ addSign[["TOP"]] <- c("RPL4", "RPL5","EEF1A1","EIF3D")
 addSign[["Senescence"]] <- c("SLC40A1","TGFB2","MASP1","ARRDC4","SLC16A6","ARHGAP28")
 
 outSign <- signCalc(annot=annot, addSign = addSign, ads = anota2seqOutput)
-                     
+}               
