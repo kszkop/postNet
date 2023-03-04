@@ -36,7 +36,7 @@ The package was primarily designed to be complementary to anota2seq \cite{Oertli
 The easiest way to start is using anota2seqUtils wrapper function \Rfunction{anota2seqUtilsRun}. 
 <<Quick start, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
 library(anota2seqUtils)
-
+data(anota2seqUtils_data)
 
 
 anota2seqUtilsRun(species='human',regionSel=c('UTR5','CDS','UTR3'), ads = ads2_pan4Ai, regulation = c("translationUp","translationDown"),
