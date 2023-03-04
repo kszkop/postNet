@@ -1,107 +1,71 @@
-#Run motif analysis
-motifAnalysis <- function(ads,
-                          annot,
-                          regulation=NULL,
-                          contrast=NULL,
-                          geneVec=NULL,
-                          geneVecName=NULL,
-                          customBg=NULL,
-                          region, #UTR5, CDS, UTR3
-                          subregion=NULL, #number of nucleotides from start if positive or end if negative.
-                          subregionSel=NULL, #select or exclude , required if subregion is not null.
-                          selection, #shortest, longest, random (default)
-                          stremeThreshold = 0.05, #pvalue , max is 0.05 
-                          minwidth=6, #min motif width (default for original software is 8 but thought I would reduce it a bit as 8 sounds bit harsh)
-                          stremeName=NULL #name for output folder
-){
-  #Subset annot for only expressed genes
-  if(!is.null(ads)){
-    #Subset annot for only expressed genes
-    bg <- row.names(ads@dataP)
-    annotBg <- annot[annot$geneID %in% bg,]
-  } else {
-    bg <- customBg
-    annotBg <- annot[annot$geneID %in% bg,]
+motifAnalysis <- function(annot,
+                          stremeThreshold = 0.05,
+                          minwidth = 6,
+                          memePath = NULL,
+                          ads,
+                          regulation = NULL,
+                          contrast = NULL,
+                          geneList = NULL,
+                          customBg = NULL,
+                          selection = "random",
+                          region,
+                          subregion = NULL,
+                          subregionSel = NULL) {
+  ####
+  if (is.null(ads) & is.null(customBg)) {
+    stop("No background provided")
   }
-  #Select region of interest
-  if(region=='UTR5'){
-    seqTmp <- annotBg$UTR5_seq
-    lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
-    annotBg <- cbind(annotBg[,c(1:2)], seqTmp,lenTmp)
-  }
-  if(region=='UTR3'){
-    seqTmp <- annotBg$UTR3_seq
-    lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
-    annotBg <- cbind(annotBg[,c(1:2)], seqTmp,lenTmp)
-  }
-  if(region=='CDS'){
-    seqTmp <- annotBg$CDS_seq
-    lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
-    annotBg <- cbind(annotBg[,c(1:2)], seqTmp,lenTmp)
-  }
-    
-  #Select per gene level
-  if(selection=='shortest'){
-    annotBgSel <- as.data.frame(annotBg %>% group_by(geneID) %>% dplyr::slice(which.min(lenTmp)))
-  } else if(selection=='longest'){
-    annotBgSel <- as.data.frame(annotBg %>% group_by(geneID) %>% dplyr::slice(which.max(lenTmp)))
-  } else {
-    annotBgSel <- as.data.frame(annotBg %>% group_by(geneID) %>% dplyr::slice_sample(n = 1))
-  }
+  ##
+  annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
+  annotTmp <- regSel(annot = annotBg, region = region)
+  annotBgSel <- isoSel(annot = annotTmp, method = selection)
   #
-  if(!is.null(subregion)){
+  if (!is.null(subregion)) {
     #
-    subSeq <- as.character(sapply(annotBgSel$seqTmp, function(x) subset_seq(x, pos=subregion,subregionSel=subregionSel)))
+    subSeq <- as.character(sapply(annotBgSel$seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel)))
     #
     annotBgSel$seqTmp <- subSeq
   }
-  annotBgSel <- annotBgSel[!is.na(annotBgSel$seqTmp),]
+  annotBgSel <- annotBgSel[!is.na(annotBgSel$seqTmp), ]
   #
   seqForAnalysis <- annotBgSel$seqTmp
   names(seqForAnalysis) <- annotBgSel$geneID
+  #
+  resOut <- resSel(vIn = seqForAnalysis, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
 
-  #Select regualted genes
-  if(is.null(geneVec)){
-    #Extract results
-    results <- anota2seqGetDirectedRegulations(ads)
-    geneSel <- results[[contrast]][[regulation]]
-  } else {
-    geneSel <- geneVec
-  }
-  #create vector for regulated and control sequences
-  regSeq <- seqForAnalysis[names(seqForAnalysis) %in% geneSel]
-  controlSeq <- seqForAnalysis#[!names(seqForAnalysis) %in% geneVec]
-  
-  #write fasta
-  seqinr::write.fasta(sequences=as.list(as.character(regSeq)),names=names(regSeq),file.out=ifelse(is.null(geneVec),paste(paste('Regulated_contrast',contrast, region, regulation, sep='_'),'.fa',sep=''),paste(paste('Regulated',geneVecName, region, sep='_'),'.fa',sep='')))
-  seqinr::write.fasta(sequences=as.list(as.character(controlSeq)),names=names(controlSeq),file.out=ifelse(is.null(geneVec),paste(paste('Control_contrast',contrast, region, regulation, sep='_'),'.fa',sep=''),paste(paste('Control',geneVecName, region, sep='_'),'.fa',sep='')))
-  #Run dreme
-  #
-  if(is.null(geneVec)){
-    outdirTmp <- ifelse(is.null(stremeName),paste('stremeOut_contrast', contrast, region, regulation, sep='_'),stremeName)
-  } else {
-    outdirTmp <- ifelse(is.null(stremeName),paste('stremeOut', geneVecName, region, sep='_'),stremeName)
+  if (!is.null(ads)) {
+    motifsIn <- regulation
+    if (!is.null(geneList)) {
+      motifsIn <- append(motifsIn, names(geneList))
+    }
+  } else if (!is.null(geneList)) {
+    motifsIn <- names(geneList)
   }
   #
-  streme_out <- memes::runStreme(input=ifelse(is.null(geneVec),paste(paste('Regulated_contrast',contrast, region, regulation, sep='_'),'.fa',sep=''),paste(paste('Regulated',geneVecName, region, sep='_'),'.fa',sep='')), control=ifelse(is.null(geneVec),paste(paste('Control_contrast',contrast, region, regulation, sep='_'),'.fa',sep=''),paste(paste('Control',geneVecName, region, sep='_'),'.fa',sep='')), alph="dna", outdir = outdirTmp,minw=minwidth)
-  
-  #Extract only these below threshold
-  streme_out <- streme_out[streme_out$pval < stremeThreshold,]
-#  if(!is.null(tomtom_database)){
-#    if(nrow(streme_out)>0){
-#      if(is.null(geneVec)){
-#        outdirTmp2 <- ifelse(is.null(tomtomName),paste('tomtomOut_contrast', contrast, region, regulation, sep='_'),tomtomName)
-#      } else {
-#        outdirTmp2 <- ifelse(is.null(tomtomName),paste('tomtomOut', geneVecName, region, sep='_'),tomtomName)
-#      }
-#      #Run tomtom
-#      tomtom_out <- memes::runTomTom(streme_out,database=tomtom_database, outdir = outdirTmp2)
-#    } else {
-#      tomtom_out <- streme_out
-#    }
-#    return(tomtom_out)
-#  } else {
-#    #
-  return(streme_out)
-#  }
+  motifsTmpOut <- list()
+  for (j in 1:length(motifsIn)) {
+    # select regulated genes
+    motifsSel <- motifsIn[j]
+
+    if (isTRUE(motifsSel %in% regulation)) {
+      regIn <- paste(motifsSel, "_c", contrast[j], sep = "")
+    } else {
+      regIn <- motifsSel
+    }
+    #
+    regSeq <- resOut[[regIn]]
+    controlSeq <- seqForAnalysis
+    if (j == 1) {
+      seqinr::write.fasta(sequences = as.list(as.character(controlSeq)), names = names(controlSeq), file.out = paste(paste("Control", region, sep = "_"), ".fa", sep = ""))
+    }
+    seqinr::write.fasta(sequences = as.list(as.character(regSeq)), names = names(regSeq), file.out = paste(paste("Regulated", region, regIn, sep = "_"), ".fa", sep = ""))
+    #
+    outdirTmp <- paste("stremeOut", region, regIn, sep = "_")
+    streme_out <- memes::runStreme(input = paste(paste("Regulated", region, regIn, sep = "_"), ".fa", sep = ""), control = paste(paste("Control", region, sep = "_"), ".fa", sep = ""), meme_path = memePath, alph = "dna", outdir = outdirTmp, minw = minwidth)
+    #
+    streme_out <- streme_out[streme_out$pval < stremeThreshold, ]
+    motifsTmpOut[[regIn]] <- streme_out
+  }
+  motifsStemeOut <- append(list(motifsOut = as.character(unlist(lapply(motifsTmpOut, function(x) x$consensus)))), motifsTmpOut)
+  return(motifsStemeOut)
 }

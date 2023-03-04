@@ -1,14 +1,13 @@
 slopeFilt <- function(ads,
-                      regulation, #'translation' or 'buffering'
-                      contrast,
+                      regulationGen,
+                      contrastSel,
                       minSlope, 
-                      maxSlope
-){
-    #extract results from anota2seq
+                      maxSlope ){
+    #
     tmpAds <- anota2seq::anota2seqGetOutput(ads, 
-                                 analysis = regulation,
+                                 analysis = regulationGen,
                                  output = "full",
-                                 selContrast = contrast,
+                                 selContrast = contrastSel,
                                  getRVM = TRUE)
     
     #Filter slopes
@@ -16,7 +15,6 @@ slopeFilt <- function(ads,
     
     #vector of genes to out
     genesOut <- as.character(row.names(tmpAds_slopeFilt))
-    
     #
     return(genesOut)
 }

@@ -83,6 +83,7 @@ checkAvailableVersions <- function(species){
   }
 }
 
+
 ###For gff 
 getAttributeField <- function (x, field, attrsep = ";") {
   s = strsplit(x, split = attrsep, fixed = TRUE)
@@ -114,6 +115,23 @@ gffRead <- function(gffFile, nrows = -1){
   return(gff)
 }
 
+extGff <- function(gff){
+  #
+  gff <- gff[gff$feature=='mRNA' | gff$feature=='transcript',]
+  gff$transID_ver <- getAttributeField(gff$attributes, "transcript_id")
+  gff$geneID <- getAttributeField(gff$attributes, "gene")
+  gff <- with(gff,cbind(gff,reshape2::colsplit(gff$transID_ver,pattern="\\.",names = c('transID','version'))))
+  bed <- data.frame(id=gff$transID,chr=gff$seqname, strand=gff$strand, start=gff$start, end=gff$end, transVer=gff$version, geneID=gff$geneID)
+  #Extract only protein coding
+  bed <- bed[grepl('NM_',bed$id),]
+  bed <- bed[grepl('NC_',bed$chr),]
+  bed <- subset(bed, !duplicated(id))
+  #
+  return(bed)
+}
+
+
+
 gSel <- function(annot,ads,customBg,geneList){
   if(!is.null(ads)){
     bg <- row.names(ads@dataP)
@@ -136,14 +154,19 @@ gSel <- function(annot,ads,customBg,geneList){
   return(annotOut)
 }
 
-regSel <- function(annot, region, ext=NULL){
+regSel <- function(annot, region, ext=FALSE){
   nc <- grep(region, colnames(annot))
   #
   seqTmp <- annot[,nc]
   lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
   #
-  if(!is.null(ext)){
-    extSeq <- as.character(mapply(combSeq, annot$CDS_seq,annot$UTR3_seq))
+  if(isTRUE(ext)){
+    seq <- list()
+    seq[[1]] <- annot$CDS_seq
+    seq[[2]] <- annot$UTR3_seq
+    extSeq <- combSeq(seqIn = seq)
+    extSeq <- unlist(extSeq)
+    #
     annotOut <- cbind(annot[,c(1:2)], seqTmp,lenTmp,extSeq)
   } else {
     annotOut <- cbind(annot[,c(1:2)], seqTmp,lenTmp)
@@ -201,12 +224,17 @@ resSel <- function(vIn, ads, regulation, contrast, customBg, geneList){
   return(resOut)
 }
 
-coloursSel <- function(ads, regulation, geneList, geneListcolours, customBg){
+coloursSel <- function(ads, regulation=NULL, regulationGen=NULL, geneList, geneListcolours, customBg){
   coloursOut <- as.character()
   if(!is.null(ads)){
     AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
     names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
-    coloursOut <- c('grey45', AnotaColours[regulation])
+    if(!is.null(regulationGen)){
+      ancol <- grepl(regulationGen,names(AnotaColours))
+    } else {
+      ancol <- regulation
+    }
+    coloursOut <- c('grey45', AnotaColours[ancol])
     if(!is.null(geneList)){
       coloursOut <- append(coloursOut, geneListcolours)
     }
@@ -259,16 +287,26 @@ subset_seq <- function(x, pos, subregionSel){
 }
 
 #
-calc_motif <- function(x, motif, len){
+calc_motif <- function(x, motifIn, dist, unit){
   seqTmp <- x
-  motOut  <- seqinr::words.pos(motif,seqTmp)
+  #
+  lenTmp <- motifLenCalc(motifIn)
+  len <- ifelse(dist == 1, lenTmp, lenTmp + (dist - 1))
+  #
+  motOut  <- seqinr::words.pos(motifIn,seqTmp)
   if(length(motOut)>0){
     #Check overlapping and collapse them
     gROut <- GenomicRanges::reduce(GenomicRanges::GRanges(seqnames='tmp', ranges=IRanges::IRanges(start=motOut,end=motOut)),min.gapwidth=len)
     #
-    nMot <- length(gROut)
+    if(unit == 'number'){
+      nMot <- length(gROut)
+    } else if (unit == 'position') {
+      nMot <- list()
+      nMot[["start"]] <- as.numeric(start(gROut@ranges))
+      nMot[["end"]] <- as.numeric(end(gROut@ranges)) + lenTmp - 1
+    }
   } else {
-    nMot <- 0
+    nMot <- ifelse(unit == "number", 0, NA)
   }
   return(nMot)
 }
@@ -303,6 +341,19 @@ convertIUPAC <- function(motif){
   return(tmpConv)
 }
 
+motifLenCalc <- function(motif){
+  lenTmp <- length(seqinr::s2c(gsub("\\[|\\]", "", motif)))
+  #
+  bracSel <- unlist(regmatches(motif, gregexpr("(?<=\\[).*?(?=\\])", motif, perl=T)))
+  lenB <- length(seqinr::s2c(seqinr::c2s(bracSel)))
+  #
+  nNotInBrackets <- lenTmp  - lenB
+  #
+  lenOut <- length(bracSel) + nNotInBrackets
+  return(lenOut)
+}
+
+
 #prepprotein
 replaceProtAmbig <- function(motif){
   #
@@ -314,14 +365,27 @@ replaceProtAmbig <- function(motif){
 }
 
 #
-codonCount <- function(gene,seq){
+codonCount <- function(seq, gene, codonN=1){
   #
-  tmpEff <- seqinr::uco(seqinr::s2c(seq),index = "eff")
-  tmpFreq <- seqinr::uco(seqinr::s2c(seq),index = "freq")
-  
-  tmpCodon <- data.frame(geneID=gene,codon=toupper(names(tmpEff)),AA=seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(toupper(names(tmpEff)))))), codonCount=as.numeric(tmpEff),codonFreq=as.numeric(tmpFreq))
-  
-  tmpCodon <- tmpCodon %>% group_by(AA) %>% mutate(AACountPerGene=sum(codonCount))
+  if(codonN==1){
+    #
+    tmpEff <- seqinr::uco(seqinr::s2c(seq),index = "eff")
+    tmpFreq <- seqinr::uco(seqinr::s2c(seq),index = "freq")
+    #
+    tmpCodon <- data.frame(geneID=gene,codon=toupper(names(tmpEff)),AA=seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(toupper(names(tmpEff)))))), codonCount=as.numeric(tmpEff),codonFreq=as.numeric(tmpFreq))
+    tmpCodon <- tmpCodon %>% group_by(AA) %>% mutate(AACountPerGene=sum(codonCount))
+  } else if(codonN > 1){
+    seqIn <- seqinr::s2c(tolower(seq))
+    
+    tmpEff <- seqinr::count(seq = seqIn, wordsize = 3*codonN, start = 3, by = 3,freq = FALSE)
+    tmpFreq <- seqinr::count(seq = seqIn, wordsize = 3*codonN, start = 3, by = 3,freq = TRUE)
+    #
+    #indSel <- which(tmpEff>0)
+    #
+    #tmpCodon <- data.frame(geneID=gene,codon=toupper(names(tmpEff)[indSel]),AA=NA, codonCount=as.numeric(tmpEff)[indSel],codonFreq=as.numeric(tmpFreq)[indSel])
+    tmpCodon <- data.frame(geneID=gene,codon=toupper(names(tmpEff)),AA=NA, codonCount=as.numeric(tmpEff),codonFreq=as.numeric(tmpFreq))
+    
+  }
   #
   return(tmpCodon)
 }
@@ -344,11 +408,11 @@ statOnDf <- function(df, # dataframe with summed codon counts for each regulatio
     testList <- rep(list(NA),length(unique(df$codon)))
     names(testList) <- names(fisherList)<- unique(df$codon)
   
-    for(AA in 1:length(uniqAA)){
+    for(AAind in 1:length(uniqAA)){
       #
-      tmpDf <- df[df$AA == uniqAA[AA],]
+      tmpDf <- df[df$AA == uniqAA[AAind],]
       #
-      codons <- as.character(df$codon[df$AA == uniqAA[AA]])
+      codons <- as.character(df$codon[df$AA == uniqAA[AAind]])
     
       # Check if the AA has 2 codons
       if(length(codons) > 1){
@@ -399,16 +463,20 @@ roundUpNice <- function(x, nice=c(1,2,4,5,6,8,10)) {
      10^floor(log10(x)) * nice[[which(x <= 10^floor(log10(x)) * nice)[[1]]]]
 }
 
-combSeq <- function(seq1, seq2){
-  seq1_tmp <- seqinr::s2c(seq1)
-  seq2_tmp <- seqinr::s2c(seq2)
-  seqOut <- seqinr::c2s(c(seq1_tmp,seq2_tmp))
+combSeq <- function(seqIn){
+  seqTmp <- lapply(seqIn, function(x) lapply(x, function(y) seqinr::s2c(y)))
+  #
+  seqC <- do.call(Map, c(c, seqTmp))
+  #
+  seqOut <- lapply(seqC, function(x) seqinr::c2s(x))
+  #
   return(seqOut)
 }
 
-calc_uORF <- function(seqTmp, ext, context){
+calc_uORF <- function(seqTmp, ext, context , unit){
   #
-  nTmp <- as.numeric()
+  nTmpStart <- as.numeric()
+  nTmpStop <- as.numeric()
   #
   #Look for ATG in context in 5UTR
   startOut  <- seqinr::words.pos(context, seqTmp) + 3
@@ -427,30 +495,36 @@ calc_uORF <- function(seqTmp, ext, context){
       #
       for(i in 1:length(startOut)){
         #Remove if stop is before start 
-        stopOut <- stopOut[which((stopOut - startOut[i])>0)]
+        stopTmp <- stopOut[which((stopOut - startOut[i])>0)]
         #
-        potORF <- stopOut - startOut[i]
+        potORF <- stopTmp - startOut[i]
         #check in frame 
         inFrameCheck <- potORF %% 3
         #Take first stop in frame
-        stopOut <- stopOut[which(inFrameCheck==0)]
+        stopTmp <- stopTmp[which(inFrameCheck==0)]
         #if maybe postition needed
         #if(length(stopOut)>0){
         #  stopOut <- min(stopOut)+2
         #}
         #
-        if(length(stopOut)>0){
-          nTmp[i] <- startOut[i] 
+        if(length(stopTmp)>0){
+          nTmpStart[i] <- startOut[i]
+          nTmpStop[i] <- min(stopTmp)
         }
       }
       #
-      nOut <- length(nTmp)
+      if(unit == 'number'){
+        nOut <- length(nTmpStart)
+      } else if (unit == 'position') {
+        nOut <- list() 
+        nOut[["start"]] <- nTmpStart
+        nOut[["end"]] <- nTmpStop
+      }
     } else {
-      #
-      nOut <- 0
+      nOut <- ifelse(unit == "number", 0, NA)
     }
   } else {
-    nOut <- 0
+    nOut <- ifelse(unit == "number", 0, NA)
   }
   return(nOut)
 }
@@ -546,4 +620,585 @@ layoutCalc <- function(Gobject, n){
   
   lOut <- igraph::layout_nicely(Gtmp, weights=igraph::E(Gtmp)$weight)[1:igraph::vcount(Gobject),]
   return(lOut)
+}
+
+extractRegSeq <- function(annotSeq){
+  #
+  annotOut <- annotSeq
+  #
+  #5UTR
+  seqSel <- as.character()
+  for(i in 1:nrow(annotSeq)){
+    seqTmp <- annotSeq$seq[i]
+    #
+    utr5len <- as.numeric(annotSeq$UTR5_len[i])
+    #
+    seqSel[i] <- seqinr::c2s(seqinr::s2c(seqTmp)[1:(utr5len)])
+  }
+  annotOut$UTR5_seq <- seqSel
+  
+  #CDS
+  seqSel <- as.character()
+  for(i in 1:nrow(annotSeq)){
+    seqTmp <- annotSeq$seq[i]
+    #
+    cdsStart <- as.numeric(annotSeq$UTR5_len[i])+1
+    cdsStop <- as.numeric(annotSeq$CDS_stop)[i]
+    #
+    seqSel[i] <- seqinr::c2s(seqinr::s2c(seqTmp)[cdsStart:cdsStop])
+  }
+  annotOut$CDS_seq <- seqSel
+  
+  #3UTR
+  seqSel <- as.character()
+  for(i in 1:nrow(annotSeq)){
+    seqTmp <- annotSeq$seq[i]
+    #
+    cdsStop <- as.numeric(annotSeq$CDS_stop)[i]
+    totalLength <- as.numeric(annotSeq$Total_len)[i]
+    #
+    seqSel[i] <- seqinr::c2s(seqinr::s2c(seqTmp)[(cdsStop+1):totalLength])
+  }
+  annotOut$UTR3_seq <- seqSel
+  #
+  return(annotOut)
+}
+
+addStats <- function(comparisons, ads, customBg, plotType, resOut, coloursOut){
+  #
+  for (j in 1:length(comparisons)) {
+    if (!is.null(ads) | !is.null(customBg)) {
+      compTmp <- comparisons[[j]] + 1
+    } else {
+      compTmp <- comparisons[[j]]
+    }
+    # stats
+    pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
+    #
+    if (plotType == "boxplot" | plotType == "violin") {
+      yposTmp <- range(as.numeric(unlist(resOut)))[2] + j
+      rect(xleft = compTmp[1], xright = compTmp[2], ybottom = yposTmp, ytop = yposTmp, lwd = 2)
+      #
+      text(sum(compTmp) / 2, yposTmp + 0.5, pvalTmp, cex = 0.75)
+    } else if (plotType == "ecdf") {
+      tableOut <- matrix(NA, nrow = length(comparisons), ncol = 5)
+      colnames(tableOut) <- c("signature", "Wilcox_pval", "q25", "q50", "q75")
+      tableOut[j, 1] <- paste(names(resOut)[compTmp[2]], "vs", names(resOut)[compTmp[1]], sep = " ")
+      tableOut[j, 2] <- pvalTmp
+    
+      # Calculate percentiles
+      tmpBg <- sort(resOut[[compTmp[1]]])
+      ecdfBg <- 1:length(tmpBg) / length(tmpBg)
+      bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
+      bg_05 <- tmpBg[which(ecdfBg >= 0.5)[1]]
+      bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
+    
+      # Calculate percentiles for second and difference from background
+      tmpSign <- sort(resOut[[compTmp[2]]])
+      ecdfSign <- 1:length(tmpSign) / length(tmpSign)
+      tableOut[j, 3] <- format(tmpSign[which(ecdfSign >= 0.25)[1]] - bg_025, digits = 2)
+      tableOut[j, 4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
+      tableOut[j, 5] <- format(tmpSign[which(ecdfSign >= 0.75)[1]] - bg_075, digits = 2)
+      #
+      if (length(which(grepl("background", c(names(resOut)[compTmp[2]], names(resOut)[compTmp[1]])))) > 0) {
+        colT <- gsub("\\_.*", "", names(resOut)[compTmp][which(names(resOut)[compTmp] != "background")])
+        colT <- coloursOut[colT]
+      } else {
+        colT <- "white"
+      }
+      xlim_min <- floor(quantile(as.numeric(unlist(resOut)), 0.01))
+      
+      plotrix::addtable2plot(xlim_min, 1.01, tableOut, bty = "n", display.rownames = FALSE, hlines = FALSE, vlines = TRUE, title = "", cex = 0.7, bg = colT, xpad = 0.1, ypad = 1.4, xjust = 0, yjust = 1)
+    }
+  }
+}
+
+
+
+#Convert to dpn
+generateOut <- function(x, tmpList){
+  if(length(tmpList[[x]])>0){
+    tmpPos <- paste(names(tmpList[[x]]), collapse="\t")
+    tmpData <- paste(as.numeric(tmpList[[x]]), collapse="\t")
+  }
+  tmpString <- paste(c(x, "ZZZ", tmpData, "ZZZ", tmpPos), collapse="\t")
+  return(tmpString)
+}
+
+codPlot <- function(rust, name){
+  rustOut <- matrix(NA, nrow=nrow(rust)-1, ncol=60)
+  for(i in 1:nrow(rust[-62,])){
+    obs <- as.numeric(rust[i,3:62])
+    exp <- as.numeric(rust[i,2])
+    ratio <- log2(obs/exp)
+    rustOut[i,] <- ratio 
+  }
+  pdf(paste(name,'codons.pdf',sep='_'),height=6,width=6)
+  par(mar=c(5,5,5,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=0.8,cex.main=0.8,cex.lab=1)
+  plot(seq(-40,19,1),rustOut[1,],type='l',xlim=c(-40,20),ylim=c(-3,3),xaxt='n',xlab='',ylab='Codon RUST ratio',col='black',lwd=2)
+  axis(seq(-40,20,5),side=1,at=seq(-40,20,5),tick=F)
+  for(i in 2:nrow(rustOut)){
+    lines(seq(-40,19,1),as.numeric(rustOut[i,]),col='black',lwd=2)
+  }
+  lines(seq(-40,19,1),as.numeric(rust[62,3:62]),col='dodgerblue',lwd=2)
+  abline(v=0,col='red')
+  dev.off()
+}
+
+
+readRiboDpn <- function(dpnFile, dpn_path=NULL, annot, cds_filt=TRUE){
+  cat("Reading and processing", dpnFile, "\n")
+  
+  ##initate output object which is a list for refseqs.
+  dataList <- list()
+  #
+  tmpList <- scan(paste(dpn_path,dpnFile,sep='/'), what="", sep="\n", quiet=TRUE)
+  tmpList <- strsplit(tmpList, "\tZZZ\t")
+  names(tmpList) <- sapply(tmpList, function(x) x[1])
+  refList <- lapply(tmpList, modList)
+  #subset to per gene
+  refList <- refList[names(refList) %in% annot$id]
+  #
+  if(isTRUE(cds_filt)){
+    #
+    tmpAllRefs <- names(refList)
+    #
+    cds_start <- as.numeric(sapply(annot$UTR5_seq, function(x) length(seqinr::s2c(x))))+1
+    cds_end <- cds_start + annot$lenTmp #as.numeric(sapply(annot$CDS_seq, function(x) length(seqinr::s2c(x))))
+    names(cds_start) <- names(cds_end) <- annot$id
+    #
+    refListMod <- sapply(tmpAllRefs, extractInCDS, tmpList=refList, cds_start=cds_start, cds_end=cds_end)
+  } else {
+    refListMod <- refList
+  }
+  ##some refseqs may then loose all the data. These are removed
+  tmpSel <- unlist(lapply(refListMod, length))
+  refListMod <- refListMod[tmpSel>0]
+  
+  ##Replace transIDs with geneIDs
+  names(refListMod) <- annot$geneID[match(names(refListMod), annot$id)]
+  
+  cat("done\n")
+  
+  ##add summary to output and return
+  dataList <- refListMod
+  return(dataList)
+}
+
+#
+modList <- function(x){
+  data <- as.numeric(unlist(strsplit(x[2], "\t")))
+  pos <-  unlist(strsplit(x[3], "\t"))
+  names(data) <- as.numeric(pos)
+  return(data)
+}
+
+extractInCDS <- function(x, tmpList, cds_start, cds_end){
+  #
+  stTmp <- as.numeric(cds_start[x])
+  endTmp <- as.numeric(cds_start[x] + cds_end[x])
+  #
+  dataTmp <- tmpList[[x]]
+  #
+  dataTmp <- dataTmp[as.numeric(names(dataTmp)) > stTmp & as.numeric(names(dataTmp)) <= endTmp]
+  #Calculate relative to start of CDS
+  names(dataTmp) <- as.numeric(names(dataTmp)) - stTmp
+  #
+  return(dataTmp)
+}
+
+countRiboCodon <- function(dataList, annot){
+  #
+  codonList <- list()
+  #
+  for(i in 1:length(dataList)){
+    dataTmp <- dataList[[i]]
+    #
+    codonsOut <- list()
+    for(j in 1:length(dataTmp)){
+      #
+      id <- names(dataTmp[j])
+      datT <- dataTmp[[j]]
+      #extract only in frame
+      datT <- datT[as.numeric(names(datT)) %% 3 == 0]
+      #
+      if(length(datT) > 0){
+        seqT <- annotSel$CDS_seq[annotSel$geneID == id]
+        #
+        codonTmp <- as.numeric(datT)
+        names(codonTmp) <- sapply(as.numeric(names(datT)), extract_seq, seqs=seqT)
+        #
+        tmpFreq <- as.numeric(codonTmp)/sum(as.numeric(codonTmp))
+        
+        tmpCodon <- data.frame(geneID=id,codon=toupper(names(codonTmp)),AA=seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(toupper(names(codonTmp)))))), codonCount=as.numeric(codonTmp),codonFreq=as.numeric(tmpFreq))
+        tmpCodon <- tmpCodon %>% group_by(AA) %>% mutate(AACountPerGene=sum(codonCount))
+        
+        codonsOut[[id]] <- tmpCodon
+      } 
+      #else {
+      #  codonTmp <- NA
+      #  names(codonTmp) <- NA
+      #}
+      #codonsOut[[id]] <- codonTmp
+    }
+    codonList[[i]] <- codonsOut
+  }
+}
+#      cdsS <- cdsLengths_start[transID]
+#      cdsE <- cdsLengths_end[transID]
+#      #
+#      if(!is.null(seqT)){
+#        #
+#        transTmp <- dataTmp[[t]]
+#        #Filter only these in 0 frame
+#        #
+#        transTmp <- transTmp[(as.numeric(names(transTmp))-as.numeric(cdsS)) %% 3 == 0]
+#        codTmp <- sapply(names(transTmp), extract_seq)
+#        names(codTmp) <- as.numeric(transTmp)
+#      }
+#      codObs <- as.numeric()
+#      for(cod in 1:length(codFreq)){
+#        codSum <- sum(as.numeric(names(codTmp[codTmp==names(codFreq[cod])])))
+#        codObs[cod] <- codSum
+#      }
+#      names(codObs) <- names(codFreq) 
+#      #rOut <- resid(lm(codObs ~ codFreq))
+#      #outTmp[[transID]] <- rOut
+#      outTmp[[transID]] <- codObs
+#    }
+#    dataCodon_0f[[d]] <- outTmp
+#  }
+#}
+
+#
+extract_seq <- function(pos, seqs){
+  #
+  start <- pos+1
+  seq <- seqinr::s2c(seqs)
+  #
+  if(!is.null(seq)){
+    seqv   <-  seqinr::c2s(seq[start:(start+2)])
+    return(seqv)
+  } else {
+    return(NA)
+  }
+}
+
+runMfold <- function(fastaFile){
+  #
+  nameTmp <- gsub('.fa','',fastaFile) 
+  #
+  seqsToFold <- seqinr::read.fasta(fastaFile)
+  #
+  logFile = paste(nameTmp,"logFile.txt",sep='_')
+  cat("", file=logFile, append=FALSE, sep = "\n")
+  
+  resFile = paste(nameTmp,'foldEnergy.txt',sep='_')
+  cat("id\tfold_energy\tlength", file=resFile, append=FALSE, sep = "\n")
+  
+  pb1 <- txtProgressBar(min=1, max=length(seqsToFold), style=3)
+  for(seqs in 1:length(seqsToFold)){    
+    if(seqinr::c2s(seqsToFold[[seqs]]) != "na"){
+      seqinr::write.fasta(seqsToFold[[seqs]], as.string = FALSE, names = attributes(seqsToFold[[seqs]])$name, 
+                          file.out = "currentSeq.fa", open = "w")
+      
+      tryCatch({
+        system("mfold SEQ=currentSeq.fa > currentSeq.out")
+        cat(paste(c(attributes(seqsToFold[[seqs]])$name, read.table("currentSeq.fa_1.ct", nrows = 1, 
+                                                                    stringsAsFactors = FALSE, 
+                                                                    fileEncoding="UTF-8", 
+                                                                    header = F)[, c("V4","V1")]), ## the identifier is also in currentSeq.fa_1.ct but often with encoding/formatting issues
+                  collapse = "\t"), file = resFile, append = TRUE, sep = "\n")
+      }, error = function(e){
+        cat(paste("error", attributes(seqsToFold[[seqs]])$name), file=logFile, append=TRUE, sep = "\n")
+      })
+      
+    } else { ##seq is NA
+      cat(paste(c(rep(NA, 2), attributes(seqsToFold[[seqs]])$name), collapse = "\t"), 
+          file = resFile, append = TRUE, sep = "\n")
+    }
+    
+    unlink(list.files(pattern = "currentSeq"))
+    setTxtProgressBar(pb1, seqs)
+  }
+  close(pb1)
+}
+
+
+runLM <- function(dataIn, namesDf, allFeat, nameOut, dirOut, NetModelSel){
+  #Univariate
+  models_prerun <- lapply(colnames(dat)[-featPos], function(x) {
+    anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dat))
+  })
+  
+  step1expl <- round(sapply(models_prerun, function(x) (x[1, 2] / (sum(x[1, 2], x[2, 2]))) * 100), 2)
+  names(step1expl) <- featureName
+
+  step1pval <- sapply(models_prerun, function(x) (x[1, 5]))
+  names(step1pval) <- featureName
+  
+  step1pval_fdr <- p.adjust(step1pval)
+  names(step1pval_fdr) <- featureName
+
+  presel <- as.numeric(which(step1pval_fdr > 0.05 | is.na(step1pval_fdr)))
+
+  if (length(presel) > 0) {
+    step1expl <- step1expl[-presel]
+    step1pval <- step1pval[-presel]
+    step1pval_fdr <- step1pval_fdr[-presel]
+  }
+
+  if (!isTRUE(allFeat) & length(presel) > 0) {
+    dat <- dat[, -presel]
+    featureName <- featureName[-presel]
+  }
+  featPos <- length(colnames(dat))
+  namesDf <- data.frame(originalNames = featureName, newNames = colnames(dat)[-featPos], stringsAsFactors = F)
+
+  #
+  fval <- list()
+  pval <- list()
+
+  models <- lapply(colnames(dat)[-featPos], function(x) {
+    anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dat))
+  })
+  
+  fvalTmp <- sapply(models, function(x) x[1, 4])
+  names(fvalTmp) <- colnames(dat)[-featPos]
+  fvalTmp[is.na(fvalTmp)] <- 0
+  fval[[1]] <- fvalTmp
+
+  pvalTmp <- sapply(models, function(x) x[1, 5])
+  names(pvalTmp) <- colnames(dat)[-featPos]
+  pvalTmp[is.na(pvalTmp)] <- 1
+  pval[[1]] <- pvalTmp
+
+  #
+  bestTmp <- which.max(sapply(models, function(x) x[1, 4]))
+  outTmp <- which(sapply(models, function(x) x[1, 5]) > 0.05 | is.na(sapply(models, function(x) x[1, 5])))
+
+  bestSel <- colnames(dat)[-featPos][bestTmp]
+  outSel <- colnames(dat)[-featPos][outTmp]
+
+  i <- 1
+  # 
+  while (length(colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]) > 0) {
+    #
+    i <- i + 1
+    #
+    tmpIn <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
+    models2 <- list()
+    #
+    x_sel <- paste(bestSel, collapse = " + ")
+  
+    for (j in 1:(length(colnames(dat)[-featPos]) - length(c(bestSel, outSel)))) {
+      varx <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)][j]
+      design <- as.formula(paste(paste("effM", paste(x_sel, collapse = " + "), sep = "~"), varx, sep = "+"))
+      models2[[j]] <- anova(lm(design, data = dat))
+    }
+    #
+    fvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 4])
+    names(fvalTmp) <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
+    fval[[i]] <- fvalTmp
+  
+    #
+    pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
+    names(pvalTmp) <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
+    pval[[i]] <- pvalTmp
+    
+    #
+    bestTmp <- which.max(sapply(models2, function(x) x[nrow(x) - 1, 4]))
+    outTmp <- which(sapply(models2, function(x) x[nrow(x) - 1, 5]) > 0.05)
+    #
+    if (length(outTmp) > 0) {
+      if (!bestTmp %in% outTmp) {
+        bestSel <- append(bestSel, tmpIn[bestTmp])
+      }
+    } else {
+      bestSel <- append(bestSel, tmpIn[bestTmp])
+    }
+    outSel <- append(outSel, tmpIn[outTmp])
+  }
+  #
+  tmp <- t(plyr::ldply(fval, rbind))
+  tmp <- tmp[c(bestSel, rev(outSel)), ]
+
+  tmp_pval <- t(plyr::ldply(pval, rbind))
+  tmp_pval <- tmp_pval[c(bestSel, rev(outSel)), ]
+  
+  tb1Out <- round(apply(tmp, 2, as.numeric), 2)
+  row.names(tb1Out) <- namesDf$originalNames[match(row.names(tmp), namesDf$newNames)]
+  tb1Out[is.na(tb1Out)] <- ""
+  colnames(tb1Out) <- paste("step", seq(1, ncol(tb1Out), 1), sep = "")
+
+  colours <- matrix("white", nrow(tb1Out), ncol(tb1Out))
+  linkIn <- matrix(NA, nrow(tb1Out), ncol(tb1Out))
+  
+  for (k in 2:nrow(colours)) {
+    trow <- as.numeric(na.omit(as.numeric(tb1Out[k, ])))
+    #
+    tsel_tab <- which((lag(trow) / trow) > 2)
+    tsel_net <- lag(trow) - trow
+    #
+    colours[k, tsel_tab] <- "#FDE0C5"
+    linkIn[k, 1:length(tsel_net)] <- tsel_net
+  }
+  
+  for (k in 1:ncol(colours)) {
+    colours[k, k] <- "#B0F2BC"
+  }
+  #
+  colours[which(tmp_pval > 0.05)] <- "#B14D8E"
+  linkIn[which(abs(linkIn) < covarFilt)] <- NA
+  row.names(linkIn) <- row.names(tmp)
+  #
+  tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))
+  tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
+  
+  #
+  varExpl <- anova(lm(as.formula(paste("effM", paste(bestSel, collapse = " + "), sep = "~")), data = dat))
+  varExpldepend <- numeric()
+  for (i in 1:length(bestSel)) {
+    tmpFeatI <- bestSel[i]
+    #
+    varExpldepend[i] <- round((varExpl[i, 2] / sum(varExpl$`Sum Sq`)) * 100, 2)
+  }
+  names(varExpldepend) <- bestSel
+  
+  #
+  varExplIndepend <- numeric()
+  for (i in 1:length(bestSel)) {
+    tmpFeat <- bestSel[i]
+    restFeat <- bestSel[-i]
+    
+    design <- as.formula(paste(paste("effM", paste(restFeat, collapse = " + "), sep = "~"), tmpFeat, sep = "+"))
+    tmpM <- anova(lm(design, data = dat))
+
+    varExplIndepend[i] <- round((tmpM[nrow(tmpM) - 1, 2] / sum(tmpM$`Sum Sq`)) * 100, 2)
+  }
+  names(varExplIndepend) <- bestSel
+  
+  #
+  varExplIndepend2 <- numeric()
+  #
+  if (length(presel) > 0) {
+    step1sel <- namesDf$newNames[-presel]
+  } else {
+    step1sel <- namesDf$newNames
+  }
+  for (i in 1:length(step1sel)) {
+    tmpFeat2 <- step1sel[i]
+    restFeat2 <- step1sel[-i]
+    
+    design2 <- as.formula(paste(paste("effM", paste(restFeat2, collapse = " + "), sep = "~"), tmpFeat2, sep = "+"))
+    tmpM2 <- anova(lm(design2, data = dat))
+
+    varExplIndepend2[i] <- round((tmpM2[nrow(tmpM2) - 1, 2] / sum(tmpM2$`Sum Sq`)) * 100, 2)
+  }
+  names(varExplIndepend2) <- step1sel
+  
+  #
+  tb2out <- data.frame(Features = namesDf$originalNames[match(bestSel, namesDf$newNames)], Pvalue = format(varExpl$`Pr(>F)`[1:length(bestSel)], scientific = T, digits = 2), VarianceExplained_Omnibus = as.numeric(varExpldepend), VarianceExplained_Adjusted = as.numeric(varExplIndepend))
+  tg2 <- gridExtra::tableGrob(tb2out, rows = NULL)
+  
+  tb3out <- data.frame(Features = names(step1expl), Pvalue_Univariate = format(as.numeric(step1pval), scientific = T, digits = 2), FDRvalue_Univariate = format(as.numeric(step1pval_fdr), scientific = T, digits = 2), VarianceExplained_Univariate = as.numeric(step1expl))
+  tb3out <- tb3out[with(tb3out, order(-tb3out$VarianceExplained_Univariate)), ]
+  
+  tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
+  
+  pdf(paste(nameOut, "FinalModel.pdf", sep = "_"), width = dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2] + 14.5, height = dim(tg1)[1] / 2, useDingbats = F)
+  gridExtra::grid.arrange(tg3, tg1, tg2, ncol = 3, nrow = 1, padding = 0, top = 0, left = 0)
+  grid::grid.text(paste("Total variance explained: ", sum(as.numeric(varExpldepend)), "%", sep = ""), x = grid::unit(0.75, "npc"), y = grid::unit(0.90, "npc"), gp = grid::gpar(fontsize = 15))
+  dev.off()
+  
+  # 
+  tb4out <- data.frame(Features = namesDf$originalNames[match(names(varExplIndepend2), namesDf$newNames)], VarianceExplained_IndependentAll = as.numeric(varExplIndepend2))
+  tb4out <- tb4out[with(tb4out, order(-tb4out$VarianceExplained_IndependentAll)), ]
+  tg4 <- gridExtra::tableGrob(tb4out, rows = NULL)
+  
+  pdf(paste(nameOut, "varexpl_independAll.pdf", sep = "_") , width = dim(tg4)[2] + dim(tg4)[2] + 4, height = dim(tg4)[1] / 2, useDingbats = F)
+  gridExtra::grid.arrange(tg4, ncol = 1, nrow = 1)
+  dev.off()
+  
+  # 
+  linkOut <- list()
+  for (i in 2:ncol(linkIn)) {
+    tmpIn <- linkIn[, i]
+    #
+    tmpOut <- as.numeric(tmpIn)[which(!is.na(tmpIn))]
+    if (length(tmpOut) > 0) {
+      names(tmpOut) <- paste(row.names(linkIn)[i - 1], names(tmpIn)[which(tmpIn != 0)], sep = "_")
+    }
+    #
+    linkOut[[i - 1]] <- tmpOut
+  }
+  linkOut <- as.data.frame(unlist(linkOut))
+  linkOut <- with(linkOut, cbind(linkOut, reshape2::colsplit(row.names(linkOut), pattern = "\\_", names = c("from", "to"))))
+  rownames(linkOut) <- NULL
+  colnames(linkOut)[1] <- "weight"
+  linkOut <- linkOut[, c(2, 3, 1)]
+  
+  ### tb3out
+  if (NetModelSel == "Adjusted") {
+    nodeOut <- tb2out[, c(1, 4)]
+  } else if (NetModelSel == "Univariate") {
+    nodeOut <- tb3out[, c(1, 4)]
+  } else {
+    nodeOut <- tb2out[, c(1, 3)]
+  }
+  colnames(nodeOut)[2] <- "VarianceExplained"
+  nodeOut$ID <- namesDf$newNames[match(nodeOut$Features, namesDf$originalNames)]
+  nodeOut <- nodeOut[, c(3, 2, 1)]
+  nodeOut$varexpl <- 1
+  
+  # other tgat are connected but not significant
+  if (nrow(linkOut) > 0) {
+    addAll <- data.frame(ID = unique(c(linkOut$from, linkOut$to)), VarianceExplained = 0)
+    addAll$Features <- namesDf$originalNames[match(addAll$ID, namesDf$newNames)]
+    
+    addAll <- addAll[!addAll$ID %in% nodeOut$ID, ]
+    if(nrow(addAll)>0){
+      addAll$varexpl <- 2
+    }
+    #
+    nodeOutAll <- rbind(nodeOut, addAll)
+  } else {
+    nodeOutAll <- nodeOut
+  }
+  # create igraph object
+  net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed = T)
+  # rescale to size ans other attributes
+  lsize <- rescale(igraph::V(net)$VarianceExplained, 0, 100, 0, 75)
+  lsize[which(lsize > 0)] <- lsize[which(lsize > 0)] + 2
+  igraph::V(net)$size <- lsize
+  lcol <- rep("black", nrow(nodeOutAll))
+  lcol[which(nodeOutAll$varexpl == 2)] <- "#B14D8E"
+  igraph::V(net)$label.color <- lcol
+  igraph::V(net)$label <- wrapNames(gsub(" 0%", "", paste(igraph::V(net)$Features, paste(igraph::V(net)$VarianceExplained, "%", sep = ""), sep = " ")), 8)
+    
+  colrs <- rep("#B0F2BC", nrow(nodeOutAll))
+  colrs[which(nodeOutAll$varexpl == 2)] <- "white"
+  igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
+      
+  # 
+  if (length(igraph::E(net)$weight) > 0) {
+    igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 50, 0, 2.5)
+  }
+      
+  # change arrow size and edge color:
+  igraph::E(net)$arrow.size <- .0
+  ecolor <- rep("#D55E00", length(igraph::E(net)$width))
+  ecolor[which(igraph::E(net)$weight < 0)] <- "#56B4E9"
+  igraph::E(net)$color <- ecolor
+        
+  # We can also override the attributes explicitly in the plot:
+  pdf(paste(nameOut, "network.pdf", sep = "_"), height = 8, width = 8, useDingbats = F)
+  par(bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 1.9, cex.lab = 1.5)
+  par(mar = c(5, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
+  plot(net, shape = "sphere", vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "white", layout = layoutCalc(net, n = 2))
+        
+  legend("bottomleft", fill = c("#B0F2BC"), "In Omnibus model", cex = 1.3, bty = "n", xpd = T, inset = -0.1)
+  legend(-1.5, 1.5, lwd = c(7, 3, 3, 7), col = c(rep("#D55E00", 2), rep("#56B4E9", 2)), title = c("Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
+  legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
+  dev.off()
 }

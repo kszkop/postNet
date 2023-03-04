@@ -2,35 +2,34 @@
 % Please edit documentation in R/retrieveFormatData.R
 \name{retrieveFormatData}
 \alias{retrieveFormatData}
-\title{Retrieve reference sequences}
+\title{Retrieve and format reference sequences}
 \usage{
-retrieveFormatData <- function(source, 
-                               version=NULL, 
-                               species=NULL, 
-                               customFile=NULL, 
-                               rna_gbff_file=NULL,
-                               rna_fa_file=NULL,
-                               genomic_gff_file=NULL
-){
+retrieveFormatData(source, version=NULL, species=NULL, customFile=NULL, fastaFile=NULL, posFile=NULL, rna_gbff_file=NULL, rna_fa_file=NULL, genomic_gff_file=NULL)
 }
+
 \arguments{
-\item{source}{To choose: 'load','custom','createFromFile'.  }
-\item{version}{If NULL (default)}
-\item{species}{If NULL (default)}
-\item{customFile}{If NULL (default)}
-\item{rna_gbff_file}{If NULL (default)}
-\item{rna_fa_file}{If NULL (default)}
-\item{genomic_gff_file}{If NULL (default)}
+\item{source}{ Select the source of the reference sequences. There are 5 options to choose from ('load' (default), 'custom', 'create', 'createFromFiles', and 'createFromSourceFiles'). The most straightforward default option 'load' involves using pre-existing version. However, there is an option to prepare references based on the latest version of NCBI RefSeq by choosing the option 'create'. It will automatically download the required files from the database. As the internet connection is required or other problems might occur with downloading the files automatically, please choose the option 'createFromSourceFiles'. In that case, please download the required files separately (ie.: rna_gbff_file, rna_fa_file, and genomic_gff_file). Furthermore, there is an option 'createFromFiles' instead fastaFile with reference sequences and posFile in the format: transcriptID, utr5_stop, cds_stop, total_length. All these mentioned options are available at the moment only if the species are human or mouse. Finally, the option 'custom' allows using the pre-prepared file. This option avoids using NCBI RefSeq database and it can be used for any specie. The customFile has to be in format transcriptID, geneID, UTR5_seq, CDS_seq, UTR3_seq }
+\item{version}{ Indicate which pre-prepared NCBI RefSeq releases should be loaded. Use the function checkAvailableVersions to check available versions for given specie. If left NULL, it will automatically look for the most recent. }
+\item{species}{ Select a specie of interest. It is required unless the source option is 'custom'. At the moment, it can be human or mouse only. }
+\item{customFile}{ Name of a file including a path to the customFile. The customFile has to be in the format transcriptID, geneID, UTR5_seq, CDS_seq, UTR3_seq. It is only required if the source is 'custom'. }
+\item{fastaFile}{ Name of a fasta file including a path to the fastaFile with reference sequences.  It is only required if the source is 'createFromFiles'. }
+\item{posFile}{ Name of a file including a path to the posFile. The file has to be in the format: transcriptID, utr5_stop, cds_stop, total_length. It is only required if the source is 'createFromFiles'. }
+\item{rna_gbff_file}{ Name of a fasta file including a path to the rna_gbff_file. It can be downloaded from NCBI RefSeq. It is only required if the source is 'createFromSourceFiles'. }
+\item{rna_fa_file}{ Name of a fasta file including a path to the rna_fa_file. It can be downloaded from NCBI RefSeq. It is only required if the source is 'createFromSourceFiles'.  }
+\item{genomic_gff_file}{ Name of a fasta file including a path to the genomic_gff_file. It can be downloaded from NCBI RefSeq. It is only required if the source is 'createFromSourceFiles'.  }
 }
+
 \value{
-Data.frame with containing refseq IDs, gene IDs and 5'UTR, CDS and 3'UTR sequences 
+Data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq 
 }
+
 \description{
-...
+In order to perfrom all the steps of feature integration analysis, in the first step it is necessery to prepare annotation in correct format containing 5'UTR, CDS and 3'UTR sequences. The function rely on NCBI RefSeq database, however there is a custom option to use it with any database for any specie.
 }
-\details{
-...
-}
+
 \examples{
-...
+# Check available versions
+checkAvailableVersions(species = 'human')
+# Load pre-existing reference sequences
+annot <- retrieveFormatData(source='load', version='rel_109.20201120',species = 'human')
 }

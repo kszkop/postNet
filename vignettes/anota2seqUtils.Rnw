@@ -1,12 +1,10 @@
-%\VignetteIndexEntry{Anota2seqUtils for transcriptome-wide studies of RNA features underlying post-transcriptional regulation of gene expression}
+%\VignetteIndexEntry{Anota2seqUtils for integration of mRNA regulatory features }
 %\VignetteKeywords{RNA, Translation, Feature Integration}
 %\VignettePackage{anota2seqUtils}
 %\VignetteEngine{knitr::knitr}
 
 \documentclass{article}
 \usepackage{float}
-
-
 
 <<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, error = FALSE, tidy = FALSE, eval = TRUE) # turn off verbosity
@@ -20,10 +18,8 @@ if(packageVersion("BiocStyle") < '2.5.0'){
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 
-
-\bioctitle[Anota2seqUtils for transcriptome-wide studies of RNA features]{Anota2seqUtils\\
-for transcriptome-wide studies of RNA features\\
-underlying post-transcriptional regulation of gene expression}
+\bioctitle[Anota2seqUtils for integration of mRNA regulatory features]{Anota2seqUtils\\
+Anota2seqUtils for integration of mRNA regulatory features}
 \author{Krzysztof Szkop, Ola Larsson \thanks{\email{krzysztof.szkop@ki.se , ola.larsson@ki.se}}}
 \maketitle
 \tableofcontents
@@ -32,15 +28,21 @@ underlying post-transcriptional regulation of gene expression}
 \addcontentsline{toc}{section}{Introduction}
 \section*{Introduction}
 
-Post-transcriptional regulation of gene expression occurs at multiple levels including perturbations in mRNA stability and translation. The selectivity of post-transcriptional regulatory mechanisms is chiefly achieved via the interplay between a plethora of cis- (i.e., mRNA elements and features) and trans-acting factors (e.g., RBPs, miRNAs). Individual mRNAs, however, frequently harbor not just one, but many of the features that can impact on their regulation. This makes identification of RNA features underlying post-transcriptional programs challenging, and may lead to erroneous conclusions when RNA features covary across transcripts. Here, we propose \emph{in silico} approach to systematically identify, integrate and model how well RNA features associate with e.g. translational efficiencies obtained from transcriptome-wide studies of mRNA translation employing polysome- or ribosome-profiling. Anota2seqUtils includes methods to identify and quantify RNA features (e.g., GC content, length and folding energy of UTRs and CDS, RNA motifs, uORFs, codon composition etc.) associated with selective alterations in different steps of post-transcriptional regulation of gene expression (e.g., mRNA translation and stability). This is coupled with statistical analysis to assess how the compendium of identified features impacts on mRNA fate, while allowing establishment of the functional relationship between different features of mRNA.
+Post-transcriptional regulation of gene expression occurs at multiple levels including perturbations in mRNA stability and translation. The selectivity of post-transcriptional regulatory mechanisms is chiefly achieved via the interplay between a plethora of cis- (i.e. mRNA elements and features) and trans-acting factors (e.g. RBPs, miRNAs). Individual mRNAs, however, frequently harbor not just one, but many of the features that can impact on their regulation. This makes identification of RNA features underlying post-transcriptional programs challenging, and may lead to erroneous conclusions when RNA features covary across transcripts. Here, we propose \emph{in silico} approach to systematically identify, integrate and model how well RNA features associate with e.g. translational efficiencies obtained from transcriptome-wide studies of mRNA translation employing polysome- or ribosome-profiling. Anota2seqUtils includes methods to identify and quantify RNA features (e.g. GC content, length and folding energy of UTRs and CDS, RNA motifs, uORFs, codon composition etc.) associated with selective alterations in different steps of post-transcriptional regulation of gene expression (e.g. mRNA translation and stability). This is coupled with statistical analysis to assess how the compendium of identified features impacts on mRNA fate, while allowing establishment of the functional relationship between different features of mRNA.
 
-The package was primarily designed as a post anota2seq translational efficiency analysis \cite{Oertlin} method, so it is sufficient to have an output of function \Rfunction{anota2seq::anota2seqRun} to perform all the steps. However, it is possible to expand analysis by inputing additional genes lists or even use own genes lists and own values that might not necessarily represent translational efficiences.
+The package was primarily designed to be complementary to anota2seq \cite{Oertlin} method for analysis of differential translation, so it is sufficient to have an output of function \Rfunction{anota2seq::anota2seqRun} to perform all the steps. However, it is also possible to expand analysis by providing additional genes or even use own gene selection and own values that might not necessarily represent translational efficiences from anota2seq analysis.
 
 \section{Quick start}
-anota2seqUtils provides a wrapper function \Rfunction{anota2seqUtilsRun} which performs complete analysis with relevant default parameters using the one-step procedure 
+The easiest way to start is using anota2seqUtils wrapper function \Rfunction{anota2seqUtilsRun}. 
 <<Quick start, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
 library(anota2seqUtils)
-anota2seqUtilsRun()
+
+
+
+anota2seqUtilsRun(species='human',regionSel=c('UTR5','CDS','UTR3'), ads = ads2_pan4Ai, regulation = c("translationUp","translationDown"),
+                  contrast = c(1,1), comparisons = list(c(1,2)),contentIn=list('G','C','A','T'),addSign=addSign, regulationGen='translation', contrastSel=1,
+                  miRNATargetScanFile='Predicted_Targets_Context_Scores.txt',analysis_type='lm',memePath='/opt/local/bin/')
+
 @
 
 The analysis includes the following steps:
@@ -66,6 +68,7 @@ Here we show an overview of the whole step by step workflow. We illustrate an an
 
 <<load_library_and_data, echo=TRUE, eval = TRUE >>=
 library(anota2seqUtils)
+data(anota2seqUtils_data)
 @
 
 Firstly, reference sequences are required. It is possible to use existing pre-prepared files based on RefSeq. At the moment these are only available for human and mouse. To check available versions please run function \R{checkAvailableVersions}:
