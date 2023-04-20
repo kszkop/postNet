@@ -91,7 +91,7 @@ foldingEnergyAnalysis <- function(annot,
     #
     energyInGene <- merge(energyIn, annot[, c(1, 2)], by = "id", all.x = T)
     energyInGene <- na.omit(energyInGene)
-    colnames(energyInGene) <- c("id", "fold_energy", "tmpLen", "geneID")
+    colnames(energyInGene) <- c("id", "fold_energy", "lenTmp", "geneID")
 
     energyInGeneBg <- gSel(annot = energyInGene, ads = ads, customBg = customBg, geneList = geneList)
     energyInGeneSel <- isoSel(annot = energyInGeneBg, method = selection)
