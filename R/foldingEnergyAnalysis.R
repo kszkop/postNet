@@ -83,7 +83,6 @@ foldingEnergyAnalysis <- function(annot,
     #
     energyIn <- read.delim(customFileFE, stringsAsFactors = FALSE)
     energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
-    colnames(energyIn) <- c("id", "fold_energy", "length")
   } else {
     stop("No correct option for source file provided")
   }
@@ -92,6 +91,7 @@ foldingEnergyAnalysis <- function(annot,
     #
     energyInGene <- merge(energyIn, annot[, c(1, 2)], by = "id", all.x = T)
     energyInGene <- na.omit(energyInGene)
+    colnames(energyInGene) <- c("id", "fold_energy", "tmpLen", "geneID")
 
     energyInGeneBg <- gSel(annot = energyInGene, ads = ads, customBg = customBg, geneList = geneList)
     energyInGeneSel <- isoSel(annot = energyInGeneBg, method = selection)

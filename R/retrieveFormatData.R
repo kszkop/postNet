@@ -34,7 +34,7 @@ retrieveFormatData <- function(source,
       download.file(paste(url, "GRCh38_latest_genomic.gff.gz", sep = ""), destfile = "GeneRef.gff.gz")
     }
     if (species == "mouse") {
-      url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/109/GCF_000001635.27_GRCm39/"
+      url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/GCF_000001635.27-RS_2023_04/"
       #
       download.file(paste(url, "GCF_000001635.27_GRCm39_rna.fna.gz", sep = ""), destfile = "customFasta.fa.gz")
       download.file(paste(url, "GCF_000001635.27_GRCm39_rna.gbff.gz", sep = ""), destfile = "customAnnot.gbff.gz")
@@ -148,7 +148,7 @@ retrieveFormatData <- function(source,
         download.file(paste(url, "GRCh38_latest_genomic.gff.gz", sep = ""), destfile = "GeneRef.gff.gz")
       }
       if (species == "mouse") {
-        url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/109/GCF_000001635.27_GRCm39/"
+        url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/GCF_000001635.27-RS_2023_04/"
         download.file(paste(url, "GCF_000001635.27_GRCm39_genomic.gff.gz", sep = ""), destfile = "GeneRef.gff.gz")
       }
       R.utils::gunzip("GeneRef.gff.gz")

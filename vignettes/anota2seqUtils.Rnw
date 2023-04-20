@@ -1,3 +1,27 @@
+---
+title: "Anota2seqUtils for integration of mRNA regulatory features"
+output: rmarkdown::html_vignette
+description: >
+  mRNAs often harbor multiple features that can impact their regulation. To understand underlying mechanism of the regulation, it is important not only to identify cis- and trans-acting factors but also to understand relationship between them. Anota2seqUtils includes methods to identify, quantify and perform statistical analysis to assess how the compedium of these features impacts on mRNA fate, while allowing establishment of the functional relationship between them. 
+
+vignette: >
+  %\VignetteIndexEntry{Introduction to anota2seqUtils}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\usepackage[utf8]{inputenc}
+---
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = T, comment = "#>")
+options(tibble.print_min = 4L, tibble.print_max = 4L)
+library(anota2seqUtils)
+set.seed(0517)
+```
+
+
+
+
+
+
 %\VignetteIndexEntry{Anota2seqUtils for integration of mRNA regulatory features }
 %\VignetteKeywords{RNA, Translation, Feature Integration}
 %\VignettePackage{anota2seqUtils}
@@ -36,13 +60,11 @@ The package was primarily designed to be complementary to anota2seq \cite{Oertli
 The easiest way to start is using anota2seqUtils wrapper function \Rfunction{anota2seqUtilsRun}. 
 <<Quick start, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
 library(anota2seqUtils)
-data(exampleData)
+data(anota2seqUtils_exampleData)
+@
 
-
-anota2seqUtilsRun(species='human',regionSel=c('UTR5','CDS','UTR3'), ads = ads2_pan4Ai, regulation = c("translationUp","translationDown"),
-                  contrast = c(1,1), comparisons = list(c(1,2)),contentIn=list('G','C','A','T'),addSign=addSign, regulationGen='translation', contrastSel=1,
-                  miRNATargetScanFile='Predicted_Targets_Context_Scores.txt',analysis_type='lm',memePath='/opt/local/bin/')
-
+<<gettingStarted, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
+utilsOut <- anota2seqUtilsRun(species='human',regionSel=c('UTR5','CDS','UTR3'), ads = anota2seqUtils_exampleData, regulation = c("translationUp","translationDown"),contrast = c(1,1), comparisons = list(c(1,2)),contentIn=list('G','C','A','T'),addSign=addSign, regulationGen='translation', contrastSel=1, miRNATargetScanFile='Predicted_Targets_Context_Scores.txt',analysis_type='lm',memePath='/opt/local/bin/')
 @
 
 The analysis includes the following steps:
@@ -54,7 +76,7 @@ The analysis includes the following steps:
 \item De novo discovery of motifs using streme \Rfunction{motifAnalysis}.
 \item Presence calculation of the discovered motifs in previous step or known motif of choice with additional possibility to predict presence of G-quadruplexes \Rfunction{contentMotifs}.
 \item Presence of gene signature \Rfunction{signCalc}.
-\item Analysis of fold energies \Rfunction{foldEnergyAnalysis}.
+\item Analysis of folding energies \Rfunction{foldEnergyAnalysis}.
 \item Presence of uORFs \Rfunction{uorf_analysis}.
 \item Codon (or alternatively AA) usage analysis \Rfunction{codonUsage}, \Rfunction{codonCalc}.
 \item miRNA enrichment \Rfunction{}.
@@ -64,20 +86,20 @@ The analysis includes the following steps:
 Each step outputs plots to working directory, in addition to final object containing all the outputs of each function.
 
 \section{Complete step by step analysis}
-Here we show an overview of the whole step by step workflow. We illustrate an analysis using anota2seq object (called ads) available with the package.
+Here we show an overview of the whole step by step workflow. We illustrate an analysis using example anota2seq object available with the package.
 
 <<load_library_and_data, echo=TRUE, eval = TRUE >>=
 library(anota2seqUtils)
 data(anota2seqUtils_data)
 @
 
-Firstly, reference sequences are required. It is possible to use existing pre-prepared files based on RefSeq. At the moment these are only available for human and mouse. To check available versions please run function \R{checkAvailableVersions}:
+The reference sequences for each mRNA region are the base of all step analysis. It is possible to use existing pre-prepared ones. These are obtained from RefSeq database. At the moment these are only available for human and mouse. To check available versions please run function \R{checkAvailableVersions}:
 
 <<load_library_and_data, echo=TRUE, eval = TRUE >>=
 checkAvailableVersions(species='human')
 @
 
-It is possible to create new annotation files based on latest ncbi refseq release (option= 'create'). It is automatic process for human and mouse. For other species option = 'createFromFile' is required and files rna.fna.gz, rna.gbff.gz and genomic.gff.gz needs to be manually downloaded from ncbi refseq and provided. It is also possible to simply load (option='custom') your own version in appropriate format, i.e. data.frame for transcripts IDs, gene IDs, and sequences for 5'UTR, CDS and 3'UTR with respective column names: id, geneID, UTR5_seq, CDS_seq, UTR3_seq.
+However, it is possible to create new annotation files based on latest ncbi refseq release (option= 'create'). It is automatic process for human and mouse. For other species option = 'createFromFile' is required and files rna.fna.gz, rna.gbff.gz and genomic.gff.gz needs to be manually downloaded from ncbi refseq and provided. It is also possible to simply load (option='custom') your own version in appropriate format, i.e. data.frame for transcripts IDs, gene IDs, and sequences for 5'UTR, CDS and 3'UTR with respective column names: id, geneID, UTR5_seq, CDS_seq, UTR3_seq.
 
 
 <<retrieveFormatData, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=

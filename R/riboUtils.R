@@ -1,4 +1,4 @@
-riboUtils <- function(annot, fastaFile, path=NULL, name=NULL, runRUST=TRUE){
+riboUtils <- function(annot, adjustStart = 0, fastaFile, path=NULL, name=NULL, runRUST=TRUE){
   #
   if(!is.null(path)){
     if(unlist(strsplit(path,''))[length(unlist(strsplit(path,'')))]!='/'){
@@ -68,6 +68,34 @@ riboUtils <- function(annot, fastaFile, path=NULL, name=NULL, runRUST=TRUE){
     #Gene level
     #first subset reads only to the selected isoform.
     sTmp_sel <- sTmp[transcript %in% annotSel$id]
+    #adjust position if desired (maybe better to adjust position of cds and recalculate 
+    if(adjustStart != 0){
+      #
+      cdsStartTmp <- sTmp_sel$cds_start
+      cdsStartAdj <- cdsStartTmp + adjustStart
+      #
+      sTmp_sel$cds_start <- cdsStartAdj
+      #but make sure the start is not after the end after adjustment as it might causes stragne things). I guess I will remove these sitations
+      cdsStopTmp <- sTmp_sel$cds_stop
+      checkCDSadj <- cdsStartAdj - cdsStopTmp
+      if(length(which(checkCDSadj >= 0))>0){
+        transTorem <- as.character(sTmp_sel$transcript)[which(checkCDSadj >= 0)]
+        sTmp_sel <- sTmp_sel[!as.character(sTmp_sel$transcript) %in% transTorem,]
+      }
+      #recalculate region
+      psite_from_startTmp <- sTmp_sel$psite - sTmp_sel$cds_start
+      psite_from_stopTmp <- sTmp_sel$psite - sTmp_sel$cds_stop
+      #
+      psite_regionTmp <- rep('NA', length(psite_from_startTmp ))
+      #
+      psite_regionTmp[which(psite_from_startTmp >= 0 & psite_from_stopTmp <= 0 )] <- 'cds'
+      psite_regionTmp[which(psite_from_startTmp < 0)] <- '5utr'
+      psite_regionTmp[which(psite_from_stopTmp > 0)] <- '3utr'
+      #
+      sTmp_sel$psite_from_start <- psite_from_startTmp
+      sTmp_sel$psite_from_stop <- psite_from_stopTmp
+      sTmp_sel$psite_region <- psite_regionTmp
+    }
     #add gene IDs
     geneInfo <- annotSel[,c(1,2)]
     colnames(geneInfo)[1] <- 'transcript'
@@ -126,3 +154,4 @@ riboUtils <- function(annot, fastaFile, path=NULL, name=NULL, runRUST=TRUE){
   #
   write.table(countsGene,file=ifelse(is.null(name),'riboSeq_counts_genelevel.txt',paste(name,'riboSeq_counts_genelevel.txt',sep='_')), col.names=T,row.names=F,sep='\t',quote=F)
 }
+
