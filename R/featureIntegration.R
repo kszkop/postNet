@@ -2,6 +2,7 @@ featureIntegration <- function(features,
                                analysis_type,
                                regOnly = TRUE,
                                allFeat = TRUE,
+                               useCorel=TRUE,
                                covarFilt = 20,
                                NetModelSel = "Omnibus",
                                ads = NULL,
@@ -235,41 +236,41 @@ featureIntegration <- function(features,
     i <- 1
     # Start with multivariate
     while (length(colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]) > 0) {
-      # Counter
-      i <- i + 1
-      #
-      tmpIn <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
-      models2 <- list()
-      #
-      x_sel <- paste(bestSel, collapse = " + ")
+    # Counter
+    i <- i + 1
+    #
+    tmpIn <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
+    models2 <- list()
+    #
+    x_sel <- paste(bestSel, collapse = " + ")
       
-      for (j in 1:(length(colnames(dat)[-featPos]) - length(c(bestSel, outSel)))) {
-        varx <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)][j]
-        design <- as.formula(paste(paste("effM", paste(x_sel, collapse = " + "), sep = "~"), varx, sep = "+"))
-        models2[[j]] <- anova(lm(design, data = dat))
-      }
-      # Collect fvalues
-      fvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 4])
-      names(fvalTmp) <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
+    for (j in 1:(length(colnames(dat)[-featPos]) - length(c(bestSel, outSel)))) {
+      varx <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)][j]
+      design <- as.formula(paste(paste("effM", paste(x_sel, collapse = " + "), sep = "~"), varx, sep = "+"))
+      models2[[j]] <- anova(lm(design, data = dat))
+    }
+    # Collect fvalues
+    fvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 4])
+    names(fvalTmp) <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
       
-      fval[[i]] <- fvalTmp
+    fval[[i]] <- fvalTmp
       
-      # Collect pvalues
-      pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
-      names(pvalTmp) <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
+    # Collect pvalues
+    pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
+    names(pvalTmp) <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
       
-      pval[[i]] <- pvalTmp
-      #
-      bestTmp <- which.max(sapply(models2, function(x) x[nrow(x) - 1, 4]))
-      outTmp <- which(sapply(models2, function(x) x[nrow(x) - 1, 5]) > 0.05)
-      #
-      if (length(outTmp) > 0) {
-        if (!bestTmp %in% outTmp) {
-          bestSel <- append(bestSel, tmpIn[bestTmp])
-        }
-      } else {
+    pval[[i]] <- pvalTmp
+    #
+    bestTmp <- which.max(sapply(models2, function(x) x[nrow(x) - 1, 4]))
+    outTmp <- which(sapply(models2, function(x) x[nrow(x) - 1, 5]) > 0.05)
+    #
+    if (length(outTmp) > 0) {
+      if (!bestTmp %in% outTmp) {
         bestSel <- append(bestSel, tmpIn[bestTmp])
       }
+    } else {
+      bestSel <- append(bestSel, tmpIn[bestTmp])
+    }
       outSel <- append(outSel, tmpIn[outTmp])
       #
       # cat('\n','Highest Fval: ', namesDf$originalNames[namesDf$newNames %in% tmpIn[bestTmp]])
@@ -313,166 +314,182 @@ featureIntegration <- function(features,
     }
     #
     colours[which(tmp_pval > 0.05)] <- "#B14D8E"
-      linkIn[which(abs(linkIn) < covarFilt)] <- NA
-      row.names(linkIn) <- row.names(tmp)
+    linkIn[which(abs(linkIn) < covarFilt)] <- NA
+    row.names(linkIn) <- row.names(tmp)
+    #
+    tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))
+    tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
+      
+    ## Calculate % varaince explained and plot output
+    # Final model
+    varExpl <- anova(lm(as.formula(paste("effM", paste(bestSel, collapse = " + "), sep = "~")), data = dat))
+    varExpldepend <- numeric()
+    for (i in 1:length(bestSel)) {
+      tmpFeatI <- bestSel[i]
+      # variance expl
+      varExpldepend[i] <- round((varExpl[i, 2] / sum(varExpl$`Sum Sq`)) * 100, 2)
+    }
+    names(varExpldepend) <- bestSel
+    ## CAalculate dependent variance explained loop through the sel features moving each to the end
+    # only features in final model
+    varExplIndepend <- numeric()
+    for (i in 1:length(bestSel)) {
+      tmpFeat <- bestSel[i]
+      restFeat <- bestSel[-i]
+      # model
+      design <- as.formula(paste(paste("effM", paste(restFeat, collapse = " + "), sep = "~"), tmpFeat, sep = "+"))
+      tmpM <- anova(lm(design, data = dat))
+        
+      # variance expl
+      varExplIndepend[i] <- round((tmpM[nrow(tmpM) - 1, 2] / sum(tmpM$`Sum Sq`)) * 100, 2)
+    }
+    names(varExplIndepend) <- bestSel
+      
+    # features significant after step1
+    varExplIndepend2 <- numeric()
+    # features aftet 1st
+    if (length(presel) > 0) {
+      step1sel <- namesDf$newNames[-presel]
+    } else {
+      step1sel <- namesDf$newNames
+    }
+    for (i in 1:length(step1sel)) {
+      tmpFeat2 <- step1sel[i]
+      restFeat2 <- step1sel[-i]
+      # model
+      design2 <- as.formula(paste(paste("effM", paste(restFeat2, collapse = " + "), sep = "~"), tmpFeat2, sep = "+"))
+      tmpM2 <- anova(lm(design2, data = dat))
+        
+      # variance expl
+      varExplIndepend2[i] <- round((tmpM2[nrow(tmpM2) - 1, 2] / sum(tmpM2$`Sum Sq`)) * 100, 2)
+    }
+    names(varExplIndepend2) <- step1sel
+      
+    # Outtable
+    tb2out <- data.frame(Features = namesDf$originalNames[match(bestSel, namesDf$newNames)], Pvalue = format(varExpl$`Pr(>F)`[1:length(bestSel)], scientific = T, digits = 2), VarianceExplained_Omnibus = as.numeric(varExpldepend), VarianceExplained_Adjusted = as.numeric(varExplIndepend))
+    
+    tg2 <- gridExtra::tableGrob(tb2out, rows = NULL)
+      
+    tb3out <- data.frame(Features = names(step1expl), Pvalue_Univariate = format(as.numeric(step1pval), scientific = T, digits = 2), FDRvalue_Univariate = format(as.numeric(step1pval_fdr), scientific = T, digits = 2), VarianceExplained_Univariate = as.numeric(step1expl))
+    tb3out <- tb3out[with(tb3out, order(-tb3out$VarianceExplained_Univariate)), ]
+    #
+    tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
+      
+    pdf(ifelse(is.null(pdfName), paste(regulationGen, "featureIntegration.pdf", sep = "_"), paste(pdfName, regulationGen, "featureIntegration.pdf", sep = "_")), width = dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2] + 14.5, height = dim(tg1)[1] / 2, useDingbats = F)
+    gridExtra::grid.arrange(tg3, tg1, tg2, ncol = 3, nrow = 1, padding = 0, top = 0, left = 0)
+    grid::grid.text(paste("Total variance explained: ", sum(as.numeric(varExpldepend)), "%", sep = ""), x = grid::unit(0.75, "npc"), y = grid::unit(0.90, "npc"), gp = grid::gpar(fontsize = 15))
+    dev.off()
+      
+    # Outtable
+    tb4out <- data.frame(Features = namesDf$originalNames[match(names(varExplIndepend2), namesDf$newNames)], VarianceExplained_IndependentAll = as.numeric(varExplIndepend2))
+    tb4out <- tb4out[with(tb4out, order(-tb4out$VarianceExplained_IndependentAll)), ]
+    #
+    tg4 <- gridExtra::tableGrob(tb4out, rows = NULL)
+      
+    pdf(ifelse(is.null(pdfName), paste(regulationGen, "featureIntegration_varexpl_independAll.pdf", sep = "_"), paste(pdfName, regulationGen, "featureIntegration_varexpl_independAll.pdf", sep = "_")), width = dim(tg4)[2] + dim(tg4)[2] + 4, height = dim(tg4)[1] / 2, useDingbats = F)
+    gridExtra::grid.arrange(tg4, ncol = 1, nrow = 1)
+    dev.off()
+      
+    # Plot network
+    linkOut <- list()
+    for (i in 2:ncol(linkIn)) {
+      tmpIn <- linkIn[, i]
       #
-      tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))
-      tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
-      
-      ## Calculate % varaince explained and plot output
-      # Final model
-      varExpl <- anova(lm(as.formula(paste("effM", paste(bestSel, collapse = " + "), sep = "~")), data = dat))
-      varExpldepend <- numeric()
-      for (i in 1:length(bestSel)) {
-        tmpFeatI <- bestSel[i]
-        # variance expl
-        varExpldepend[i] <- round((varExpl[i, 2] / sum(varExpl$`Sum Sq`)) * 100, 2)
+      tmpOut <- as.numeric(tmpIn)[which(!is.na(tmpIn))]
+      if (length(tmpOut) > 0) {
+        names(tmpOut) <- paste(row.names(linkIn)[i - 1], names(tmpIn)[which(tmpIn != 0)], sep = "_")
       }
-      names(varExpldepend) <- bestSel
-      ## CAalculate dependent variance explained loop through the sel features moving each to the end
-      # only features in final model
-      varExplIndepend <- numeric()
-      for (i in 1:length(bestSel)) {
-        tmpFeat <- bestSel[i]
-        restFeat <- bestSel[-i]
-        # model
-        design <- as.formula(paste(paste("effM", paste(restFeat, collapse = " + "), sep = "~"), tmpFeat, sep = "+"))
-        tmpM <- anova(lm(design, data = dat))
-        
-        # variance expl
-        varExplIndepend[i] <- round((tmpM[nrow(tmpM) - 1, 2] / sum(tmpM$`Sum Sq`)) * 100, 2)
-      }
-      names(varExplIndepend) <- bestSel
-      
-      # features significant after step1
-      varExplIndepend2 <- numeric()
-      # features aftet 1st
-      if (length(presel) > 0) {
-        step1sel <- namesDf$newNames[-presel]
-      } else {
-        step1sel <- namesDf$newNames
-      }
-      for (i in 1:length(step1sel)) {
-        tmpFeat2 <- step1sel[i]
-        restFeat2 <- step1sel[-i]
-        # model
-        design2 <- as.formula(paste(paste("effM", paste(restFeat2, collapse = " + "), sep = "~"), tmpFeat2, sep = "+"))
-        tmpM2 <- anova(lm(design2, data = dat))
-        
-        # variance expl
-        varExplIndepend2[i] <- round((tmpM2[nrow(tmpM2) - 1, 2] / sum(tmpM2$`Sum Sq`)) * 100, 2)
-      }
-      names(varExplIndepend2) <- step1sel
-      
-      # Outtable
-      tb2out <- data.frame(Features = namesDf$originalNames[match(bestSel, namesDf$newNames)], Pvalue = format(varExpl$`Pr(>F)`[1:length(bestSel)], scientific = T, digits = 2), VarianceExplained_Omnibus = as.numeric(varExpldepend), VarianceExplained_Adjusted = as.numeric(varExplIndepend))
-      
-      tg2 <- gridExtra::tableGrob(tb2out, rows = NULL)
-      
-      tb3out <- data.frame(Features = names(step1expl), Pvalue_Univariate = format(as.numeric(step1pval), scientific = T, digits = 2), FDRvalue_Univariate = format(as.numeric(step1pval_fdr), scientific = T, digits = 2), VarianceExplained_Univariate = as.numeric(step1expl))
-      tb3out <- tb3out[with(tb3out, order(-tb3out$VarianceExplained_Univariate)), ]
       #
-      tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
+      linkOut[[i - 1]] <- tmpOut
+    }
+    linkOut <- as.data.frame(unlist(linkOut))
+    linkOut <- with(linkOut, cbind(linkOut, reshape2::colsplit(row.names(linkOut), pattern = "\\_", names = c("from", "to"))))
+    rownames(linkOut) <- NULL
+    colnames(linkOut)[1] <- "weight"
+    linkOut <- linkOut[, c(2, 3, 1)]
+    #
+    if(isTRUE(useCorel)){
+      for(i in 1:nrow(linkOut)){
+        f1tmp <- linkOut[i,]$from
+        f2tmp <- linkOut[i,]$to
+        #
+        f1dat <- dat[,colnames(dat)==f1tmp]
+        f2dat <- dat[,colnames(dat)==f2tmp]
+        #
+        corOut <- cor(f1dat,f2dat)
+        linkOut$weight[i] <- corOut
+      }
+    }
+    ### tb3out
+    if (NetModelSel == "Adjusted") {
+      nodeOut <- tb2out[, c(1, 4)]
+    } else if (NetModelSel == "Univariate") {
+      nodeOut <- tb3out[, c(1, 4)]
+    } else {
+      nodeOut <- tb2out[, c(1, 3)]
+    }
+    colnames(nodeOut)[2] <- "VarianceExplained"
+    nodeOut$ID <- namesDf$newNames[match(nodeOut$Features, namesDf$originalNames)]
+    nodeOut <- nodeOut[, c(3, 2, 1)]
+    nodeOut$varexpl <- 1
       
-      pdf(ifelse(is.null(pdfName), paste(regulationGen, "featureIntegration.pdf", sep = "_"), paste(pdfName, regulationGen, "featureIntegration.pdf", sep = "_")), width = dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2] + 14.5, height = dim(tg1)[1] / 2, useDingbats = F)
-      gridExtra::grid.arrange(tg3, tg1, tg2, ncol = 3, nrow = 1, padding = 0, top = 0, left = 0)
-      grid::grid.text(paste("Total variance explained: ", sum(as.numeric(varExpldepend)), "%", sep = ""), x = grid::unit(0.75, "npc"), y = grid::unit(0.90, "npc"), gp = grid::gpar(fontsize = 15))
-      dev.off()
-      
-      # Outtable
-      tb4out <- data.frame(Features = namesDf$originalNames[match(names(varExplIndepend2), namesDf$newNames)], VarianceExplained_IndependentAll = as.numeric(varExplIndepend2))
-      tb4out <- tb4out[with(tb4out, order(-tb4out$VarianceExplained_IndependentAll)), ]
+    # other tgat are connected but not significant
+    if (nrow(linkOut) > 0) {
+      addAll <- data.frame(ID = unique(c(linkOut$from, linkOut$to)), VarianceExplained = 0)
+      addAll$Features <- namesDf$originalNames[match(addAll$ID, namesDf$newNames)]
+        
+      addAll <- addAll[!addAll$ID %in% nodeOut$ID, ]
+      if(nrow(addAll)>0){
+        addAll$varexpl <- 2
+      }
       #
-      tg4 <- gridExtra::tableGrob(tb4out, rows = NULL)
-      
-      pdf(ifelse(is.null(pdfName), paste(regulationGen, "featureIntegration_varexpl_independAll.pdf", sep = "_"), paste(pdfName, regulationGen, "featureIntegration_varexpl_independAll.pdf", sep = "_")), width = dim(tg4)[2] + dim(tg4)[2] + 4, height = dim(tg4)[1] / 2, useDingbats = F)
-      gridExtra::grid.arrange(tg4, ncol = 1, nrow = 1)
-      dev.off()
-      
-      # Plot network
-      linkOut <- list()
-      for (i in 2:ncol(linkIn)) {
-        tmpIn <- linkIn[, i]
-        #
-        tmpOut <- as.numeric(tmpIn)[which(!is.na(tmpIn))]
-        if (length(tmpOut) > 0) {
-          names(tmpOut) <- paste(row.names(linkIn)[i - 1], names(tmpIn)[which(tmpIn != 0)], sep = "_")
-        }
-        #
-        linkOut[[i - 1]] <- tmpOut
-      }
-      linkOut <- as.data.frame(unlist(linkOut))
-      linkOut <- with(linkOut, cbind(linkOut, reshape2::colsplit(row.names(linkOut), pattern = "\\_", names = c("from", "to"))))
-      rownames(linkOut) <- NULL
-      colnames(linkOut)[1] <- "weight"
-      linkOut <- linkOut[, c(2, 3, 1)]
-      
-      ### tb3out
-      if (NetModelSel == "Adjusted") {
-        nodeOut <- tb2out[, c(1, 4)]
-      } else if (NetModelSel == "Univariate") {
-        nodeOut <- tb3out[, c(1, 4)]
-      } else {
-        nodeOut <- tb2out[, c(1, 3)]
-      }
-      colnames(nodeOut)[2] <- "VarianceExplained"
-      nodeOut$ID <- namesDf$newNames[match(nodeOut$Features, namesDf$originalNames)]
-      nodeOut <- nodeOut[, c(3, 2, 1)]
-      nodeOut$varexpl <- 1
-      
-      # other tgat are connected but not significant
-      if (nrow(linkOut) > 0) {
-        addAll <- data.frame(ID = unique(c(linkOut$from, linkOut$to)), VarianceExplained = 0)
-        addAll$Features <- namesDf$originalNames[match(addAll$ID, namesDf$newNames)]
+      nodeOutAll <- rbind(nodeOut, addAll)
+    } else {
+      nodeOutAll <- nodeOut
+    }
+    # create igraph object
+    net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed = T)
+    # rescale to size ans other attributes
+    lsize <- rescale(igraph::V(net)$VarianceExplained, 0, 100, 0, 75)
+    lsize[which(lsize > 0)] <- lsize[which(lsize > 0)] + 2
+    igraph::V(net)$size <- lsize
+    lcol <- rep("black", nrow(nodeOutAll))
+    lcol[which(nodeOutAll$varexpl == 2)] <- "#B14D8E"
+    igraph::V(net)$label.color <- lcol
+    igraph::V(net)$label <- wrapNames(gsub(" 0%", "", paste(igraph::V(net)$Features, paste(igraph::V(net)$VarianceExplained, "%", sep = ""), sep = " ")), 8)
         
-        addAll <- addAll[!addAll$ID %in% nodeOut$ID, ]
-        if(nrow(addAll)>0){
-          addAll$varexpl <- 2
-        }
-        #
-        nodeOutAll <- rbind(nodeOut, addAll)
-      } else {
-        nodeOutAll <- nodeOut
-      }
-      # create igraph object
-      net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed = T)
-      # rescale to size ans other attributes
-      lsize <- rescale(igraph::V(net)$VarianceExplained, 0, 100, 0, 75)
-      lsize[which(lsize > 0)] <- lsize[which(lsize > 0)] + 2
-      igraph::V(net)$size <- lsize
-      lcol <- rep("black", nrow(nodeOutAll))
-      lcol[which(nodeOutAll$varexpl == 2)] <- "#B14D8E"
-        igraph::V(net)$label.color <- lcol
-        igraph::V(net)$label <- wrapNames(gsub(" 0%", "", paste(igraph::V(net)$Features, paste(igraph::V(net)$VarianceExplained, "%", sep = ""), sep = " ")), 8)
-        
-        # colour nodes as in table
-        # colrs <- c('#B0F2BC','white')#"#B14D8E")
-        colrs <- rep("#B0F2BC", nrow(nodeOutAll))
-        colrs[which(nodeOutAll$varexpl == 2)] <- "white"
-          igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
+    # colour nodes as in table
+    # colrs <- c('#B0F2BC','white')#"#B14D8E")
+    colrs <- rep("#B0F2BC", nrow(nodeOutAll))
+    colrs[which(nodeOutAll$varexpl == 2)] <- "white"
+    igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
           
-          # Set edges width based on weight:
-          if (length(igraph::E(net)$weight) > 0) {
-            igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 50, 0, 2.5)
-          }
+    # Set edges width based on weight:
+    if (length(igraph::E(net)$weight) > 0) {
+      if(isTRUE(useCorel)){
+        igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 1, 0, 20)
+      } else {
+        igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 50, 0, 2.5)
+      }
+    }
           
-          # change arrow size and edge color:
-          igraph::E(net)$arrow.size <- .0
-          ecolor <- rep("#D55E00", length(igraph::E(net)$width))
-          ecolor[which(igraph::E(net)$weight < 0)] <- "#56B4E9"
-            igraph::E(net)$color <- ecolor
+    # change arrow size and edge color:
+    igraph::E(net)$arrow.size <- .0
+    ecolor <- rep("#D55E00", length(igraph::E(net)$width))
+    ecolor[which(igraph::E(net)$weight < 0)] <- "#56B4E9"
+    igraph::E(net)$color <- ecolor
             
-            # We can also override the attributes explicitly in the plot:
-            pdf(ifelse(is.null(pdfName), paste(ifelse(is.null(regulationGen), "custom", regulationGen), "network.pdf", sep = "_"), paste(pdfName, ifelse(is.null(regulationGen), "custom", regulationGen), "network.pdf", sep = "_")), height = 8, width = 8, useDingbats = F)
-            par(bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 1.9, cex.lab = 1.5)
-            par(mar = c(5, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
-            plot(net, shape = "sphere", vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "white", layout = layoutCalc(net, n = 2))
+    # We can also override the attributes explicitly in the plot:
+    pdf(ifelse(is.null(pdfName), paste(ifelse(is.null(regulationGen), "custom", regulationGen), "network.pdf", sep = "_"), paste(pdfName, ifelse(is.null(regulationGen), "custom", regulationGen), "network.pdf", sep = "_")), height = 8, width = 8, useDingbats = F)
+    par(bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 1.9, cex.lab = 1.5)
+    par(mar = c(5, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
+    plot(net, shape = "sphere", vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "white", layout = layoutCalc(net, n = 2))
             
-            legend("bottomleft", fill = c("#B0F2BC"), "In Omnibus model", cex = 1.3, bty = "n", xpd = T, inset = -0.1)
-            legend(-1.5, 1.5, lwd = c(7, 3, 3, 7), col = c(rep("#D55E00", 2), rep("#56B4E9", 2)), title = c("Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
-            legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
+    legend("bottomleft", fill = c("#B0F2BC"), "In Omnibus model", cex = 1.3, bty = "n", xpd = T, inset = -0.1)
+    legend(-1.5, 1.5, lwd = c(7, 3, 3, 7), col = c(rep("#D55E00", 2), rep("#56B4E9", 2)), title = ifelse(isTRUE(useCorel),"Correlation","Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
+    legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
             
-            dev.off()
+    dev.off()
   } else {
     stop("Please provide correct type: lm for linear regression or rf for random forest")
   }
