@@ -5,7 +5,7 @@
 \title{ Calculation of folding energy}
 
 \usage{
-foldingEnergyAnalysis(annot, sourceFE = "load", version=NULL, species=NULL, fromFasta = FALSE, customFileFE = NULL, onlyRun = FALSE, residFE = FALSE, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, selection = "random", region=NULL, subregion=NULL, subregionSel=NULL, comparisons=NULL, plotOut = TRUE, pdfName = NULL )
+foldingEnergyAnalysis(annot, sourceFE = "load", version=NULL, species=NULL, fromFasta = FALSE, customFileFE = NULL, residFE = TRUE, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, selection = "random", region=NULL, subregion=NULL, subregionSel=NULL, comparisons=NULL, plotOut = TRUE, pdfName = NULL )
 }
 
 \arguments{
@@ -14,10 +14,9 @@ foldingEnergyAnalysis(annot, sourceFE = "load", version=NULL, species=NULL, from
 \item{version}{ Indicate which pre-prepared NCBI RefSeq releases should be loaded. Use the function checkAvailableVersions to check available versions for given specie. If left NULL, it will automatically look for the most recent. It is only relevant if sourceFE = "load". }
 \item{species}{ Select a specie of interest. It is required if sourceFE = "load". At the moment, it can be human or mouse only. }
 
-\item{fromFasta}{ If TRUE, it will calculate folding energy values with mfold on a custom fasta file. The default is FALSE. }
+\item{fromFasta}{ If TRUE, it will calculate folding energy values with mfold using a custom fasta file. The default is FALSE. }
 \item{customFileFE}{ Name of a file including a path to the customFile. It is required for sourceFE=='custom' or if sourceFE=='create' and fromFasta==TRUE. In the former case, it must be the file with calculated folding energies in the format: transcript ID, folding energy, length of the sequence, or in the latter fasta files with sequences and transcript ids as names. }
-\item{onlyRun}{ If TRUE, it will create a folding energy input file using mfold without running an analysis comparing different modes of regulation. It is relevant only if sourceFE == "create". The default is FALSE. }
-\item{residFE}{ Residuals after correction for the length of the sequences should be used instead. The default is FALSE.}
+\item{residFE}{ Residuals after correction for the length of the sequences should be used instead. The default is TRUE.}
 \item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
 \item{regulation}{ If the anota2seq object is provided, desired names of regulation modes from the anota2seq object are to be compared. To choose from "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNAUp", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
 \item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
@@ -25,7 +24,7 @@ foldingEnergyAnalysis(annot, sourceFE = "load", version=NULL, species=NULL, from
 \item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
 \item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 \item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest for a given region will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }
-\item{region}{ Select the region of interest. Choose from "UTR5", "CDS", "UTR3" }
+\item{region}{ Select the regions of interest. Choose from combination of "UTR5", "CDS", "UTR3" }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end. }
 \item{plotOut}{ Logical whether plots and optionally comparisons should be performed. The default is TRUE. }
 \item{plotType}{ If plotOut is TRUE, please indicate the type of the output plots (Choose from "boxplot", "violin", "ecdf"). The default is "ecdf". }
@@ -54,9 +53,9 @@ checkAvailableVersions(species = "human")
 annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = "human")
 
 # If only the anota2seq object
-feOut <- foldingEnergyAnalysis(annot = annot, sourceFE = "load", version="rel_109.20201120", species = "human", residFE = FALSE, ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = contrast = c(1,1), selection = "random", region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE, plotType = "ecdf")
+feOut <- foldingEnergyAnalysis(annot = annot, sourceFE = "load", version="rel_109.20201120", species = "human", residFE = TRUE, ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = contrast = c(1,1), selection = "random", region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE, plotType = "ecdf")
 
 
 # If only the geneList
-feOut <- foldingEnergyAnalysis(annot = annot, sourceFE = "load", version="rel_109.20201120", species = "human", residFE = FALSE, geneList = inList, geneListcolours=c("#F2A104","#00743F"), selection = "random", region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE, plotType = "ecdf")
+feOut <- foldingEnergyAnalysis(annot = annot, sourceFE = "load", version="rel_109.20201120", species = "human", residFE = TRUE, geneList = inList, geneListcolours=c("#F2A104","#00743F"), selection = "random", region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE, plotType = "ecdf")
 }

@@ -27,7 +27,7 @@ uorf_analysis(annot, startCodon="ATG", KozakContext="strong", onlyUTR5=FALSE, un
 }
 
 \value{
-If the "number" of uORFs is selected, a vector with calculated values for each gene with be provided. It can be directly fed to the featureIntegration function. Otherwise, if the "position" list of uORF positions per gene. The function will also output plots with desired comparisons.
+If the "number" of uORFs is selected, a list of vector with calculated values for each gene with be provided. It can be directly fed to the featureIntegration function. Otherwise, if the "position" list of uORF positions per gene. The function will also output plots with desired comparisons.
 }
 
 \description{

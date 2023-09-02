@@ -28,6 +28,8 @@ uorf_analysis <- function(annot,
     stop("Please provide correct Kozak context")
   }
   #
+  uORFFinal <- list()
+  #
   annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
   annotTmp <- regSel(annot = annotBg, region = "UTR5", ext = ifelse(isTRUE(onlyUTR5), FALSE, TRUE))
   annotBgSel <- isoSel(annot = annotTmp, method = selection)
@@ -80,6 +82,7 @@ uorf_analysis <- function(annot,
     }
     dev.off()
   }
+  uORFFinal[[paste('uORFs',startCodon,KozakContext,sep='_')]] <- uorfOut
   #
-  return(uorfOut)
+  return(uORFFinal)
 }

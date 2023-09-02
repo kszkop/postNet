@@ -314,7 +314,7 @@ calc_motif <- function(x, motifIn, dist, unit){
 #Combine 
 calc_g4 <- function(x,min_score){
   seqTmp <- DNAString(x)
-  predTmp <- pqsfinder::pqsfinder(seqTmp, min_score = min_score, strand = '+')
+  predTmp <- pqsfinder::pqsfinder(seqTmp, min_score = min_score, strand = '+', verbose=F)
   nMot <- nrow(predTmp@elementMetadata)
   return(nMot)
 }
@@ -924,21 +924,21 @@ runMfold <- function(fastaFile){
   close(pb1)
 }
 
-
-runLM <- function(dataIn, namesDf, allFeat, nameOut, dirOut, NetModelSel){
+runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
+  #
   #Univariate
-  models_prerun <- lapply(colnames(dat)[-featPos], function(x) {
-    anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dat))
+  models_prerun <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
+    anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dataIn))
   })
-  
+  #
   step1expl <- round(sapply(models_prerun, function(x) (x[1, 2] / (sum(x[1, 2], x[2, 2]))) * 100), 2)
-  names(step1expl) <- featureName
+  names(step1expl) <- namesDf$originalNames
 
   step1pval <- sapply(models_prerun, function(x) (x[1, 5]))
-  names(step1pval) <- featureName
+  names(step1pval) <- namesDf$originalNames
   
   step1pval_fdr <- p.adjust(step1pval)
-  names(step1pval_fdr) <- featureName
+  names(step1pval_fdr) <- namesDf$originalNames
 
   presel <- as.numeric(which(step1pval_fdr > 0.05 | is.na(step1pval_fdr)))
 
@@ -949,27 +949,24 @@ runLM <- function(dataIn, namesDf, allFeat, nameOut, dirOut, NetModelSel){
   }
 
   if (!isTRUE(allFeat) & length(presel) > 0) {
-    dat <- dat[, -presel]
-    featureName <- featureName[-presel]
+    dataIn <- dataIn[, -presel]
+    #featureNames <- featureNames[-presel]
   }
-  featPos <- length(colnames(dat))
-  namesDf <- data.frame(originalNames = featureName, newNames = colnames(dat)[-featPos], stringsAsFactors = F)
-
   #
   fval <- list()
   pval <- list()
 
-  models <- lapply(colnames(dat)[-featPos], function(x) {
-    anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dat))
+  models <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
+    anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dataIn))
   })
-  
+  #
   fvalTmp <- sapply(models, function(x) x[1, 4])
-  names(fvalTmp) <- colnames(dat)[-featPos]
+  names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))]
   fvalTmp[is.na(fvalTmp)] <- 0
   fval[[1]] <- fvalTmp
 
   pvalTmp <- sapply(models, function(x) x[1, 5])
-  names(pvalTmp) <- colnames(dat)[-featPos]
+  names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))]
   pvalTmp[is.na(pvalTmp)] <- 1
   pval[[1]] <- pvalTmp
 
@@ -977,33 +974,33 @@ runLM <- function(dataIn, namesDf, allFeat, nameOut, dirOut, NetModelSel){
   bestTmp <- which.max(sapply(models, function(x) x[1, 4]))
   outTmp <- which(sapply(models, function(x) x[1, 5]) > 0.05 | is.na(sapply(models, function(x) x[1, 5])))
 
-  bestSel <- colnames(dat)[-featPos][bestTmp]
-  outSel <- colnames(dat)[-featPos][outTmp]
+  bestSel <- colnames(dataIn)[-length(colnames(dataIn))][bestTmp]
+  outSel <- colnames(dataIn)[-length(colnames(dataIn))][outTmp]
 
   i <- 1
   # 
-  while (length(colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]) > 0) {
+  while (length(colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]) > 0) {
     #
     i <- i + 1
     #
-    tmpIn <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
+    tmpIn <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
     models2 <- list()
     #
     x_sel <- paste(bestSel, collapse = " + ")
   
-    for (j in 1:(length(colnames(dat)[-featPos]) - length(c(bestSel, outSel)))) {
-      varx <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)][j]
+    for (j in 1:(length(colnames(dataIn)[-length(colnames(dataIn))]) - length(c(bestSel, outSel)))) {
+      varx <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)][j]
       design <- as.formula(paste(paste("effM", paste(x_sel, collapse = " + "), sep = "~"), varx, sep = "+"))
       models2[[j]] <- anova(lm(design, data = dat))
     }
     #
     fvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 4])
-    names(fvalTmp) <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
+    names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
     fval[[i]] <- fvalTmp
   
     #
     pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
-    names(pvalTmp) <- colnames(dat)[-featPos][!colnames(dat)[-featPos] %in% c(bestSel, outSel)]
+    names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
     pval[[i]] <- pvalTmp
     
     #
@@ -1106,11 +1103,6 @@ runLM <- function(dataIn, namesDf, allFeat, nameOut, dirOut, NetModelSel){
   
   tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
   
-  pdf(paste(nameOut, "FinalModel.pdf", sep = "_"), width = dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2] + 14.5, height = dim(tg1)[1] / 2, useDingbats = F)
-  gridExtra::grid.arrange(tg3, tg1, tg2, ncol = 3, nrow = 1, padding = 0, top = 0, left = 0)
-  grid::grid.text(paste("Total variance explained: ", sum(as.numeric(varExpldepend)), "%", sep = ""), x = grid::unit(0.75, "npc"), y = grid::unit(0.90, "npc"), gp = grid::gpar(fontsize = 15))
-  dev.off()
-  
   # 
   tb4out <- data.frame(Features = namesDf$originalNames[match(names(varExplIndepend2), namesDf$newNames)], VarianceExplained_IndependentAll = as.numeric(varExplIndepend2))
   tb4out <- tb4out[with(tb4out, order(-tb4out$VarianceExplained_IndependentAll)), ]
@@ -1138,6 +1130,37 @@ runLM <- function(dataIn, namesDf, allFeat, nameOut, dirOut, NetModelSel){
   colnames(linkOut)[1] <- "weight"
   linkOut <- linkOut[, c(2, 3, 1)]
   
+  #
+  if(isTRUE(useCorel)){
+    for(i in 1:nrow(linkOut)){
+      f1tmp <- linkOut[i,]$from
+      f2tmp <- linkOut[i,]$to
+      #
+      f1dat <- dat[,colnames(dat)==f1tmp]
+      f2dat <- dat[,colnames(dat)==f2tmp]
+      #
+      corOut <- cor(f1dat,f2dat)
+      linkOut$weight[i] <- corOut
+    }
+    ##
+    tb5Out <- linkOut
+    tb5Out$weight <- round(tb5Out$weight,2)
+    tb5Out$from <- namesDf$originalNames[match(tb5Out$from, namesDf$newNames)]
+    tb5Out$to <- namesDf$originalNames[match(tb5Out$to, namesDf$newNames)]
+    colnames(tb5Out) <- c('featureFrom','featureTo','CorCoef')
+    ##
+    tg5 <- gridExtra::tableGrob(tb5Out, rows = NULL)
+  
+    pdf(paste(nameOut, "FinalModel.pdf", sep = "_"), width = dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2] + dim(tg5)[2] + 14.5, height = dim(tg1)[1] / 2, useDingbats = F)
+    gridExtra::grid.arrange(tg3, tg1, tg2, tg5, ncol = 4, nrow = 1, padding = 0, top = 0, left = 0)
+    grid::grid.text(paste("Total variance explained: ", sum(as.numeric(varExpldepend)), "%", sep = ""), x = grid::unit(0.75, "npc"), y = grid::unit(0.90, "npc"), gp = grid::gpar(fontsize = 15))
+    dev.off()
+  } else {
+    pdf(paste(nameOut, "FinalModel.pdf", sep = "_"), width = dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2] + 14.5, height = dim(tg1)[1] / 2, useDingbats = F)
+    gridExtra::grid.arrange(tg3, tg1, tg2, ncol = 3, nrow = 1, padding = 0, top = 0, left = 0)
+    grid::grid.text(paste("Total variance explained: ", sum(as.numeric(varExpldepend)), "%", sep = ""), x = grid::unit(0.75, "npc"), y = grid::unit(0.90, "npc"), gp = grid::gpar(fontsize = 15))
+    dev.off()
+  }
   ### tb3out
   if (NetModelSel == "Adjusted") {
     nodeOut <- tb2out[, c(1, 4)]
@@ -1180,9 +1203,13 @@ runLM <- function(dataIn, namesDf, allFeat, nameOut, dirOut, NetModelSel){
   colrs[which(nodeOutAll$varexpl == 2)] <- "white"
   igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
       
-  # 
+  # Set edges width based on weight:
   if (length(igraph::E(net)$weight) > 0) {
-    igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 50, 0, 2.5)
+    if(isTRUE(useCorel)){
+      igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 1, 0, 20)
+    } else {
+      igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 50, 0, 2.5)
+    }
   }
       
   # change arrow size and edge color:
@@ -1202,3 +1229,4 @@ runLM <- function(dataIn, namesDf, allFeat, nameOut, dirOut, NetModelSel){
   legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
   dev.off()
 }
+

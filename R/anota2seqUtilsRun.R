@@ -13,7 +13,7 @@ anota2seqUtilsRun <- function(source='load',
                               excl=FALSE,
                               keepAll=FALSE,
                               
-                              regionSel,
+                              region,
                               
                               ads = NULL,
                               regulation = NULL,
@@ -48,7 +48,6 @@ anota2seqUtilsRun <- function(source='load',
                               sourceFE='load',
                               fromFasta=FALSE,
                               customFileFE=NULL, 
-                              onlyRun=FALSE,
                               residFE=FALSE,
                               
                               addMotifs=NULL,
@@ -118,23 +117,22 @@ anota2seqUtilsRun <- function(source='load',
   #####Run analysis
   resultsOut <- list()
   #
-  for(i in 1:regionSel){
-    #Select current region to run
-    region <- regionSel[i]
+  for(reg in region){
     #
-    resultsOut[[paste('len',region,sep='_')]] <- lengthAnalysis(annot=annot, 
-                                                                ads=ads,
-                                                                regulation=regulation, 
-                                                                contrast=contrast, 
-                                                                geneList=geneList,
-                                                                geneListcolours=geneListcolours,
-                                                                customBg=customBg,
-                                                                selection=selection,
-                                                                region=region, 
-                                                                comparisons=comparisons,
-                                                                plotOut=plotOut,
-                                                                plotType=plotType, 
-                                                                pdfName=pdfName)
+    lengthTmp <-  lengthAnalysis(annot=annot, 
+                                  ads=ads,
+                                  regulation=regulation, 
+                                  contrast=contrast, 
+                                  geneList=geneList,
+                                  geneListcolours=geneListcolours,
+                                  customBg=customBg,
+                                  selection=selection,
+                                  region=reg, 
+                                  comparisons=comparisons,
+                                  plotOut=plotOut,
+                                  plotType=plotType, 
+                                  pdfName=pdfName)
+    resultsOut <- append(resultsOut, lengthTmp)
     #
     contentTmp <- contentAnalysis(annot=annot,
                                   contentIn=contentIn,
@@ -145,28 +143,30 @@ anota2seqUtilsRun <- function(source='load',
                                   geneListcolours = geneListcolours,
                                   customBg = customBg,
                                   selection = selection,
-                                  region = region,
+                                  region = reg,
                                   comparisons = comparisons,
                                   plotOut = plotOut,
                                   plotType = plotType,
                                   pdfName = pdfName)
     resultsOut <- append(resultsOut, contentTmp)
     #
-    if(region=='UTR5'){
-      resultsOut[[paste('uORFs',startCodon,KozakContext,sep='_')]] <- uorf_analysis(annot = annot,
-                                                                                    startCodon=startCodon,
-                                                                                    KozakContext=KozakContext,
-                                                                                    onlyUTR5=onlyUTR5,
-                                                                                    unitOut="number",                                                                                    ads = ads, 
-                                                                                    regulation =  regulation, 
-                                                                                    contrast = contrast,
-                                                                                    geneList = geneList,
-                                                                                    geneListcolours = geneListcolours,
-                                                                                    customBg = customBg,
-                                                                                    selection = selection,
-                                                                                    comparisons = comparisons,
-                                                                                    plotOut = plotOut,
-                                                                                    pdfName = pdfName)
+    if(reg=='UTR5'){
+      uORFtemp <- uorf_analysis(annot = annot,
+                                ads = ads,
+                                startCodon=startCodon,
+                                KozakContext=KozakContext,
+                                onlyUTR5=onlyUTR5,
+                                unitOut="number",                                                                                     
+                                regulation =  regulation, 
+                                contrast = contrast,
+                                geneList = geneList,
+                                geneListcolours = geneListcolours,
+                                customBg = customBg,
+                                selection = selection,
+                                comparisons = comparisons,
+                                plotOut = plotOut,
+                                pdfName = pdfName)
+      resultsOut <- append(resultsOut, uORFtemp)
     }
     #
     if(isTRUE(runMotifs)){
@@ -180,10 +180,11 @@ anota2seqUtilsRun <- function(source='load',
                               geneList=geneList,
                               customBg=customBg,
                               selection = selection,
-                              region = region,
+                              region = reg,
                               subregion=subregion, 
                               subregionSel= subregionSel)
-      motifsIn <- tmpOut[[1]]
+      ##Correct this part for nested list for each region
+      motifsIn <- tmpOut[[reg]][[1]]
       #
       if(length(motifsIn)>0){
         #
@@ -200,7 +201,7 @@ anota2seqUtilsRun <- function(source='load',
                                    geneListcolours = geneListcolours,
                                    customBg = customBg,
                                    selection=selection,
-                                   region=region,
+                                   region=reg,
                                    subregion = subregion,
                                    subregionSel = subregionSel,
                                    comparisons = comparisons,
@@ -209,29 +210,30 @@ anota2seqUtilsRun <- function(source='load',
         
         resultsOut <- append(resultsOut, motifsOut)
       } else {
-        print('No significant de-novo motifs found')
+        message('No significant de-novo motifs found')
       }
     }
-    if(i != 'UTR3'){
-      resultsOut[[paste(region,'G4',sep='_')]] <- contentMotifs(annot = annot,
-                                                                motifsIn = "G4",
-                                                                seqType = seqType,
-                                                                dist = dist,
-                                                                min_score = min_score,
-                                                                resid = resid,
-                                                                ads = ads,
-                                                                regulation = regulation,
-                                                                contrast = contrast,
-                                                                geneList = geneList,
-                                                                geneListcolours = geneListcolours,
-                                                                customBg = customBg,
-                                                                selection=selection,
-                                                                region=region,
-                                                                subregion = subregion,
-                                                                subregionSel = subregionSel,
-                                                                comparisons = comparisons,
-                                                                pdfName = pdfName,
-                                                                plotOut = plotOut)[[1]]
+    if(reg != 'UTR3'){
+      G4Out <-  contentMotifs(annot = annot,
+                              motifsIn = "G4",
+                              seqType = seqType,
+                              dist = dist,
+                              min_score = min_score,
+                              resid = resid,
+                              ads = ads,
+                              regulation = regulation,
+                              contrast = contrast,
+                              geneList = geneList,
+                              geneListcolours = geneListcolours,
+                              customBg = customBg,
+                              selection=selection,
+                              region=reg,
+                              subregion = subregion,
+                              subregionSel = subregionSel,
+                              comparisons = comparisons,
+                              pdfName = pdfName,
+                              plotOut = plotOut)
+      resultsOut <- append(resultsOut, G4Out)
     }
     #
     if(!is.null(addMotifs)){
@@ -248,38 +250,38 @@ anota2seqUtilsRun <- function(source='load',
                                     geneListcolours = geneListcolours,
                                     customBg = customBg,
                                     selection=selection,
-                                    region=region,
+                                    region=reg,
                                     subregion = subregion,
                                     subregionSel = subregionSel,
                                     comparisons = comparisons,
                                     pdfName = pdfName,
                                     plotOut = plotOut)
-      
       resultsOut <- append(resultsOut, motifsOutadd)
     }
     #
-    resultsOut[[paste('fe',region,sep='_')]] <- foldingEnergyAnalysis(annot = annot, 
-                                                                      sourceFE = sourceFE,
-                                                                      version=version,
-                                                                      species=species,
-                                                                      fromFasta = fromFasta,
-                                                                      customFile = customFile,
-                                                                      onlyRun = onlyRun, 
-                                                                      residFE = residFE,
-                                                                      ads = ads,
-                                                                      regulation = regulation,
-                                                                      contrast = contrast,
-                                                                      geneList = geneList,
-                                                                      geneListcolours = geneListcolours,
-                                                                      customBg = customBg,
-                                                                      selection=selection,
-                                                                      region=region,
-                                                                      comparisons = comparisons,
-                                                                      plotOut = plotOut,
-                                                                      plotType = plotType,
-                                                                      pdfName = pdfName)
+    feTmp <- foldingEnergyAnalysis(annot = annot, 
+                                   sourceFE = sourceFE,
+                                   version=version,
+                                   species=species,
+                                   fromFasta = fromFasta,
+                                   customFile = customFile,
+                                   residFE = residFE,
+                                   ads = ads,
+                                   regulation = regulation,
+                                   contrast = contrast,
+                                   geneList = geneList,
+                                   geneListcolours = geneListcolours,
+                                   customBg = customBg,
+                                   selection=selection,
+                                   region=reg,
+                                   comparisons = comparisons,
+                                   plotOut = plotOut,
+                                   plotType = plotType,
+                                   pdfName = pdfName)
+    
+    resultsOut <- append(resultsOut, feTmp)
     #
-    if(region=='CDS'){
+    if(reg=='CDS'){
       codonOutTmp <- codonUsage(annot=annot,
                                 annotType = annotType, 
                                 sourceCod = sourceCod,
@@ -330,7 +332,7 @@ anota2seqUtilsRun <- function(source='load',
                                      plotOut = plotOut,
                                      plotType = plotType,
                                      pdfName = pdfName)
-          resultsOut[[paste('codUp','comp',j,sep='_')]] <- selCodonOutUp
+          resultsOut[[paste('codonUp','comp',j,sep='_')]] <- selCodonOutUp
         }
         if(length(featSelDown) > 0){
           selCodonOutDown <- codonCalc(codonIn = codonIn,
@@ -347,7 +349,7 @@ anota2seqUtilsRun <- function(source='load',
                                    plotOut = plotOut,
                                    plotType = plotType,
                                    pdfName = pdfName)
-          resultsOut[[paste('codDown','comp',j,sep='_')]] <- selCodonOutDown
+          resultsOut[[paste('codonDown','comp',j,sep='_')]] <- selCodonOutDown
         }
       }
     }

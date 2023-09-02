@@ -23,7 +23,7 @@ contentMotifs(annot, motifsIn, seqType="dna", dist=1, min_score=47, unitOut="num
 \item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
 \item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 \item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest for a given region will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }
-\item{region}{ Select the region of interest. Choose from "UTR5", "CDS", "UTR3" }
+\item{region}{ Select the regions of interest. Choose from combination of "UTR5", "CDS", "UTR3" }
 \item{subregion}{ Optionally it is possible to select a subregion by indicating a number of nucleotides from the start if positive or end if negative. }
 \item{subregionSel}{ It is required if the subregion is provided. Choose whether the indicated subregion should be "select" or "exclude". }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end. }
@@ -32,7 +32,7 @@ contentMotifs(annot, motifsIn, seqType="dna", dist=1, min_score=47, unitOut="num
 }
 
 \value{
-Vector with calculated number of motifs present in selected region for each gene. The function will also output plots with desired comparisons.
+List of vectors for selected regions with calculated number of motifs present for each gene. The function will also output plots with desired comparisons.
 }
 
 \description{

@@ -17,7 +17,7 @@ lengthAnalysis(annot, ads = NULL, regulation = NULL, contrast = NULL, geneList =
 \item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
 \item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 \item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest for a given region will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }
-\item{region}{ Select the region of interest. Choose from "UTR5", "CDS", "UTR3" }
+\item{region}{ Select the regions of interest. Choose from combination of "UTR5", "CDS", "UTR3" }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end. }
 \item{plotOut}{ Logical whether plots and optionally comparisons should be performed. The default is TRUE. }
 \item{plotType}{ If plotOut is TRUE, please indicate the type of the output plots (Choose from "boxplot", "violin", "ecdf"). The default is "boxplot". }
@@ -25,11 +25,11 @@ lengthAnalysis(annot, ads = NULL, regulation = NULL, contrast = NULL, geneList =
 }
 
 \value{
-Vector with calculated values for selected region for each gene. The function will also output plots with desired comparisons.
+List of vectors for selected regions with calculated lengths for each gene. The function will also output plots with desired comparisons.
 }
 
 \description{
-Lengths of desired region for each gene is calculated. If plotOut is TRUE, all indicated comparisons between different sets of genes are performed and plotted. 
+Lengths of desired regions for each gene is calculated. If plotOut is TRUE, all indicated comparisons between different sets of genes are performed and plotted. 
 }
 
 \examples{
@@ -39,9 +39,9 @@ checkAvailableVersions(species = "human")
 annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = "human")
 
 # If only the anota2seq object
-len_utr5 <- lengthAnalysis(annot = annot, ads = anota2seqOutput, regulation =  c("translationUp","translationDown"),contrast = c(1,1), region = "UTR5", selection ="random", comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
+len_utr5 <- lengthAnalysis(annot = annot, ads = anota2seqOutput, regulation =  c("translationUp","translationDown"),contrast = c(1,1), region = c("UTR5","CDS","UTR3"), selection ="random", comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
 
 # If only the geneList
-len_utr5 <- lengthAnalysis(annot = annot, geneList = inList, geneListcolours=c("#F2A104","#00743F"), region = "UTR5", selection ="random", comparisons = list(c(1,2)), plotType = "boxplot")
+len_utr5 <- lengthAnalysis(annot = annot, geneList = inList, geneListcolours=c("#F2A104","#00743F"), region = c("UTR5","CDS","UTR3"), selection ="random", comparisons = list(c(1,2)), plotType = "boxplot")
 
 }
