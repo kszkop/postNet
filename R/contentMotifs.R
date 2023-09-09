@@ -16,9 +16,22 @@ contentMotifs <- function(annot,
                           subregion = NULL,
                           subregionSel,
                           comparisons = NULL,
+                          outDir=NULL
                           pdfName = NULL,
                           plotOut = TRUE) {
   ####
+  if(isTRUE(plotOut)){
+    if (!is.null(outDir)){
+      dirTmp <- outDir
+    } else {
+      dirTmp <- paste('motifAnalysis', format(Sys.time(), "%Y%m%e_%X"),sep='_')
+    }
+    dir.create(dirTmp)
+ 
+    nameTmp <- ifelse(is.null(pdfName), paste(region, motif, "content.pdf", sep = "_"), paste(pdfName, reg, motif, "content.pdf", sep = "_"))
+    nameOut <- paste(dirTmp,nameTmp, sep='/')
+  }
+  #
   annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
   #
   motifFinalRegion <- list()
@@ -79,7 +92,7 @@ contentMotifs <- function(annot,
         coloursOut <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
         #
         # Plot
-        pdf(ifelse(is.null(pdfName), paste(region, motif, "content.pdf", sep = "_"), paste(pdfName, reg, motif, "content.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
+        pdf(nameOut, width = 8, height = 8, useDingbats = F)
         par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
         #
         xlim_min <- ifelse(isTRUE(resid), floor(quantile(as.numeric(unlist(resOut)), 0.01)), 0)

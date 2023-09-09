@@ -19,7 +19,7 @@ featureIntegration <- function(features,
                                outDir = NULL,
                                pdfName = NULL) {
   #
-  if (!is.null(outDir) & !dir.exists('featOut')){
+  if (!is.null(outDir)){
     dirTmp <- outDir
   } else {
     dirTmp <- paste('featureIntegration', format(Sys.time(), "%Y%m%e_%X"),sep='_')

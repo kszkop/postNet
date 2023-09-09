@@ -5,7 +5,7 @@
 \title{ Codon usage analysis }
 
 \usage{
-codonUsage(annot=NULL, annotType = "ccds", sourceCod = "load", customFileCod = NULL, species = NULL, analysis="codon", codonN = 1, type = "sequence", dpn_path = NULL, cds_filt = TRUE, pAdj = 0.01, plotHeatmap = TRUE, thresX1 = 0.3, thresY1 = 0.3, thresX2 = 0.3, thresY2 = 0.3, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, customBg = NULL, selection = "random", subregion=NULL, subregionSel=NULL, comparisons=NULL, pdfName = NULL )
+codonUsage(annot=NULL, annotType = "ccds", sourceCod = "load", customFileCod = NULL, species = NULL, analysis="codon", codonN = 1, type = "sequence", dpn_path = NULL, cds_filt = TRUE, pAdj = 0.01, plotHeatmap = TRUE, thresX1 = 0.3, thresY1 = 0.3, thresX2 = 0.3, thresY2 = 0.3, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, customBg = NULL, selection = "random", subregion=NULL, subregionSel=NULL, comparisons=NULL, outDir=NULL, pdfName = NULL )
 }
 
 \arguments{
@@ -34,6 +34,7 @@ codonUsage(annot=NULL, annotType = "ccds", sourceCod = "load", customFileCod = N
 \item{subregion}{ Optionally it is possible to select a subregion by indicating a number of nucleotides from the start if positive or end if negative. }
 \item{subregionSel}{ It is required if the subregion is provided. Choose whether the indicated subregion should be "select" or "exclude". }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end. }
+\item{outDir}{ Optionally, the name of the output directory for all the plots if plotOut is TRUE. }
 \item{pdfName}{ Name of the output pdf files. }
 }
 

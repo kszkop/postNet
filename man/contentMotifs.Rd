@@ -5,12 +5,12 @@
 \title{ Calculation of motif presence }
 
 \usage{
-contentMotifs(annot, motifsIn, seqType="dna", dist=1, min_score=47, unitOut="number", resid=FALSE, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, selection = "random", region, subregion=NULL, subregionSel=NULL, comparisons=NULL, plotOut = TRUE, pdfName = NULL )
+contentMotifs(annot, motifsIn, seqType="dna", dist=1, min_score=47, unitOut="number", resid=FALSE, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, selection = "random", region, subregion=NULL, subregionSel=NULL, comparisons=NULL, plotOut = TRUE, outDir=NULL, pdfName = NULL )
 }
 
 \arguments{
 \item{annot}{ An object containing reference sequences is obtained by the retrieveFormatData function. It is data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq }
-\item{motifsIn}{ Motif sequences to be analyzed. IUPAC code or [ ] can be used for ambiguities. Provide "G4" for g-quadruplexes. G-quadruplexes presence is predicted using pqsfinder package https://bioconductor.org/packages/release/bioc/html/pqsfinder.html }
+\item{motifsIn}{ List of motif sequences to be analyzed. IUPAC code or [ ] can be used for ambiguities. Provide "G4" for g-quadruplexes. G-quadruplexes presence is predicted using pqsfinder package https://bioconductor.org/packages/release/bioc/html/pqsfinder.html }
 \item{seqType}{ Sequence type of the motif. Choose from dna, rna, or protein. The default is "dna". }
 \item{dist}{ Minimal distance between motifs. The default is 1. }
 \item{min_score}{ Threshold for the quality of the g-quadruplexes prediction. It is required for "G4" option. The default is 47. }
@@ -28,6 +28,7 @@ contentMotifs(annot, motifsIn, seqType="dna", dist=1, min_score=47, unitOut="num
 \item{subregionSel}{ It is required if the subregion is provided. Choose whether the indicated subregion should be "select" or "exclude". }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end. }
 \item{plotOut}{ Logical whether plots and optionally comparisons should be performed. The default is TRUE. }
+\item{outDir}{ Optionally, the name of the output directory for all the plots if plotOut is TRUE. }
 \item{pdfName}{ Name of the output pdf files. }
 }
 

@@ -24,7 +24,18 @@ codonUsage <- function(annot=NULL,
                        subregion = NULL, # number of nucleotides from start if positive or end if negative.
                        subregionSel, # select or exclude , required if subregion is not null.
                        comparisons,
+                       outDir = NULL,
                        pdfName = NULL) {
+  #
+  if (!is.null(outDir)){
+    dirTmp <- outDir
+  } else {
+    dirTmp <- paste('codonUsage', format(Sys.time(), "%Y%m%e_%X"),sep='_')
+  }
+  dir.create(dirTmp)
+  #
+  nameTmp <- ifelse(is.null(pdfName), analysis, paste(pdfName, analysis, sep = "_"))
+  nameOut <- paste(dirTmp,nameTmp, sep='/')
   #
   if (is.null(comparisons)) {
     stop(
@@ -205,7 +216,270 @@ codonUsage <- function(annot=NULL,
   }
   #
   resOut <- do.call(rbind, resOut)
+  
+  #indexes
+  if(analysis="codon"){
+    if (species == "human") {
+      codind <- read.delim(system.file(paste("extdata/indexes/human", version, sep = "/"), "codonIndexesHuman.rda", package = "anota2seqUtils"), stringsAsFactors = FALSE)
+    }
+    if (species == "mouse") {
+      codind <- read.delim(system.file(paste("extdata/indexes/mouse", version, sep = "/"), "codonIndexesMouse.rda", package = "anota2seqUtils"), stringsAsFactors = FALSE) # }
+    }
+  }
 
+  #####CAI
+  index_sel <- codind[,which(colnames(codind)=='CAI')]
+  names(index_sel) <- codind$external_gene_name
+  
+  resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
+  coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+  
+  ##
+  pdf(paste(nameOut,'_CAI_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
+  par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  # 
+  if (!is.null(regulation)) {
+    xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
+  } else {
+    xlimIn <- c(0.5, length(geneList) + 1.5)
+  }
+  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  
+  axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
+  mtext(side = 2, line = 6, "CAI index", col = "black", font = 2, cex = 1.7, at = 0.5)
+  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+  
+  if (!is.null(ads) | !is.null(customBg)) {
+    abline(lty = 5, h = median(resOutInd[[1]]))
+  }
+  #
+  for (i in 1:length(resOutInd)) {
+    boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
+    text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
+  }
+  # Plot stats
+  if (!is.null(comparisons)) {
+    addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+  }
+  dev.off()
+  
+  ######CBI
+  index_sel <- codind[,which(colnames(codind)=='CBI')]
+  names(index_sel) <- codind$external_gene_name
+  
+  resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
+  coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+  
+  ##
+  pdf(paste(nameOut,'_CBI_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
+  par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  # 
+  if (!is.null(regulation)) {
+    xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
+  } else {
+    xlimIn <- c(0.5, length(geneList) + 1.5)
+  }
+  plot(1, 1, xlim = xlimIn, ylim = c(-1, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  
+  axis(side = 2, at=seq(-1,1,0.25),labels = seq(-1,1,0.25), font = 2, las = 2, lwd = 2)
+  mtext(side = 2, line = 6, "CBI index", col = "black", font = 2, cex = 1.7, at = 0.5)
+  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+  
+  if (!is.null(ads) | !is.null(customBg)) {
+    abline(lty = 5, h = median(resOutInd[[1]]))
+  }
+  #
+  for (i in 1:length(resOutInd)) {
+    boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
+    text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
+  }
+  # Plot stats
+  if (!is.null(comparisons)) {
+    addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+  }
+  dev.off()
+  
+  ######Fop
+  index_sel <- codind[,which(colnames(codind)=='Fop')]
+  names(index_sel) <- codind$external_gene_name
+  
+  resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
+  coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+  
+  ##
+  pdf(paste(nameOut,'_Fop_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
+  par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  # 
+  if (!is.null(regulation)) {
+    xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
+  } else {
+    xlimIn <- c(0.5, length(geneList) + 1.5)
+  }
+  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  
+  axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
+  mtext(side = 2, line = 6, "Fop index", col = "black", font = 2, cex = 1.7, at = 0.5)
+  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+  
+  if (!is.null(ads) | !is.null(customBg)) {
+    abline(lty = 5, h = median(resOutInd[[1]]))
+  }
+  #
+  for (i in 1:length(resOutInd)) {
+    boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
+    text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
+  }
+  # Plot stats
+  if (!is.null(comparisons)) {
+    addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+  }
+  dev.off()
+  
+  #####GC3s
+  index_sel <- codind[,which(colnames(codind)=='GC3s')]
+  names(index_sel) <- codind$external_gene_name
+  
+  resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
+  coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+  
+  ##
+  pdf(paste(nameOut,'_GC3s_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
+  par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  # 
+  if (!is.null(regulation)) {
+    xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
+  } else {
+    xlimIn <- c(0.5, length(geneList) + 1.5)
+  }
+  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  
+  axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
+  mtext(side = 2, line = 6, "GC3s index", col = "black", font = 2, cex = 1.7, at = 0.5)
+  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+  
+  if (!is.null(ads) | !is.null(customBg)) {
+    abline(lty = 5, h = median(resOutInd[[1]]))
+  }
+  #
+  for (i in 1:length(resOutInd)) {
+    boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
+    text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
+  }
+  # Plot stats
+  if (!is.null(comparisons)) {
+    addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+  }
+  dev.off()
+  
+  #######Nc
+  tmp <- codind[!codind$Nc=='*****',]
+  tmp <- tmp[!is.na(tmp$Nc),]
+  index_sel <- as.numeric(levels(tmp$Nc))[tmp$Nc]
+  names(index_sel) <- tmp$external_gene_name
+  
+  resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
+  coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+  
+  pdf(paste(nameOut,'_Nc_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
+  par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  # 
+  if (!is.null(regulation)) {
+    xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
+  } else {
+    xlimIn <- c(0.5, length(geneList) + 1.5)
+  }
+  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  
+  axis(side = 2, at=seq(0,100,20),labels = seq(0,100,20), font = 2, las = 2, lwd = 2)
+  mtext(side = 2, line = 6, "Nc index", col = "black", font = 2, cex = 1.7, at = 0.5)
+  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+  
+  if (!is.null(ads) | !is.null(customBg)) {
+    abline(lty = 5, h = median(resOutInd[[1]]))
+  }
+  #
+  for (i in 1:length(resOutInd)) {
+    boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
+    text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
+  }
+  # Plot stats
+  if (!is.null(comparisons)) {
+    addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+  }
+  dev.off()
+  
+  #####tAI
+  index_sel <- codind[,which(colnames(codind)=='tai')]
+  names(index_sel) <- codind$external_gene_name
+  
+  resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
+  coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+  
+  ##
+  pdf(paste(nameOut,'_tAI_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
+  par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  # 
+  if (!is.null(regulation)) {
+    xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
+  } else {
+    xlimIn <- c(0.5, length(geneList) + 1.5)
+  }
+  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  
+  axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
+  mtext(side = 2, line = 6, "tAI index", col = "black", font = 2, cex = 1.7, at = 0.5)
+  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+  
+  if (!is.null(ads) | !is.null(customBg)) {
+    abline(lty = 5, h = median(resOutInd[[1]]))
+  }
+  #
+  for (i in 1:length(resOutInd)) {
+    boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
+    text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
+  }
+  # Plot stats
+  if (!is.null(comparisons)) {
+    addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+  }
+  dev.off()
+  
+  ###L_aa
+  index_sel <- log2(codind[,which(colnames(codind)=='L_aa')])
+  names(index_sel) <- codind$external_gene_name
+  
+  resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
+  coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+  
+  ##
+  pdf(paste(nameOut,'L_aa_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
+  par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  # 
+  if (!is.null(regulation)) {
+    xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
+  } else {
+    xlimIn <- c(0.5, length(geneList) + 1.5)
+  }
+  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  
+  axis(side = 2, at=seq(0,10,2),labels = seq(0,10,2), font = 2, las = 2, lwd = 2)
+  mtext(side = 2, line = 6, "log2 L_aa index", col = "black", font = 2, cex = 1.7, at = 0.5)
+  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+  
+  if (!is.null(ads) | !is.null(customBg)) {
+    abline(lty = 5, h = median(resOutInd[[1]]))
+  }
+  #
+  for (i in 1:length(resOutInd)) {
+    boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
+    text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
+  }
+  # Plot stats
+  if (!is.null(comparisons)) {
+    addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+  }
+  dev.off()
+  
   #
   codonsOut <- list()
   for (j in 1:length(comparisons)) {
@@ -234,8 +508,8 @@ codonUsage <- function(annot=NULL,
     if (isTRUE(plotHeatmap)) {
       #
       residOut <- t(as.matrix(StResiduals))
-
-      pdf(ifelse(is.null(pdfName), paste(analysis, paste(colnames(residOut), collapse = "_"), "Heatmap.pdf", sep = ""), paste(pdfName, paste(analysis, paste(colnames(residOut), collapse = "_"), "Heatmap.pdf", sep = ""), sep = "_")), width = 20, height = 28, useDingbats = F)
+      
+      pdf(paste(nameOut, paste(colnames(residOut), collapse = "_"), "_heatmap.pdf", sep = ""), width = 20, height = 28, useDingbats = F)
       par(mar = c(10, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
       col <- grDevices::colorRampPalette(c("blue", "white", "red"))(50)
       gplots::heatmap.2(residOut,
@@ -287,7 +561,7 @@ codonUsage <- function(annot=NULL,
       #
       xylim <- roundUpNice(max(compOut[, c(1, 2)]))
       #
-      pdf(ifelse(is.null(pdfName), paste(paste(colnames(compOut)[1:2], collapse = "_"), "averageFreq.pdf", sep = "_"), paste(pdfName, paste(colnames(compOut)[1:2], collapse = "_"), "averageFreq.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
+      pdf(paste(nameOut, paste(colnames(compOut)[1:2], collapse = "_"), "_averageFreq.pdf", sep = ""), width = 8, height = 8, useDingbats = F)
       par(mar = c(10, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
       pOut <- ggplot2::ggplot(compOut, ggplot2::aes(!!sym(colnames(compOut)[1]), !!sym(colnames(compOut)[2]), col = AA)) +
         ggplot2::theme_bw() +
@@ -336,7 +610,7 @@ codonUsage <- function(annot=NULL,
       #
       xylim <- roundUpNice(max(compOut[, c(1, 2)]))
       #
-      pdf(ifelse(is.null(pdfName), paste(paste(colnames(compOut)[1:2], collapse = "_"), "codonUsage.pdf", sep = "_"), paste(pdfName, paste(colnames(compOut)[1:2], collapse = "_"), "codonUsage.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
+      pdf(paste(nameOut, paste(colnames(compOut)[1:2], collapse = "_"), "_codonUsage.pdf", sep = ""), width = 8, height = 8, useDingbats = F)
       par(mar = c(10, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
       pOut <- ggplot2::ggplot(compOut, ggplot2::aes(!!sym(colnames(compOut)[1]), !!sym(colnames(compOut)[2]), col = AA)) +
         ggplot2::theme_bw() +
@@ -374,7 +648,7 @@ codonUsage <- function(annot=NULL,
       finalOut <- finalOut[finalOut$codon %in% signSel, ]
       #
       xlimT <- roundUpNice(max(abs(range(log2(finalOut$statOut)))))
-      pdf(ifelse(is.null(pdfName), paste(analysis, paste(colnames(compOut)[1:2], collapse = "_"), "codon_oddratio_freq.pdf", sep = ""), paste(pdfName, paste(analysis, paste(colnames(compOut)[1:2], collapse = "_"), "codon_oddratio_freq.pdf", sep = ""), sep = "_")), width = 8, height = 8, useDingbats = F)
+      pdf(paste(nameOut, paste(colnames(compOut)[1:2], collapse = "_"), "codon_oddratio_vs_freq.pdf", sep = ""), width = 8, height = 8, useDingbats = F)
       par(mar = c(5, 5, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.7, cex.main = 1.7, cex.lab = 1.3)
       plot(log2(finalOut$statOut), finalOut$freq, col = "black", pch = 20, cex = 0.1, xlab = "", ylab = "", lwd = 1, bty = "n", xaxt = "n", yaxt = "n", font = 2, xlim = c(-xlimT, xlimT), ylim = range(finalOut$freq))
       text(log2(finalOut$statOut), finalOut$freq, finalOut$codon, col = "black", font = 2)
@@ -398,6 +672,7 @@ codonUsage <- function(annot=NULL,
       legend(-xlimT, roundUpNice(range(finalOut$freq)[2]), c(regComb[2], regComb[1]), fill = c("dodgerblue1", "firebrick1"), bty = "n", horiz = TRUE, xpd = T, y.intersp = 2.8, cex = 1.3)
 
       dev.off()
+      
     } else if (analysis == "AA") {
       resOutTmp <- data.frame(AA = colnames(resOut), t(resOut[compTmp, ]), row.names = NULL)
       #
@@ -419,7 +694,8 @@ codonUsage <- function(annot=NULL,
       finalOut <- finalOut[finalOut$AA %in% signSel, ]
       #
       xlimT <- roundUpNice(max(abs(range(log2(finalOut$statOut)))))
-      pdf(ifelse(is.null(pdfName), paste(analysis, paste(colnames(compOut)[1:2], collapse = "_"), "AA_oddratio_freq.pdf", sep = ""), paste(pdfName, paste(analysis, paste(colnames(compOut)[1:2], collapse = "_"), "AA_oddratio_freq.pdf", sep = ""), sep = "_")), width = 8, height = 8, useDingbats = F)
+      
+      pdf(paste(nameOut, paste(colnames(compOut)[1:2], collapse = "_"), "AA_oddratio_vs_freq.pdf", sep = ""), width = 8, height = 8, useDingbats = F)
       par(mar = c(5, 8, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.7, cex.main = 1.7, cex.lab = 1.3)
       plot(finalOut$statOut, finalOut$freq, col = "black", pch = 20, cex = 0.1, xlab = "", ylab = "", lwd = 1, bty = "n", xaxt = "n", yaxt = "n", font = 2, xlim = c(-xlimT, xlimT), ylim = range(finalOut$freq))
       text(finalOut$statOut, finalOut$freq, finalOut$AA, col = "black")
