@@ -220,10 +220,10 @@ codonUsage <- function(annot=NULL,
   #indexes
   if(analysis == "codon"){
     if (species == "human") {
-      codind <- read.delim(system.file(paste("extdata/indexes/human", version, sep = "/"), "codonIndexesHuman.rda", package = "anota2seqUtils"), stringsAsFactors = FALSE)
+      codind <- load(system.file(paste("extdata/indexes/human", version, sep = "/"), "codonIndexesHuman.rda", package = "anota2seqUtils"))
     }
     if (species == "mouse") {
-      codind <- read.delim(system.file(paste("extdata/indexes/mouse", version, sep = "/"), "codonIndexesMouse.rda", package = "anota2seqUtils"), stringsAsFactors = FALSE) # }
+      codind <- load(system.file(paste("extdata/indexes/mouse", version, sep = "/"), "codonIndexesMouse.rda", package = "anota2seqUtils"))
     }
     #####CAI
     index_sel <- codind[,which(colnames(codind)=='CAI')]
