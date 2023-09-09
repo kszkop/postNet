@@ -1230,3 +1230,17 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   dev.off()
 }
 
+retrieveSignatures <- function(species=NULL){
+  #list existing species
+  currTmp <- list.files(system.file("extdata/signatures/human",package = "anota2seqUtils"))
+  #
+  if(!species %in% currTmp){
+    stop("This option is only  available for species: human and mouse at the moment")
+  }
+  if (species == "human") {
+    codind <- read.delim(system.file(paste("extdata/signatures/human", version, sep = "/"), "humanSignatures.rda", package = "anota2seqUtils"), stringsAsFactors = FALSE)
+  }
+  if (species == "mouse") {
+    codind <- read.delim(system.file(paste("extdata/signatures/mouse", version, sep = "/"), "mouseSignatures.rda", package = "anota2seqUtils"), stringsAsFactors = FALSE) # }
+  }
+}
