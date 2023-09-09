@@ -38,4 +38,4 @@ featureIntegration(features, analysis_type, comparisons = NULL, rmCat = NULL, re
 }
 
 \examples{
-featureIntegration(features, analysis_type, regOnly=TRUE, allFeat=TRUE, covarFilt = 20,  NetModelSel= "Omnibus", ads = NULL, regulationGen=NULL, contrastSel=NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, effectMeasure=NULL, outDir=NULL, pdfName=NULL)                     
+featureIntegration(features, analysis_type, regOnly=TRUE, allFeat=TRUE, covarFilt = 20,  NetModelSel= "Omnibus", ads = NULL, regulationGen=NULL, contrastSel=NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, effectMeasure=NULL, outDir=NULL, pdfName=NULL)
