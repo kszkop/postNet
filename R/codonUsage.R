@@ -218,7 +218,7 @@ codonUsage <- function(annot=NULL,
   resOut <- do.call(rbind, resOut)
   
   #indexes
-  if(analysis="codon"){
+  if(analysis == "codon"){
     if (species == "human") {
       codind <- read.delim(system.file(paste("extdata/indexes/human", version, sep = "/"), "codonIndexesHuman.rda", package = "anota2seqUtils"), stringsAsFactors = FALSE)
     }
