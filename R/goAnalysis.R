@@ -81,7 +81,7 @@ goAnalysis <- function(ads,
                              testDirection="over") 
       }
     } else {
-      stop('Wrong category! Please select from: BP, MF, CC, KEGG or PFAM')
+      stop('Wrong category! Please select from: BP, MF, CC, KEGG')
     }
     #
     hgOver <- list()
