@@ -72,6 +72,8 @@ anota2seqUtilsRun <- function(source='load',
                               
                               addSign = NULL,
                               
+                              contrastSel,
+                              
                               regulationGen = NULL,
                               minSlope = NULL,
                               maxSlope = NULL,
@@ -81,13 +83,15 @@ anota2seqUtilsRun <- function(source='load',
                               
                               analysis_type,
                               rmCat = NULL,
+                              useCorel = TRUE,
                               regOnly = TRUE,
                               allFeat = TRUE,
                               covarFilt = 20,
                               NetModelSel = "Omnibus",
-                              effectMeasure = NULL,
-                              outDir = NULL
+                              effectMeasure = NULL
+                              outDir=NULL,
                               ){
+  
   #####Prepare annotation
   if(is.null(version)){
     version <- checkAvailableVersions(species=species)
@@ -314,12 +318,17 @@ anota2seqUtilsRun <- function(source='load',
       codonIn <- codonOutTmp[['codonAll']]
       for(j in 1:length(comparisons)){
         #
-        featSelUp <- codonOutTmp[[j]][["Up"]]
-        featSelDown <- codonOutTmp[[j]][["Down"]]
-        #
-        if(length(featSelUp) > 0){
-          selCodonOutUp <- codonCalc(codonIn = codonIn,
-                                     featsel = featSelUp,
+        featSel <- codonOutTmp[[j]]
+        #Remove empty and check whether anything there and then run for each line remainng
+        
+        
+        #featSelUp <- codonOutTmp[[j]][["Up"]]
+        #featSelDown <- codonOutTmp[[j]][["Down"]]
+        
+        if(length(featSel) > 0){
+            selCodonOut <- codonCalc(codonIn = codonIn,
+                                     featsel = featSel,
+                                     featselName = paste('comparison', j ,names(selCodonOut),sep='_'),
                                      analysis = analysis,
                                      unit = unit,
                                      ads = ads,
@@ -332,24 +341,7 @@ anota2seqUtilsRun <- function(source='load',
                                      plotOut = plotOut,
                                      plotType = plotType,
                                      pdfName = pdfName)
-          resultsOut[[paste('codonUp','comp',j,sep='_')]] <- selCodonOutUp
-        }
-        if(length(featSelDown) > 0){
-          selCodonOutDown <- codonCalc(codonIn = codonIn,
-                                   featsel = featSelDown,
-                                   analysis = analysis,
-                                   unit = unit,
-                                   ads = ads,
-                                   regulation = regulation,
-                                   contrast = contrast,
-                                   geneList = geneList,
-                                   geneListcolours = geneListcolours,
-                                   customBg = customBg,
-                                   comparisons = comparisons,
-                                   plotOut = plotOut,
-                                   plotType = plotType,
-                                   pdfName = pdfName)
-          resultsOut[[paste('codonDown','comp',j,sep='_')]] <- selCodonOutDown
+          resultsOut <- append(resultsOut, selCodonOut)
         }
       }
     }
@@ -365,56 +357,60 @@ anota2seqUtilsRun <- function(source='load',
     resultsOut <- append(resultsOut, signOutTmp)
   }
   #
-  for(cSel in unique(contrast)){
-    contrastSel <- cSel
-    
-    genesSlopeFiltOut <- slopeFilt(ads=ads,
-                                   regulationGen=regulationGen,
-                                   contrastSel=contrastSel,
-                                   minSlope=minSlope, 
-                                   maxSlope=maxSlope)
+ genesSlopeFiltOut <- slopeFilt(ads=ads,
+                                regulationGen=regulationGen,
+                                contrastSel=contrastSel,
+                                minSlope=minSlope, 
+                                maxSlope=maxSlope)
                         
-    miRNAOut <- miRNAanalysis(annot=annot,
-                              miRNATargetScanFile = miRNATargetScanFile,
-                              genesSlopeFiltOut = genesSlopeFiltOut,
-                              ads=ads,
-                              regulationGen=regulationGen,
-                              contrastSel=contrastSel,
-                              customBg=customBg,
-                              rankIn=rankIn)
-    #
-    if(length(miRNAOut)>1){
-      if(length(miRNAOut) > (miRNAmax)+1 ){
-        miRNAOutFilt <- miRNAOut[2:(miRNAmax+1)]
-      } else {
-        miRNAOutFilt <- miRNAOut[2:length(miRNAOut)]
-      }
-      names(miRNAOutFilt) <- paste(names(miRNAOutFilt), paste('c',contrastSel,sep=''), sep='_')
-      resultsOut <- append(resultsOut, miRNAOutFilt)
+  miRNAOut <- miRNAanalysis(annot=annot,
+                            miRNATargetScanFile = miRNATargetScanFile,
+                            genesSlopeFiltOut = genesSlopeFiltOut,
+                            ads=ads,
+                            regulationGen=regulationGen,
+                            contrastSel=contrastSel,
+                            customBg=customBg,
+                            rankIn=rankIn)
+  #
+  if(length(miRNAOut)>1){
+    if(length(miRNAOut) > (miRNAmax)+1 ){
+      miRNAOutFilt <- miRNAOut[2:(miRNAmax+1)]
+    } else {
+      miRNAOutFilt <- miRNAOut[2:length(miRNAOut)]
     }
+    names(miRNAOutFilt) <- paste(names(miRNAOutFilt), paste('c',contrastSel,sep=''), sep='_')
+    resultsOut <- append(resultsOut, miRNAOutFilt)
   }
   
   ####Run feature integration
-  utilsOut <- featureIntegration(features = resultsOut, 
-                                 analysis_type = analysis_type,
-                                 rmCat=rmCat,
-                                 comparisons = comparisons,
-                                 regOnly = regOnly, 
-                                 allFeat = allFeat, 
-                                 covarFilt = covarFilt,  
-                                 NetModelSel= NetModelSel, 
-                                 ads = ads, 
-                                 regulationGen = regulationGen, 
-                                 contrastSel = contrastSel, 
-                                 geneList = geneList, 
-                                 geneListcolours = geneListcolours, 
-                                 customBg = customBg,
-                                 effectMeasure = effectMeasure, 
-                                 outDir = outDir,
-                                 pdfName = pdfName)  
+  #utilsOut <- 
+    featureIntegration(features = resultsOut, 
+                                  analysis_type = analysis_type,
+                                  rmCat = rmCat,
+                                  useCorel = useCorel,
+                                  comparisons = comparisons,
+                                  regOnly = regOnly, 
+                                  allFeat = allFeat, 
+                                  covarFilt = covarFilt,  
+                                  NetModelSel = NetModelSel, 
+                                  ads = ads, 
+                                  regulation = regulation,
+                                  contrast = contrast,
+                                  regulationGen = regulationGen, 
+                                  contrastSel = contrastSel, 
+                                  geneList = geneList, 
+                                  geneListcolours = geneListcolours, 
+                                  customBg = customBg,
+                                  effectMeasure = effectMeasure, 
+                                  outDir = outDir,
+                                  pdfName = pdfName)  
 
-    return(utilsOut)
+    #return(utilsOut)
 }
+
+
+
+        
 
 
 

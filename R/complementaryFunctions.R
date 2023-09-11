@@ -1238,7 +1238,7 @@ retrieveSignatures <- function(species){
     stop("This option is only  available for species: human and mouse at the moment")
   }
   if (species == "human") {
-    load(system.file("extdata/signatures/human", "humanSignatures.rda", package = "anota2seqUtils"))
+   load(system.file("extdata/signatures/human", "humanSignatures.rda", package = "anota2seqUtils"))
   }
   if (species == "mouse") {
     load(system.file("extdata/signatures/mouse", "mouseSignatures.rda", package = "anota2seqUtils"))

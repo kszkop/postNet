@@ -33,7 +33,7 @@ codonCalc <- function(codonIn,
     #
     featTmp <- featsel[[i]]
     if(!is.null(featselName)){
-      featNameTmp <- names(featsel)[i]
+      featNameTmp <- featselName[i]
     } else {
       featNameTmp <- i
     }

@@ -1,12 +1,12 @@
-signatureFunction <- function(signatureList, #signatures to be plotted (as a list of gene vectors)
-                              generalName, #Name of signature, main name (for example "Guan_etal_2017_eIF2Alpha")
+signatureFunction <- function(signatureList,
+                              generalName,
                               dataName,
                               effects_names=c('total mRNA log2FC', 'polysome associated mRNA log2FC','buffering log2FC','translation log2FC'),
-                              colours, #colour for each signature, must be equal length to the number of signatures
-                              ads, #output from anota2seq
-                              contrast, #
-                              xlim=NULL, #provide x axis min and max if you want to set , leave it out if automatic
-                              scatterXY=NULL, #provide lim for scatter
+                              colours, 
+                              ads,
+                              contrast,
+                              xlim=NULL, 
+                              scatterXY=NULL,
                               tableCex,
                               pdfName){
   #

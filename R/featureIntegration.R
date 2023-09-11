@@ -72,7 +72,6 @@ featureIntegration <- function(features,
         nameOut <- paste(dirTmp,nameTmp, sep='/')
         #
         runLM(dataIn = dat, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, nameOut = nameOut, NetModelSel = NetModelSel)
-        
       }
     } else {
       dirTmp <- paste(dirTmp, 'lm',sep='_')
