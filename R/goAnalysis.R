@@ -13,6 +13,9 @@ goAnalysis <- function(ads,
                        myCond=F,
                        name
 ){
+  #
+  library(Category)
+  #
   GOout <- list()
   #Extract all results
   if(!is.null(ads)){
