@@ -36,8 +36,8 @@ Imports:
   ROCR (>= 1.0-11),
   caret (>= 6.0-93),
   GOstats (>=2.64.0,
-  Category (>2.64.0),
-  org.Hs.eg.db (>3.16.0),
-  org.Mm.eg.db (>3.16.0) 
+  Category (>=2.64.0),
+  org.Hs.eg.db (>=3.16.0),
+  org.Mm.eg.db (>=3.16.0) 
 Suggests: BiocStyle, knitr
 VignetteBuilder: knitr
