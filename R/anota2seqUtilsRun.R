@@ -88,7 +88,7 @@ anota2seqUtilsRun <- function(source='load',
                               allFeat = TRUE,
                               covarFilt = 20,
                               NetModelSel = "Omnibus",
-                              effectMeasure = NULL
+                              effectMeasure = NULL,
                               outDir=NULL
                               ){
   
