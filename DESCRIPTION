@@ -13,8 +13,7 @@ Depends:
   R (>= 4.1.0),
   dplyr (>= 1.0.7),
   pqsfinder (>= 2.8.0),
-  Biostrings (>= 2.60.2),
-  Category (>= 2.64.0)
+  Biostrings (>= 2.60.2)
 Imports:
   gridExtra (>= 2.3),
   curl (>= 4.3.1),
@@ -38,6 +37,7 @@ Imports:
   caret (>= 6.0-93),
   GOstats (>= 2.64.0),
   org.Hs.eg.db (>= 3.16.0),
-  org.Mm.eg.db (>= 3.16.0) 
+  org.Mm.eg.db (>= 3.16.0),
+  Category (>= 2.64.0)
 Suggests: BiocStyle, knitr
 VignetteBuilder: knitr
