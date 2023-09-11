@@ -89,7 +89,7 @@ anota2seqUtilsRun <- function(source='load',
                               covarFilt = 20,
                               NetModelSel = "Omnibus",
                               effectMeasure = NULL
-                              outDir=NULL,
+                              outDir=NULL
                               ){
   
   #####Prepare annotation

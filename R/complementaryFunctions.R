@@ -378,7 +378,8 @@ codonCount <- function(seq, gene, codonN=1){
     seqIn <- seqinr::s2c(tolower(seq))
     
     tmpEff <- seqinr::count(seq = seqIn, wordsize = 3*codonN, start = 3, by = 3,freq = FALSE)
-    tmpFreq <- seqinr::count(seq = seqIn, wordsize = 3*codonN, start = 3, by = 3,freq = TRUE)
+    tmpFreq<- length(seqIn)/(3*codonN)
+    #tmpFreq <- seqinr::count(seq = seqIn, wordsize = 3*codonN, start = 3, by = 3,freq = TRUE)
     #
     #indSel <- which(tmpEff>0)
     #
