@@ -245,7 +245,7 @@ codonUsage <- function(annot=NULL,
     
       axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
       mtext(side = 2, line = 6, "CAI index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
     
       if (!is.null(ads) | !is.null(customBg)) {
         abline(lty = 5, h = median(resOutInd[[1]]))
@@ -257,7 +257,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     
@@ -281,7 +281,7 @@ codonUsage <- function(annot=NULL,
     
       axis(side = 2, at=seq(-1,1,0.25),labels = seq(-1,1,0.25), font = 2, las = 2, lwd = 2)
       mtext(side = 2, line = 6, "CBI index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
     
       if (!is.null(ads) | !is.null(customBg)) {
         abline(lty = 5, h = median(resOutInd[[1]]))
@@ -317,7 +317,7 @@ codonUsage <- function(annot=NULL,
     
       axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
       mtext(side = 2, line = 6, "Fop index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
     
       if (!is.null(ads) | !is.null(customBg)) {
         abline(lty = 5, h = median(resOutInd[[1]]))
@@ -353,7 +353,7 @@ codonUsage <- function(annot=NULL,
     
       axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
       mtext(side = 2, line = 6, "GC3s index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
     
       if (!is.null(ads) | !is.null(customBg)) {
         abline(lty = 5, h = median(resOutInd[[1]]))
@@ -369,43 +369,7 @@ codonUsage <- function(annot=NULL,
       }
       dev.off()
     
-      #######Nc
-      tmp <- codind[!codind$Nc=='*****',]
-      tmp <- tmp[!is.na(tmp$Nc),]
-      index_sel <- as.numeric(levels(tmp$Nc))[tmp$Nc]
-      names(index_sel) <- tmp$external_gene_name
-    
-      resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
-    
-      pdf(paste(nameOut,'_Nc_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
-      par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-      # 
-      if (!is.null(regulation)) {
-        xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
-      } else {
-        xlimIn <- c(0.5, length(geneList) + 1.5)
-      }
-      plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-    
-      axis(side = 2, at=seq(0,100,20),labels = seq(0,100,20), font = 2, las = 2, lwd = 2)
-      mtext(side = 2, line = 6, "Nc index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-    
-      if (!is.null(ads) | !is.null(customBg)) {
-        abline(lty = 5, h = median(resOutInd[[1]]))
-      }
-      #
-      for (i in 1:length(resOutInd)) {
-        boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-        text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
-      }
-      # Plot stats
-      if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
-      }
-      dev.off()
-    
+      
       #####tAI
       index_sel <- codind[,which(colnames(codind)=='tai')]
       names(index_sel) <- codind$external_gene_name
@@ -426,7 +390,7 @@ codonUsage <- function(annot=NULL,
     
       axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
       mtext(side = 2, line = 6, "tAI index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
     
       if (!is.null(ads) | !is.null(customBg)) {
         abline(lty = 5, h = median(resOutInd[[1]]))
@@ -462,7 +426,7 @@ codonUsage <- function(annot=NULL,
   
       axis(side = 2, at=seq(0,10,2),labels = seq(0,10,2), font = 2, las = 2, lwd = 2)
       mtext(side = 2, line = 6, "log2 L_aa index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
   
       if (!is.null(ads) | !is.null(customBg)) {
         abline(lty = 5, h = median(resOutInd[[1]]))

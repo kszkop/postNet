@@ -682,10 +682,10 @@ addStats <- function(comparisons, ads, customBg, plotType, resOut, coloursOut){
     pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
     #
     if (plotType == "boxplot" | plotType == "violin") {
-      yposTmp <- range(as.numeric(unlist(resOut)))[2] + j*5
+      yposTmp <- ifelse(range(as.numeric(unlist(resOut)))[2] <= 1, 1.1,range(as.numeric(unlist(resOut)))[2] + j*5)
       rect(xleft = compTmp[1], xright = compTmp[2], ybottom = yposTmp, ytop = yposTmp, lwd = 2)
       #
-      text(sum(compTmp) / 2, yposTmp + 2.5, pvalTmp, cex = 0.75)
+      text(sum(compTmp) / 2, ifelse(range(as.numeric(unlist(resOut)))[2] <= 1,yposTmp + 0.05,yposTmp + 2.5), pvalTmp, cex = 0.75)
     } else if (plotType == "ecdf") {
       tableOut[j, 1] <- paste(names(resOut)[compTmp[2]], "vs", names(resOut)[compTmp[1]], sep = " ")
       tableOut[j, 2] <- pvalTmp

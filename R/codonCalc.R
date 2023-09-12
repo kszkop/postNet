@@ -32,11 +32,9 @@ codonCalc <- function(codonIn,
   for(i in 1:length(featsel)){
     #
     featTmp <- featsel[[i]]
-    if(!is.null(featselName)){
-      featNameTmp <- featselName[i]
-    } else {
-      featNameTmp <- i
-    }
+    if(is.null(featselName)){
+      featNameTmp <- paste("codon",names(featsel)[i],sep="_")
+    } 
     #
     nameTmp <- ifelse(is.null(pdfName),paste("features",i,"codonCalc.pdf", sep = "_"), paste(pdfName,"features",i,"codonCalc.pdf", sep = "_"))
     nameOut <- paste(dirTmp,nameTmp, sep='/')

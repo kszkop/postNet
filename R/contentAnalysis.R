@@ -32,7 +32,7 @@ contentAnalysis <- function(annot,
     #
     contentFinal <- list()
     for (i in 1:length(contentIn)) {
-      content <- contentIn[[i]]
+      content <- contentIn[i]
     
       contentOut <- as.numeric()
       for (i in 1:nrow(annotBgSel)) {
