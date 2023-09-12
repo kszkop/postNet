@@ -27,9 +27,6 @@ contentMotifs <- function(annot,
       dirTmp <- paste('motifAnalysis', format(Sys.time(), "%Y%m%e_%X"),sep='_')
     }
     dir.create(dirTmp)
- 
-    nameTmp <- ifelse(is.null(pdfName), paste(region, motif, "content.pdf", sep = "_"), paste(pdfName, reg, motif, "content.pdf", sep = "_"))
-    nameOut <- paste(dirTmp,nameTmp, sep='/')
   }
   #
   annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
@@ -58,7 +55,7 @@ contentMotifs <- function(annot,
     #
     motifsFinal <- list()
     for (i in 1:length(motifsIn)) {
-      motif <- motifsIn[[i]]
+      motif <- motifsIn[i]
       #
       if (motif == "G4") {
         motifOutTmp <- as.numeric(sapply(annotBgSel$seqTmp, calc_g4, min_score = min_score))
@@ -87,6 +84,8 @@ contentMotifs <- function(annot,
       }
       #
       if (unitOut == "number" & isTRUE(plotOut)) {
+        nameTmp <- ifelse(is.null(pdfName), paste(region, motif, "content.pdf", sep = "_"), paste(pdfName, reg, motif, "content.pdf", sep = "_"))
+        nameOut <- paste(dirTmp,nameTmp, sep='/')
         #
         resOut <- resSel(vIn = motifOut, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
         coloursOut <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)

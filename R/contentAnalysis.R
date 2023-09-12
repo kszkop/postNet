@@ -14,7 +14,6 @@ contentAnalysis <- function(annot,
                             plotOut = TRUE,
                             plotType = "boxplot",
                             pdfName = NULL) {
-    
   ####
   annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
   #
@@ -48,7 +47,7 @@ contentAnalysis <- function(annot,
         resOut <- resSel(vIn = contentOut, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
         coloursOut <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
         # Plot
-        pdf(ifelse(is.null(pdfName), paste(reg, content, "contentAnalysis.pdf", sep = "_"), paste(pdfName, reg, content, "contentAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
+        pdf(ifelse(is.null(pdfName), paste(reg, content, "Ncontent.pdf", sep = "_"), paste(pdfName, reg, content, "Ncontent.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
         if (plotType == "boxplot" | plotType == "violin") {
           par(mar = c(8, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
           # 
@@ -86,7 +85,7 @@ contentAnalysis <- function(annot,
             lines(ecdf(resOut[[i]]), col = coloursOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
           }
 
-          mtext(side = 1, line = 4, paste(paste(reg, toupper(content), "content (%)", sep = " "), "\n", region, sep = ""), col = "black", font = 2, cex = 1.2)
+          mtext(side = 1, line = 4, paste(paste(reg, toupper(content), "content (%)", sep = " "), "\n", reg, sep = ""), col = "black", font = 2, cex = 1.2)
           mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
 
           axis(side = 1, seq(floor(xlim_min), ceiling(xlim_max), 10), font = 2, lwd = 2)

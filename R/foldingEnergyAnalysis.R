@@ -177,11 +177,11 @@ runFE <- function(energyIn = energyIn,
       for (i in 2:length(resOut)) {
         lines(ecdf(resOut[[i]]), col = coloursOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
       }
+      if (!is.null(comparisons)) {
+        addStats(comparisons, ads, customBg, plotType, resOut, coloursOut)
+      }
     }
     #
-    if (!is.null(comparisons)) {
-      addStats(comparisons, ads, customBg, plotType, resOut, coloursOut)
-    }
     dev.off()
   }
   return(feForAnalysis)

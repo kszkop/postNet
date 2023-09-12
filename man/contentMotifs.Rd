@@ -10,7 +10,7 @@ contentMotifs(annot, motifsIn, seqType="dna", dist=1, min_score=47, unitOut="num
 
 \arguments{
 \item{annot}{ An object containing reference sequences is obtained by the retrieveFormatData function. It is data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq }
-\item{motifsIn}{ List of motif sequences to be analyzed. IUPAC code or [ ] can be used for ambiguities. Provide "G4" for g-quadruplexes. G-quadruplexes presence is predicted using pqsfinder package https://bioconductor.org/packages/release/bioc/html/pqsfinder.html }
+\item{motifsIn}{ motif sequences to be analyzed. IUPAC code or [ ] can be used for ambiguities. Provide "G4" for g-quadruplexes. G-quadruplexes presence is predicted using pqsfinder package https://bioconductor.org/packages/release/bioc/html/pqsfinder.html }
 \item{seqType}{ Sequence type of the motif. Choose from dna, rna, or protein. The default is "dna". }
 \item{dist}{ Minimal distance between motifs. The default is 1. }
 \item{min_score}{ Threshold for the quality of the g-quadruplexes prediction. It is required for "G4" option. The default is 47. }

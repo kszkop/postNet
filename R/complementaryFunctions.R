@@ -667,6 +667,10 @@ extractRegSeq <- function(annotSeq){
 
 addStats <- function(comparisons, ads, customBg, plotType, resOut, coloursOut){
   #
+  if(plotType == "ecdf"){
+    tableOut <- matrix(NA, nrow = length(comparisons), ncol = 5)
+    colnames(tableOut) <- c("signature", "Wilcox_pval", "q25", "q50", "q75")
+  }
   for (j in 1:length(comparisons)) {
     if (!is.null(ads) | !is.null(customBg)) {
       compTmp <- comparisons[[j]] + 1
@@ -677,13 +681,11 @@ addStats <- function(comparisons, ads, customBg, plotType, resOut, coloursOut){
     pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
     #
     if (plotType == "boxplot" | plotType == "violin") {
-      yposTmp <- range(as.numeric(unlist(resOut)))[2] + j
+      yposTmp <- range(as.numeric(unlist(resOut)))[2] + j*5
       rect(xleft = compTmp[1], xright = compTmp[2], ybottom = yposTmp, ytop = yposTmp, lwd = 2)
       #
-      text(sum(compTmp) / 2, yposTmp + 0.5, pvalTmp, cex = 0.75)
+      text(sum(compTmp) / 2, yposTmp + 2.5, pvalTmp, cex = 0.75)
     } else if (plotType == "ecdf") {
-      tableOut <- matrix(NA, nrow = length(comparisons), ncol = 5)
-      colnames(tableOut) <- c("signature", "Wilcox_pval", "q25", "q50", "q75")
       tableOut[j, 1] <- paste(names(resOut)[compTmp[2]], "vs", names(resOut)[compTmp[1]], sep = " ")
       tableOut[j, 2] <- pvalTmp
     
@@ -708,9 +710,10 @@ addStats <- function(comparisons, ads, customBg, plotType, resOut, coloursOut){
         colT <- "white"
       }
       xlim_min <- floor(quantile(as.numeric(unlist(resOut)), 0.01))
-      
-      plotrix::addtable2plot(xlim_min, 1.01, tableOut, bty = "n", display.rownames = FALSE, hlines = FALSE, vlines = TRUE, title = "", cex = 0.7, bg = colT, xpad = 0.1, ypad = 1.4, xjust = 0, yjust = 1)
     }
+  }
+  if (plotType == "ecdf")
+    plotrix::addtable2plot(xlim_min, 1.01, tableOut, bty = "n", display.rownames = FALSE, hlines = FALSE, vlines = TRUE, title = "", cex = 0.7, bg = colT, xpad = 0.1, ypad = 1.4, xjust = 0, yjust = 1)
   }
 }
 
