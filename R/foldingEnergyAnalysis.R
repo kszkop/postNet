@@ -59,7 +59,7 @@ foldingEnergyAnalysis <- function(annot,
     energyIn <- read.delim(customFileFE, stringsAsFactors = FALSE)
     energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
     #
-    feOutTmp <- runFE(energyIn = energyIn, annot = annot,  ads = ads, region = 'custom', regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList, geneListcolours = geneListcolours, selection = selection, residFE = residFE,  plotOut=plotOut, plotType = plotType, pdfName=pdfName)
+    feOutTmp <- runFE(energyIn = energyIn, annot = annot,  ads = ads, region = 'custom', regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList, geneListcolours = geneListcolours, comparisons=comparisons, selection = selection, residFE = residFE,  plotOut=plotOut, plotType = plotType, pdfName=pdfName)
     feOut[['custom']] <- feOutTmp
     #
   } else if (sourceFE == "load") {
@@ -89,7 +89,7 @@ foldingEnergyAnalysis <- function(annot,
         energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), paste("mouseDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "anota2seqUtils"), stringsAsFactors = FALSE)
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
-      feOutTmp <- runFE(energyIn = energyIn, annot = annot,  ads = ads, region = reg, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList, geneListcolours = geneListcolours, selection = selection, residFE = residFE,  plotOut=plotOut, plotType = plotType, pdfName=pdfName)
+      feOutTmp <- runFE(energyIn = energyIn, annot = annot,  ads = ads, region = reg, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList, geneListcolours = geneListcolours, comparisons=comparisons, selection = selection, residFE = residFE,  plotOut=plotOut, plotType = plotType, pdfName=pdfName)
       feOut[[paste(reg, "foldingEnergy",sep='_')]] <- feOutTmp
     }
   } else {
@@ -109,6 +109,7 @@ runFE <- function(energyIn = energyIn,
                   customBg = customBg, 
                   geneList = geneList, 
                   geneListcolours = geneListcolours, 
+                  comparisons=comparisons,
                   selection = selection, 
                   residFE = residFE, 
                   plotOut=plotOut,

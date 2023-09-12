@@ -670,6 +670,7 @@ addStats <- function(comparisons, ads, customBg, plotType, resOut, coloursOut){
   if(plotType == "ecdf"){
     tableOut <- matrix(NA, nrow = length(comparisons), ncol = 5)
     colnames(tableOut) <- c("signature", "Wilcox_pval", "q25", "q50", "q75")
+    colOut <- as.character()
   }
   for (j in 1:length(comparisons)) {
     if (!is.null(ads) | !is.null(customBg)) {
@@ -705,15 +706,15 @@ addStats <- function(comparisons, ads, customBg, plotType, resOut, coloursOut){
       #
       if (length(which(grepl("background", c(names(resOut)[compTmp[2]], names(resOut)[compTmp[1]])))) > 0) {
         colT <- gsub("\\_.*", "", names(resOut)[compTmp][which(names(resOut)[compTmp] != "background")])
-        colT <- coloursOut[colT]
+        colOut[j] <- coloursOut[colT]
       } else {
-        colT <- "white"
+        colOut[j]  <- "white"
       }
       xlim_min <- floor(quantile(as.numeric(unlist(resOut)), 0.01))
     }
   }
   if (plotType == "ecdf"){
-    plotrix::addtable2plot(xlim_min, 1.01, tableOut, bty = "n", display.rownames = FALSE, hlines = FALSE, vlines = TRUE, title = "", cex = 0.7, bg = colT, xpad = 0.1, ypad = 1.4, xjust = 0, yjust = 1)
+    plotrix::addtable2plot(xlim_min, 1.01, tableOut, bty = "n", display.rownames = FALSE, hlines = FALSE, vlines = TRUE, title = "", cex = 0.7, bg = colOut, xpad = 0.1, ypad = 1.4, xjust = 0, yjust = 1)
   }
 }
 
@@ -1232,19 +1233,4 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   legend(-1.5, 1.5, lwd = c(7, 3, 3, 7), col = c(rep("#D55E00", 2), rep("#56B4E9", 2)), title = c("Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
   legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
   dev.off()
-}
-
-retrieveSignatures <- function(species){
-  #list existing species
-  currTmp <- list.files(system.file("extdata/signatures/",package = "anota2seqUtils"))
-  #
-  if(!species %in% currTmp){
-    stop("This option is only  available for species: human and mouse at the moment")
-  }
-  if (species == "human") {
-   load(system.file("extdata/signatures/human", "humanSignatures.rda", package = "anota2seqUtils"))
-  }
-  if (species == "mouse") {
-    load(system.file("extdata/signatures/mouse", "mouseSignatures.rda", package = "anota2seqUtils"))
-  }
 }
