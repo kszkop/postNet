@@ -712,7 +712,7 @@ addStats <- function(comparisons, ads, customBg, plotType, resOut, coloursOut){
       xlim_min <- floor(quantile(as.numeric(unlist(resOut)), 0.01))
     }
   }
-  if (plotType == "ecdf")
+  if (plotType == "ecdf"){
     plotrix::addtable2plot(xlim_min, 1.01, tableOut, bty = "n", display.rownames = FALSE, hlines = FALSE, vlines = TRUE, title = "", cex = 0.7, bg = colT, xpad = 0.1, ypad = 1.4, xjust = 0, yjust = 1)
   }
 }
