@@ -293,7 +293,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     
@@ -329,7 +329,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     
@@ -365,7 +365,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     
@@ -402,7 +402,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     
@@ -438,7 +438,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType, resOutInd, coloursOutInd)
+        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     }
