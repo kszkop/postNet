@@ -24,7 +24,7 @@ codonCalc <- function(codonIn,
     dirTmp <- sort(dirTmp, decreasing = T)
   } else {
     dirTmp <- paste('codonUsage', format(Sys.time(), "%Y%m%e_%X"),sep='_')
-    dir.create(dirTmp)
+    #dir.create(dirTmp)
   }
   #
   codonCalcOut <- list()
@@ -37,7 +37,8 @@ codonCalc <- function(codonIn,
     } 
     #
     nameTmp <- ifelse(is.null(pdfName),paste("features",i,"codonCalc.pdf", sep = "_"), paste(pdfName,"features",i,"codonCalc.pdf", sep = "_"))
-    nameOut <- paste(dirTmp,nameTmp, sep='/')
+    #nameOut <- paste(dirTmp,nameTmp, sep='/')
+    nameOut <- nameTmp
     #
     if (analysis == "codon") {
       codonTmp <- codonIn[codonIn$codon %in% featTmp, ]

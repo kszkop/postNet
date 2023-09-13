@@ -93,7 +93,6 @@ goAnalysis <- function(ads,
   for(i in 1:length(GOobjects)){
     hgOver[[i]] <- GOstats::hyperGTest(GOobjects[[i]])
   }
-  
   names(hgOver) <- names(GoLists)
   
   GOtables <- list()
@@ -101,20 +100,11 @@ goAnalysis <- function(ads,
     GOtables[[i]] <- summary(hgOver[[i]])
   }
   names(GOtables)<- names(hgOver)
-  print('KS1')
-  #for( i in 1:length(GOtables)){
-  #  rownames(GOtables[[i]])<- GOtables[[i]][,"Term"]
+  #
+  #for(i in 1:length(GOtables)){
+  #  GOtables[[i]] <- GOtables[[i]][which(GOtables[[i]][,"Size"] <= maxSize & GOtables[[i]][,"Size"] > minSize & GOtables[[i]][,"Count"] > counts),]
   #}
-  
-  ### Filter go tables output 
-  ### Size of the GO terms
-  ### number of genes per GO term
-  ### OddsRatio
-  ###
-  
-  for(i in 1:length(GOtables)){
-    GOtables[[i]] <- GOtables[[i]][which(GOtables[[i]][,"Size"] <= maxSize & GOtables[[i]][,"Size"] > minSize & GOtables[[i]][,"Count"] > counts),]
-  }
+  GOtables <- lapply(GOtables, function(x) x[x[,6] <= maxSize & x[,6] > minSize & x[,5] > counts,])
   
   
   print('KS2')
