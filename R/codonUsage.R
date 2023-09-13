@@ -27,15 +27,16 @@ codonUsage <- function(annot=NULL,
                        outDir = NULL,
                        pdfName = NULL) {
   #
-  if (!is.null(outDir)){
-    dirTmp <- outDir
-  } else {
-    dirTmp <- paste('codonUsage', format(Sys.time(), "%Y%m%e_%X"),sep='_')
-  }
-  dir.create(dirTmp)
+  #if (!is.null(outDir)){
+  #  dirTmp <- outDir
+  #} else {
+  #  dirTmp <- paste('codonUsage', format(Sys.time(), "%Y%m%e_%X"),sep='_')
+  #}
+  #dir.create(dirTmp)
   #
   nameTmp <- ifelse(is.null(pdfName), analysis, paste(pdfName, analysis, sep = "_"))
-  nameOut <- paste(dirTmp,nameTmp, sep='/')
+  #nameOut <- paste(dirTmp,nameTmp, sep='/')
+  nameOut <- nameTmp
   #
   if (is.null(comparisons)) {
     stop(
