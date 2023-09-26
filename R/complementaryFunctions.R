@@ -1234,3 +1234,13 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
   dev.off()
 }
+
+
+GOconv <- function(geneTerm, species){
+  #
+  convOutTmp <- lapply(geneTerm, function(y) convertEntrezIDToSymbol(entrezIDList = y, species=species))
+  convOutTmp <- lapply(convOutTmp, sort)
+  convOut <- lapply(convOutTmp, function(y) paste(y,collapse=':'))
+  #
+  return(convOut)
+}

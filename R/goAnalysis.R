@@ -139,15 +139,22 @@ goAnalysis <- function(ads,
   #
   id2symb <- as.list(setNames(names(symbol2id), symbol2id))
   print('KS5')
-  geneNamesPerTerm <- genesPerTerm
-  for(k  in 1:length(genesPerTerm)){
-    for(l in 1:length(genesPerTerm[[k]])){
-      if(length(genesPerTerm[[k]]) >0){
-        tmpList <- as.vector(genesPerTerm[[1]][[1]],"character")
-        geneNamesPerTerm[[k]][[l]]<- paste(sort(convertEntrezIDToSymbol(tmpList, species=species)),collapse=":")
-      }
-    }
+  
+
+  
+  
+  
+  GOconv <- function(geneTerm, species){
+    #
+    convOutTmp <- lapply(geneTerm, function(y) convertEntrezIDToSymbol(entrezIDList = y, species=species))
+    convOutTmp <- lapply(convOutTmp, sort)
+    convOut <- lapply(convOutTmp, function(y) paste(y,collapse=':'))
+    #
+    return(convOut)
   }
+  
+  geneNamesPerTerm <- lapply(genesPerTerm, function(x) GOconv(geneTerm = x, species=species))
+  
   print('KS6')
   #
   for(i in 1:length(GOtables)){
