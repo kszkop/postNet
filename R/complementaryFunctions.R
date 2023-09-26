@@ -584,6 +584,9 @@ convertEntrezIDToSymbol <- function(entrezIDList,
 }
 
 
+gsub("\\_*","",rownames(mTo...))
+
+
 writeExcel <- function(listOfData=NULL, listNames=NULL, fileName=NULL){
   
   listToWrite <- list()
@@ -1233,14 +1236,4 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   legend(-1.5, 1.5, lwd = c(7, 3, 3, 7), col = c(rep("#D55E00", 2), rep("#56B4E9", 2)), title = c("Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
   legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
   dev.off()
-}
-
-
-GOconv <- function(geneTerm, species){
-  #
-  convOutTmp <- lapply(geneTerm, function(y) convertEntrezIDToSymbol(entrezIDList = y, species=species))
-  convOutTmp <- lapply(convOutTmp, sort)
-  convOut <- lapply(convOutTmp, function(y) paste(y,collapse=':'))
-  #
-  return(convOut)
 }

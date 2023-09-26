@@ -1,14 +1,20 @@
 gseaAnalysis <- function(ads,
-                         regulationGen,
-                         contrastSel,
-                         genesSlopeFiltOut=NULL,
-                         geneList = NULL,
+                         regulationGen=NULL,
+                         contrastSel=NULL,
+                         genesSlopeFiltOut = NULL,
                          rankIn = NULL,
-                         geneSetName
+                         species,
+                         collection = NULL,
+                         subcollection = NULL,
+                         subsetNames = NULL,
+                         geneSet = NULL,
+                         name = NULL
                         
 ){
   #
-  gseaOut <- list()
+  if (!species %in% c("human","mouse")) {
+    stop("This option is only  available for species: human and mouse at the moment")
+  }
   #
   if(!is.null(ads)){
     tmpAds <- anota2seq::anota2seqGetOutput(ads,
@@ -18,7 +24,7 @@ gseaAnalysis <- function(ads,
                                             getRVM = TRUE)
     #
     if (!is.null(genesSlopeFiltOut)) {
-      tmpAdsFilt <- tmpAds[row.names(tmpAds) %in% genesSlopeFiltOut, ]
+      tmpAdsFilt <- tmpAds[!row.names(tmpAds) %in% genesSlopeFiltOut, ]
     }  else {
       tmpAdsFilt <- tmpAds
     }
@@ -26,92 +32,114 @@ gseaAnalysis <- function(ads,
     tmpP <- tmpAdsFilt[, "apvRvmP"]
     tmpEff <- tmpAdsFilt[, "apvEff"]
     #rankedRVMP <- rank(-log10(tmpP) * sign(tmpEff))
-    fcOut <- tmpEff[order(tmpEff,decreasing = T)]
-  } else if (!is.null(geneList)){
-    tmpAds <- geneList
-    #
-    rankedRVMP <- rankIn
-    names(rankedRVMP) <- tmpAds
+    rankIn <- tmpEff[order(tmpEff,decreasing = T)]
+  } else if (!is.null(rankIn)){
+    rankIn <- rankIn[order(rankIn,decreasing = T)]
   } else {
-    stop("No background provided")
+    stop("No anota2seq object or ranks provided")
   }
-  library(msigdb)
-  library(ExperimentHub)
-  library(GSEABase)
-  library(fgsea)
-  
-  eh = ExperimentHub()
-  query(eh , 'msigdb')
-  
-  msigdb.hs = getMsigdb(org = 'hs', id = 'SYM', version = '7.4')
-  msigdb.hs = appendKEGG(msigdb.hs)
   #
+  if(is.null(geneSet)){
+    eh <- ExperimentHub::ExperimentHub()
+    AnnotationHub::query(eh , 'msigdb')
   
-  #Start with hallmark
-  hallmarks = subsetCollection(msigdb.hs, 'h')
-  msigdb_hallmarks_ids = geneIds(hallmarks)
-  fgseaRes_hallmark <- fgsea(pathways = msigdb_hallmarks_ids, stat = fcOut, minSize  = 5, maxSize  = 500)
-  head(fgseaRes_hallmark[order(padj), ])
-  data.table::fwrite(fgseaRes_hallmark, file="smyd5_gsea_hallmark.txt", sep="\t", sep2=c("", " ", ""))
+    versionTmp <- as.character(sort(as.numeric(msigdb::getMsigdbVersions()),decreasing = T))[1]
+    msigdbOut <- msigdb::getMsigdb(org = ifelse(species=="human",'hs', 'mm'), id = 'SYM', version = versionTmp)
+    msigdbOut <- msigdb::appendKEGG(msigdbOut, version = versionTmp)
+    #
   
-  
-  c6_kegg <- subsetCollection(msigdb.hs, 'c6', 'CP:KEGG')
-  msigdb_c6_kegg_ids = geneIds(c6_kegg)
-  fgseaRes_c6_kegg<- fgsea(pathways = msigdb_c6_kegg_ids, stat = fcOut, minSize  = 5, maxSize  = 500)
-  data.table::fwrite(fgseaRes_c6_kegg, file="smyd5_gsea_c6_kegg.txt", sep="\t", sep2=c("", " ", ""))
-  
-  c6 <- subsetCollection(msigdb.hs, 'c6')
-  msigdb_c6_ids = geneIds(c6)
-  fgseaRes_c6<- fgsea(pathways = msigdb_c6_ids, stat = fcOut, minSize  = 5, maxSize  = 500)
-  
-  outSet <- list()
-  for(i in 1:length(selSet[-c(11,12)])){
-    posOut <- which(grepl(selSet[-c(11,12)][i],names(msigdb.hs)))
-    outSetTmp <- msigdb.hs[[posOut]]
-    outSet[[i]] <- outSetTmp@geneIds
+    #Start with hallmark
+    collectionTmp <- msigdb::subsetCollection(msigdbOut, collection = collection , subcollection = subcollection)
+    if(!is.null(subsetNames)){
+      collectionTmp <- collectionTmp[names(collectionTmp) %in% subsetNames]
+    }
+    geneSet_ids <- GSEABase::geneIds(collectionTmp)
+  } else {
+    geneSet_ids <- geneSet
   }
-  names(outSet) <- selSet[-c(11,12)]
-  fgseaRes_selSet<- fgsea(pathways = outSet, stat = fcOut, minSize  = 5, maxSize  = 500)
-  data.table::fwrite(fgseaRes_selSet, file="smyd5_gsea_selSet.txt", sep="\t", sep2=c("", " ", ""))
+  resOut <- fgsea::fgsea(pathways = geneSet_ids, stat = rankIn, minSize  = 5, maxSize  = 500)
   
-  ###Combine all sel
-  toRunAll <- c(msigdb_hallmarks_ids,msigdb_c6_kegg_ids,outSet)
-  fgseaRes_toRunAll <- fgsea(pathways = toRunAll, stat = fcOut, minSize  = 5, maxSize  = 500)
-  data.table::fwrite(fgseaRes_toRunAll, file="smyd5_gsea_allCat.txt", sep="\t", sep2=c("", " ", ""))
+  #format output
+  resOut$Count <- unlist(lapply(resOut$leadingEdge, length))
+  colnames(resOut) <- c("Term","pvalue",'adjusted_pvalue','log2err',"ES",'NES','Size',"Genes",'Count')
+  resOut <- resOut[,c(1,5,6,4,9,7,2,3,8)]
+  gseaOut <- resOut[order(resOut$adjusted_pvalue),]
   
-  plotEnrichment <- function (pathway, stats, gseaParam = 1, ticksSize = 0.3) 
-  {
-    rnk <- rank(-stats)
-    ord <- order(rnk)
-    statsAdj <- stats[ord]
-    statsAdj <- sign(statsAdj) * (abs(statsAdj)^gseaParam)
-    statsAdj <- statsAdj/max(abs(statsAdj))
-    pathway <- unname(as.vector(na.omit(match(pathway, names(statsAdj)))))
-    pathway <- sort(pathway)
-    gseaRes <- calcGseaStat(statsAdj, selectedStats = pathway, 
-                            returnAllExtremes = TRUE)
+  nameTmp <- paste("gseaAnalysis", regulationGen, paste("c",contrastSel, sep=''),sep='_')
+  nameTmp <- ifelse(!is.null(name), paste(name, nameTmp, sep='_'), nameTmp)
+  data.table::fwrite(gseaOut, file=paste(nameTmp,".txt",sep=''), sep="\t", sep2=c("", ":", ""))
+  #
+  return(gseaOut)
+}
+
+
+gseaPlot <- function(gseaOut,
+                     termNames,
+                     ads,
+                     regulationGen=NULL,
+                     contrastSel=NULL,
+                     genesSlopeFiltOut = NULL,
+                     rankIn = NULL,
+                     gseaParam = 1,
+                     ticksSize = 0.3,
+                     pdfName = NULL
+){
+  #
+  if(!is.null(ads)){
+    tmpAds <- anota2seq::anota2seqGetOutput(ads,
+                                            analysis = regulationGen,
+                                            output = "full",
+                                            selContrast = contrastSel,
+                                            getRVM = TRUE)
+    #
+    if (!is.null(genesSlopeFiltOut)) {
+      tmpAdsFilt <- tmpAds[!row.names(tmpAds) %in% genesSlopeFiltOut, ]
+    }  else {
+      tmpAdsFilt <- tmpAds
+    }
+    #
+    tmpP <- tmpAdsFilt[, "apvRvmP"]
+    tmpEff <- tmpAdsFilt[, "apvEff"]
+    #rankedRVMP <- rank(-log10(tmpP) * sign(tmpEff))
+    rankIn <- tmpEff[order(tmpEff,decreasing = T)]
+  } else if (!is.null(rankIn)){
+    rankIn <- rankIn[order(rankIn,decreasing = T)]
+  } else {
+    stop("No anota2seq object or ranks provided")
+  }
+  #
+  #
+  rnk <- rank(-stats)
+  ord <- order(rnk)
+  statsAdj <- stats[ord]
+  statsAdj <- sign(statsAdj) * (abs(statsAdj)^gseaParam)
+  statsAdj <- statsAdj/max(abs(statsAdj))
+  #
+  for(tname in termNames){
+    termTmp <- tname
+    pathGenes <- unlist(gseaOut[gseaOut$Term %in% termTmp]$Genes)
+    pathGenes<- unname(as.vector(na.omit(match(pathGenes, names(statsAdj)))))
+    pathGenes <- sort(pathGenes)
+    gseaRes <- fgsea::calcGseaStat(statsAdj, selectedStats = pathGenes, returnAllExtremes = TRUE)
     bottoms <- gseaRes$bottoms
     tops <- gseaRes$tops
     n <- length(statsAdj)
-    xs <- as.vector(rbind(pathway - 1, pathway))
+    xs <- as.vector(rbind(pathGenes - 1, pathGenes))
     ys <- as.vector(rbind(bottoms, tops))
     toPlot <- data.frame(x = c(0, xs, n + 1), y = c(0, ys, 0))
     diff <- (max(tops) - min(bottoms))/8
     x = y = NULL
-    g <- ggplot(toPlot, aes(x = x, y = y)) + geom_line(color = "firebrick1", linetype=1, size = 0.75)  + geom_line(color = "firebrick1") + theme_bw() + 
-      theme(panel.border = element_blank(),panel.grid.major = element_blank(),panel.grid.minor = element_blank()) + 
-      theme(axis.line.x = element_line(color="black", linewidth = 0.5),
-            axis.line.y = element_line(color="black", linewidth = 0.5)) +
-      labs(x = "rank", y = "enrichment score") +
-      geom_segment(data = data.frame(x = pathway), mapping = aes(x = x, 
-                                                                 y = -diff/4, xend = x, yend = diff/4), size = ticksSize, color="firebrick1")
-    g
+    
+    nameOut <- ifelse(!is.null(pdfName),paste(pdfName,"gsea", termTmp, sep="_"), paste("gsea", termTmp, sep="_"))
+    
+    pdf(paste(nameOut,".pdf",sep=''), width = 8, height = 4, useDingbats = F)
+    par(mar = c(5, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
+    peOut <- ggplot2::ggplot(toPlot, ggplot2::aes(x = x, y = y)) + ggplot2::geom_line(color = "firebrick1", linetype=1, size = 0.75)  + ggplot2::geom_line(color = "firebrick1") + ggplot2::theme_bw() + 
+      ggplot2::theme(panel.border = ggplot2::element_blank(),panel.grid.major = ggplot2::element_blank(),panel.grid.minor = ggplot2::element_blank()) + 
+      ggplot2::theme(axis.line.x = ggplot2::element_line(color="black", linewidth = 0.5),axis.line.y = ggplot2::element_line(color="black", linewidth = 0.5)) +
+      ggplot2::labs(title=termTmp, x = "rank", y = "enrichment score") +
+      ggplot2::geom_segment(data = data.frame(x = pathGenes), mapping = ggplot2::aes(x = x, y = -diff/4, xend = x, yend = diff/4), size = ticksSize, color="firebrick1")
+    print(peOut)
+    dev.off()
   }
-  
-  
-  
-  
-  
 }
-
-

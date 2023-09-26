@@ -1,32 +1,37 @@
 goAnalysis <- function(ads,
-                       regulation,
-                       contrast,
-                       genesSlopeFiltOut=NULL,
+                       regulationGen,
+                       contrastSel,
+                       genesSlopeFiltOut = NULL,
                        geneList = NULL,
                        customBg = NULL,
                        species,
-                       category, #To choose from (gene ontologies) 'BP', 'CC', 'MF'  or 'KEGG'
-                       maxSize=500,
-                       minSize=10,
-                       counts=10,
-                       FDR=0.15,
-                       myCond=F,
-                       name
+                       category, #To choose from (gene ontologies) 'BP', 'CC', 'MF' or 'KEGG'
+                       maxSize = 500,
+                       minSize = 10,
+                       counts = 10,
+                       FDR = 0.15,
+                       name = NULL
 ){
   #
-  library(Category)
+  if (!species %in% c("human","mouse")) {
+    stop("Only available for 'human' or 'mouse' at the moment")
+  }
   #
+  if (!category %in% c("BP","CC","MF","KEGG")) {
+    stop("Wrong category! Only available for 'BP','CC','MF','KEGG'")
+  }
+
   GOout <- list()
   #Extract all results
   if(!is.null(ads)){
     results <- anota2seqGetDirectedRegulations(ads)
     #
-    res <- vector("list", length = length(regulation))
-    for(i in unique(contrast)){
-      resTmp <- results[[i]][regulation[contrast==i]]
-      res[which(contrast==i)] <- resTmp
+    res <- vector("list", length = length(regulationGen))
+    for(i in unique(contrastSel)){
+      resTmp <- results[[i]][regulationGen[contrastSel==i]]
+      res[which(contrastSel==i)] <- resTmp
     }
-    names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
+    names(res) <- paste(regulationGen, paste('c', contrastSel,sep=''), sep='_')
     if(!is.null(geneList)){
       res <- append(res, geneList)
     }
@@ -57,117 +62,57 @@ goAnalysis <- function(ads,
   res_entrezID <- lapply(res,function(x) convertSymbolToEntrezID(geneList=x, species=species))
   
   GoLists <- res_entrezID[!sapply(res_entrezID, is.null)]
-  
-  ####
-  ####
+
+  #
+  resOut <- list()
   if(category=='KEGG'){
-    GOobjects <- list()
     for(i in 1:length(GoLists)){
-      GOobjects[[i]]<- new("KEGGHyperGParams",
-                           geneIds=as.integer(GoLists[[i]]), ### Genes from the 
-                           universeGeneIds=as.integer(bg_entrezID),
-                           annotation=ifelse(species=="human","org.Hs.eg.db",ifelse(species=="mouse","org.Mm.eg.db",'ups')),
-                           #ontology=category,
-                           pvalueCutoff=1,
-                           #conditional=myCond,
-                           testDirection="over") 
+        resTmp <- clusterProfiler::enrichKEGG(gene=GoLists[[i]],
+                                        universe      = bg_entrezID,
+                                        organism         = ifelse(species=="human","hsa",ifelse(species=="mouse","mmu",'ups')),
+                                        pAdjustMethod = "BH",
+                                        pvalueCutoff  = 1,
+                                        qvalueCutoff  = 1,
+                                        minGSSize = minSize,
+                                        maxGSSize = maxSize)
+        resOut[[names(GoLists)[i]]] <- resTmp
     }
   } else if(category=='BP'|category=='MF'|category=='CC'){
-    #
-    GOobjects <- list()
     for(i in 1:length(GoLists)){
-      GOobjects[[i]]<- new("GOHyperGParams",
-                           geneIds=as.integer(GoLists[[i]]), ### Genes from the 
-                           universeGeneIds=as.integer(bg_entrezID),
-                           annotation=ifelse(species=="human","org.Hs.eg.db",ifelse(species=="mouse","org.Mm.eg.db",'ups')),
-                           ontology=category,
-                           pvalueCutoff=1,
-                           conditional=myCond,
-                           testDirection="over") 
-    }
-  } else {
-    stop('Wrong category! Please select from: BP, MF, CC, KEGG or PFAM')
-  }
-  #
-  hgOver <- list()
-  for(i in 1:length(GOobjects)){
-    hgOver[[i]] <- GOstats::hyperGTest(GOobjects[[i]])
-  }
-  names(hgOver) <- names(GoLists)
-  
-  GOtables <- list()
-  for( i in 1:length(hgOver)){
-    GOtables[[i]] <- summary(hgOver[[i]])
-  }
-  names(GOtables)<- names(hgOver)
-  #
-  #for(i in 1:length(GOtables)){
-  #  GOtables[[i]] <- GOtables[[i]][which(GOtables[[i]][,"Size"] <= maxSize & GOtables[[i]][,"Size"] > minSize & GOtables[[i]][,"Count"] > counts),]
-  #}
-  GOtables <- lapply(GOtables, function(x) x[x[,6] <= maxSize & x[,6] > minSize & x[,5] > counts,])
-  
-  
-  print('KS2')
-  ### Calculate FDRs for the output
-  for ( i in 1:length(hgOver)){
-    
-    FDR<- p.adjust(GOtables[[i]][,"Pvalue"],method="BH")
-    GOtables[[i]]<- cbind(GOtables[[i]],FDR)
-  }
-  
-  print('KS3')
-  # ### Add genes to GO terms...
-  genesPerTerm <- list()
-  
-  for(i in 1:length(hgOver)){
-    genesPerTerm[[i]] <- Category::geneIdsByCategory(hgOver[[i]])
-  }
-  for( i in 1:length(genesPerTerm)){
-    if(category=='KEGG'){
-      genesPerTerm[[i]] <- genesPerTerm[[i]][GOtables[[i]][,"KEGGID"]]
-    } else {
-      genesPerTerm[[i]] <- genesPerTerm[[i]][GOtables[[i]][,paste("GO",category,"ID",sep='')]]
+      resTmp <- clusterProfiler::enrichGO(gene=GoLists[[i]],
+                                            universe      = bg_entrezID,
+                                            OrgDb         = ifelse(species=="human","org.Hs.eg.db",ifelse(species=="mouse","org.Mm.eg.db",'ups')),
+                                            ont           = category,
+                                            pAdjustMethod = "BH",
+                                            pvalueCutoff  = 1,
+                                            qvalueCutoff  = 1,
+                                            minGSSize = minSize,
+                                            maxGSSize = maxSize,
+                                            readable = TRUE,
+                                            pool = FALSE)
+        resOut[[names(GoLists)[i]]] <- resTmp
     }
   }
-  print('KS4')
+  #remove counts below 10 and recalculate adjp and reformat
+  for(i in 1:length(resOut)){
+      tabTmp <- resOut[[i]]@result
+      #
+      tabTmp <- tabTmp[tabTmp$Count > counts,]
+      tabTmp$p.adjust <- stats::p.adjust( tabTmp$pvalue, method = 'BH')
+      tabTmp$Size <- as.numeric(sub("\\/.*", "", tabTmp$BgRatio))
+      tabTmp <- tabTmp[,c(1,2,9,10,5,6,8)]
+      #
+      tabTmp <- tabTmp[tabTmp$p.adjust < FDR, ]
+      #
+      geneIDs_temp <- tabTmp$geneID
+      tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
+      #
+      resOut[[i]]@result <- tabTmp
+  } 
+  resWrite <- lapply(resOut, function(x) x@result)
   #
-  if(species=="human"){
-    symbol2id <- as.list(org.Hs.eg.db::org.Hs.egSYMBOL2EG)
-  } else if(species=="mouse"){
-    symbol2id <- as.list(org.Mm.eg.db::org.Mm.egSYMBOL2EG)
-  }
+  nameOut <- ifelse(is.null(name), paste('GO_',category, '.xlsx',sep=''), paste(name,'_GO_', category, '.xlsx',sep=''))
+  WriteXLS::WriteXLS(resWrite,SheetNames = names(resWrite), ExcelFileName = nameOut, row.names=FALSE)
   #
-  id2symb <- as.list(setNames(names(symbol2id), symbol2id))
-  print('KS5')
-  
-
-  
-  
-  
-  GOconv <- function(geneTerm, species){
-    #
-    convOutTmp <- lapply(geneTerm, function(y) convertEntrezIDToSymbol(entrezIDList = y, species=species))
-    convOutTmp <- lapply(convOutTmp, sort)
-    convOut <- lapply(convOutTmp, function(y) paste(y,collapse=':'))
-    #
-    return(convOut)
-  }
-  
-  geneNamesPerTerm <- lapply(genesPerTerm, function(x) GOconv(geneTerm = x, species=species))
-  
-  print('KS6')
-  #
-  for(i in 1:length(GOtables)){
-    genes <- unlist(geneNamesPerTerm[[i]])
-    tmpTab <- cbind(GOtables[[i]],genes)
-    #reformat
-    tmpTab <- tmpTab[,c(1,7,2,8,3:6,9)]
-    #row.names(tmpTab) <- NULL
-    GOtables[[i]] <- tmpTab 
-  }
-  print('KS7')
-  WriteXLS::WriteXLS(GOtables,SheetNames = names(GOtables),ExcelFileName = paste(name, paste(category, '.xlsx',sep=''),sep='_'),row.names=FALSE)
-  return(list(GOtables,hgOver))
+  return(resOut)
 }
-
-
