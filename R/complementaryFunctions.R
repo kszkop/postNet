@@ -584,9 +584,6 @@ convertEntrezIDToSymbol <- function(entrezIDList,
 }
 
 
-gsub("\\_*","",rownames(mTo...))
-
-
 writeExcel <- function(listOfData=NULL, listNames=NULL, fileName=NULL){
   
   listToWrite <- list()
