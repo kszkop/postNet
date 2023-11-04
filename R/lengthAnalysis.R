@@ -45,7 +45,7 @@ lengthAnalysis <- function(annot,
     if(is.null(geneList)){
       stop('Either anota2seq object of gene list must be provided')
     } else {
-      if(!checkGeneList(geneList){
+      if(!checkGeneList(geneList)){
         stop("'geneList' is empty or not named")
       }
       if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours)== length(geneList)) {
