@@ -400,7 +400,7 @@ plotBoxplots <- function(resOut, coloursOut, comparisons) {
   plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOut)))[2] + (1.25 * length(comparisons))+20), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
   
   axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
-  mtext(side = 2, line = 6, paste(reg, "Log2 length", sep = " "), col = "black", font = 2, cex = 1.7, at = median(as.numeric(unlist(resOut))))
+  mtext(side = 2, line = 6, "Log2 length", col = "black", font = 2, cex = 1.7, at = median(as.numeric(unlist(resOut))))
   text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
   
   if (names(resOut)[1] == 'background') {
@@ -423,7 +423,7 @@ plotViolin <- function(resOut, coloursOut, comparisons) {
   plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOut)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
   
   axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
-  mtext(side = 2, line = 6, paste(reg, "Log2 length", sep = " "), col = "black", font = 2, cex = 1.7, at = median(as.numeric(unlist(resOut))))
+  mtext(side = 2, line = 6, "Log2 length", col = "black", font = 2, cex = 1.7, at = median(as.numeric(unlist(resOut))))
   text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
   
   if (names(resOut)[1] == 'background') {
@@ -448,7 +448,7 @@ plotEcdf <- function(resOut, coloursOut, comparisons) {
   #
   plot(ecdf(resOut[[1]]), col = coloursOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(xlim_min, xlim_max), xaxt = "none")
   
-  mtext(side = 1, line = 4, paste("Log2 length \n", reg, sep = ""), col = "black", font = 2, cex = 1.2)
+  mtext(side = 1, line = 4, "Log2 length", col = "black", font = 2, cex = 1.2)
   mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
   
   axis(side = 1, seq(floor(xlim_min), ceiling(xlim_max), 1), font = 2, lwd = 2)
