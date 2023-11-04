@@ -28,7 +28,7 @@ lengthAnalysis <- function(annot,
   if(isTRUE(plotOut)){
     plotType <- checkPlotType(plotType)
   }
-  if(!is.null(ads))
+  if(!is.null(ads)){
     if (!checkAds(ads)) {
       stop("ads is not a valid 'Anota2seqDataSet' object.")
     }
