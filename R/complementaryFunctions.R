@@ -6,7 +6,7 @@ anota2seqGetDirectedRegulations <- function(ads) {
     rvm_data <- ads@selectedTranslation@selectedRvmData[[i]]
     buffering_data <- ads@selectedBuffering@selectedRvmData[[i]]
     abundance_data <- ads@mRNAAbundance@translatedmRNA[[i]]
-    total_mrna_data <- ads@selectedTotalMRNA@selectedRvmData[[i]]
+    total_mrna_data <- ads@selectedTotalmRNA@selectedRvmData[[i]]
     
     translationUp <- rvm_data[rvm_data$apvEff > 0 & rvm_data$singleRegMode == "translation", ]
     translationDown <- rvm_data[rvm_data$apvEff < 0 & rvm_data$singleRegMode == "translation", ]
