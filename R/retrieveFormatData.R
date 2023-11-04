@@ -185,10 +185,10 @@ checkSource <- function(source) {
 
 # Function to validate the species input
 checkSpecies <- function(source, species) {
-  if (source %in c("create", "load") && is.null(species)) {
+  if (source %in% c("create", "load") && is.null(species)) {
     stop("Please specify a species (e.g., 'human' or 'mouse').")
   }
-  if (source %in c("create", "load") && !(species %in% c("human", "mouse"))) {
+  if (source %in% c("create", "load") && !(species %in% c("human", "mouse"))) {
     stop("This option is only available for species: human and mouse at the moment. Please use option createFromFile.")
   }
 }
