@@ -1,88 +1,67 @@
-# This function assumes that anota2seqRegModes has been run on the ads already...
-# This function is used to generate a list of genes for all contrasts and regulatory modes . . .
-anota2seqGetDirectedRegulations <- function(ads){
-  # Create a list for each contrast
-  regModeList <- rep(list(NA),ncol(ads@contrasts))
+anota2seqGetDirectedRegulations <- function(ads) {
+  n_contrasts <- ncol(ads@contrasts)
+  regModeList <- vector("list", length = n_contrasts)
   
-  for(c in 1:ncol(ads@contrasts)){
-    # Get the proper regulatory modes and store them in the list.
-    translationUp <- ads@selectedTranslation@selectedRvmData[[c]][
-      ads@selectedTranslation@selectedRvmData[[c]][,"apvEff"] > 0 &
-        ads@selectedTranslation@selectedRvmData[[c]][,"singleRegMode"] == "translation",
-      ]
-    translationDown <-ads@selectedTranslation@selectedRvmData[[c]][
-      ads@selectedTranslation@selectedRvmData[[c]][,"apvEff"] < 0 &
-        ads@selectedTranslation@selectedRvmData[[c]][,"singleRegMode"] == "translation",
-      ]
-    translatedmRNAUp <- ads@selectedTranslatedmRNA@selectedRvmData[[c]][
-      ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"apvEff"] > 0,
-      ]
-    translatedmRNADown <-ads@selectedTranslatedmRNA@selectedRvmData[[c]][
-      ads@selectedTranslatedmRNA@selectedRvmData[[c]][,"apvEff"] < 0,
-      ]
-    bufferingmRNAUp <- ads@selectedBuffering@selectedRvmData[[c]][
-      ads@selectedBuffering@selectedRvmData[[c]][,"apvEff"] > 0 &
-        ads@selectedBuffering@selectedRvmData[[c]][,"singleRegMode"] == "buffering",
-      ]
-    bufferingmRNADown <- ads@selectedBuffering@selectedRvmData[[c]][
-      ads@selectedBuffering@selectedRvmData[[c]][,"apvEff"] < 0 &
-        ads@selectedBuffering@selectedRvmData[[c]][,"singleRegMode"] == "buffering",
-      ]
-    mRNAAbundanceUp <- ads@mRNAAbundance@translatedmRNA[[c]][
-      ads@mRNAAbundance@translatedmRNA[[c]][,"apvEff"] > 0 &
-        ads@mRNAAbundance@translatedmRNA[[c]][,"singleRegMode"] == "abundance",
-      ]
-    mRNAAbundanceDown <- ads@mRNAAbundance@translatedmRNA[[c]][
-      ads@mRNAAbundance@translatedmRNA[[c]][,"apvEff"] < 0 &
-        ads@mRNAAbundance@translatedmRNA[[c]][,"singleRegMode"] == "abundance",
-      ]
-    totalmRNAUp <- ads@selectedTotalmRNA@selectedRvmData[[c]][
-        ads@selectedTotalmRNA@selectedRvmData[[c]][,"apvEff"] > 0,
-      ]
-    totalmRNADown <-ads@selectedTotalmRNA@selectedRvmData[[c]][
-      ads@selectedTotalmRNA@selectedRvmData[[c]][,"apvEff"] < 0,
-      ]
-      
-      
-    regModeList[[c]] <- list("translationUp" = rownames(translationUp),
-                             "translationDown" = rownames(translationDown),
-                             "translatedmRNAUp" = rownames(translatedmRNAUp),
-                             "translatedmRNADown" = rownames(translatedmRNADown),
-                             "bufferingmRNAUp" = rownames(bufferingmRNAUp),
-                             "bufferingmRNADown" = rownames(bufferingmRNADown),
-                             "mRNAAbundanceUp" = rownames(mRNAAbundanceUp),
-                             "mRNAAbundanceDown" = rownames(mRNAAbundanceDown),
-                             "totalmRNAUp" = rownames(totalmRNAUp),
-                             "totalmRNADown" = rownames(totalmRNADown))#,
-                             #"background" = setdiff(rownames(ads@dataP),c(rownames(translationUp),
-                                                                          #rownames(translationDown),
-                                                                          #rownames(bufferingmRNADown),
-                                                                          #rownames(bufferingmRNAUp),
-                                                                          #rownames(mRNAAbundanceUp),
-                                                                          #rownames(mRNAAbundanceDown))
-                             #))
+  for (i in 1:n_contrasts) {
+    rvm_data <- ads@selectedTranslation@selectedRvmData[[i]]
+    buffering_data <- ads@selectedBuffering@selectedRvmData[[i]]
+    abundance_data <- ads@mRNAAbundance@translatedmRNA[[i]]
+    total_mrna_data <- ads@selectedTotalMRNA@selectedRvmData[[i]]
     
+    translationUp <- rvm_data[rvm_data$apvEff > 0 & rvm_data$singleRegMode == "translation", ]
+    translationDown <- rvm_data[rvm_data$apvEff < 0 & rvm_data$singleRegMode == "translation", ]
+    translatedmRNAUp <- rvm_data[rvm_data$apvEff > 0, ]
+    translatedmRNADown <- rvm_data[rvm_data$apvEff < 0, ]
+    bufferingmRNAUp <- buffering_data[buffering_data$apvEff > 0 & buffering_data$singleRegMode == "buffering", ]
+    bufferingmRNADown <- buffering_data[buffering_data$apvEff < 0 & buffering_data$singleRegMode == "buffering", ]
+    mRNAAbundanceUp <- abundance_data[abundance_data$apvEff > 0 & abundance_data$singleRegMode == "abundance", ]
+    mRNAAbundanceDown <- abundance_data[abundance_data$apvEff < 0 & abundance_data$singleRegMode == "abundance", ]
+    totalmRNAUp <- total_mrna_data[total_mrna_data$apvEff > 0, ]
+    totalmRNADown <- total_mrna_data[total_mrna_data$apvEff < 0, ]
+    
+    regModeList[[i]] <- list(
+      "translationUp" = rownames(translationUp),
+      "translationDown" = rownames(translationDown),
+      "translatedmRNAUp" = rownames(translatedmRNAUp),
+      "translatedmRNADown" = rownames(translatedmRNADown),
+      "bufferingmRNAUp" = rownames(bufferingmRNAUp),
+      "bufferingmRNADown" = rownames(bufferingmRNADown),
+      "mRNAAbundanceUp" = rownames(mRNAAbundanceUp),
+      "mRNAAbundanceDown" = rownames(mRNAAbundanceDown),
+      "totalmRNAUp" = rownames(totalmRNAUp),
+      "totalmRNADown" = rownames(totalmRNADown)
+    )
   }
-  
   return(regModeList)
-  
 }
 
 
 ###
-checkAvailableVersions <- function(species){
-  #list existing species
-  currTmp <- list.files(system.file("extdata/annotation/refseq",package = "anota2seqUtils"))
+checkAvailableVersions <- function(species) {
+  # Define the base directory for annotation files
+  base_dir <- system.file("extdata/annotation/refseq", package = "anota2seqUtils")
   
-  if(!species %in% currTmp){
-    stop("The pre-prepared annotation file for that species does not exist. Please use option createFromFile")
-  }  else {
-    dir <- system.file(paste("extdata/annotation/refseq", species,sep='/'),package = "anota2seqUtils")
-    listVersions <- list.files(path = dir)
-    print(listVersions)
+  # List existing species
+  curr_tmp <- list.files(base_dir)
+  
+  # Check if the input species is a valid species name
+  if (!species %in% curr_tmp) {
+    stop("Invalid species name. The pre-prepared annotation file for that species does not exist. Please use a valid species name.")
+  } else {
+    # Create the directory path for the specified species
+    species_dir <- file.path(base_dir, species)
+    
+    # List available versions for the specified species
+    list_versions <- list.files(path = species_dir)
+    
+    if (length(list_versions) == 0) {
+      cat("No annotation versions found for", species, "\n")
+    } else {
+      cat("Available versions for", species, ":\n")
+      print(list_versions)
+    }
   }
 }
-
 
 ###For gff 
 getAttributeField <- function (x, field, attrsep = ";") {
@@ -130,14 +109,106 @@ extGff <- function(gff){
   return(bed)
 }
 
+checkRegion <- function(region, convertToUppercase = TRUE) {
+  valid_regions <- c('UTR3', 'CDS', 'UTR5')
+  
+  if (is.null(region) || !is.character(region) || length(region) == 0) {
+    stop("'region' must be a non-empty character vector with valid values, to choose from 'UTR3', 'CDS', 'UTR5'.")
+  }
+  
+  if (convertToUppercase) {
+    region <- toupper(region)
+  }
+  
+  if (!all(region %in% valid_regions)) {
+    stop("'region' must contain valid values: 'UTR3', 'CDS', 'UTR5'.")
+  }
+  return(region)
+}
 
+checkSelection <- function(selection, convertToLowercase = TRUE) {
+  valid_selection <- c('random', 'longest', 'shortest')
+  
+  if (is.null(selection) || !is.character(selection) || length(selection) == 0) {
+    stop("'selection' must be one of: 'random', 'longest', or 'shortest'.")
+  }
+  
+  if (convertToLowercase) {
+    selection <- tolower(selection)
+  }
+  
+  if (!selection %in% tolower(valid_selection)) {
+    stop("'selection' must be one of: 'random', 'longest', or 'shortest'.")
+  }
+  
+  return(selection)
+}
+
+checkPlotType <- function(plotType, convertToLowercase = TRUE) {
+  valid_plottypes <- c('boxplot', 'violin', 'ecdf')
+  
+  if (is.null(plotType) || !is.character(plotType) || length(plotType) == 0) {
+    stop("'plotType' must be one of: 'boxplot', 'violin', or 'ecdf'.")
+  }
+  
+  if (convertToLowercase) {
+    plotType <- tolower(plotType)
+  }
+  
+  if (!plotType %in% tolower(valid_plottypes)) {
+    stop("'plotType' must be one of: 'boxplot', 'violin', or 'ecdf'.")
+  }
+  
+  return(plotType)
+}
+
+checkAnnot <- function(annot, expectedCols = c("id", "geneID", "UTR5_seq", "CDS_seq", "UTR3_seq")) {
+  if (is.null(annot) || !is.data.frame(annot)) {
+    stop("'annot' should be a data frame.")
+  }
+  
+  if (!all(expectedCols %in% colnames(annot))) {
+    stop("The following columns are missing in 'annot': ", paste(expectedCols[!expectedCols %in% colnames(annot)], collapse = ", "))
+  }
+}
+
+# Check if 'ads' is a valid 'Anota2seqDataSet' object
+checkAds <- function(obj) {
+  if (!inherits(obj, "Anota2seqDataSet")) {
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
+checkGeneList <- function(obj) {
+  if (is.list(obj) && length(obj) > 0 && any(names(obj) != "")) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+checkComparisons <- function(obj) {
+  if (!is.list(obj)) {
+    return(FALSE)
+  }
+  
+  all(sapply(obj, function(x) is.numeric(x) && length(x) == 2))
+}
+
+checkLogicalArgument <- function(arg) {
+  if (is.logical(arg) && length(arg) == 1) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}
 
 gSel <- function(annot,ads,customBg,geneList){
   if(!is.null(ads)){
     bg <- row.names(ads@dataP)
-    if(!is.null(geneList)){
-      bg <- unique(c(bg, as.character(unlist(geneList))))
-    }
+    #if(!is.null(geneList)){
+    #  bg <- unique(c(bg, as.character(unlist(geneList))))
+    #}
     annotOut <- annot[annot$geneID %in% bg,]
   } else {
     if(!is.null(customBg)){
@@ -187,26 +258,50 @@ isoSel <- function(annot, method){
   return(annotOut)
 }
 
-resSel <- function(vIn, ads, regulation, contrast, customBg, geneList){
+resSel <- function(vIn, ads, regulation=NULL, regulationGen=NULL, contrast, customBg, geneList){
   resOut <- list()
   #Extract all results
   if(!is.null(ads)){
     results <- anota2seqGetDirectedRegulations(ads)
     #
-    res <- vector("list", length = length(regulation))
-    for(i in unique(contrast)){
-      resTmp <- results[[i]][regulation[contrast==i]]
-      res[which(contrast==i)] <- resTmp
-    }
-    names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
-    if(!is.null(geneList)){
-      res <- append(res, geneList)
-    }
+    if(!is.null(regulationGen)){
+      regulation <- names(results[[contrast]])[grepl(regulationGen, names(results[[contrast]]))]
+      contrast <- rep(contrast,length(regulation))
+      res <- vector("list", length = length(regulation))
+      for(i in unique(contrast)){
+        resTmp <- results[[i]][regulation[contrast==i]]
+        res[which(contrast==i)] <- resTmp
+      }
+      names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
+    } 
+    
+    if (!is.null(regulation)){
+      res <- vector("list", length = length(regulation))
+      for(i in unique(contrast)){
+        resTmp <- results[[i]][regulation[contrast==i]]
+        res[which(contrast==i)] <- resTmp
+      }
+      names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
+    } else {
+      res <- list()
+      for(i in 1:length(results)){
+        resTmp <- results[[i]]
+        names(resTmp) <- paste(names(resTmp), paste('c', i,sep=''), sep="_")
+        res <- append(res, resTmp)
+      }
+    } 
+    #if(!is.null(geneList)){
+    #  res <- append(res, geneList)
+    #}
+    #if(isTRUE(addBg)){
     resOut[[1]] <- vIn
+    #}
     for(i in 1:length(res)){
       resOut[[names(res)[i]]] <- vIn[names(vIn) %in% res[[i]]]
     }
+    #if(isTRUE(addBg)){
     names(resOut)[1] <- 'background'
+    #}
   } else {
     res <- geneList
     if(!is.null(customBg)){
@@ -221,32 +316,152 @@ resSel <- function(vIn, ads, regulation, contrast, customBg, geneList){
       }
     }
   }
+  resOut <- resOut[lapply(resOut,length)>0]
   return(resOut)
 }
 
-coloursSel <- function(ads, regulation=NULL, regulationGen=NULL, geneList, geneListcolours, customBg){
+coloursSel <- function(resOut, geneList, geneListcolours){
   coloursOut <- as.character()
-  if(!is.null(ads)){
+  if(is.null(geneList)){
     AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
     names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
-    if(!is.null(regulationGen)){
-      ancol <- grepl(regulationGen,names(AnotaColours))
-    } else {
-      ancol <- regulation
-    }
-    coloursOut <- c('grey45', AnotaColours[ancol])
-    if(!is.null(geneList)){
-      coloursOut <- append(coloursOut, geneListcolours)
-    }
+    #
+    coloursOut <- AnotaColours[gsub("\\_.*","",names(resOut))]
+    coloursOut[1] <- 'grey75'
   } else {
-    if(!is.null(customBg)){
+    if(names(resOut)[1] == 'background'){
       coloursOut <- c('grey65', geneListcolours)
     } else {
       coloursOut <- geneListcolours
     }
-  }
+  } 
   return(coloursOut)
 }
+
+addStats <- function(comparisons, plotType, resOut, coloursOut){
+  #
+  if(plotType == "ecdf"){
+    tableOut <- matrix(NA, nrow = length(comparisons), ncol = 5)
+    colnames(tableOut) <- c("signature", "Wilcox_pval", "q25", "q50", "q75")
+    colOut <- as.character()
+  }
+  for (j in 1:length(comparisons)) {
+    if (names(resOut)[1] == 'background') {
+      compTmp <- comparisons[[j]] + 1
+    } else {
+      compTmp <- comparisons[[j]]
+    }
+    # stats
+    pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
+    #
+    if (plotType == "boxplot" | plotType == "violin") {
+      yposTmp <- ifelse(range(as.numeric(unlist(resOut)))[2] <= 1, 1.1,range(as.numeric(unlist(resOut)))[2] + j*5)
+      rect(xleft = compTmp[1], xright = compTmp[2], ybottom = yposTmp, ytop = yposTmp, lwd = 2)
+      #
+      text(sum(compTmp) / 2, ifelse(range(as.numeric(unlist(resOut)))[2] <= 1,yposTmp + 0.05,yposTmp + 2.5), pvalTmp, cex = 0.75)
+    } else if (plotType == "ecdf") {
+      tableOut[j, 1] <- paste(names(resOut)[compTmp[2]], "vs", names(resOut)[compTmp[1]], sep = " ")
+      tableOut[j, 2] <- pvalTmp
+      
+      # Calculate percentiles
+      tmpBg <- sort(resOut[[compTmp[1]]])
+      ecdfBg <- 1:length(tmpBg) / length(tmpBg)
+      bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
+      bg_05 <- tmpBg[which(ecdfBg >= 0.5)[1]]
+      bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
+      
+      # Calculate percentiles for second and difference from background
+      tmpSign <- sort(resOut[[compTmp[2]]])
+      ecdfSign <- 1:length(tmpSign) / length(tmpSign)
+      tableOut[j, 3] <- format(tmpSign[which(ecdfSign >= 0.25)[1]] - bg_025, digits = 2)
+      tableOut[j, 4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
+      tableOut[j, 5] <- format(tmpSign[which(ecdfSign >= 0.75)[1]] - bg_075, digits = 2)
+      #
+      if (length(which(grepl("background", c(names(resOut)[compTmp[2]], names(resOut)[compTmp[1]])))) > 0) {
+        colT <- gsub("\\_.*", "", names(resOut)[compTmp][which(names(resOut)[compTmp] != "background")])
+        colOut[j] <- coloursOut[colT]
+      } else {
+        colOut[j]  <- "white"
+      }
+      xlim_min <- floor(quantile(as.numeric(unlist(resOut)), 0.01))
+    }
+  }
+  if (plotType == "ecdf"){
+    plotrix::addtable2plot(xlim_min, 1.01, tableOut, bty = "n", display.rownames = FALSE, hlines = FALSE, vlines = TRUE, title = "", cex = 0.7, bg = colOut, xpad = 0.1, ypad = 1.4, xjust = 0, yjust = 1)
+  }
+}
+
+
+# 
+plotBoxplots <- function(resOut, coloursOut, comparisons) {
+  par(mar = c(8, 12, 12, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  xlimIn <- c(0.5, length(resOut) + 1.5)
+  
+  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOut)))[2] + (1.25 * length(comparisons))+20), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  
+  axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
+  mtext(side = 2, line = 6, paste(reg, "Log2 length", sep = " "), col = "black", font = 2, cex = 1.7, at = median(as.numeric(unlist(resOut))))
+  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+  
+  if (names(resOut)[1] == 'background') {
+    abline(lty = 5, h = median(resOut[[1]]))
+  }
+  #
+  for (i in 1:length(resOut)) {
+    boxplot(resOut[[i]], add = TRUE, at = i, col = coloursOut[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
+    text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
+  }
+  if(!is.null(comparisons)){
+    addStats(comparisons, plotType='boxplot', resOut, coloursOut)
+  }
+}
+
+plotViolin <- function(resOut, coloursOut, comparisons) {
+  par(mar = c(8, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  xlimIn <- c(0.5, length(resOut) + 1.5)
+  
+  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOut)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  
+  axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
+  mtext(side = 2, line = 6, paste(reg, "Log2 length", sep = " "), col = "black", font = 2, cex = 1.7, at = median(as.numeric(unlist(resOut))))
+  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+  
+  if (names(resOut)[1] == 'background') {
+    abline(lty = 5, h = median(resOut[[1]]))
+  }
+  #
+  for (i in 1:length(resOut)) {
+    vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = coloursOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+    text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
+  }
+  if(!is.null(comparisons)){
+    addStats(comparisons, plotType='violin', resOut, coloursOut)
+  }
+}
+
+# Helper function for plotting ECDF
+plotEcdf <- function(resOut, coloursOut, comparisons) {
+  xlim_min <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.01))
+  xlim_max <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.99))
+  par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  
+  #
+  plot(ecdf(resOut[[1]]), col = coloursOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(xlim_min, xlim_max), xaxt = "none")
+  
+  mtext(side = 1, line = 4, paste("Log2 length \n", reg, sep = ""), col = "black", font = 2, cex = 1.2)
+  mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
+  
+  axis(side = 1, seq(floor(xlim_min), ceiling(xlim_max), 1), font = 2, lwd = 2)
+  axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
+  for (i in 2:length(resOut)) {
+    lines(ecdf(resOut[[i]]), col = coloursOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
+  }
+  if(!is.null(comparisons)){
+    addStats(comparisons, plotType='ecdf', resOut, coloursOut)
+  }
+}
+
+
 
 antilog<-function(lx,base){ 
   lbx<-lx/log(exp(1),base=base) 
@@ -664,60 +879,6 @@ extractRegSeq <- function(annotSeq){
   #
   return(annotOut)
 }
-
-addStats <- function(comparisons, ads, customBg, plotType, resOut, coloursOut){
-  #
-  if(plotType == "ecdf"){
-    tableOut <- matrix(NA, nrow = length(comparisons), ncol = 5)
-    colnames(tableOut) <- c("signature", "Wilcox_pval", "q25", "q50", "q75")
-    colOut <- as.character()
-  }
-  for (j in 1:length(comparisons)) {
-    if (!is.null(ads) | !is.null(customBg)) {
-      compTmp <- comparisons[[j]] + 1
-    } else {
-      compTmp <- comparisons[[j]]
-    }
-    # stats
-    pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
-    #
-    if (plotType == "boxplot" | plotType == "violin") {
-      yposTmp <- ifelse(range(as.numeric(unlist(resOut)))[2] <= 1, 1.1,range(as.numeric(unlist(resOut)))[2] + j*5)
-      rect(xleft = compTmp[1], xright = compTmp[2], ybottom = yposTmp, ytop = yposTmp, lwd = 2)
-      #
-      text(sum(compTmp) / 2, ifelse(range(as.numeric(unlist(resOut)))[2] <= 1,yposTmp + 0.05,yposTmp + 2.5), pvalTmp, cex = 0.75)
-    } else if (plotType == "ecdf") {
-      tableOut[j, 1] <- paste(names(resOut)[compTmp[2]], "vs", names(resOut)[compTmp[1]], sep = " ")
-      tableOut[j, 2] <- pvalTmp
-    
-      # Calculate percentiles
-      tmpBg <- sort(resOut[[compTmp[1]]])
-      ecdfBg <- 1:length(tmpBg) / length(tmpBg)
-      bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
-      bg_05 <- tmpBg[which(ecdfBg >= 0.5)[1]]
-      bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
-    
-      # Calculate percentiles for second and difference from background
-      tmpSign <- sort(resOut[[compTmp[2]]])
-      ecdfSign <- 1:length(tmpSign) / length(tmpSign)
-      tableOut[j, 3] <- format(tmpSign[which(ecdfSign >= 0.25)[1]] - bg_025, digits = 2)
-      tableOut[j, 4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
-      tableOut[j, 5] <- format(tmpSign[which(ecdfSign >= 0.75)[1]] - bg_075, digits = 2)
-      #
-      if (length(which(grepl("background", c(names(resOut)[compTmp[2]], names(resOut)[compTmp[1]])))) > 0) {
-        colT <- gsub("\\_.*", "", names(resOut)[compTmp][which(names(resOut)[compTmp] != "background")])
-        colOut[j] <- coloursOut[colT]
-      } else {
-        colOut[j]  <- "white"
-      }
-      xlim_min <- floor(quantile(as.numeric(unlist(resOut)), 0.01))
-    }
-  }
-  if (plotType == "ecdf"){
-    plotrix::addtable2plot(xlim_min, 1.01, tableOut, bty = "n", display.rownames = FALSE, hlines = FALSE, vlines = TRUE, title = "", cex = 0.7, bg = colOut, xpad = 0.1, ypad = 1.4, xjust = 0, yjust = 1)
-  }
-}
-
 
 
 #Convert to dpn

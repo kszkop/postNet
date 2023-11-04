@@ -12,6 +12,64 @@ lengthAnalysis <- function(annot,
                            plotType = "boxplot",
                            pdfName = NULL) {
   ####
+  if(!is.null(ads) && !is.null(geneList)){
+    stop("please provide anota2seq object or list, not both.")
+  }
+  # Check for other input conditions as needed
+  checkAnnot(annot)
+  
+  region <- checkRegion(region)
+  
+  selection <- checkSelection(selection)
+  
+  if(!checkLogicalArgument(plotOut)){
+    stop("'plotOut' can only be only be logical: TRUE of FALSE ")
+  } 
+  if(isTRUE(plotOut)){
+    plotType <- checkPlotType(plotType)
+  }
+  if(!is.null(ads))
+    if (!checkAds(ads)) {
+      stop("ads is not a valid 'Anota2seqDataSet' object.")
+    }
+    if (!is.null(regulation) && !is.character(regulation) && !regulation %in% c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","bufferingmRNAUp","bufferingmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown")) {
+      stop("'regulation' should be a character vector chosen from translationUp,translationDown,translatedmRNAUp,translatedmRNADown,bufferingmRNAUp,bufferingmRNADown,mRNAAbundanceUp,mRNAAbundanceDown,totalmRNAUp,totalmRNADown")
+    }
+    if (!is.null(regulation)){
+      if(!is.null(contrast) && !is.numeric(contrast) && !length(contrast) == length(regulation) && !contrast %in% seq(1,ncol(ads@contrasts),1)){
+        stop("'contrast' should be a numeric vector chosen from each regulation mode")
+      }
+    }
+  } 
+  if(is.null(ads)){
+    if(is.null(geneList){
+      stop('Either anota2seq object of gene list must be provided')
+    } else {
+      if(!checkGeneList(geneList){
+        stop("'geneList' is empty or not named")
+      }
+      if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours)== length(geneList)) {
+        stop("'geneListcolours' should be a character vector of the same length as geneList.")
+      }
+    }
+  }
+  if(!is.null(customBg)){
+    if(!is.character(customBg)){
+      stop("'customBg' is not character vector")
+    }
+    if(!length(setdiff(unlist(geneList), customBg)==0){
+      stop("There are entries in geneList that are not in 'customBg'")
+    }
+  }
+  if(!is.null(comparisons)){
+    if(!checkComparisons(comparisons)){
+      stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
+    }
+    if(length(which(unique(unlist(list(c(0,2),c(0,1))))==0)>0) && is.null(customBg) && is.null(ads)){
+      stop(" 0 is always a background, but no background provided")
+    }
+  }
+  
   annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
   #
   lengthFinal <- list()
@@ -25,55 +83,19 @@ lengthAnalysis <- function(annot,
     if (isTRUE(plotOut)) {
       #
       resOut <- resSel(vIn = lenForAnalysis, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOut <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+      if(length(resOut)==0){
+        stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
+      }
+      coloursOut <- coloursSel(resOut=resOut, geneList = geneList, geneListcolours = geneListcolours)
+      
       # Plot
       pdf(ifelse(is.null(pdfName), paste(reg, plotType, "lengthAnalysis.pdf", sep = "_"), paste(pdfName, reg, plotType, "lengthAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
-      if (plotType == "boxplot" | plotType == "violin") {
-        par(mar = c(8, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-        # 
-        if (!is.null(regulation)) {
-          xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
-        } else {
-          xlimIn <- c(0.5, length(geneList) + 1.5)
-        }
-        plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOut)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-
-        axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
-        mtext(side = 2, line = 6, paste(reg, "Log2 length", sep = " "), col = "black", font = 2, cex = 1.7, at = median(as.numeric(unlist(resOut))))
-        text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-
-        if (!is.null(ads) | !is.null(customBg)) {
-          abline(lty = 5, h = median(resOut[[1]]))
-        }
-        #
-        for (i in 1:length(resOut)) {
-          if (plotType == "violin") {
-            vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = coloursOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-          } else if (plotType == "boxplot") {
-            boxplot(resOut[[i]], add = TRUE, at = i, col = coloursOut[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-          }
-          text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
-        }
+      if (plotType == "boxplot"){
+        plotBoxplots(resOut, coloursOut, comparisons)
+      } else if(plotType == "violin") {
+        plotViolin(resOut, coloursOut, comparisons)
       } else if (plotType == "ecdf") {
-        #
-        xlim_min <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.01))
-        xlim_max <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.99))
-      #
-        par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-        plot(ecdf(resOut[[1]]), col = coloursOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(xlim_min, xlim_max), xaxt = "none")
-
-        mtext(side = 1, line = 4, paste("Log2 length \n", reg, sep = ""), col = "black", font = 2, cex = 1.2)
-        mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
-
-        axis(side = 1, seq(floor(xlim_min), ceiling(xlim_max), 1), font = 2, lwd = 2)
-        axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
-        for (i in 2:length(resOut)) {
-          lines(ecdf(resOut[[i]]), col = coloursOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
-        }
-      }
-      # Plot stats
-      if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType, resOut, coloursOut)
+        plotEcdf(resOut, coloursOut, comparisons)
       }
       dev.off()
     }

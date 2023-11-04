@@ -1,6 +1,6 @@
-goAnalysis <- function(ads,
-                       regulationGen,
-                       contrastSel,
+goAnalysis <- function(ads=NULL,
+                       regulation=NULL,
+                       contrast=NULL,
                        genesSlopeFiltOut = NULL,
                        geneList = NULL,
                        customBg = NULL,
@@ -26,12 +26,12 @@ goAnalysis <- function(ads,
   if(!is.null(ads)){
     results <- anota2seqGetDirectedRegulations(ads)
     #
-    res <- vector("list", length = length(regulationGen))
-    for(i in unique(contrastSel)){
-      resTmp <- results[[i]][regulationGen[contrastSel==i]]
-      res[which(contrastSel==i)] <- resTmp
+    res <- vector("list", length = length(regulation))
+    for(i in unique(contrast)){
+      resTmp <- results[[i]][regulation[contrast==i]]
+      res[which(contrast==i)] <- resTmp
     }
-    names(res) <- paste(regulationGen, paste('c', contrastSel,sep=''), sep='_')
+    names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
     if(!is.null(geneList)){
       res <- append(res, geneList)
     }
@@ -115,4 +115,83 @@ goAnalysis <- function(ads,
   WriteXLS::WriteXLS(resWrite,SheetNames = names(resWrite), ExcelFileName = nameOut, row.names=FALSE)
   #
   return(resOut)
+}
+
+######
+goDotplot <- function(goIn,
+                      pool = TRUE,
+                      termSel=NULL,
+                      colours = NULL,
+                      nCategories=10,
+                      size = 'Count',
+                      pdfName=NULL){
+  #
+  if(isTRUE(pool)){
+    nameOut<- ifelse(is.null(pdfName), "pooled_GOdotplot.pdf", paste(pdfName, "pooled_GOdotplot.pdf", sep = "_"))
+    #
+    goDf <- data.table::rbindlist(lapply(goIn, function(x) x@result),use.names=TRUE, idcol=TRUE)
+    colnames(goDf)[1] <- 'regulation'
+    #
+    if(!is.null(termSel)){
+      goDf <- goDf[goDf$ID %in% termSel,]
+    }
+    #
+    idx <- order(goDf$p.adjust, decreasing = FALSE)
+    #
+    goDf <- goDf[idx,]
+    goDf <- goDf[1:nCategories,]
+    
+    #to plot
+    goDf$log10fdr <- -log10(goDf$p.adjust)
+    
+    #
+    if(size=='geneRatio'){
+      goDf$geneRatio <- goDf$Count/goDf$Size
+    }
+    #
+    pdf(nameOut, width = 8, height = 8, useDingbats = F)
+    par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
+    pOut <- ggplot2::ggplot(goDf, ggplot2::aes(x=log10fdr, y=reorder(Description,log10fdr), size=Count,colour = regulation)) +
+      ggplot2::geom_point() +
+      ggplot2::scale_color_manual(values = colours[1:2]) +   
+      ggplot2::theme_bw() +
+      ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = 'dashed', linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(),panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, 'cm')) +   
+      ggplot2::xlab('-log10 FDR') +
+      ggplot2::ylab(" ")
+    plot(pOut)
+    dev.off()
+  } else{
+    for(i in 1:length(goIn)){
+      nameOut <- ifelse(is.null(pdfName), paste(names(goIn)[i], "GOdotplot.pdf",sep='_'), paste(pdfName,names(goIn)[i],"GOdotplot.pdf", sep = "_"))
+      goDf <- goIn[[i]]@result
+      #
+      if(!is.null(termSel)){
+        goDf <- goDf[goDf$ID %in% termSel,]
+      }
+      #
+      idx <- order(goDf$p.adjust, decreasing = FALSE)
+      #
+      goDf <- goDf[idx,]
+      goDf <- goDf[1:nCategories,]
+      
+      #to plot
+      goDf$log10fdr <- -log10(goDf$p.adjust)
+      
+      #
+      if(size=='geneRatio'){
+        goDf$geneRatio <- goDf$Count/goDf$Size
+      }
+      #
+      pdf(nameOut, width = 8, height = 8, useDingbats = F)
+      par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
+      ggplot2::ggplot(goDf, ggplot2::aes(x=log10fdr, y=reorder(Description,log10fdr), size=Count)) +
+        ggplot2::geom_point(color= colours[i]) +
+        ggplot2::scale_color_manual(values = colours[i]) +   
+        ggplot2::theme_bw() +
+        ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = 'dashed', linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(),panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, 'cm')) +   
+        ggplot2::xlab('-log10 FDR') +
+        ggplot2::ylab(" ")
+      dev.off()
+    }
+  }
 }

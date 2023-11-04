@@ -625,14 +625,21 @@ codonUsage <- function(annot=NULL,
 
       finalOut_u <- finalOut[finalOut$statOut >= 1, ]
       codU <- finalOut_u$codon[finalOut_u$freq >= quantile(finalOut_u$freq, 1 - thresY1) & finalOut_u$statOut >= quantile(finalOut_u$statOut, 1 - thresX1)]
-      finalOut_u <- finalOut_u[finalOut_u$codon %in% codU, ]
-      text(log2(finalOut_u$statOut), finalOut_u$freq, finalOut_u$codon, col = "firebrick1", font = 2)
-
+      if(length(codU) > 0){
+        finalOut_u <- finalOut_u[finalOut_u$codon %in% codU, ]
+        text(log2(finalOut_u$statOut), finalOut_u$freq, finalOut_u$codon, col = "firebrick1", font = 2)
+      } else {
+        message('Non of the codons is labelled, please select more relaxed thresholds for thresX1 and thresY1')
+      }
+      #
       finalOut_d <- finalOut[finalOut$statOut < 1, ]
       codD <- finalOut_d$codon[finalOut_d$freq >= quantile(finalOut_d$freq, 1 - thresY2) & finalOut_d$statOut <= quantile(finalOut_d$statOut, thresX2)]
-      finalOut_d <- finalOut_d[finalOut_d$codon %in% codD, ]
-      text(log2(finalOut_d$statOut), finalOut_d$freq, finalOut_d$codon, col = "dodgerblue1", font = 2)
-
+      if(length(codD) > 0){
+        finalOut_d <- finalOut_d[finalOut_d$codon %in% codD, ]
+        text(log2(finalOut_d$statOut), finalOut_d$freq, finalOut_d$codon, col = "dodgerblue1", font = 2)
+      } else {
+        message('Non of the codons is labelled, please select more relaxed thresholds for thresX2 and thresY2')
+      }
       legend(-xlimT, roundUpNice(range(finalOut$freq)[2]), c(regComb[2], regComb[1]), fill = c("dodgerblue1", "firebrick1"), bty = "n", horiz = TRUE, xpd = T, y.intersp = 2.8, cex = 1.3)
 
       dev.off()

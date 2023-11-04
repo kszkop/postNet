@@ -72,7 +72,7 @@ gseaAnalysis <- function(ads,
   return(gseaOut)
 }
 
-
+####
 gseaPlot <- function(gseaOut,
                      termNames,
                      ads,
@@ -109,9 +109,9 @@ gseaPlot <- function(gseaOut,
   }
   #
   #
-  rnk <- rank(-stats)
+  rnk <- rank(-rankIn)
   ord <- order(rnk)
-  statsAdj <- stats[ord]
+  statsAdj <- rankIn[ord]
   statsAdj <- sign(statsAdj) * (abs(statsAdj)^gseaParam)
   statsAdj <- statsAdj/max(abs(statsAdj))
   #
