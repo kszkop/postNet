@@ -42,7 +42,7 @@ lengthAnalysis <- function(annot,
     }
   } 
   if(is.null(ads)){
-    if(is.null(geneList){
+    if(is.null(geneList)){
       stop('Either anota2seq object of gene list must be provided')
     } else {
       if(!checkGeneList(geneList){
