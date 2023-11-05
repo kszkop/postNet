@@ -10,11 +10,11 @@ contentAnalysis(annot, contentIn, ads = NULL, regulation = NULL, contrast = NULL
 
 \arguments{
 \item{annot}{ An object containing reference sequences is obtained by the retrieveFormatData function. It is data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq }
-\item{contentIn}{ A list with desired content combinations of A,T,G,C }
+\item{contentIn}{ A vector with desired content combinations of A,T,G,C }
 \item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
 \item{regulation}{ If the anota2seq object is provided, desired names of regulation modes from the anota2seq object are to be compared. To choose from "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNAUp", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
 \item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
-\item{geneList}{ In addition or instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
+\item{geneList}{ Instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
 \item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
 \item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 \item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest for a given region will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }
@@ -42,8 +42,8 @@ checkAvailableVersions(species = "human")
 annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = "human")
 
 # If only the anota2seq object
-GC_utr5 <- contentAnalysis(annot = annot, contentIn = list("GC"), ads = anota2seqOutput, regulation =  c("translationUp","translationDown"),contrast = c(1,1), selection ="random", region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)), plotType = "boxplot")
+GC_utr5 <- contentAnalysis(annot = annot, contentIn = c("A","G","C","T"), ads = anota2seqOutput, regulation =  c("translationUp","translationDown"),contrast = c(1,1), selection ="random", region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)), plotType = "boxplot")
 
 # If only the geneList
-GC_utr5 <- contentAnalysis(annot = annot, contentIn = list("GC"), geneList = inList, geneListcolours=c("#F2A104","#00743F"), selection ="random", region = c("UTR5","CDS","UTR3"), comparisons = list(c(1,2)), plotType = "boxplot")
+GC_utr5 <- contentAnalysis(annot = annot, contentIn = c("GC","AT"), geneList = inList, geneListcolours=c("#F2A104","#00743F"), selection ="random", region = c("UTR5","CDS","UTR3"), comparisons = list(c(1,2)), plotType = "boxplot")
 }
