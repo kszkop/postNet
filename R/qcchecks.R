@@ -33,7 +33,7 @@ checkParameters <- function(annot,
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
   } 
   if(isTRUE(plotOut)){
-    if(!is.null(plotType){
+    if(!is.null(plotType)){
       plotType <- checkPlotType(plotType)
     }
   }
