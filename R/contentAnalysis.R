@@ -21,7 +21,7 @@ contentAnalysis <- function(annot,
   annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
   #
   contentFinal <- list()
-  for(reg in region){
+  for(reg in toupper(region)){
     annotTmp <- regSel(annot = annotBg, region = reg)
     annotBgSel <- isoSel(annot = annotTmp, method = selection)
     #

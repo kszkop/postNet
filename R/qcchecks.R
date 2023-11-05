@@ -6,7 +6,7 @@ checkParameters <- function(annot,
                             geneListcolours, 
                             customBg, 
                             selection, 
-                            region = NULL, 
+                            region, 
                             comparisons, 
                             plotOut,
                             plotType = NULL,
@@ -24,10 +24,8 @@ checkParameters <- function(annot,
   }
   # Check for other input conditions as needed
   checkAnnot(annot)
-  if(!is.null(region)){
-    region <- checkRegion(region)
-  }
-  selection <- checkSelection(selection)
+  checkRegion(region)
+  checkSelection(selection)
   
   if(!checkLogicalArgument(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
@@ -106,7 +104,7 @@ checkParameters <- function(annot,
 checkRegion <- function(region, convertToUppercase = TRUE) {
   valid_regions <- c('UTR3', 'CDS', 'UTR5')
   
-  if (is.null(region) || !is.character(region) || length(region) == 0) {
+  if (!is.character(region) || length(region) == 0) {
     stop("'region' must be a non-empty character vector with valid values, to choose from 'UTR3', 'CDS', 'UTR5'.")
   }
   
@@ -123,7 +121,7 @@ checkRegion <- function(region, convertToUppercase = TRUE) {
 checkSelection <- function(selection, convertToLowercase = TRUE) {
   valid_selection <- c('random', 'longest', 'shortest')
   
-  if (is.null(selection) || !is.character(selection) || length(selection) == 0) {
+  if (!is.character(selection) || length(selection) == 0) {
     stop("'selection' must be one of: 'random', 'longest', or 'shortest'.")
   }
   
@@ -141,7 +139,7 @@ checkSelection <- function(selection, convertToLowercase = TRUE) {
 checkPlotType <- function(plotType, convertToLowercase = TRUE) {
   valid_plottypes <- c('boxplot', 'violin', 'ecdf')
   
-  if (is.null(plotType) || !is.character(plotType) || length(plotType) == 0) {
+  if (!is.character(plotType) || length(plotType) == 0) {
     stop("'plotType' must be one of: 'boxplot', 'violin', or 'ecdf'.")
   }
   
@@ -157,7 +155,7 @@ checkPlotType <- function(plotType, convertToLowercase = TRUE) {
 }
 
 checkAnnot <- function(annot, expectedCols = c("id", "geneID", "UTR5_seq", "CDS_seq", "UTR3_seq")) {
-  if (is.null(annot) || !is.data.frame(annot)) {
+  if (!is.data.frame(annot)) {
     stop("'annot' should be a data frame.")
   }
   
