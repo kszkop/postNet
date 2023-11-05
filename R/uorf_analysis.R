@@ -14,7 +14,7 @@ uorf_analysis <- function(annot,
                           plotOut = TRUE,
                           pdfName = NULL) {
   #
-  checkParameters(annot, ads, regulation, contrast, geneList, geneListcolours, customBg, selection, region, comparisons, plotOut, startCodon, KozakContext, onlyUTR5, unitOut)
+  checkParameters(annot, ads, regulation, contrast, geneList, geneListcolours, customBg, selection, comparisons, plotOut, startCodon, KozakContext, onlyUTR5, unitOut)
   #
   KozakContext <- tolower(KozakContext)
   if (KozakContext == "strong") {

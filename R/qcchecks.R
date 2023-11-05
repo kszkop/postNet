@@ -6,7 +6,7 @@ checkParameters <- function(annot,
                             geneListcolours, 
                             customBg, 
                             selection, 
-                            region, 
+                            region=NULL, 
                             comparisons, 
                             plotOut,
                             plotType = NULL,
@@ -81,7 +81,6 @@ checkParameters <- function(annot,
   if(!is.null(contentIn) && !isDNAsequence(contentIn)){
     stop("'contentIn' must be a character vector with DNA sequences")
   }
-  
   if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
     stop("'subregion' must be a numeric and just number")
   }
@@ -90,7 +89,6 @@ checkParameters <- function(annot,
       stop("'subregionSel' must be a character and only 'select' or 'exclude'")
     }
   } 
-  
   if(!is.null(startCodon) && !isStartCodon(startCodon)){
     stop("'startCodon' must be a character vector of length one, and contain only 3 nucleotide sequence, ex. 'ATG'")
   }
