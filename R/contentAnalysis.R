@@ -14,6 +14,25 @@ contentAnalysis <- function(annot,
                             plotOut = TRUE,
                             plotType = "boxplot",
                             pdfName = NULL) {
+  #
+  checkParameters(annot, ads, regulation, contrast, geneList, geneListcolours, customBg, selection, region, comparisons, plotOut, plotType)
+  
+  if(!isDNAsequence(contentIn)){
+    stop("'contentIn' must be a character vector with DNA sequences")
+  }
+  
+  if(!is.numeric(subregion) || !length(subregion)==1){
+    stop("'subregion' must be a numeric and just number")
+  }
+  
+  if (is.character(subregionSel) && length(subregionSel) == 1) {
+    if (!subregionSel %in% c("select", "exclude")) {
+      stop("'subregionSel' must be a character and only 'select' or 'exclude'")
+    }
+  } else {
+    stop("'subregionSel' must be a character and only 'select' or 'exclude'")
+  }
+  
   ####
   annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
   #
@@ -104,3 +123,18 @@ contentAnalysis <- function(annot,
   return(contentFinal)
 }
 
+isDNAsequence <- function(contentIn) {
+  if (!is.character(contentIn)) {
+    return(FALSE)
+  }
+  
+  # Define a regular expression pattern for valid DNA characters
+  pattern <- "^[ACGTacgt]+$"
+  
+  # Use grepl to check if contentIn matches the pattern
+  if (all(grepl(pattern, contentIn))) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}

@@ -9,7 +9,10 @@ checkParameters <- function(annot,
                             region, 
                             comparisons, 
                             plotOut,
-                            plotType){
+                            plotType,
+                            contentIn,
+                            subregion,
+                            subregionSel){
   ####
   if(!is.null(ads) && !is.null(geneList)){
     stop("please provide anota2seq object or genelist, not both.")
@@ -67,6 +70,21 @@ checkParameters <- function(annot,
     if(length(which(unique(unlist(list(c(0,2),c(0,1))))==0)>0) && is.null(customBg) && is.null(ads)){
       stop(" 0 is always a background, but no background provided")
     }
+  }
+  if(!isDNAsequence(contentIn)){
+    stop("'contentIn' must be a character vector with DNA sequences")
+  }
+  
+  if(!is.numeric(subregion) || !length(subregion)==1){
+    stop("'subregion' must be a numeric and just number")
+  }
+  
+  if (is.character(subregionSel) && length(subregionSel) == 1) {
+    if (!subregionSel %in% c("select", "exclude")) {
+      stop("'subregionSel' must be a character and only 'select' or 'exclude'")
+    }
+  } else {
+    stop("'subregionSel' must be a character and only 'select' or 'exclude'")
   }
 }
 
