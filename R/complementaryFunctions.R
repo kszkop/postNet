@@ -12,7 +12,8 @@ checkParameters <- function(annot,
                             plotType,
                             contentIn,
                             subregion,
-                            subregionSel){
+                            subregionSel,
+                            ...){
   ####
   if(!is.null(ads) && !is.null(geneList)){
     stop("please provide anota2seq object or genelist, not both.")
