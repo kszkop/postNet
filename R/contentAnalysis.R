@@ -26,7 +26,7 @@ contentAnalysis <- function(annot,
     annotBgSel <- isoSel(annot = annotTmp, method = selection)
     #
     if (!is.null(subregion)) {
-      if(is.null(subregionSel){
+      if(is.null(subregionSel)){
         stop("You have chosen option to select subset of the sequence. Please provide parameter 'subregionSel' to 'select' or 'exclude'")
       }
       #
