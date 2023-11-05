@@ -10,9 +10,9 @@ checkParameters <- function(annot,
                             comparisons, 
                             plotOut,
                             plotType = NULL,
-                            contentIn=NULL,
-                            subregion=NULL,
-                            subregionSel=NULL,
+                            contentIn= NULL,
+                            subregion= NULL,
+                            subregionSel= NULL,
                             startCodon = NULL,
                             KozakContext = NULL,
                             onlyUTR5 = NULL,
@@ -89,9 +89,8 @@ checkParameters <- function(annot,
     if (!subregionSel %in% c("select", "exclude")) {
       stop("'subregionSel' must be a character and only 'select' or 'exclude'")
     }
-  } else {
-    stop("'subregionSel' must be a character and only 'select' or 'exclude'")
-  }
+  } 
+  
   if(!is.null(startCodon) && !isStartCodon(startCodon)){
     stop("'startCodon' must be a character vector of length one, and contain only 3 nucleotide sequence, ex. 'ATG'")
   }
