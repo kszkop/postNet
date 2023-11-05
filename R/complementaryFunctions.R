@@ -1,3 +1,75 @@
+checkParameters <- function(annot, 
+                            ads, 
+                            regulation, 
+                            contrast, 
+                            geneList, 
+                            geneListcolours, 
+                            customBg, 
+                            selection, 
+                            region, 
+                            comparisons, 
+                            plotOut,
+                            plotType){
+  ####
+  if(!is.null(ads) && !is.null(geneList)){
+    stop("please provide anota2seq object or genelist, not both.")
+  }
+  # Check for other input conditions as needed
+  checkAnnot(annot)
+  
+  region <- checkRegion(region)
+  
+  selection <- checkSelection(selection)
+  
+  if(!checkLogicalArgument(plotOut)){
+    stop("'plotOut' can only be only be logical: TRUE of FALSE ")
+  } 
+  if(isTRUE(plotOut)){
+    plotType <- checkPlotType(plotType)
+  }
+  if(!is.null(ads)){
+    if (!checkAds(ads)) {
+      stop("ads is not a valid 'Anota2seqDataSet' object.")
+    }
+    if (!is.null(regulation) && !is.character(regulation) && !regulation %in% c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","bufferingmRNAUp","bufferingmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown")) {
+      stop("'regulation' should be a character vector chosen from translationUp,translationDown,translatedmRNAUp,translatedmRNADown,bufferingmRNAUp,bufferingmRNADown,mRNAAbundanceUp,mRNAAbundanceDown,totalmRNAUp,totalmRNADown")
+    }
+    if (!is.null(regulation)){
+      if(!is.null(contrast) && !is.numeric(contrast) && !length(contrast) == length(regulation) && !contrast %in% seq(1,ncol(ads@contrasts),1)){
+        stop("'contrast' should be a numeric vector chosen from each regulation mode")
+      }
+    }
+  } 
+  if(is.null(ads)){
+    if(is.null(geneList)){
+      stop('Either anota2seq object of gene list must be provided')
+    } else {
+      if(!checkGeneList(geneList)){
+        stop("'geneList' is empty or not named")
+      }
+      if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours)== length(geneList)) {
+        stop("'geneListcolours' should be a character vector of the same length as geneList.")
+      }
+    }
+  }
+  if(!is.null(customBg)){
+    if(!is.character(customBg)){
+      stop("'customBg' is not character vector")
+    }
+    if(!length(setdiff(unlist(geneList), customBg)==0)){
+      stop("There are entries in geneList that are not in 'customBg'")
+    }
+  }
+  if(!is.null(comparisons)){
+    if(!checkComparisons(comparisons)){
+      stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
+    }
+    if(length(which(unique(unlist(list(c(0,2),c(0,1))))==0)>0) && is.null(customBg) && is.null(ads)){
+      stop(" 0 is always a background, but no background provided")
+    }
+  }
+}
+
 anota2seqGetDirectedRegulations <- function(ads) {
   n_contrasts <- ncol(ads@contrasts)
   regModeList <- vector("list", length = n_contrasts)
@@ -397,7 +469,7 @@ plotBoxplots <- function(resOut, coloursOut, comparisons) {
   par(mar = c(8, 12, 12, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
   xlimIn <- c(0.5, length(resOut) + 1.5)
   
-  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOut)))[2] + (1.25 * length(comparisons))+20), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOut)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
   
   axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
   mtext(side = 2, line = 6, "Log2 length", col = "black", font = 2, cex = 1.7, at = median(as.numeric(unlist(resOut))))

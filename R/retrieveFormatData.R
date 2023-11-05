@@ -26,7 +26,7 @@ retrieveFormatData <- function(source,
   # Validate specific parameters
   tryCatch({
     # Code that may throw an error
-    checkParameters(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile)
+    checkInput(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile)
   }, error = function(e) {
     stop("Parameters check failed: ", e$message)
   })
@@ -194,7 +194,7 @@ checkSpecies <- function(source, species) {
 }
 
 # Function to validate specific input parameters
-checkParameters <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile) {
+checkInput <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile) {
   if (source == "createFromSourceFiles") {
     if (is.null(rna_gbff_file)) {
       stop("Please provide an rna_gbff_file.")
