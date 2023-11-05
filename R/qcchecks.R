@@ -12,7 +12,7 @@ checkParameters <- function(annot,
                             plotType,
                             contentIn=NULL,
                             subregion=NULL,
-                            subregionSel=NULL,
+                            subregionSel=NULL
                             ){
   ####
   if(!is.null(ads) && !is.null(geneList)){
