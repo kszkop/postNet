@@ -9,10 +9,14 @@ checkParameters <- function(annot,
                             region, 
                             comparisons, 
                             plotOut,
-                            plotType,
+                            plotType = NULL,
                             contentIn=NULL,
                             subregion=NULL,
-                            subregionSel=NULL
+                            subregionSel=NULL,
+                            startCodon = NULL,
+                            KozakContext = NULL,
+                            onlyUTR5 = NULL,
+                            unitOut = NULL
                             ){
   ####
   if(!is.null(ads) && !is.null(geneList)){
@@ -29,7 +33,9 @@ checkParameters <- function(annot,
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
   } 
   if(isTRUE(plotOut)){
-    plotType <- checkPlotType(plotType)
+    if(!is.null(plotType){
+      plotType <- checkPlotType(plotType)
+    }
   }
   if(!is.null(ads)){
     if (!checkAds(ads)) {
@@ -72,20 +78,31 @@ checkParameters <- function(annot,
       stop(" 0 is always a background, but no background provided")
     }
   }
-  if(!isDNAsequence(contentIn)){
+  if(!is.null(contentIn) && !isDNAsequence(contentIn)){
     stop("'contentIn' must be a character vector with DNA sequences")
   }
   
-  if(!is.numeric(subregion) || !length(subregion)==1){
+  if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
     stop("'subregion' must be a numeric and just number")
   }
-  
-  if (is.character(subregionSel) && length(subregionSel) == 1) {
+  if (!is.null(subregionSel) && is.character(subregionSel) && length(subregionSel) == 1) {
     if (!subregionSel %in% c("select", "exclude")) {
       stop("'subregionSel' must be a character and only 'select' or 'exclude'")
     }
   } else {
     stop("'subregionSel' must be a character and only 'select' or 'exclude'")
+  }
+  if(!is.null(startCodon) && !isStartCodon(startCodon)){
+    stop("'startCodon' must be a character vector of length one, and contain only 3 nucleotide sequence, ex. 'ATG'")
+  }
+  if(!is.null(KozakContext) && !isKozakContext(KozakContext)){
+    stop("'KozakContext' must be one from these: 'strong','adequate1','adequate2','weak','any'")
+  }
+  if(!is.null(onlyUTR5) && !checkLogicalArgument(onlyUTR5)){
+    stop("'onlyUTR5' can only be only be logical: TRUE of FALSE ")
+  }
+  if(!is.null(unitOut) && !isUnitOut(unitOut)){
+    stop("'unitOut' must be one from these: 'numeric' or 'position'")
   }
 }
 
@@ -217,6 +234,37 @@ isDNAsequence <- function(contentIn) {
   }
 }
 
+isStartCodon <- function(startCodon) {
+  if (is.character(startCodon) && nchar(startCodon) == 1) {
+    start_codon <- toupper(seqinr::s2c(startCodon))
+    valid_bases <- c("A", "C", "G", "T")
+    if (all(start_codon %in% valid_bases) &&
+        length(start_codon) == 3) {
+      return(TRUE)
+    }
+  }
+  return(FALSE)
+}
+
+isKozakContext <- function(KozakContext) {
+  KozakContext <- tolower(KozakContext)
+  valid_values <- c("strong", "adequate1", "adequate2", "weak", "any")
+  if (is.character(KozakContext) && length(KozakContext) == 1 &&
+      KozakContext %in% valid_values) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+isUnitOut <- function(unitOut) {
+  unitOut <- tolower(unitOut)
+  valid_values <- c("number", "position")
+  if (is.character(unitOut) && length(unitOut) == 1 && unitOut %in% valid_values) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
 # Function to validate specific input parameters
 checkInput <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile) {
   if (source == "createFromSourceFiles") {
@@ -238,12 +286,4 @@ checkInput <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_g
       stop("Please provide a posFile in the format: id, UTR5_len, CDS_stop, Total_len.")
     }
   }
-}
-
-# Function to download and unzip files
-downloadAndUnzip <- function(source, species) {
-  url <- generateDownloadURL(species)
-  download_and_unzip("customFasta.fa.gz", paste0(url, "_rna.fna.gz"))
-  download_and_unzip("customAnnot.gbff.gz", paste0(url, "_rna.gbff.gz"))
-  download_and_unzip("GeneRef.gff.gz", paste0(url, "_genomic.gff.gz"))
 }

@@ -26,6 +26,9 @@ contentAnalysis <- function(annot,
     annotBgSel <- isoSel(annot = annotTmp, method = selection)
     #
     if (!is.null(subregion)) {
+      if(is.null(subregionSel){
+        stop("You have chosen option to select subset of the sequence. Please provide parameter 'subregionSel' to 'select' or 'exclude'")
+      }
       #
       subSeq <- as.character(sapply(annotBgSel$seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel)))
       #
@@ -46,6 +49,9 @@ contentAnalysis <- function(annot,
       names(contentOut) <- annotBgSel$geneID
       #
       if (isTRUE(plotOut)) {
+        if(is.null(plotType)){
+          stop("Please provide 'plotType', to choose from 'boxplot','violin','ecdf'")
+        }
         #
         resOut <- resSel(vIn = contentOut, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
         if(length(resOut)==0){

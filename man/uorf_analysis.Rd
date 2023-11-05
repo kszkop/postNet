@@ -17,7 +17,7 @@ uorf_analysis(annot, startCodon="ATG", KozakContext="strong", onlyUTR5=FALSE, un
 \item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
 \item{regulation}{ If the anota2seq object is provided, desired names of regulation modes from the anota2seq object are to be compared. To choose from "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNAUp", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
 \item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
-\item{geneList}{ In addition or instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
+\item{geneList}{ Instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
 \item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
 \item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 \item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest 5"UTR will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }

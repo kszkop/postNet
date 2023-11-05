@@ -14,16 +14,19 @@ uorf_analysis <- function(annot,
                           plotOut = TRUE,
                           pdfName = NULL) {
   #
+  checkParameters(annot, ads, regulation, contrast, geneList, geneListcolours, customBg, selection, region, comparisons, plotOut, startCodon, KozakContext, onlyUTR5, unitOut)
+  #
+  KozakContext <- tolower(KozakContext)
   if (KozakContext == "strong") {
-    context <-  paste("[AG][ATGC][ATGC]", startCodon, "G", sep = "")
+    context <-  paste("[AG][ATGC][ATGC]", toupper(startCodon), "G", sep = "")
   } else if (KozakContext == "adequate1") {
-    context <- paste("[AG][ATGC][ATGC]", startCodon, "[ATC]", sep = "")
+    context <- paste("[AG][ATGC][ATGC]", toupper(startCodon), "[ATC]", sep = "")
   } else if (KozakContext == "adequate2") {
-    context <- paste("[TC][ATGC][ATGC]", startCodon, "G", sep = "")
+    context <- paste("[TC][ATGC][ATGC]", toupper(startCodon), "G", sep = "")
   } else if (KozakContext == "weak") {
-    context <- paste("[TC][ATGC][ATGC]", startCodon, "[ATC]", sep = "")
+    context <- paste("[TC][ATGC][ATGC]", toupper(startCodon), "[ATC]", sep = "")
   } else if (KozakContext == "any") {
-    context <- paste("[ATGC][ATGC][ATGC]", startCodon, "[ATGC]", sep = "")
+    context <- paste("[ATGC][ATGC][ATGC]", toupper(startCodon), "[ATGC]", sep = "")
   } else {
     stop("Please provide correct Kozak context")
   }
@@ -36,9 +39,9 @@ uorf_analysis <- function(annot,
   
   #
   if (!isTRUE(onlyUTR5)) {
-    uorfOut <- mapply(calc_uORF, seqTmp=annotBgSel$seqTmp, ext = annotBgSel$extSeq, context = context, unit = unitOut, USE.NAMES=FALSE)
+    uorfOut <- mapply(calc_uORF, seqTmp=annotBgSel$seqTmp, ext = annotBgSel$extSeq, context = context, unit = tolower(unitOut), USE.NAMES=FALSE)
   } else {
-    uorfOut <- sapply(annotBgSel$seqTmp, function(x) calc_uORF(x, ext=NULL, context = context, unit = unitOut), USE.NAMES=FALSE)
+    uorfOut <- sapply(annotBgSel$seqTmp, function(x) calc_uORF(x, ext=NULL, context = context, unit = tolower(unitOut)), USE.NAMES=FALSE)
   }
   #
   names(uorfOut) <- annotBgSel$geneID
@@ -46,8 +49,11 @@ uorf_analysis <- function(annot,
   if (unitOut == "number" & isTRUE(plotOut)) {
     #
     resOut <- resSel(vIn = uorfOut, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
+    if(length(resOut)==0){
+      stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
+    }
     #
-    coloursOut <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+    coloursOut <- coloursSel(resOut=resOut, geneList = geneList, geneListcolours = geneListcolours)
     #
     resProp <- as.numeric()
     for (i in 1:length(resOut)) {

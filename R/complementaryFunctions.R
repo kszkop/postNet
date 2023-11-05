@@ -1302,3 +1302,11 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
   dev.off()
 }
+
+# Function to download and unzip files
+downloadAndUnzip <- function(source, species) {
+  url <- generateDownloadURL(species)
+  download_and_unzip("customFasta.fa.gz", paste0(url, "_rna.fna.gz"))
+  download_and_unzip("customAnnot.gbff.gz", paste0(url, "_rna.gbff.gz"))
+  download_and_unzip("GeneRef.gff.gz", paste0(url, "_genomic.gff.gz"))
+}
