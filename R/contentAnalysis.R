@@ -9,13 +9,13 @@ contentAnalysis <- function(annot,
                             selection = "random",
                             region,
                             subregion = NULL, 
-                            subregionSel,
+                            subregionSel = NULL,
                             comparisons = NULL,
                             plotOut = TRUE,
                             plotType = "boxplot",
                             pdfName = NULL) {
   #
-  checkParameters(annot, ads, regulation, contrast, geneList, geneListcolours, customBg, selection, region, comparisons, plotOut, plotType,contentIn,subregion,subregionSel)
+  checkParameters(annot, ads, regulation, contrast, geneList, geneListcolours, customBg, selection, region, comparisons, plotOut, plotType, contentIn, subregion, subregionSel)
 
   ####
   annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
