@@ -6,7 +6,7 @@ checkParameters <- function(annot,
                             geneListcolours, 
                             customBg, 
                             selection, 
-                            region, 
+                            region=NULL, 
                             comparisons, 
                             plotOut,
                             plotType = NULL,
@@ -23,9 +23,15 @@ checkParameters <- function(annot,
     stop("please provide anota2seq object or genelist, not both.")
   }
   # Check for other input conditions as needed
-  checkAnnot(annot)
-  checkRegion(region)
-  checkSelection(selection)
+  if(!is.null(annot)){
+    checkAnnot(annot)
+  }
+  if(!is.null(region)){
+    checkRegion(region)
+  }
+  if(!is.null(selection)){
+    checkSelection(selection)
+  }
   
   if(!checkLogicalArgument(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
@@ -115,7 +121,6 @@ checkRegion <- function(region, convertToUppercase = TRUE) {
   if (!all(region %in% valid_regions)) {
     stop("'region' must contain valid values: 'UTR3', 'CDS', 'UTR5'.")
   }
-  return(region)
 }
 
 checkSelection <- function(selection, convertToLowercase = TRUE) {
@@ -132,8 +137,6 @@ checkSelection <- function(selection, convertToLowercase = TRUE) {
   if (!selection %in% tolower(valid_selection)) {
     stop("'selection' must be one of: 'random', 'longest', or 'shortest'.")
   }
-  
-  return(selection)
 }
 
 checkPlotType <- function(plotType, convertToLowercase = TRUE) {
@@ -150,8 +153,6 @@ checkPlotType <- function(plotType, convertToLowercase = TRUE) {
   if (!plotType %in% tolower(valid_plottypes)) {
     stop("'plotType' must be one of: 'boxplot', 'violin', or 'ecdf'.")
   }
-  
-  return(plotType)
 }
 
 checkAnnot <- function(annot, expectedCols = c("id", "geneID", "UTR5_seq", "CDS_seq", "UTR3_seq")) {
