@@ -24,9 +24,9 @@ checkParameters <- function(annot,
   }
   # Check for other input conditions as needed
   checkAnnot(annot)
-  
-  region <- checkRegion(region)
-  
+  if(!is.null(region)){
+    region <- checkRegion(region)
+  }
   selection <- checkSelection(selection)
   
   if(!checkLogicalArgument(plotOut)){
