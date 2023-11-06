@@ -121,15 +121,17 @@ isDNAsequence <- function(contentIn) {
 }
 
 isStartCodon <- function(startCodon) {
-  if (is.character(startCodon) && nchar(startCodon) == 1) {
+  if (is.character(startCodon) && length(startCodon) == 1) {
     start_codon <- toupper(seqinr::s2c(startCodon))
     valid_bases <- c("A", "C", "G", "T")
-    if (all(start_codon %in% valid_bases) &&
-        length(start_codon) == 3) {
+    if (all(start_codon %in% valid_bases) && length(start_codon) == 3) {
       return(TRUE)
+    } else {
+      return(FALSE)
     }
+  } else {
+    return(FALSE)
   }
-  return(FALSE)
 }
 
 isKozakContext <- function(KozakContext) {
