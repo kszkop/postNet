@@ -1,116 +1,7 @@
-checkParameters <- function(annot, 
-                            ads, 
-                            regulation, 
-                            contrast, 
-                            geneList, 
-                            geneListcolours, 
-                            customBg, 
-                            selection, 
-                            region=NULL, 
-                            comparisons, 
-                            plotOut,
-                            plotType = NULL,
-                            contentIn= NULL,
-                            subregion= NULL,
-                            subregionSel= NULL,
-                            startCodon = NULL,
-                            KozakContext = NULL,
-                            onlyUTR5 = NULL,
-                            unitOut = NULL
-                            ){
-  ####
-  if(!is.null(ads) && !is.null(geneList)){
-    stop("please provide anota2seq object or genelist, not both.")
-  }
-  # Check for other input conditions as needed
-  if(!is.null(annot)){
-    checkAnnot(annot)
-  }
-  if(!is.null(region)){
-    checkRegion(region)
-  }
-  if(!is.null(selection)){
-    checkSelection(selection)
-  }
-  
-  if(!checkLogicalArgument(plotOut)){
-    stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  } 
-  if(isTRUE(plotOut)){
-    if(!is.null(plotType)){
-      plotType <- checkPlotType(plotType)
-    }
-  }
-  if(!is.null(ads)){
-    if (!checkAds(ads)) {
-      stop("ads is not a valid 'Anota2seqDataSet' object.")
-    }
-    if (!is.null(regulation) && !is.character(regulation) && !regulation %in% c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","bufferingmRNAUp","bufferingmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown")) {
-      stop("'regulation' should be a character vector chosen from translationUp,translationDown,translatedmRNAUp,translatedmRNADown,bufferingmRNAUp,bufferingmRNADown,mRNAAbundanceUp,mRNAAbundanceDown,totalmRNAUp,totalmRNADown")
-    }
-    if (!is.null(regulation)){
-      if(!is.null(contrast) && !is.numeric(contrast) && !length(contrast) == length(regulation) && !contrast %in% seq(1,ncol(ads@contrasts),1)){
-        stop("'contrast' should be a numeric vector chosen from each regulation mode")
-      }
-    }
-  } 
-  if(is.null(ads)){
-    if(is.null(geneList)){
-      stop('Either anota2seq object of gene list must be provided')
-    } else {
-      if(!checkGeneList(geneList)){
-        stop("'geneList' is empty or not named")
-      }
-      if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours)== length(geneList)) {
-        stop("'geneListcolours' should be a character vector of the same length as geneList.")
-      }
-    }
-  }
-  if(!is.null(customBg)){
-    if(!is.character(customBg)){
-      stop("'customBg' is not character vector")
-    }
-    if(!length(setdiff(unlist(geneList), customBg)==0)){
-      stop("There are entries in geneList that are not in 'customBg'")
-    }
-  }
-  if(!is.null(comparisons)){
-    if(!checkComparisons(comparisons)){
-      stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
-    }
-    if(length(which(unique(unlist(list(c(0,2),c(0,1))))==0)>0) && is.null(customBg) && is.null(ads)){
-      stop(" 0 is always a background, but no background provided")
-    }
-  }
-  if(!is.null(contentIn) && !isDNAsequence(contentIn)){
-    stop("'contentIn' must be a character vector with DNA sequences")
-  }
-  if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
-    stop("'subregion' must be a numeric and just number")
-  }
-  if (!is.null(subregionSel) && is.character(subregionSel) && length(subregionSel) == 1) {
-    if (!subregionSel %in% c("select", "exclude")) {
-      stop("'subregionSel' must be a character and only 'select' or 'exclude'")
-    }
-  } 
-  if(!is.null(startCodon) && !isStartCodon(startCodon)){
-    stop("'startCodon' must be a character vector of length one, and contain only 3 nucleotide sequence, ex. 'ATG'")
-  }
-  if(!is.null(KozakContext) && !isKozakContext(KozakContext)){
-    stop("'KozakContext' must be one from these: 'strong','adequate1','adequate2','weak','any'")
-  }
-  if(!is.null(onlyUTR5) && !checkLogicalArgument(onlyUTR5)){
-    stop("'onlyUTR5' can only be only be logical: TRUE of FALSE ")
-  }
-  if(!is.null(unitOut) && !isUnitOut(unitOut)){
-    stop("'unitOut' must be one from these: 'numeric' or 'position'")
-  }
-}
-
 checkRegion <- function(region, convertToUppercase = TRUE) {
   valid_regions <- c('UTR3', 'CDS', 'UTR5')
   
-  if (!is.character(region) || length(region) == 0) {
+  if (is.null(region) || !is.character(region) || length(region) == 0) {
     stop("'region' must be a non-empty character vector with valid values, to choose from 'UTR3', 'CDS', 'UTR5'.")
   }
   
@@ -126,14 +17,13 @@ checkRegion <- function(region, convertToUppercase = TRUE) {
 checkSelection <- function(selection, convertToLowercase = TRUE) {
   valid_selection <- c('random', 'longest', 'shortest')
   
-  if (!is.character(selection) || length(selection) == 0) {
+  if (is.null(selection) || !is.character(selection) || length(selection) == 0) {
     stop("'selection' must be one of: 'random', 'longest', or 'shortest'.")
   }
   
   if (convertToLowercase) {
     selection <- tolower(selection)
   }
-  
   if (!selection %in% tolower(valid_selection)) {
     stop("'selection' must be one of: 'random', 'longest', or 'shortest'.")
   }
@@ -142,7 +32,7 @@ checkSelection <- function(selection, convertToLowercase = TRUE) {
 checkPlotType <- function(plotType, convertToLowercase = TRUE) {
   valid_plottypes <- c('boxplot', 'violin', 'ecdf')
   
-  if (!is.character(plotType) || length(plotType) == 0) {
+  if (is.null(plotType) || !is.character(plotType) || length(plotType) == 0) {
     stop("'plotType' must be one of: 'boxplot', 'violin', or 'ecdf'.")
   }
   
@@ -156,7 +46,7 @@ checkPlotType <- function(plotType, convertToLowercase = TRUE) {
 }
 
 checkAnnot <- function(annot, expectedCols = c("id", "geneID", "UTR5_seq", "CDS_seq", "UTR3_seq")) {
-  if (!is.data.frame(annot)) {
+  if (is.null(annot) || !is.data.frame(annot)) {
     stop("'annot' should be a data frame.")
   }
   
