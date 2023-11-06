@@ -28,7 +28,7 @@ contentAnalysis <- function(annot,
   } 
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
-      plotType <- checkPlotType(plotType)
+      checkPlotType(plotType)
     }
   }
   if(!is.null(ads)){
@@ -117,9 +117,6 @@ contentAnalysis <- function(annot,
       names(contentOut) <- annotBgSel$geneID
       #
       if (isTRUE(plotOut)) {
-        if(is.null(plotType)){
-          stop("Please provide 'plotType', to choose from 'boxplot','violin','ecdf'")
-        }
         #
         resOut <- resSel(vIn = contentOut, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
         if(length(resOut)==0){

@@ -25,7 +25,7 @@ lengthAnalysis <- function(annot,
   } 
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
-      plotType <- checkPlotType(plotType)
+      checkPlotType(plotType)
     }
   }
   if(!is.null(ads)){
@@ -82,9 +82,6 @@ lengthAnalysis <- function(annot,
     names(lenForAnalysis) <- annotBgSel$geneID
     #
     if (isTRUE(plotOut)) {
-      if(is.null(plotType)){
-        stop("Please provide 'plotType', to choose from 'boxplot','violin','ecdf'")
-      }
       #
       resOut <- resSel(vIn = lenForAnalysis, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
       if(length(resOut)==0){
@@ -94,11 +91,11 @@ lengthAnalysis <- function(annot,
       
       # Plot
       pdf(ifelse(is.null(pdfName), paste(reg, plotType, "lengthAnalysis.pdf", sep = "_"), paste(pdfName, reg, plotType, "lengthAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
-      if (plotType == "boxplot"){
+      if (tolower(plotType) == "boxplot"){
         plotBoxplots(resOut, coloursOut, comparisons)
-      } else if(plotType == "violin") {
+      } else if (tolower(plotType) == "violin") {
         plotViolin(resOut, coloursOut, comparisons)
-      } else if (plotType == "ecdf") {
+      } else if (tolower(plotType) == "ecdf") {
         plotEcdf(resOut, coloursOut, comparisons)
       }
       dev.off()
