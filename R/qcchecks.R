@@ -86,6 +86,11 @@ checkLogicalArgument <- function(arg) {
   }
 }
 
+
+is_number <- function(x) {
+  is.numeric(x) && !is.na(x)
+}
+
 # Function to validate the source input
 checkSource <- function(source) {
   valid_sources <- c("create", "createFromSourceFiles", "load", "custom", "createFromFiles")
