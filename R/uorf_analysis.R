@@ -66,7 +66,7 @@ uorf_analysis <- function(annot,
       stop(" 0 is always a background, but no background provided")
     }
   }
-  if(!is.null(startCodon) && !isStartCodon(startCodon)){
+  if(!is.null(startCodon) && isStartCodon(startCodon)){
     stop("'startCodon' must be a character vector of length one, and contain only 3 nucleotide sequence, ex. 'ATG'")
   }
   if(!is.null(KozakContext) && !isKozakContext(KozakContext)){
