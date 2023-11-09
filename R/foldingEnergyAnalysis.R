@@ -95,7 +95,7 @@ foldingEnergyAnalysis <- function(annot,
       stop("'fromFasta', can only be only be logical: TRUE of FALSE ")
     }
     if (isTRUE(fromFasta)) {
-      if(is.null(customFileFE){
+      if(is.null(customFileFE)){
         stop("Please provide a fasta file.")
       }
     } else {
@@ -106,7 +106,7 @@ foldingEnergyAnalysis <- function(annot,
   }
   #
   if(sourceFE=='custom'){
-    if(is.null(customFileFE){
+    if(is.null(customFileFE)){
       stop("Please provide a custom file.")
     }
   }
