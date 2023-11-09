@@ -136,7 +136,7 @@ motifAnalysis <- function(annot,
       seqinr::write.fasta(sequences = as.list(as.character(regSeq)), names = names(regSeq), file.out = paste(paste("Regulated", reg, regIn, sep = "_"), ".fa", sep = ""))
       #
       outdirTmp <- paste("stremeOut", reg, regIn, sep = "_")
-      streme_out <- memes::runStreme(input = paste(paste("Regulated", reg, regIn, sep = "_"), ".fa", sep = ""), control = paste(paste("Control", reg, sep = "_"), ".fa", sep = ""), meme_path = memePath, alph = lolower(seqType), outdir = outdirTmp, minw = minwidth)
+      streme_out <- memes::runStreme(input = paste(paste("Regulated", reg, regIn, sep = "_"), ".fa", sep = ""), control = paste(paste("Control", reg, sep = "_"), ".fa", sep = ""), meme_path = memePath, alph = tolower(seqType), outdir = outdirTmp, minw = minwidth)
       if(nrow(streme_out)==0){
         message(paste('No motifs found among genes: ', motifsSel,sep=''))
       }
