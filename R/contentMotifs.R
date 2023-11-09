@@ -158,7 +158,7 @@ contentMotifs <- function(annot,
         nameOut <- nameTmp
         #
         resOut <- resSel(vIn = motifOut, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-        coloursOut <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+        coloursOut <- coloursSel(resOut=resOut, geneList = geneList, geneListcolours = geneListcolours)
         #
         # Plot
         pdf(nameOut, width = 8, height = 8, useDingbats = F)
