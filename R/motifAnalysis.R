@@ -71,9 +71,6 @@ motifAnalysis <- function(annot,
   if(is.null(memePath)){
     stop("please provide path to meme suit")
   }
-  if(!isUnitOut(unitOut)){
-    stop("'unitOut' must be one from these: 'numeric' or 'position'")
-  }
   if(!is_valid_seq_type(seqType)){
     stop("'seqType' sequence type must be selected from one of these: 'dna', 'rna' or 'protein' ")
   } 
