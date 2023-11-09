@@ -162,26 +162,28 @@ contentMotifs <- function(annot,
         #
         # Plot
         pdf(nameOut, width = 8, height = 8, useDingbats = F)
-        par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+        #par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
         #
-        xlim_min <- ifelse(isTRUE(resid), floor(quantile(as.numeric(unlist(resOut)), 0.01)), 0)
-        xlim_max <- roundUpNice(abs(as.numeric(quantile(as.numeric(unlist(resOut)), 0.99))))
+        plotEcdf(resOut, coloursOut, comparisons)
+        
+        #xlim_min <- ifelse(isTRUE(resid), floor(quantile(as.numeric(unlist(resOut)), 0.01)), 0)
+        #xlim_max <- roundUpNice(abs(as.numeric(quantile(as.numeric(unlist(resOut)), 0.99))))
 
-        plot(ecdf(resOut[[1]]), col = coloursOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(xlim_min, xlim_max), xaxt = "none")
+        #plot(ecdf(resOut[[1]]), col = coloursOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(xlim_min, xlim_max), xaxt = "none")
         #
-        for (i in 2:length(resOut)) {
-          lines(ecdf(resOut[[i]]), col = coloursOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
-        }
+        #for (i in 2:length(resOut)) {
+        #  lines(ecdf(resOut[[i]]), col = coloursOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
+        #}
 
-        mtext(side = 1, line = 4, paste("Number of motifs \n", motif, sep = ""), col = "black", font = 2, cex = 1.2)
-        mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
+        #mtext(side = 1, line = 4, paste("Number of motifs \n", motif, sep = ""), col = "black", font = 2, cex = 1.2)
+        #mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
 
-        axis(side = 1, seq(xlim_min, xlim_max, 1), font = 2, lwd = 2)
-        axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
-        #
-        if (!is.null(comparisons)) {
-          addStats(comparisons, ads, customBg, plotType = "ecdf", resOut, coloursOut)
-        }
+        #axis(side = 1, seq(xlim_min, xlim_max, 1), font = 2, lwd = 2)
+        #axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
+        ##
+        #if (!is.null(comparisons)) {
+        #  addStats(comparisons, ads, customBg, plotType = "ecdf", resOut, coloursOut)
+        #}
         dev.off()
       }
       motifsFinal[[paste(reg, motif, sep = "_")]] <- motifOut
