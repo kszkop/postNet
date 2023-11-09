@@ -66,16 +66,16 @@ uorf_analysis <- function(annot,
       stop(" 0 is always a background, but no background provided")
     }
   }
-  if(!is.null(startCodon) && !isStartCodon(startCodon)){
+  if(!isStartCodon(startCodon)){
     stop("'startCodon' must be a character vector of length one, and contain only 3 nucleotide sequence, ex. 'ATG'")
   }
-  if(!is.null(KozakContext) && !isKozakContext(KozakContext)){
+  if(!isKozakContext(KozakContext)){
     stop("'KozakContext' must be one from these: 'strong','adequate1','adequate2','weak','any'")
   }
-  if(!is.null(onlyUTR5) && !checkLogicalArgument(onlyUTR5)){
+  if(!checkLogicalArgument(onlyUTR5)){
     stop("'onlyUTR5' can only be only be logical: TRUE of FALSE ")
   }
-  if(!is.null(unitOut) && !isUnitOut(unitOut)){
+  if(!isUnitOut(unitOut)){
     stop("'unitOut' must be one from these: 'numeric' or 'position'")
   }
   
@@ -110,7 +110,7 @@ uorf_analysis <- function(annot,
   #
   names(uorfOut) <- annotBgSel$geneID
   #
-  if (unitOut == "number" & isTRUE(plotOut)) {
+  if (tolower(unitOut) == "number" & isTRUE(plotOut)) {
     #
     resOut <- resSel(vIn = uorfOut, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
     if(length(resOut)==0){
@@ -136,7 +136,7 @@ uorf_analysis <- function(annot,
     # Plot stats
     if (!is.null(comparisons)) {
       for (j in 1:length(comparisons)) {
-        if (!is.null(ads) | !is.null(customBg)) {
+        if (names(resOut)[1] == 'background') {
           compTmp <- comparisons[[j]] + 1
         } else {
           compTmp <- comparisons[[j]]
