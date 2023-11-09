@@ -249,52 +249,16 @@ runFE <- function(energyIn = energyIn,
   #
   if (isTRUE(plotOut)) {
     resOut <- resSel(vIn = feForAnalysis, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-    coloursOut <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+    coloursOut <- coloursSel(resOut=resOut, geneList = geneList, geneListcolours = geneListcolours)
     
     pdf(ifelse(is.null(pdfName), paste(ifelse(!is.null(region), region, ""), plotType, "foldEnergyAnalysis.pdf", sep = "_"), paste(pdfName, ifelse(!is.null(region), region, ""), plotType, "foldenergyAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
     #
-    xlim_set <- roundUpNice(abs(max(abs(as.numeric(quantile(as.numeric(unlist(resOut)), 0.01))), abs(as.numeric(quantile(as.numeric(unlist(resOut)), 0.99))))))
-    #
-    if (plotType == "boxplot" | plotType == "violin") {
-      #
-      if (!is.null(regulation)) {
-        xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
-      } else {
-        xlimIn <- c(0.5, length(geneList) + 1.5)
-      }
-      par(mar = c(8, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-      plot(1, 1, xlim = xlimIn, ylim = c(-xlim_set, ifelse(isTRUE(residFE), xlim_set, 50)), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-      for (i in 1:length(resOut)) {
-        if (plotType == "violin") {
-          vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = coloursOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-        } else if (plotType == "boxplot") {
-          boxplot(resOut[[i]], add = TRUE, at = i, col = coloursOut[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-        }
-        text(i, -xlim_set, round(mean(resOut[[i]], 0)), font = 2)
-      }
-      axis(side = 2, font = 2, las = 2, lwd = 2, at = seq(-xlim_set, ifelse(isTRUE(residFE), xlim_set, 50), 20), labels = seq(-xlim_set, ifelse(isTRUE(residFE), xlim_set, 50), 20))
-      
-      mtext(side = 2, line = 6, "folding energy", col = "black", font = 2, cex = 1.7, at = 0)
-      if (!is.null(ads) | !is.null(customBg)) {
-        abline(lty = 5, h = median(resOut[[1]]))
-      }
-      text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-    } else if (plotType == "ecdf") {
-      par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-      plot(ecdf(resOut[[1]]), col = coloursOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(-xlim_set, ifelse(isTRUE(residFE), xlim_set, 0)), xaxt = "none")
-      
-      mtext(side = 1, line = 4, paste("folding energy", "\n", paste(ifelse(!is.null(region), region, ""), sep = "")), col = "black", font = 2, cex = 1.2)
-      mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
-      
-      axis(side = 1, seq(-xlim_set, ifelse(isTRUE(residFE), xlim_set, 0), 20), font = 2, lwd = 2)
-      axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
-      
-      for (i in 2:length(resOut)) {
-        lines(ecdf(resOut[[i]]), col = coloursOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
-      }
-      if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType, resOut, coloursOut)
-      }
+    if (tolower(plotType) == "boxplot"){
+      plotBoxplots(resOut, coloursOut, comparisons)
+    } else if (tolower(plotType) == "violin") {
+      plotViolin(resOut, coloursOut, comparisons)
+    } else if (tolower(plotType) == "ecdf") {
+      plotEcdf(resOut, coloursOut, comparisons)
     }
     #
     dev.off()
