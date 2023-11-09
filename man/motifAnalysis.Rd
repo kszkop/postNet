@@ -5,7 +5,7 @@
 \title{ De-novo motif discovery using STREME }
 
 \usage{
-motifAnalysis(annot, stremeThreshold = 0.05, minwidth=6, memePath=NULL, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, customBg = NULL, selection = "random", region, subregion=NULL, subregionSel=NULL )
+motifAnalysis(annot, stremeThreshold = 0.05, minwidth=6, memePath=NULL, seqType='dna', ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, customBg = NULL, selection = "random", region, subregion=NULL, subregionSel=NULL )
 }
 
 \arguments{
@@ -13,10 +13,11 @@ motifAnalysis(annot, stremeThreshold = 0.05, minwidth=6, memePath=NULL, ads = NU
 \item{stremeThreshold}{ p-value threshold for motif selection. The default is 0.05 }
 \item{minwidth}{ minimal width if the motif. The default is 6. }
 \item{memePath}{ path to the stream executables }
+\item{seqType}{ Sequence type of the motif. Choose from dna, rna, or protein. The default is "dna". }
 \item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
 \item{regulation}{ If the anota2seq object is provided, desired names of regulation modes from the anota2seq object to be analysed. To choose combination from "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNAUp", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
 \item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
-\item{geneList}{ In addition or instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
+\item{geneList}{ Instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
 \item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 \item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest for a given region will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }
 \item{region}{ Select the regions of interest. Choose from combination of "UTR5", "CDS", "UTR3" }
@@ -49,8 +50,8 @@ checkAvailableVersions(species = "human")
 annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = "human")
 
 # If only the anota2seq object
-denovo_motifs <- motifAnalysis(annot = annot, stremeThreshold = 0.05, minwidth=6, memePath="/opt/local/bin", ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = c(1,1), selection = "random", region = c("UTR5","CDS","UTR3"))
+denovo_motifs <- motifAnalysis(annot = annot, stremeThreshold = 0.05, minwidth=6, memePath="/opt/local/bin", seqType='dna', ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = c(1,1), selection = "random", region = c("UTR5","CDS","UTR3"))
 
 # If only the geneList
-denovo_motifs <- motifAnalysis(annot = annot, stremeThreshold = 0.05, minwidth=6, memePath="/opt/local/bin", geneList = inList, selection = "random", region = c("UTR5","CDS","UTR3"))
+denovo_motifs <- motifAnalysis(annot = annot, stremeThreshold = 0.05, minwidth=6, memePath="/opt/local/bin", seqType='dna', geneList = inList, selection = "random", region = c("UTR5","CDS","UTR3"))
 }

@@ -16,13 +16,6 @@ retrieveFormatData <- function(source,
     stop("Source check failed: ", e$message)
   })
   
-  # Validate species input
-  tryCatch({
-    # Code that may throw an error
-    checkSpecies(source, species)
-  }, error = function(e) {
-    stop("Species check failed: ", e$message)
-  })
   # Validate specific parameters
   tryCatch({
     # Code that may throw an error
@@ -33,6 +26,9 @@ retrieveFormatData <- function(source,
 
   # Check available species for the 'create' source
   if (source == "create") {
+    if(!is_valid_species(species)){
+      stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
+    }
     # Define URLs for downloading files
     url <- switch(species,
                   "human" = "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/",
@@ -75,6 +71,9 @@ retrieveFormatData <- function(source,
     
     write.table(outDB, file = "customDB.txt", col.names = TRUE, row.names = FALSE, sep = "\t", quote = FALSE)
   } else if (source == "createFromSourceFiles") {
+    if(!is_valid_species(species)){
+      stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
+    }
     # Unzip the source files
     source_files <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
     source_files <- gsub('.gz', '', source_files)
@@ -92,7 +91,13 @@ retrieveFormatData <- function(source,
                        stringsAsFactors = FALSE)
     
     # Run the Perl script (adjust as needed)
-    command <- paste("perl", file.path(perl.dir, "AnnotFromgbff_human.pl"), sep = " ")
+    # Determine the appropriate Perl script based on species
+    perl_script <- switch(species,
+                          "human" = "AnnotFromgbff_human.pl",
+                          "mouse" = "AnnotFromgbff_mouse.pl"
+    )
+    # Run the Perl script
+    command <- paste("perl", file.path(perl.dir, perl_script), sep = " ")
     system(command)
     
     # Read and merge annotation data
@@ -111,6 +116,9 @@ retrieveFormatData <- function(source,
     
     write.table(outDB, file = "customDB.txt", col.names = TRUE, row.names = FALSE, sep = "\t", quote = FALSE)
   } else if (source == "load") {
+    if(!is_valid_species(species)){
+      stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
+    }
     # List existing species
     currTmp <- list.files(system.file("extdata/annotation/refseq", package = "anota2seqUtils"))
     
@@ -136,6 +144,9 @@ retrieveFormatData <- function(source,
     outDB <- read.delim(customFile, stringsAsFactors = FALSE)
     colnames(outDB) <- c('id', 'geneID', 'UTR5_seq', 'CDS_seq', 'UTR3_seq')
   } else if (source == "createFromFiles") {
+    if(!is_valid_species(species)){
+      stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
+    }
     posTmp <- read.delim(posFile, stringsAsFactors = FALSE)
     colnames(posTmp) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
     

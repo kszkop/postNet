@@ -29,6 +29,8 @@ contentAnalysis <- function(annot,
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
       checkPlotType(plotType)
+    } else {
+      stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
     }
   }
   if(!is.null(ads)){
@@ -72,17 +74,14 @@ contentAnalysis <- function(annot,
       stop(" 0 is always a background, but no background provided")
     }
   }
-
-  if(!is.null(contentIn) && !isDNAsequence(contentIn)){
+  if(!isDNAsequence(contentIn)){
     stop("'contentIn' must be a character vector with DNA sequences")
   }
   if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
     stop("'subregion' must be a numeric and just number")
   }
-  if (!is.null(subregionSel) && is.character(subregionSel) && length(subregionSel) == 1) {
-    if (!subregionSel %in% c("select", "exclude")) {
+  if (!is.null(subregionSel) && !subregionSel %in% c("select", "exclude")) {
       stop("'subregionSel' must be a character and only 'select' or 'exclude'")
-    }
   } 
   
   ####

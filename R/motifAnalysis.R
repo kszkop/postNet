@@ -2,6 +2,7 @@ motifAnalysis <- function(annot,
                           stremeThreshold = 0.05,
                           minwidth = 6,
                           memePath = NULL,
+                          seqType = "dna",
                           ads=NULL,
                           regulation = NULL,
                           contrast = NULL,
@@ -57,20 +58,25 @@ motifAnalysis <- function(annot,
   if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
     stop("'subregion' must be a numeric and just number")
   }
-  if (!is.null(subregionSel) && is.character(subregionSel) && length(subregionSel) == 1) {
-    if (!subregionSel %in% c("select", "exclude")) {
-      stop("'subregionSel' must be a character and only 'select' or 'exclude'")
-    }
-  }
-  if(is.null(stremeThreshold) || !is_number(stremeThreshold)){
+  if (!is.null(subregionSel) && !subregionSel %in% c("select", "exclude")) {
+    stop("'subregionSel' must be a character and only 'select' or 'exclude'")
+  } 
+  
+  if(!is_number(stremeThreshold)){
     stop("please provide numeric p-value threshold for motif selection")
   }
-  if(is.null(minwidth) || !is_number(minwidth)){
+  if(!is_number(minwidth)){
     stop("please provide numeric minimal width for motif selection")
   }
   if(is.null(memePath)){
     stop("please provide path to meme suit")
   }
+  if(!isUnitOut(unitOut)){
+    stop("'unitOut' must be one from these: 'numeric' or 'position'")
+  }
+  if(!is_valid_seq_type(seqType)){
+    stop("'seqType' sequence type must be selected from one of these: 'dna', 'rna' or 'protein' ")
+  } 
 
   ##
   annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
@@ -79,6 +85,13 @@ motifAnalysis <- function(annot,
   for(reg in region){
     annotTmp <- regSel(annot = annotBg, region = reg)
     annotBgSel <- isoSel(annot = annotTmp, method = selection)
+    if (tolower(seqType) == "protein") {
+      proseqtmp <- as.character(sapply(annotBgSel$seqTmp, function(x) seqinr::c2s(seqinr::translate(seqinr::s2c(x)))))
+      #
+      annotBgSel$seqTmp <- proseqtmp
+      #
+      annotBgSel$lenTmp <- annotBgSel$lenTmp / 3
+    }
     #
     if (!is.null(subregion)) {
       #
@@ -126,9 +139,15 @@ motifAnalysis <- function(annot,
       seqinr::write.fasta(sequences = as.list(as.character(regSeq)), names = names(regSeq), file.out = paste(paste("Regulated", reg, regIn, sep = "_"), ".fa", sep = ""))
       #
       outdirTmp <- paste("stremeOut", reg, regIn, sep = "_")
-      streme_out <- memes::runStreme(input = paste(paste("Regulated", reg, regIn, sep = "_"), ".fa", sep = ""), control = paste(paste("Control", reg, sep = "_"), ".fa", sep = ""), meme_path = memePath, alph = "dna", outdir = outdirTmp, minw = minwidth)
+      streme_out <- memes::runStreme(input = paste(paste("Regulated", reg, regIn, sep = "_"), ".fa", sep = ""), control = paste(paste("Control", reg, sep = "_"), ".fa", sep = ""), meme_path = memePath, alph = lolower(seqType), outdir = outdirTmp, minw = minwidth)
+      if(nrow(streme_out)==0){
+        message(paste('No motifs found among genes: ', motifsSel,sep=''))
+      }
       #
       streme_out <- streme_out[streme_out$pval < stremeThreshold, ]
+      if(nrow(streme_out)==0){
+        message(paste('No motifs passed thresholds for: ', motifsSel,sep=''))
+      }
       motifsTmpOut[[regIn]] <- streme_out
     }
     motifsStemeOut <- append(list(motifsOut = as.character(unlist(lapply(motifsTmpOut, function(x) x$consensus)))), motifsTmpOut)

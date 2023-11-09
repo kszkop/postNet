@@ -49,7 +49,6 @@ checkAnnot <- function(annot, expectedCols = c("id", "geneID", "UTR5_seq", "CDS_
   if (is.null(annot) || !is.data.frame(annot)) {
     stop("'annot' should be a data frame.")
   }
-  
   if (!all(expectedCols %in% colnames(annot))) {
     stop("The following columns are missing in 'annot': ", paste(expectedCols[!expectedCols %in% colnames(annot)], collapse = ", "))
   }
@@ -74,7 +73,6 @@ checkComparisons <- function(obj) {
   if (!is.list(obj)) {
     return(FALSE)
   }
-  
   all(sapply(obj, function(x) is.numeric(x) && length(x) == 2))
 }
 
@@ -85,7 +83,6 @@ checkLogicalArgument <- function(arg) {
     return(FALSE)
   }
 }
-
 
 is_number <- function(x) {
   is.numeric(x) && !is.na(x)
@@ -99,21 +96,25 @@ checkSource <- function(source) {
   }
 }
 
-# Function to validate the species input
-checkSpecies <- function(source, species) {
-  if (source %in% c("create", "load") && is.null(species)) {
-    stop("Please specify a species (e.g., 'human' or 'mouse').")
+# Function to validate the source input
+checkSourceFE <- function(sourceFE) {
+  valid_sourcesFE <- c("create", "load", "custom")
+  if (!(sourceFE %in% valid_sources)) {
+    stop("Invalid sourceFE. Please provide a valid sourceFE option.")
   }
-  if (source %in% c("create", "load") && !(species %in% c("human", "mouse"))) {
-    stop("This option is only available for species: human and mouse at the moment. Please use option createFromFile.")
+}
+
+is_valid_species <- function(species) {
+  if (!is.null(species) && (species == "human" || species == "mouse")) {
+    return(TRUE)
   }
+  return(FALSE)
 }
 
 isDNAsequence <- function(contentIn) {
   if (!is.character(contentIn)) {
     return(FALSE)
   }
-  
   # Define a regular expression pattern for valid DNA characters
   pattern <- "^[ACGTacgt]+$"
   
@@ -123,6 +124,14 @@ isDNAsequence <- function(contentIn) {
   } else {
     return(FALSE)
   }
+}
+
+is_valid_seq_type <- function(seqType) {
+  valid_types <- c('dna', 'rna', 'protein')
+  if (!is.null(seqType) && tolower(seqType) %in% valid_types) {
+    return(TRUE)
+  }
+  return(FALSE)
 }
 
 isStartCodon <- function(startCodon) {
@@ -158,6 +167,13 @@ isUnitOut <- function(unitOut) {
   return(FALSE)
 }
 
+is_motifs <- function(motifsIn) {
+  if (!is.null(motifsIn) && is.character(motifsIn) && length(motifsIn) > 0) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
 # Function to validate specific input parameters
 checkInput <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile) {
   if (source == "createFromSourceFiles") {
@@ -180,3 +196,4 @@ checkInput <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_g
     }
   }
 }
+

@@ -12,7 +12,7 @@ foldingEnergyAnalysis(annot, sourceFE = "load", version=NULL, species=NULL, from
 \item{annot}{ An object containing reference sequences is obtained by the retrieveFormatData function. It is data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq }
 \item{sourceFE}{ selecting the source of the folding energy calculations. If "load", it will use precalculated folding energies for selected species. However, there is an option to automatically calculate new ("create") based on the selected region in annot or fromFasta ( fasta file with sequences and transcript ids as names) or load custom 'custom' file with precalculated folding energies calculations in the format: transcript ID, folding energy, length of the sequence. The default is "load". }
 \item{version}{ Indicate which pre-prepared NCBI RefSeq releases should be loaded. Use the function checkAvailableVersions to check available versions for given specie. If left NULL, it will automatically look for the most recent. It is only relevant if sourceFE = "load". }
-\item{species}{ Select a specie of interest. It is required if sourceFE = "load". At the moment, it can be human or mouse only. }
+\item{species}{ Select a specie of interest. It is required if sourceFE = "load" or sourceFE="create" and fromFasta TRUE. At the moment, it can be human or mouse only. }
 
 \item{fromFasta}{ If TRUE, it will calculate folding energy values with mfold using a custom fasta file. The default is FALSE. }
 \item{customFileFE}{ Name of a file including a path to the customFile. It is required for sourceFE=='custom' or if sourceFE=='create' and fromFasta==TRUE. In the former case, it must be the file with calculated folding energies in the format: transcript ID, folding energy, length of the sequence, or in the latter fasta files with sequences and transcript ids as names. }
@@ -20,7 +20,7 @@ foldingEnergyAnalysis(annot, sourceFE = "load", version=NULL, species=NULL, from
 \item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
 \item{regulation}{ If the anota2seq object is provided, desired names of regulation modes from the anota2seq object are to be compared. To choose from "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNAUp", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
 \item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
-\item{geneList}{ In addition or instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
+\item{geneList}{ Instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
 \item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
 \item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 \item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest for a given region will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }

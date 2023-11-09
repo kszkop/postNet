@@ -26,6 +26,8 @@ lengthAnalysis <- function(annot,
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
       checkPlotType(plotType)
+    } else {
+      stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
     }
   }
   if(!is.null(ads)){
