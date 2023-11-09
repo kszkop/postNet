@@ -152,7 +152,7 @@ contentMotifs <- function(annot,
         motifOut <- motifOutTmp
       }
       #
-      if (tolwer(unitOut) == "number" & isTRUE(plotOut)) {
+      if (tolower(unitOut) == "number" & isTRUE(plotOut)) {
         nameTmp <- ifelse(is.null(pdfName), paste(region, motif, "content.pdf", sep = "_"), paste(pdfName, reg, motif, "content.pdf", sep = "_"))
         #nameOut <- paste(dirTmp,nameTmp, sep='/')
         nameOut <- nameTmp
