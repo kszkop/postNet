@@ -14,7 +14,7 @@ contentMotifs <- function(annot,
                           selection,
                           region,
                           subregion = NULL,
-                          subregionSel,
+                          subregionSel=NULL,
                           comparisons = NULL,
                           pdfName = NULL,
                           plotOut = TRUE) {
