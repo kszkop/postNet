@@ -105,6 +105,7 @@ checkSourceFE <- function(sourceFE) {
 }
 
 is_valid_species <- function(species) {
+  species <- tolower(species)
   if (!is.null(species) && (species == "human" || species == "mouse")) {
     return(TRUE)
   }
@@ -197,3 +198,52 @@ checkInput <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_g
   }
 }
 
+is_annotType <- function(annotType) {
+  valid_types <- c('refseq', 'ccds', 'custom')
+  
+  if (!is.null(annotType) && tolower(annotType) %in% valid_types) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+is_valid_sourceSeq <- function(sourceSeq) {
+  if (is.null(sourceSeq)) {
+    return(FALSE)
+  }
+  sourceSeq <- tolower(sourceSeq)
+  if (sourceSeq %in% c("load", "create")) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+is_valid_analysis <- function(analysis) {
+  if (is.null(analysis)) {
+    return(FALSE)
+  }
+  if (analysis %in% c("codon", "AA")) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+checkDirectory <- function(path) {
+  if (!dir.exists(path)) {
+    stop("Directory does not exist.")
+  }
+}
+
+checkcodSource <- function(codSource) {
+  valid_codSource <- c("sequence", "riboseq")
+  if (is.null(codSource)) {
+    stop("'codSource' cannot be null.")
+  } else {
+    # Convert to lowercase
+    codSource <- tolower(codSource)
+    
+    if (!(codSource %in% valid_codSource)) {
+      stop("Invalid codSource. Allowed 'codSource' are 'sequence' or 'riboseq'.")
+    } 
+  }
+}

@@ -1,12 +1,12 @@
 codonUsage <- function(annot=NULL,
                        annotType = "ccds", # option: 'refseq' or 'ccds', 'custom
-                       sourceCod = "load", # option to 'load' available or create new 'create'
+                       sourceSeq = "load", # option to 'load' available or create new 'create'
                        customFileCod = NULL,
                        species = NULL, # it is required for ccds
                        analysis,
                        codonN = 1,
-                       type = "sequence", # option: 'sequence' or if ribosomal profiling 'riboSeq'
-                       dpn_path = NULL, # path to dpn files if riboSeq
+                       codSource = "sequence", # option: 'sequence' or if ribosomal profiling 'riboseq'
+                       dpn_path = NULL, # path to dpn files if riboseq
                        cds_filt = TRUE,
                        pAdj = 0.01,
                        plotHeatmap = TRUE,
@@ -23,19 +23,122 @@ codonUsage <- function(annot=NULL,
                        selection, # shortest, longest, random (default)
                        subregion = NULL, # number of nucleotides from start if positive or end if negative.
                        subregionSel, # select or exclude , required if subregion is not null.
+                       inputTable=NULL,
                        comparisons,
-                       outDir = NULL,
                        pdfName = NULL) {
   #
-  #if (!is.null(outDir)){
-  #  dirTmp <- outDir
-  #} else {
-  #  dirTmp <- paste('codonUsage', format(Sys.time(), "%Y%m%e_%X"),sep='_')
-  #}
-  #dir.create(dirTmp)
+  if(!is_annotType(annotType)){
+    stop("Please provide 'annotType', i.e source of annotation'")
+  }
+  annotType <- tolower(annotType)
+  
+  if(annotType=="ccds"){
+    if(tolower(codSource)=='riboseq'){
+      stop("Please choose 'refseq' as a sourceSeq'")
+    }
+    sourceSeq <- tolower(sourceSeq)
+    if(!is_valid_sourceSeq){
+      stop("Please provide 'sourceSeq', i.e. 'load' or 'create'")
+    } else {
+      if(!is_valid_species){
+        stop("Please specify a species, at the moment only 'human' or 'mouse' are available")
+      } else {
+        species <- tolower(species)
+      }
+    }
+  } else if(annotType=="refseq"){
+    checkAnnot(annot)
+  } else if(annotType=="custom"){
+    if (is.null(customFileCod)) {
+      stop("Please provide an customFileCod.")
+    }
+    annot <- read.delim(customFileCod, stringsAsFactors = FALSE)
+    checkAnnot(annot)
+  }
+  if(!is_valid_analysis(analysis)){
+    stop("Please provide an 'analysis'. It can only be 'codon' or 'AA'")
+  } 
+  checkSelection(selection)
+  if(!is_number(codonN)){
+    stop("Please provide numerical value for 'codonN'")
+  }
+  checkcodSource(codSource)
+  codSourse <- tolower(codSource)
+
+  #
+  if(!is.null(ads) && !is.null(geneList)){
+    stop("please provide anota2seq object or genelist, not both.")
+  }
+
+  if(!is.null(ads)){
+    if (!checkAds(ads)) {
+      stop("ads is not a valid 'Anota2seqDataSet' object.")
+    }
+    if (!is.null(regulation) && !is.character(regulation) && !regulation %in% c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","bufferingmRNAUp","bufferingmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown")) {
+      stop("'regulation' should be a character vector chosen from translationUp,translationDown,translatedmRNAUp,translatedmRNADown,bufferingmRNAUp,bufferingmRNADown,mRNAAbundanceUp,mRNAAbundanceDown,totalmRNAUp,totalmRNADown")
+    }
+    if (!is.null(regulation)){
+      if(!is.null(contrast) && !is.numeric(contrast) && !length(contrast) == length(regulation) && !contrast %in% seq(1,ncol(ads@contrasts),1)){
+        stop("'contrast' should be a numeric vector chosen from each regulation mode")
+      }
+    }
+  } 
+  if(is.null(ads)){
+    if(is.null(geneList)){
+      stop('Either anota2seq object of gene list must be provided')
+    } else {
+      if(!checkGeneList(geneList)){
+        stop("'geneList' is empty or not named")
+      }
+      if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours)== length(geneList)) {
+        stop("'geneListcolours' should be a character vector of the same length as geneList.")
+      }
+    }
+  }
+  if(!is.null(customBg)){
+    if(!is.character(customBg)){
+      stop("'customBg' is not character vector")
+    }
+    if(!length(setdiff(unlist(geneList), customBg)==0)){
+      stop("There are entries in geneList that are not in 'customBg'")
+    }
+  }
+  
+  if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
+    stop("'subregion' must be a numeric and just number")
+  }
+  if (!is.null(subregionSel) && !subregionSel %in% c("select", "exclude")) {
+    stop("'subregionSel' must be a character and only 'select' or 'exclude'")
+  } 
+  
+  
+  
+  
+  if(!is.null(comparisons)){
+    if(!checkComparisons(comparisons)){
+      stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
+    }
+    if(length(which(unique(unlist(list(c(0,2),c(0,1))))==0)>0) && is.null(customBg) && is.null(ads)){
+      stop(" 0 is always a background, but no background provided")
+    }
+  }
+
+  
+  
+  
+  if(!checkLogicalArgument(plotOut)){
+    stop("'plotOut' can only be only be logical: TRUE of FALSE ")
+  } 
+  if(isTRUE(plotOut)){
+    if(!is.null(plotType)){
+      checkPlotType(plotType)
+    } else {
+      stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
+    }
+  }
+  
   #
   nameTmp <- ifelse(is.null(pdfName), analysis, paste(pdfName, analysis, sep = "_"))
-  #nameOut <- paste(dirTmp,nameTmp, sep='/')
   nameOut <- nameTmp
   #
   if (is.null(comparisons)) {
@@ -46,7 +149,7 @@ codonUsage <- function(annot=NULL,
   }
   #
   if (annotType == "ccds") {
-    if (sourceCod == "create") {
+    if (sourceSeq == "create") {
       if (species == "human") {
         #
         download.file("ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/CCDS.current.txt", destfile = "CCDS_human.txt")
@@ -96,7 +199,7 @@ codonUsage <- function(annot=NULL,
         colnames(annot) <- c("id", "geneID", "CDS_seq")
         write.table(annot, file = "customDB_ccds.txt", col.names = T, row.names = F, sep = "\t", quote = F)
       }
-    } else if (sourceCod == "load") {
+    } else if (sourceSeq == "load") {
       # list existing species
       currTmp <- list.files(system.file("extdata/annotation/ccds", package = "anota2seqUtils"))
 
@@ -110,65 +213,118 @@ codonUsage <- function(annot=NULL,
         annot <- read.delim(system.file(paste("extdata/annotation/ccds/mouse", sep = "/"), "mouseDB_ccds.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE) # }
       }
     }
-  } else if (annotType == "refSeq") {
-    annot <- annot[, c(1, 2, 4)]
-    colnames(annot) <- c("id", "geneID", "CDS_seq")
-  } else if (annotType == "custom") {
-    annot <- read.delim(customFileCod, stringsAsFactors = FALSE)
-    colnames(annot) <- c("id", "geneID", "CDS_seq")
-  } else {
-    stop("No correct option for annotation file provided")
+  } 
+  # Subset annot for only expressed genes
+  annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
+  # Select region of interest
+  annotTmp <- regSel(annot = annotBg, region = "CDS")
+  # Per gene
+  annotBgSel <- isoSel(annot = annotTmp, method = selection)
+  #
+  if (!is.null(subregion)) {
+    #
+    subSeq <- as.character(sapply(annotBgSel$seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel)))
+    #
+    annotBgSel$seqTmp <- subSeq
   }
-  if (type == "sequence") {
-    # Subset annot for only expressed genes
-    annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
-    # Select region of interest
-    annotTmp <- regSel(annot = annotBg, region = "CDS")
-    # Per gene
-    annotBgSel <- isoSel(annot = annotTmp, method = selection)
-    #
-    if (!is.null(subregion)) {
-      #
-      subSeq <- as.character(sapply(annotBgSel$seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel)))
-      #
-      annotBgSel$seqTmp <- subSeq
-    }
-    annotBgSel <- annotBgSel[!is.na(annotBgSel$seqTmp), ]
-    #
+  annotBgSel <- annotBgSel[!is.na(annotBgSel$seqTmp), ]
+  
+  if (codSource == "sequence") {
+    #ptm <- proc.time()
     codonTmp <- list()
     for (i in 1:nrow(annotBgSel)) {
       codonTmp[[i]] <- codonCount(gene = annotBgSel$geneID[i], seq = annotBgSel$seqTmp[i], codonN = codonN)
     }
-
-    # ptm <- proc.time()
-    # inTmp <- annotBgSel$seqTmp
-    # names(inTmp) <- annotBgSel$geneID
-    # test <- sapply(names(inTmp), codonCount, seq=inTmp,codonN=codonN )
-    # Stop the clock
-    # proc.time() - ptm
-
+    #proc.time() - ptm
     codonAll <- do.call(rbind, lapply(codonTmp, data.frame, stringsAsFactors = FALSE))
     if (codonN == 1) {
       codonAll <- codonAll[!codonAll$AA %in% c("Stp", "Trp", "Met"), ]
     }
-  } else if (type == "riboSeq") {
+  } else if (codSource == "riboSeq") {
     # Remember to add information about annotation file so it is compatibile with the one used for alignement...
     # Load dpn
     if (!is.null(dpn_path)) {
+      checkDirectory(dpn_path)
       if (unlist(strsplit(dpn_path, ""))[length(unlist(strsplit(dpn_path, "")))] != "/") {
         dpn_path <- paste(dpn_path, "/", sep = "")
       }
     }
-    #
-    annot$lenTmp <- as.numeric(sapply(annot$CDS_seq, function(x) length(seqinr::s2c(x))))
-    annotSel <- isoSel(annot = annot, method = selection)
-    #
     dpn_files <- list.files(ifelse(is.null(dpn_path), ".", dpn_path), pattern = ".dpn$")
-    dataList <- lapply(dpn_files, readRiboDpn, dpn_path = dpn_path, annot = annotSel, cds_filt = cds_filt)
-
-
-    condition <- c(1, 1, 1, 1, 2, 2, 2, 2)
-    InputTable <- data.frame(dpnFiles = dpn_files, condition = condition, stringsAsFactors = FALSE)
+    #
+    annotTmp <- annotBg
+    annotTmp <- annotTmp[annotTmp$id %in% annotBgSel$id,]
+    annotTmp$lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
+    dataList <- lapply(dpn_files, readRiboDpn, dpn_path = dpn_path, annot = annotTmp, cds_filt = TRUE)
+    names(dataList) <- dpn_files
+    #
+    dataListMerged <- list()
+    for(i in unique(inputTable$condition)){
+      dataListTmp <- dataList[inputTable$dpnFiles[which(inputTable$condition == i)]]
+      #
+      geneTmp <- as.character()
+      for(s in 1:length(dataListTmp)){
+        geneTmp <- append(geneTmp,names(dataListTmp[[s]])) 
+      }
+      #
+      geneTmp<- unique(geneTmp)
+      #
+      cond_merged <- list()
+      for(g in 1:length(geneTmp)){
+        #Progress
+        pb1 <- txtProgressBar(min=1, max=length(geneTmp), style=3)
+        #Extract current transcirpt
+        geneID <- geneTmp[g]
+        #Extract all entries for that transcirpt in all samples in given condition
+        conv <- lapply(dataListTmp, function(x) x[[geneID]])
+        #Remove empty ones
+        conv <- conv[lapply(conv,length)>0]
+        #convert
+        tmpConv <- t(plyr::ldply(conv, rbind,.id=NULL))
+        #Select only reproducible peaks i.e. occur in selected number of samples in each condition
+        vec <- apply(tmpConv,1,function(x) sum(x, na.rm=TRUE))
+        #Add to output
+        cond_merged[[geneID]] <- vec
+        #Progress
+        setTxtProgressBar(pb1, g)
+      }
+      dataListMerged[[i]] <- cond_merged
+    }
+    #calculate codons 
+    dataCodon <- list()
+    for(d in 1:length(dataListMerged)){
+      dataMergedTmp <- dataListMerged[[d]]
+      #
+      outTmp <- list()
+      for(t in 1:length(dataTmp)){
+        #
+        transID <- names(dataTmp[t])
+        #
+        seqT <- seqs[[transID]]
+        #
+        seqCDS <- seqT[cdsLengths_start[transID]:cdsLengths_end[transID]]
+        #
+        codFreq <- seqinr::uco(seqCDS,index = "eff")
+        names(codFreq) <- toupper(names(codFreq))
+        if(!is.null(seqT)){
+          #
+          transTmp <- dataTmp[[t]]
+          codTmp <- sapply(names(transTmp), extract_seq)
+          names(codTmp) <- as.numeric(transTmp)
+        }
+        codObs <- as.numeric()
+        for(cod in 1:length(codFreq)){
+          codSum <- sum(as.numeric(names(codTmp[codTmp==names(codFreq[cod])])))
+          codObs[cod] <- codSum
+        }
+        names(codObs) <- names(codFreq) 
+        #rOut <- resid(lm(codObs ~ codFreq))
+        #outTmp[[transID]] <- rOut
+        outTmp[[transID]] <- codObs
+      }
+      dataCodon[[d]] <- outTmp
+    }
+    
+    
   }
   #
   res <- list()
