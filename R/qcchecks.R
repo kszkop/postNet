@@ -199,7 +199,7 @@ checkInput <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_g
 }
 
 is_annotType <- function(annotType) {
-  valid_types <- c('refseq', 'ccds', 'custom')
+  valid_types <- c('refseq', 'ccds', 'custom', 'riboseq')
   
   if (!is.null(annotType) && tolower(annotType) %in% valid_types) {
     return(TRUE)

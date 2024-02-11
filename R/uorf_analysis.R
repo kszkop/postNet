@@ -54,7 +54,7 @@ uorf_analysis <- function(annot,
     if(!is.character(customBg)){
       stop("'customBg' is not character vector")
     }
-    if(!length(setdiff(unlist(geneList), customBg)==0)){
+    if(!length(setdiff(unlist(geneList), customBg))==0){
       stop("There are entries in geneList that are not in 'customBg'")
     }
   }

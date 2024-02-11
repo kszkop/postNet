@@ -1,5 +1,5 @@
 codonUsage <- function(annot=NULL,
-                       annotType = "ccds", # option: 'refseq' or 'ccds', 'custom
+                       annotType = "ccds", # option: 'refseq' or 'ccds', 'custom', 'riboseq'
                        sourceSeq = "load", # option to 'load' available or create new 'create'
                        customFileCod = NULL,
                        species = NULL, # it is required for ccds
@@ -22,11 +22,14 @@ codonUsage <- function(annot=NULL,
                        customBg = NULL,
                        selection, # shortest, longest, random (default)
                        subregion = NULL, # number of nucleotides from start if positive or end if negative.
-                       subregionSel, # select or exclude , required if subregion is not null.
+                       subregionSel= NULL, # select or exclude , required if subregion is not null.
                        inputTable=NULL,
                        comparisons,
                        pdfName = NULL) {
   #
+  if(tolower(codSource)=='riboseq'){
+    message("Please make sure the 'annot' was created using 'source == createFromFiles' option, and providing fasta file and corresponding postion file that was used for ribosomal profiling reads alignment. Otherwise positions in the dpn file will not match")
+  }
   if(!is_annotType(annotType)){
     stop("Please provide 'annotType', i.e source of annotation'")
   }
@@ -34,19 +37,19 @@ codonUsage <- function(annot=NULL,
   
   if(annotType=="ccds"){
     if(tolower(codSource)=='riboseq'){
-      stop("Please choose 'refseq' as a sourceSeq'")
+      stop("Please choose 'riboseq' if codSource is 'riboseq'")
     }
     sourceSeq <- tolower(sourceSeq)
-    if(!is_valid_sourceSeq){
-      stop("Please provide 'sourceSeq', i.e. 'load' or 'create'")
-    } else {
-      if(!is_valid_species){
-        stop("Please specify a species, at the moment only 'human' or 'mouse' are available")
-      } else {
-        species <- tolower(species)
-      }
-    }
-  } else if(annotType=="refseq"){
+    #if(is_valid_sourceSeq){
+    #  stop("Please provide 'sourceSeq', i.e. 'load' or 'create'")
+    #} else {
+    #  if(!is_valid_species){
+    #    stop("Please specify a species, at the moment only 'human' or 'mouse' are available")
+    #  } else {
+    #    species <- tolower(species)
+    #  }
+    #}
+  } else if(annotType=="refseq" | annotType=='riboseq'){
     checkAnnot(annot)
   } else if(annotType=="custom"){
     if (is.null(customFileCod)) {
@@ -99,7 +102,7 @@ codonUsage <- function(annot=NULL,
     if(!is.character(customBg)){
       stop("'customBg' is not character vector")
     }
-    if(!length(setdiff(unlist(geneList), customBg)==0)){
+    if(!length(setdiff(unlist(geneList), customBg))==0){
       stop("There are entries in geneList that are not in 'customBg'")
     }
   }
@@ -111,9 +114,6 @@ codonUsage <- function(annot=NULL,
     stop("'subregionSel' must be a character and only 'select' or 'exclude'")
   } 
   
-  
-  
-  
   if(!is.null(comparisons)){
     if(!checkComparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
@@ -123,20 +123,6 @@ codonUsage <- function(annot=NULL,
     }
   }
 
-  
-  
-  
-  if(!checkLogicalArgument(plotOut)){
-    stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  } 
-  if(isTRUE(plotOut)){
-    if(!is.null(plotType)){
-      checkPlotType(plotType)
-    } else {
-      stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
-    }
-  }
-  
   #
   nameTmp <- ifelse(is.null(pdfName), analysis, paste(pdfName, analysis, sep = "_"))
   nameOut <- nameTmp
@@ -241,7 +227,6 @@ codonUsage <- function(annot=NULL,
       codonAll <- codonAll[!codonAll$AA %in% c("Stp", "Trp", "Met"), ]
     }
   } else if (codSource == "riboSeq") {
-    # Remember to add information about annotation file so it is compatibile with the one used for alignement...
     # Load dpn
     if (!is.null(dpn_path)) {
       checkDirectory(dpn_path)
@@ -290,26 +275,44 @@ codonUsage <- function(annot=NULL,
       dataListMerged[[i]] <- cond_merged
     }
     #calculate codons 
+    #
+    #
+    seqs <- list()
+    seqs[[1]] <- annotTmp$UTR5_seq
+    seqs[[2]] <- annotTmp$CDS_seq
+    #
+    seqComb <- combSeq(seqIn = seqs)
+    names(seqComb) <- annotTmp$geneID
+    #
     dataCodon <- list()
     for(d in 1:length(dataListMerged)){
       dataMergedTmp <- dataListMerged[[d]]
       #
       outTmp <- list()
-      for(t in 1:length(dataTmp)){
+      for(j in 1:length(dataTmp)){
         #
-        transID <- names(dataTmp[t])
+        geneID <- names(dataTmp[j])
+        print(geneID)
+        
+      
         #
-        seqT <- seqs[[transID]]
+        #cdsLengths_start <- as.numeric(sapply(annotTmp$UTR5_seq, function(x) length(seqinr::s2c(x))))+1
+        #names(cdsLengths_start) <- annotTmp$geneID
         #
-        seqCDS <- seqT[cdsLengths_start[transID]:cdsLengths_end[transID]]
+        #cdsLengths_end <- cdsLengths_start + annotTmp$lenTmp
+        #names(cdsLengths_end) <- annotTmp$geneID
+          
         #
-        codFreq <- seqinr::uco(seqCDS,index = "eff")
+        seqG <- seqComb[[geneID]]
+        #seqCDS <- seqs[cdsLengths_start[geneID]:cdsLengths_end[geneID]]
+        #
+        codFreq <- seqinr::uco(seqG,index = "eff")
         names(codFreq) <- toupper(names(codFreq))
-        if(!is.null(seqT)){
+        if(!is.null(seqG)){
           #
-          transTmp <- dataTmp[[t]]
-          codTmp <- sapply(names(transTmp), extract_seq)
-          names(codTmp) <- as.numeric(transTmp)
+          geneTmp <- dataTmp[[j]]
+          codTmp <- sapply(as.numeric(names(geneTmp)), extract_seq, seqs=seqG)
+          names(codTmp) <- as.numeric(geneTmp)
         }
         codObs <- as.numeric()
         for(cod in 1:length(codFreq)){
@@ -319,13 +322,15 @@ codonUsage <- function(annot=NULL,
         names(codObs) <- names(codFreq) 
         #rOut <- resid(lm(codObs ~ codFreq))
         #outTmp[[transID]] <- rOut
-        outTmp[[transID]] <- codObs
+        outTmp[[geneID]] <- codObs
       }
       dataCodon[[d]] <- outTmp
     }
-    
-    
   }
+  
+  
+  
+  
   #
   res <- list()
   if (!is.null(ads) | !is.null(customBg)) {
@@ -387,7 +392,7 @@ codonUsage <- function(annot=NULL,
       names(index_sel) <- codind$external_gene_name
     
       resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
     
       ##
       pdf(paste(nameOut,'_CAI_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
@@ -414,7 +419,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
+        addStats(comparisons, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     
@@ -423,8 +428,8 @@ codonUsage <- function(annot=NULL,
       names(index_sel) <- codind$external_gene_name
       
       resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
-    
+      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
+      
       ##
       pdf(paste(nameOut,'_CBI_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
       par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -450,7 +455,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
+        addStats(comparisons, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     
@@ -459,8 +464,8 @@ codonUsage <- function(annot=NULL,
       names(index_sel) <- codind$external_gene_name
     
       resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
-    
+      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
+      
       ##
       pdf(paste(nameOut,'_Fop_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
       par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -486,7 +491,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
+        addStats(comparisons, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     
@@ -495,8 +500,8 @@ codonUsage <- function(annot=NULL,
       names(index_sel) <- codind$external_gene_name
     
       resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
-    
+      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
+      
       ##
       pdf(paste(nameOut,'_GC3s_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
       par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -522,7 +527,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
+        addStats(comparisons, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     
@@ -532,8 +537,8 @@ codonUsage <- function(annot=NULL,
       names(index_sel) <- codind$external_gene_name
     
       resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
-    
+      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
+      
       ##
       pdf(paste(nameOut,'_tAI_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
       par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -559,7 +564,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
+        addStats(comparisons,plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     
@@ -568,8 +573,8 @@ codonUsage <- function(annot=NULL,
       names(index_sel) <- codind$external_gene_name
     
       resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
-    
+      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
+      
       ##
       pdf(paste(nameOut,'L_aa_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
       par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -595,7 +600,7 @@ codonUsage <- function(annot=NULL,
       }
       # Plot stats
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType='boxplot', resOutInd, coloursOutInd)
+        addStats(comparisons, plotType='boxplot', resOutInd, coloursOutInd)
       }
       dev.off()
     }

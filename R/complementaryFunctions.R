@@ -165,7 +165,7 @@ isoSel <- function(annot, method){
   return(annotOut)
 }
 
-resSel <- function(vIn, ads, regulation=NULL, regulationGen=NULL, contrast, customBg, geneList){
+resSel <- function(vIn, ads=NULL, regulation=NULL, regulationGen=NULL, contrast, customBg, geneList){
   resOut <- list()
   #Extract all results
   if(!is.null(ads)){
@@ -997,7 +997,7 @@ runMfold <- function(fastaFile){
   close(pb1)
 }
 
-runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
+runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, isads=NULL, regulationGen=NULL){
   #
   #Univariate
   models_prerun <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
@@ -1271,15 +1271,39 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   lcol[which(nodeOutAll$varexpl == 2)] <- "#B14D8E"
   igraph::V(net)$label.color <- lcol
   igraph::V(net)$label <- wrapNames(gsub(" 0%", "", paste(igraph::V(net)$Features, paste(igraph::V(net)$VarianceExplained, "%", sep = ""), sep = " ")), 8)
-    
-  colrs <- rep("#B0F2BC", nrow(nodeOutAll))
-  colrs[which(nodeOutAll$varexpl == 2)] <- "white"
-  igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
-      
+  
+  ###introduce direction here to colour
+  if(isTRUE(isads)){
+    AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
+    names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
+    coloursTmp <- as.character(AnotaColours[grep(regulationGen, names(AnotaColours))])
+    #
+    direct <- as.character()
+    for(i in 1:nrow(nodeOutAll)){
+      if(nodeOutAll[i,]$varexpl==1){
+        IDtmp <- nodeOutAll[i,]$ID
+        #
+        directTmp <- as.numeric(cor.test(dataIn[,colnames(dataIn)==IDtmp,], dataIn$effM)[4])
+        direct[i] <- ifelse(directTmp>0, 'plus','minus')
+      } else {
+        direct[i] <- 'nonsign'
+      }
+    }
+    nodeOutAll$direct <- direct
+    #
+    colrs <- rep("white", nrow(nodeOutAll))
+    colrs[which(nodeOutAll$direct == 'plus')] <- coloursTmp[1]
+    colrs[which(nodeOutAll$direct == 'minus')] <- coloursTmp[2]
+    igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
+  } else {
+    colrs <- rep("#B0F2BC", nrow(nodeOutAll))
+    colrs[which(nodeOutAll$varexpl == 2)] <- "white"
+    igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
+  }
   # Set edges width based on weight:
   if (length(igraph::E(net)$weight) > 0) {
     if(isTRUE(useCorel)){
-      igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 1, 0, 20)
+      igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 1, 0, 15)
     } else {
       igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 50, 0, 2.5)
     }
@@ -1287,26 +1311,22 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
       
   # change arrow size and edge color:
   igraph::E(net)$arrow.size <- .0
-  ecolor <- rep("#D55E00", length(igraph::E(net)$width))
-  ecolor[which(igraph::E(net)$weight < 0)] <- "#56B4E9"
+  ecolor <- rep(grDevices::adjustcolor("#F40009", alpha.f = 0.2), length(igraph::E(net)$width))
+  ecolor[which(igraph::E(net)$weight < 0)] <- grDevices::adjustcolor("#1C39BB",alpha.f = 0.2)
   igraph::E(net)$color <- ecolor
         
   # We can also override the attributes explicitly in the plot:
-  pdf(paste(nameOut, "network.pdf", sep = "_"), height = 8, width = 8, useDingbats = F)
+  pdf(paste(nameOut, "network.pdf", sep = "_"), height = 8, width = 8, useDingbats = F,family = "Helvetica")
   par(bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 1.9, cex.lab = 1.5)
   par(mar = c(5, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
-  plot(net, shape = "sphere", vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "white", layout = layoutCalc(net, n = 2))
-        
-  legend("bottomleft", fill = c("#B0F2BC"), "In Omnibus model", cex = 1.3, bty = "n", xpd = T, inset = -0.1)
-  legend(-1.5, 1.5, lwd = c(7, 3, 3, 7), col = c(rep("#D55E00", 2), rep("#56B4E9", 2)), title = c("Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
+  plot(net, shape = "sphere", vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "black", layout = layoutCalc(net, n = 2))
+  if(isTRUE(isads)){
+    tmpCoord <- legend("bottomleft", fill = coloursTmp, c("Positive regulation","Negative regulation"), cex = 1.1, bty = "n", xpd = T, inset = -0.1)
+    legend(-1.5, 1.1, "Covary with significant features", bty="n",text.col="#B14D8E")
+  } else {
+    tmpCoord <-legend("bottomleft", fill = c("#B0F2BC"), "In Omnibus model", cex = 1.3, bty = "n", xpd = T, inset = -0.1)
+  }
+  legend(-1.5, 1.5, lwd = c(7, 3, 3, 7), col = c(rep(grDevices::adjustcolor("#F40009", alpha.f = 0.2), 2), rep(grDevices::adjustcolor("#1C39BB",alpha.f = 0.2), 2)), title = ifelse(isTRUE(useCorel),"Correlation", "Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
   legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
   dev.off()
-}
-
-# Function to download and unzip files
-downloadAndUnzip <- function(source, species) {
-  url <- generateDownloadURL(species)
-  download_and_unzip("customFasta.fa.gz", paste0(url, "_rna.fna.gz"))
-  download_and_unzip("customAnnot.gbff.gz", paste0(url, "_rna.gbff.gz"))
-  download_and_unzip("GeneRef.gff.gz", paste0(url, "_genomic.gff.gz"))
 }

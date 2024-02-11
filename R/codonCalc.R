@@ -60,7 +60,7 @@ codonCalc <- function(codonIn,
       #
       resOut <- resSel(vIn = codonCalcOutTmp, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
       #
-      coloursOut <- coloursSel(ads = ads, regulation = regulation, geneList = geneList, geneListcolours = geneListcolours, customBg = customBg)
+      coloursOut <- coloursSel(resOut, geneList = geneList, geneListcolours = geneListcolours)
       #
       pdf(nameOut, width = 8, height = 8, useDingbats = F)
       par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -81,7 +81,7 @@ codonCalc <- function(codonIn,
 
       # 
       if (!is.null(comparisons)) {
-        addStats(comparisons, ads, customBg, plotType, resOut, coloursOut)
+        addStats(comparisons, plotType, resOut, coloursOut)
       }
       dev.off()
     }

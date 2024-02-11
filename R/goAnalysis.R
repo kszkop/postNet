@@ -172,8 +172,9 @@ goDotplot <- function(goIn,
       idx <- order(goDf$p.adjust, decreasing = FALSE)
       #
       goDf <- goDf[idx,]
-      goDf <- goDf[1:nCategories,]
-      
+      if(nCategories<nrow(goDf)){
+        goDf <- goDf[1:nCategories,]
+      }
       #to plot
       goDf$log10fdr <- -log10(goDf$p.adjust)
       
@@ -184,13 +185,14 @@ goDotplot <- function(goIn,
       #
       pdf(nameOut, width = 8, height = 8, useDingbats = F)
       par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
-      ggplot2::ggplot(goDf, ggplot2::aes(x=log10fdr, y=reorder(Description,log10fdr), size=Count)) +
+      pOut <- ggplot2::ggplot(goDf, ggplot2::aes(x=log10fdr, y=reorder(Description,log10fdr), size=Count)) +
         ggplot2::geom_point(color= colours[i]) +
         ggplot2::scale_color_manual(values = colours[i]) +   
         ggplot2::theme_bw() +
         ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = 'dashed', linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(),panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, 'cm')) +   
         ggplot2::xlab('-log10 FDR') +
         ggplot2::ylab(" ")
+      print(pOut)
       dev.off()
     }
   }
