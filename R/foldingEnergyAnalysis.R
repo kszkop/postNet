@@ -82,7 +82,7 @@ foldingEnergyAnalysis <- function(annot,
     if(!checkComparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
-    if(length(which(unique(unlist(list(c(0,2),c(0,1))))==0)>0) && is.null(customBg) && is.null(ads)){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(customBg) && is.null(ads)){
       stop(" 0 is always a background, but no background provided")
     }
   }
