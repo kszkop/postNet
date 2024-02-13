@@ -103,7 +103,6 @@ contentAnalysis <- function(annot,
     }
     annotBgSel <- annotBgSel[!is.na(annotBgSel$seqTmp), ]
     #
-    contentFinal <- list()
     for (i in 1:length(contentIn)) {
       content <- contentIn[i]
     

@@ -247,3 +247,26 @@ checkcodSource <- function(codSource) {
     } 
   }
 }
+
+check_codonIn<- function(codonIn) {
+  #is it a list
+  if (!is.list(codonIn)) {
+    stop('"codonIn" is not a list, and so probably not an output of codonUsage function')
+  }
+  #'codonAll' exists and is a list
+  if (!"codonAll" %in% names(codonIn) || !is.list(codonIn$codonAll)) {
+    stop('"codonIn" does not contain codonAll element, and so probably not an output of codonUsage function')
+  }
+  
+  #'codonAll' list contains required elements
+  required_elements <- c("geneID", "codon", "AA", "codonCount", "codonFreq", "AACountPerGene")
+  if (!all(required_elements %in% names(codonIn$codonAll))) {
+    stop('"codonIn$codonAll" element does not contain all required elements, and so probably "codonIn" is not an output of codonUsage function')
+  }
+  
+  # elements are of correct types
+  if (!all(sapply(codonIn$codonAll[grep("geneID|codon|AA", names(codonIn$codonAll))], is.character)) ||
+      !all(sapply(codonIn$codonAll[grep("codonCount|codonFreq|AACountPerGene", names(codonIn$codonAll))], is.double))) {
+    stop('"codonIn$codonAll" elements are not of correct types, and so probably "codonIn" is not an output of codonUsage function')
+  }
+}
