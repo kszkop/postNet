@@ -1064,17 +1064,27 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, isad
     for (j in 1:(length(colnames(dataIn)[-length(colnames(dataIn))]) - length(c(bestSel, outSel)))) {
       varx <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)][j]
       design <- as.formula(paste(paste("effM", paste(x_sel, collapse = " + "), sep = "~"), varx, sep = "+"))
-      models2[[j]] <- anova(lm(design, data = dat))
+      models2[[j]] <- anova(lm(design, data = dataIn))
     }
     #
-    fvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 4])
-    names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
-    fval[[i]] <- fvalTmp
+    #if(length(which(is.na(lm(design, data = dataIn)$coefficients)))>0){
+    #  fvalTmp  <- NA
+    #  fval[[i]] <- fvalTmp
+    #} else {
+      fvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 4])
+      names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
+      fval[[i]] <- fvalTmp
+    #}
   
     #
-    pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
-    names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
-    pval[[i]] <- pvalTmp
+    #if(length(which(is.na(lm(design, data = dataIn)$coefficients)))>0){
+    #  pvalTmp  <- NA
+    #  pval[[i]] <- pvalTm <- fvalTmp
+    #} else {
+      pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
+      names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
+      pval[[i]] <- pvalTmp
+    #}
     
     #
     bestTmp <- which.max(sapply(models2, function(x) x[nrow(x) - 1, 4]))
@@ -1088,6 +1098,8 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, isad
       bestSel <- append(bestSel, tmpIn[bestTmp])
     }
     outSel <- append(outSel, tmpIn[outTmp])
+    #outSel <- append(outSel, 'a8')
+    
   }
   #
   tmp <- t(plyr::ldply(fval, rbind))
@@ -1125,8 +1137,11 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, isad
   tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))
   tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
   
+  #check whether any of the cooeficients is NA as it will be removed
+  
   #
-  varExpl <- anova(lm(as.formula(paste("effM", paste(bestSel, collapse = " + "), sep = "~")), data = dat))
+  
+  varExpl <- anova(lm(as.formula(paste("effM", paste(bestSel, collapse = " + "), sep = "~")), data = dataIn))
   varExpldepend <- numeric()
   for (i in 1:length(bestSel)) {
     tmpFeatI <- bestSel[i]

@@ -77,13 +77,6 @@ codonCalc <- function(codonIn,
   if(!is_valid_analysis(analysis)){
     stop("Please provide an 'analysis'. It can only be 'codon' or 'AA'")
   } 
-  if(!isUnit(unit)){
-    stop("'unit' must be one from these: 'count' or 'freq' for frequency")
-  }
-  #
-  check_codonIn(codonIn)
-    
-  
   
   #
   codonCalcOut <- list()

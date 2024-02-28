@@ -5,7 +5,7 @@
 \title{Calculate codon counts/frequency}
 
 \usage{
-codonCalc(codonIn, featsel, analysis="codon", unit="count", ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours = NULL, customBg = NULL, comparisons=NULL, plotOut = TRUE, outDir=NULL, pdfName = NULL)
+codonCalc(codonIn, featsel, analysis="codon", unit="count", ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours = NULL, customBg = NULL, comparisons=NULL, plotOut = TRUE, pdfName = NULL)
 }
 
 \arguments{
@@ -21,7 +21,6 @@ codonCalc(codonIn, featsel, analysis="codon", unit="count", ads = NULL, regulati
 \item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end. }
 \item{plotOut}{ Logical whether plots and optionally comparisons should be performed. The default is TRUE. }
-\item{outDir}{ Optionally, the name of the output directory for all the plots if plotOut is TRUE. }
 \item{pdfName}{ Name of the output pdf files. }
 }
 
