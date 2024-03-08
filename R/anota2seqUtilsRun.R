@@ -88,8 +88,7 @@ anota2seqUtilsRun <- function(source='load',
                               allFeat = TRUE,
                               covarFilt = 20,
                               NetModelSel = "Omnibus",
-                              effectMeasure = NULL,
-                              outDir=NULL
+                              effectMeasure = NULL
                               ){
   
   #####Prepare annotation
@@ -101,7 +100,7 @@ anota2seqUtilsRun <- function(source='load',
     version <- version[grep(versionInd, version)]
   }
   #
-  annot <- retrieveFormatData(source=source, 
+  a2sU <- retrieveFormatData(source=source, 
                               species=species,
                               version=version,
                               customFile=customFile, 
@@ -112,7 +111,7 @@ anota2seqUtilsRun <- function(source='load',
                               genomic_gff_file=genomic_gff_file)
   
   if(!is.null(adjObj)){
-    annot <- adjustSeq(annot=annot, 
+    a2sU <- adjustSeq(annot=a2sU, 
                        adjObj = adjObj,
                        region_adj = region_adj,
                        excl = excl,

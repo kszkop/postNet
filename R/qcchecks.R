@@ -14,6 +14,25 @@ checkRegion <- function(region, convertToUppercase = TRUE) {
   }
 }
 
+check_adjObj <- function(adjObj) {
+  if (!is.list(adjObj)) {
+    stop("'adjObj' is not a list")
+  }
+  valid_names <- c('UTR5', 'UTR3')
+  if (!all(names(adjObj) %in% valid_names)) {
+    stop("names of the entries in the list should be only 'UTR3' or 'UTR5'")
+  }
+  for (name in names(adjObj)) {
+    entry <- adjObj[[name]]
+    if (!is.character(entry) || !all(nchar(entry) > 0)) {
+      stop("the entries in list should be a character vector with nucleotide sequences")
+    }
+    if (!isDNAsequence(entry[1])) {
+      stop("It looks like the sequences are not DNA sequences")
+    }
+  }
+}
+
 checkSelection <- function(selection, convertToLowercase = TRUE) {
   valid_selection <- c('random', 'longest', 'shortest')
   
@@ -47,7 +66,7 @@ checkPlotType <- function(plotType, convertToLowercase = TRUE) {
 
 checkAnnot <- function(annot, expectedCols = c("id", "geneID", "UTR5_seq", "CDS_seq", "UTR3_seq")) {
   if (is.null(annot) || !is.data.frame(annot)) {
-    stop("'annot' should be a data frame.")
+    stop("'annot' should be a data frame with columns: 'id', 'geneID', 'UTR5_seq', 'CDS_seq', 'UTR3_seq'")
   }
   if (!all(expectedCols %in% colnames(annot))) {
     stop("The following columns are missing in 'annot': ", paste(expectedCols[!expectedCols %in% colnames(annot)], collapse = ", "))

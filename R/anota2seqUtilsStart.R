@@ -1,13 +1,60 @@
-retrieveFormatData <- function(source,
-                               version = NULL,
-                               species = NULL,
-                               customFile = NULL,
-                               fastaFile = NULL,
-                               posFile = NULL,
-                               rna_gbff_file = NULL,
-                               rna_fa_file = NULL,
-                               genomic_gff_file = NULL) {
-  
+anota2seqUtilsStart <- function(ads = NULL,
+                                regulation = NULL,
+                                contrast = NULL,
+                                geneList = NULL,
+                                geneListcolours = NULL,
+                                customBg = NULL,
+                                selection = "random",
+                                source,
+                                version = NULL,
+                                species = NULL,
+                                customFile = NULL,
+                                fastaFile = NULL,
+                                posFile = NULL,
+                                rna_gbff_file = NULL,
+                                rna_fa_file = NULL,
+                                genomic_gff_file = NULL,
+                                adjObj = NULL,
+                                region_adj = NULL,
+                                excl = FALSE,
+                                keepAll = FALSE) {
+  #
+  if(!is.null(ads) && !is.null(geneList)){
+    stop("please provide anota2seq object or genelist, not both.")
+  }
+  if(!is.null(ads)){
+    if (!checkAds(ads)) {
+      stop("ads is not a valid 'Anota2seqDataSet' object.")
+    }
+    if (!is.null(regulation) && !is.character(regulation) && !regulation %in% c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","bufferingmRNAUp","bufferingmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown")) {
+      stop("'regulation' should be a character vector chosen from translationUp,translationDown,translatedmRNAUp,translatedmRNADown,bufferingmRNAUp,bufferingmRNADown,mRNAAbundanceUp,mRNAAbundanceDown,totalmRNAUp,totalmRNADown")
+    }
+    if (!is.null(regulation)){
+      if(!is.null(contrast) && !is.numeric(contrast) && !length(contrast) == length(regulation) && !contrast %in% seq(1,ncol(ads@contrasts),1)){
+        stop("'contrast' should be a numeric vector chosen from each regulation mode")
+      }
+    }
+  }
+  if(is.null(ads)){
+    if(is.null(geneList)){
+      stop('Either anota2seq object of gene list must be provided')
+    } else {
+      if(!checkGeneList(geneList)){
+        stop("'geneList' is empty or not named")
+      }
+      if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours)== length(geneList)) {
+        stop("'geneListcolours' should be a character vector of the same length as geneList.")
+      }
+    }
+  }
+  if(!is.null(customBg)){
+    if(!is.character(customBg)){
+      stop("'customBg' is not character vector")
+    }
+    if(!length(setdiff(unlist(geneList), customBg))==0){
+      stop("There are entries in geneList that are not in 'customBg'")
+    }
+  }
   # Validate the source input
   tryCatch({
     # Code that may throw an error
@@ -23,7 +70,20 @@ retrieveFormatData <- function(source,
   }, error = function(e) {
     stop("Parameters check failed: ", e$message)
   })
-
+  
+  if(!is.null(adjObj)){
+    check_adjObj(adjObj)
+    valid_regions <- c('UTR5', 'UTR3')
+    if (!all(region_adj %in% valid_regions)) {
+      stop("'region_adj' has to be provided and can be only: 'UTR5','UTR3'. It should also match named entries in the list adjObj ")
+    }
+    if(!checkLogicalArgument(excl)){
+      stop("'excl' can be only TRUE or FALSE ")
+    }
+    if(!checkLogicalArgument(keepAll)){
+      stop("'keepAll' can be only TRUE or FALSE ")
+    }
+  }
   # Check available species for the 'create' source
   if (source == "create") {
     if(!is_valid_species(species)){
@@ -141,11 +201,9 @@ retrieveFormatData <- function(source,
       versionInd <- sort(versionInd, decreasing = TRUE)[1]
       version <- version[grep(versionInd, version)]
     }
-    
     if (species == "human") {
       outDB <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), "humanDB.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE)
     }
-    
     if (species == "mouse") {
       outDB <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), "mouseDB.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE)
     }
@@ -192,6 +250,55 @@ retrieveFormatData <- function(source,
   } else {
     stop("No correct option for the annotation file provided")
   }
-  return(outDB)
+  
+  ####
+  annotBg <- gSel(annot = outDB, ads = ads, customBg = customBg, geneList = geneList)
+  #
+  if(!is.null(adjObj)){
+    annotBg <- adjustSeq(annot=annotBg, region_adj = region_adj, adjObj = adjObj, keepAll =  keepAll, excl = excl)
+  }
+  
+  annot <- new("anota2seqUtilsAnnot",
+              UTR5 = NULL,
+              CDS = NULL,
+              UTR3 = NULL)
+  
+  for(reg in c('UTR5','CDS','UTR3')){
+    annotTmp <- regSel(annot = annotBg, region = reg)
+    annotBgSelTmp <- isoSel(annot = annotTmp, method = selection)
+    
+    RegionTmp <- new("anota2seqUtilsRegion",
+                     id = annotBgSelTmp$id,
+                     geneID = annotBgSelTmp$geneID,
+                     seq = annotBgSelTmp$seqTmp)
+    
+    if(reg == 'UTR5'){
+      annot@UTR5 <- RegionTmp
+    } else if (reg == 'CDS'){
+      annot@CDS <- RegionTmp
+    } else if (reg == 'UTR3'){
+      annot@UTR3 <- RegionTmp
+    }
+  }
+  
+  ##
+  genesIn <- resSel(ads = ads, regulation = regulation, contrast = contrast, geneList = geneList)
+  bgIn <- getBg(ads = ads, customBg = customBg, geneList = geneList)
+  #
+  dataIn <- new("anota2seqUtilsDataIn",
+                background = bgIn,
+                geneList = genesIn)
+  
+  
+  
+  # initialize the anota2seqUtils
+  anota2seqUtilsData <- new("anota2seqUtilsData",
+                             version = version,
+                             species = species,
+                             annot = annot,
+                             dataIn = dataIn)
+  
+  
+  return(anota2seqUtilsData)
 }
 

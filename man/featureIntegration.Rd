@@ -5,7 +5,7 @@
 \title{ RNA feature integration } 
 
 \usage{
-featureIntegration(features, analysis_type, comparisons = NULL, rmCat = NULL, regOnly=TRUE, allFeat=TRUE, covarFilt = 20,  NetModelSel= "Omnibus", ads = NULL, regulationGen=NULL, contrastSel=NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, effectMeasure=NULL, outDir=NULL, pdfName=NULL)
+featureIntegration(features, analysis_type, comparisons = NULL, rmCat = NULL, regOnly=TRUE, allFeat=TRUE, covarFilt = 20,  NetModelSel= "Omnibus", ads = NULL, regulationGen=NULL, contrastSel=NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, effectMeasure=NULL, pdfName=NULL)
 }
 
 \arguments{
@@ -25,7 +25,6 @@ featureIntegration(features, analysis_type, comparisons = NULL, rmCat = NULL, re
 \item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
 \item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 \item{effectMeasure}{ In case the anots2seq object is absent or own measure is desired.}
-\item{outDir}{ Optionally, the name of the output directory.}
 \item{pdfName}{ Name of the output pdf files. }
 }
 
@@ -38,5 +37,5 @@ featureIntegration(features, analysis_type, comparisons = NULL, rmCat = NULL, re
 }
 
 \examples{
-featureIntegration(features, analysis_type, regOnly=TRUE, allFeat=TRUE, covarFilt = 20,  NetModelSel= "Omnibus", ads = NULL, regulationGen=NULL, contrastSel=NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, effectMeasure=NULL, outDir=NULL, pdfName=NULL)
+featureIntegration(features, analysis_type, regOnly=TRUE, allFeat=TRUE, covarFilt = 20,  NetModelSel= "Omnibus", ads = NULL, regulationGen=NULL, contrastSel=NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, effectMeasure=NULL, pdfName=NULL)
 }

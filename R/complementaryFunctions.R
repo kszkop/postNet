@@ -165,23 +165,65 @@ isoSel <- function(annot, method){
   return(annotOut)
 }
 
-resSel <- function(vIn, ads=NULL, regulation=NULL, regulationGen=NULL, contrast, customBg, geneList){
+adjustSeq <- function(annot,
+                      adjObj,
+                      region_adj,
+                      excl = FALSE,
+                      keepAll = FALSE) {
+  
+  checkAnnot(annot)
+  #
+  if(!is.null(adjObj)){
+    check_adjObj(adjObj)
+    valid_regions <- c('UTR5', 'UTR3')
+    if (is.null(region_adj) | !all(region_adj %in% valid_regions)) {
+      stop("'region_adj' has to be provided and can be only: 'UTR5','UTR3'. It should also match named entries in the list adjObj ")
+    }
+    if(!checkLogicalArgument(excl)){
+      stop("'excl' can be only TRUE or FALSE ")
+    }
+    if(!checkLogicalArgument(keepAll)){
+      stop("'keepAll' can be only TRUE or FALSE ")
+    }
+  }
+  annotTmp <- annot
+  #
+  for(reg in region_adj){
+    adjObj_temp <- adjObj[[reg]]
+ 
+    if(length(which(names(adjObj_temp) %in% annotTmp$id))==0){
+      stop("It looks like transcript IDs do not match with transcript ids in annotation ")
+    }
+    adjObj_temp <- adjObj_temp[names(adjObj_temp) %in% annotTmp$id]
+    #
+    if (isTRUE(excl)) {
+      annotTmp <- annotTmp[annotTmp$id %in% names(adjObj_temp), ]
+    }
+    #remove these that are not in annotation but in adjustment 
+    #toRemove <- setdiff(names(adjObj_temp), annotTmp$id)
+    #adjObj_temp <- adjObj_temp[!names(adjObj_temp) %in% toRemove]
+    #
+    if(length(adjObj_temp) == 0){
+      stop("none of the entries in the adjustment vector are in annotation ")
+    }
+    #
+    annotTmp[match(names(adjObj_temp), annotTmp$id), ifelse(reg=="UTR5","UTR5_seq","UTR3_seq")] <- adjObj_temp
+    if (!isTRUE(keepAll)) {
+      annotTmp <- annotTmp[(annotTmp$geneID %in% unique(annotTmp[annotTmp$id %in% names(adjObj_temp), ]$geneID) & annotTmp$id %in% unique(annotTmp[annotTmp$id %in% names(adjObj_temp), ]$id)) | (!annotTmp$geneID %in% unique(annotTmp[annotTmp$id %in% names(adjObj_temp), ]$geneID)), ]
+    }
+  }
+  return(annotTmp)
+}
+
+resSel <- function(ads=NULL, 
+                   regulation=NULL,
+                   contrast, 
+                   geneList){
   resOut <- list()
   #Extract all results
   if(!is.null(ads)){
     results <- anota2seqGetDirectedRegulations(ads)
     #
-    if(!is.null(regulationGen)){
-      regulation <- names(results[[contrast]])[grepl(regulationGen, names(results[[contrast]]))]
-      contrast <- rep(contrast,length(regulation))
-      res <- vector("list", length = length(regulation))
-      for(i in unique(contrast)){
-        resTmp <- results[[i]][regulation[contrast==i]]
-        res[which(contrast==i)] <- resTmp
-      }
-      names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
-    } 
-    
     if (!is.null(regulation)){
       res <- vector("list", length = length(regulation))
       for(i in unique(contrast)){
@@ -197,35 +239,36 @@ resSel <- function(vIn, ads=NULL, regulation=NULL, regulationGen=NULL, contrast,
         res <- append(res, resTmp)
       }
     } 
-    #if(!is.null(geneList)){
-    #  res <- append(res, geneList)
-    #}
-    #if(isTRUE(addBg)){
-    resOut[[1]] <- vIn
-    #}
-    for(i in 1:length(res)){
-      resOut[[names(res)[i]]] <- vIn[names(vIn) %in% res[[i]]]
-    }
-    #if(isTRUE(addBg)){
-    names(resOut)[1] <- 'background'
-    #}
   } else {
     res <- geneList
-    if(!is.null(customBg)){
-      resOut[[1]] <- vIn
-      for(i in 1:length(res)){
-        resOut[[names(res)[i]]] <- vIn[names(vIn) %in% res[[i]]]
-      }
-      names(resOut)[1] <- 'background'
-    } else {
-      for(i in 1:length(res)){
-        resOut[[names(res)[i]]] <- vIn[names(vIn) %in% res[[i]]]
-      }
-    }
   }
-  resOut <- resOut[lapply(resOut,length)>0]
+  resOut <- res[lapply(res,length)>3]
   return(resOut)
 }
+
+getBg <- function(ads=NULL, customBg=NULL, geneList=NULL){
+  bgOut <- list()
+  #Extract all results
+  if(!is.null(ads)){
+    bgOut <-  row.names(ads@dataP)
+  } else {
+    if(!is.null(customBg)){
+      #add here to be sure that all genelist are in bg
+      bgOut <- customBg
+      if(!is.null(geneList)){
+        tmpDiff <- setdiff(as.character(unlist(geneList)), bgOut)
+        if(length(tmpDiff)>0){
+          stop('There are genes in the geneList that are not in custom bg')
+        }
+      }
+    } else {
+      bgOut <- as.character(unlist(geneList))
+    } 
+  }
+  return(bgOut)
+}
+
+
 
 coloursSel <- function(resOut, geneList, geneListcolours){
   coloursOut <- as.character()
@@ -1345,3 +1388,4 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, isad
   legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
   dev.off()
 }
+
