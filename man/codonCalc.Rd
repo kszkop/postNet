@@ -5,20 +5,15 @@
 \title{Calculate codon counts/frequency}
 
 \usage{
-codonCalc(codonIn, featsel, analysis="codon", unit="count", ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours = NULL, customBg = NULL, comparisons=NULL, plotOut = TRUE, pdfName = NULL)
+codonCalc(a2sU, codonIn, featsel, analysis="codon", unit="count", comparisons=NULL, plotOut = TRUE, pdfName = NULL)
 }
 
 \arguments{
+\item{a2sU}{ anota2seqUtils class object created using anota2seqUtilsStart function }
 \item{codonIn}{ provide codonAll summary in output from the codonUsage function }
 \item{featSel}{ List of  desired codons or AA to be calculated. Select these with high frequency and the highest/lowest odd ratios indicated by the codonUsage function. }
 \item{analysis}{ select type of the analysis. Choose from "codon" or alternatively amino acid level "AA". The default is "codon". }
 \item{unit}{ select calculation unit. Choose from "count" or "freq" for frequency. The default is "count". }
-\item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
-\item{regulation}{ If the anota2seq object is provided, desired names of regulation modes from the anota2seq object are to be compared. To choose from "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNAUp", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
-\item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
-\item{geneList}{ In addition or instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
-\item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
-\item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end. }
 \item{plotOut}{ Logical whether plots and optionally comparisons should be performed. The default is TRUE. }
 \item{pdfName}{ Name of the output pdf files. }
@@ -33,11 +28,24 @@ Number or Frequency of selected codons is calculated for each gene. If plotOut i
 }
 
 \examples{
-#Firstly run the codonUsage function. For example:
-codonOut <- codonUsage(annotType = "ccds", sourceCod = "load", species = "human", analysis = "codon", codonN = 1, type = "sequence", pAdj = 0.01 , plotHeatmap = TRUE, ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = contrast = c(1,1), selection = "random", comparisons = list(c(0,1),c(0,2),c(1,2)))
+#First prepare anota2seqUtils class object
+# from anota2seq object
+a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, region = c("UTR5","CDS","UTR3"), selection ="random", source = 'load', species = 'human')
+# or from geneList
+a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, region = c("UTR5","CDS","UTR3"), selection ="random", comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
 
+
+len_utr5 <- lengthAnalysis(a2sU = a2sU, region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
+
+#Then run the codonUsage function. For example:
+codonOut <- codonUsage(a2sU = a2sU, annotType = "ccds", sourceCod = "load", species = "human", analysis = "codon", codonN = 1, type = "sequence", pAdj = 0.01 , plotHeatmap = TRUE, comparisons = list(c(0,1),c(0,2),c(1,2)))
+
+#selected from codon usage function:
 featsel <- codonOut[["translationUp_vs_translationDown"]]
-selCodonOut <- calcCodon(codonIn=codonIn, featsel = featsel, analysis="codon", unit="count", ads = anota2seqOutput, regulation =  c("translationUp","translationDown"),contrast = c(1,1), comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE)
+or 
+featsel = list(c('AAA','GGG'),c('CCC','TTT'))
+
+selCodonOut <- calcCodon(a2sU, codonIn=codonIn, featsel = featsel, analysis="codon", unit="count", comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE)
 
 #or after running just provide desired group of codons as a named list 
 selCodonOut <- calcCodon(codonIn=codonIn, featsel = list(c('AAA','GGG'),c('CCC','TTT')), analysis="codon", unit="count", ads = anota2seqOutput, regulation =  c("translationUp","translationDown"),contrast = c(1,1), comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE)

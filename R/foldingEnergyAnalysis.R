@@ -1,31 +1,21 @@
-foldingEnergyAnalysis <- function(annot,
+foldingEnergyAnalysis <- function(a2sU,
                                   sourceFE = "load",
-                                  version = NULL,
-                                  species = NULL,
+                                  #version = NULL,
+                                  #species = NULL,
                                   fromFasta = FALSE,
                                   customFileFE = NULL,
                                   #onlyRun = FALSE,
                                   residFE = FALSE,
-                                  ads = NULL,
-                                  regulation = NULL,
-                                  contrast = NULL,
-                                  geneList = NULL,
-                                  geneListcolours = NULL,
-                                  customBg = NULL,
-                                  selection,
                                   region = NULL,
                                   comparisons = NULL,
                                   plotOut = TRUE,
                                   plotType = "boxplot",
                                   pdfName = NULL) {
   #
-  if(!is.null(ads) && !is.null(geneList)){
-    stop("please provide anota2seq object or genelist, not both.")
-  }
-  
-  checkAnnot(annot)
   checkRegion(region)
-  checkSelection(selection)
+  
+  species <- anota2seqUtilsGetSpecies(a2sU)
+  version <- anota2seqUtilsGetVersion(a2sU)
   
   # Validate the source input
   tryCatch({
@@ -45,44 +35,13 @@ foldingEnergyAnalysis <- function(annot,
       stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
     }
   }
-  if(!is.null(ads)){
-    if (!checkAds(ads)) {
-      stop("ads is not a valid 'Anota2seqDataSet' object.")
-    }
-    if (!is.null(regulation) && !is.character(regulation) && !regulation %in% c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","bufferingmRNAUp","bufferingmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown")) {
-      stop("'regulation' should be a character vector chosen from translationUp,translationDown,translatedmRNAUp,translatedmRNADown,bufferingmRNAUp,bufferingmRNADown,mRNAAbundanceUp,mRNAAbundanceDown,totalmRNAUp,totalmRNADown")
-    }
-    if (!is.null(regulation)){
-      if(!is.null(contrast) && !is.numeric(contrast) && !length(contrast) == length(regulation) && !contrast %in% seq(1,ncol(ads@contrasts),1)){
-        stop("'contrast' should be a numeric vector chosen from each regulation mode")
-      }
-    }
-  } 
-  if(is.null(ads)){
-    if(is.null(geneList)){
-      stop('Either anota2seq object of gene list must be provided')
-    } else {
-      if(!checkGeneList(geneList)){
-        stop("'geneList' is empty or not named")
-      }
-      if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours)== length(geneList)) {
-        stop("'geneListcolours' should be a character vector of the same length as geneList.")
-      }
-    }
-  }
-  if(!is.null(customBg)){
-    if(!is.character(customBg)){
-      stop("'customBg' is not character vector")
-    }
-    if(!length(setdiff(unlist(geneList), customBg))==0){
-      stop("There are entries in geneList that are not in 'customBg'")
-    }
-  }
+ 
   if(!is.null(comparisons)){
     if(!checkComparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(customBg) && is.null(ads)){
+    #
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(anota2seqUtilsGetBg(a2sU))){
       stop(" 0 is always a background, but no background provided")
     }
   }
@@ -173,7 +132,7 @@ foldingEnergyAnalysis <- function(annot,
     energyIn <- read.delim(customFileFE, stringsAsFactors = FALSE)
     energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
     #
-    feOutTmp <- runFE(energyIn = energyIn, annot = annot,  ads = ads, region = 'custom', regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList, geneListcolours = geneListcolours, comparisons=comparisons, selection = selection, residFE = residFE,  plotOut=plotOut, plotType = plotType, pdfName=pdfName)
+    feOutTmp <- runFE(energyIn = energyIn, a2sU, comparisons=comparisons, residFE = residFE,  plotOut=plotOut, plotType = plotType, pdfName=pdfName)
     feOut[['custom']] <- feOutTmp
     #
   } else if (sourceFE == "load") {
@@ -214,21 +173,14 @@ foldingEnergyAnalysis <- function(annot,
 }
 
 #
-runFE <- function(energyIn = energyIn, 
-                  annot = annot, 
-                  ads = ads,
-                  region = reg,
-                  regulation = regulation, 
-                  contrast = contrast,
-                  customBg = customBg, 
-                  geneList = geneList, 
-                  geneListcolours = geneListcolours, 
-                  comparisons=comparisons,
-                  selection = selection, 
-                  residFE = residFE, 
-                  plotOut=plotOut,
-                  plotType = plotType,
-                  pdfName=pdfName){
+runFE <- function(energyIn,
+                  a2sU,
+                  region = NULL,
+                  comparisons = NULL,
+                  residFE = FALSE, 
+                  plotOut = TRUE,
+                  plotType = "boxplot",
+                  pdfName = NULL){
   #
   energyInGene <- merge(energyIn, annot[, c(1, 2)], by = "id", all.x = T)
   energyInGene <- na.omit(energyInGene)

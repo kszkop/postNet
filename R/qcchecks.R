@@ -73,9 +73,25 @@ checkAnnot <- function(annot, expectedCols = c("id", "geneID", "UTR5_seq", "CDS_
   }
 }
 
+checkAnnotCod <- function(annot, expectedCols = c("id", "geneID", "CDS_seq")) {
+  if (is.null(annot) || !is.data.frame(annot)) {
+    stop("'customFileCod' should be a file in format data frame with columns: 'id', 'geneID', 'CDS_seq'")
+  }
+  if (!all(expectedCols %in% colnames(annot))) {
+    stop("The following columns are missing in 'customFileCod': ", paste(expectedCols[!expectedCols %in% colnames(annot)], collapse = ", "))
+  }
+}
+
 # Check if 'ads' is a valid 'Anota2seqDataSet' object
 checkAds <- function(obj) {
   if (!inherits(obj, "Anota2seqDataSet")) {
+    return(FALSE)
+  }
+  return(TRUE)
+}
+
+checkUtils <- function(obj) {
+  if (!inherits(obj, "anota2seqUtilsData")) {
     return(FALSE)
   }
   return(TRUE)
@@ -168,6 +184,10 @@ isStartCodon <- function(startCodon) {
   }
 }
 
+is_by_3 <- function(seqs) {
+  all(sapply(seqs, function(x) length(seqinr::s2c(x)) %% 3 == 0))
+}
+
 isKozakContext <- function(KozakContext) {
   KozakContext <- tolower(KozakContext)
   valid_values <- c("strong", "adequate1", "adequate2", "weak", "any")
@@ -182,6 +202,15 @@ isUnitOut <- function(unitOut) {
   unitOut <- tolower(unitOut)
   valid_values <- c("number", "position")
   if (is.character(unitOut) && length(unitOut) == 1 && unitOut %in% valid_values) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+isUnit <- function(unit) {
+  unitOut <- tolower(unit)
+  valid_values <- c("count", "freq")
+  if (is.character(unit) && length(unit) == 1 && unit %in% valid_values) {
     return(TRUE)
   }
   return(FALSE)
@@ -288,4 +317,24 @@ check_codonIn<- function(codonIn) {
       !all(sapply(codonIn$codonAll[grep("codonCount|codonFreq|AACountPerGene", names(codonIn$codonAll))], is.double))) {
     stop('"codonIn$codonAll" elements are not of correct types, and so probably "codonIn" is not an output of codonUsage function')
   }
+}
+
+check_codons <- function(featSel) {
+  # Define a vector of all possible codons
+  all_codons <- c("AAA", "AAC", "AAG", "AAT", "ACA", "ACC", "ACG", "ACT", "AGA", "AGC",
+                  "AGG", "AGT", "ATA", "ATC", "ATG", "ATT", "CAA", "CAC", "CAG", "CAT",
+                  "CCA", "CCC", "CCG", "CCT", "CGA", "CGC", "CGG", "CGT", "CTA", "CTC",
+                  "CTG", "CTT", "GAA", "GAC", "GAG", "GAT", "GCA", "GCC", "GCG", "GCT",
+                  "GGA", "GGC", "GGG", "GGT", "GTA", "GTC", "GTG", "GTT", "TAA", "TAC",
+                  "TAG", "TAT", "TCA", "TCC", "TCG", "TCT", "TGA", "TGC", "TGG", "TGT",
+                  "TTA", "TTC", "TTG", "TTT")
+  
+  # Check if all elements of featSel are either single codons or combinations of codons
+  all(sapply(featSel, function(x) {
+    if (nchar(x) %% 3 == 0 && all(strsplit(x, "")[[1]] %in% c("A", "C", "G", "T"))) {
+      all(substring(x, seq(1, nchar(x), by = 3), seq(3, nchar(x), by = 3)) %in% all_codons)
+    } else {
+      x %in% all_codons
+    }
+  }))
 }

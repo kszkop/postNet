@@ -1,6 +1,7 @@
 ## anota2seqUtils S4 class implementation
 setClassUnion("RegionOrNULL",members=c("anota2seqUtilsRegion", "NULL"))
 setClassUnion("characterOrNULL",members=c("character", "NULL"))
+setClassUnion("listOrNULL",members=c("list", "NULL"))
 
 setClass("anota2seqUtilsRegion",
          slots = c(
@@ -21,13 +22,15 @@ setClass("anota2seqUtilsAnnot",
 setClass("anota2seqUtilsDataIn",
          slots = c(
            background = "characterOrNULL",
-           geneList = "list"
+           geneList = "list",
+           effect = "numeric",
+           colours = "character"
          )
 )
 
 setClass("anota2seqUtilsFeatures",
          slots = c(
-           features = "list"
+           features = "listOrNULL"
          )
 )
 
@@ -35,6 +38,7 @@ setClass("anota2seqUtilsData",
          slots = c(
            species = "character",
            version = "character",
+           selection = "character",
            annot =  "anota2seqUtilsAnnot",
            dataIn = "anota2seqUtilsDataIn",
            features = "anota2seqUtilsFeatures"

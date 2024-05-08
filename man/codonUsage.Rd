@@ -12,7 +12,7 @@ codonUsage(annotType = "ccds", annot=NULL, sourceSeq = "load", customFileCod = N
 \item{annotType}{ select source of reference coding region sequences. Choose from "ccds", "custom", "refseq". The default is "ccds". }
 \item{annot}{ if annotType is "refseq". An object containing reference sequences is obtained by the retrieveFormatData function. It is data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq }
 \item{sourceSeq}{ if annotType is "ccds", choose "create" to automatically prepare reference sequences from ccds database,  "load" to load preprepared sequences for selected species, or "custom" to use customFile. The default is "load". }
-\item{customFileCod}{ name of a file including a path to the customFile. The customFile has to be in the format transcriptID, geneID, UTR5_seq, CDS_seq, UTR3_seq. It is only required if the annotType is 'custom'. }
+\item{customFileCod}{ name of a file including a path to the customFile. The customFile has to be in the format transcriptID, geneID, CDS_seq. It is only required if the annotType is 'custom'. }
 \item{species}{ it is required if annotType == 'create' or 'load'. At the moment only human and mouse are available. }
 \item{analysis}{ select type of the analysis. Choose from "codon" or alternatively amino acid level "AA". The default is "codon". }
 \item{codonN}{ n number of codon combinations. The default is 1. For di-codon choose 2 and so on. The option is available only for type=="sequence". }

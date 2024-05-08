@@ -1,9 +1,12 @@
 anota2seqUtilsStart <- function(ads = NULL,
                                 regulation = NULL,
                                 contrast = NULL,
+                                regulationGen = NULL, 
+                                contrastSel = NULL,
                                 geneList = NULL,
                                 geneListcolours = NULL,
                                 customBg = NULL,
+                                effectMeasure = NULL,
                                 selection = "random",
                                 source,
                                 version = NULL,
@@ -283,20 +286,34 @@ anota2seqUtilsStart <- function(ads = NULL,
   
   ##
   genesIn <- resSel(ads = ads, regulation = regulation, contrast = contrast, geneList = geneList)
+  
+  #add here to check numbers of genes
+  #if(length(resOut)==0){
+  #  stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
+  #}
+  
+  coloursIn <- coloursSel(ads = ads, genesIn = genesIn, geneList = geneList, geneListcolours = geneListcolours)
+  effIn <- effectSel(ads = ads, regulationGen = regulationGen, contrastSel = contrastSel, effectMeasure = effectMeasure)
   bgIn <- getBg(ads = ads, customBg = customBg, geneList = geneList)
   #
   dataIn <- new("anota2seqUtilsDataIn",
                 background = bgIn,
-                geneList = genesIn)
+                geneList = genesIn,
+                effect = effIn,
+                colours = coloursIn)
   
+  featIn <- new("anota2seqUtilsFeatures",
+                features = NULL)
   
   
   # initialize the anota2seqUtils
   anota2seqUtilsData <- new("anota2seqUtilsData",
                              version = version,
                              species = species,
+                             selection = selection,
                              annot = annot,
-                             dataIn = dataIn)
+                             dataIn = dataIn,
+                             features = featIn)
   
   
   return(anota2seqUtilsData)

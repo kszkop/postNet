@@ -268,25 +268,38 @@ getBg <- function(ads=NULL, customBg=NULL, geneList=NULL){
   return(bgOut)
 }
 
-
-
-coloursSel <- function(resOut, geneList, geneListcolours){
+coloursSel <- function(ads, genesIn, geneList, geneListcolours){
   coloursOut <- as.character()
-  if(is.null(geneList)){
+  if(!is.null(ads)){
     AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
     names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
     #
-    coloursOut <- AnotaColours[gsub("\\_.*","",names(resOut))]
-    coloursOut[1] <- 'grey75'
+    coloursOut <- AnotaColours[gsub("\\_.*","",names(genesIn))]
   } else {
-    if(names(resOut)[1] == 'background'){
-      coloursOut <- c('grey65', geneListcolours)
-    } else {
-      coloursOut <- geneListcolours
-    }
+    coloursOut <-  geneListcolours
   } 
   return(coloursOut)
 }
+
+effectSel <- function(ads, regulationGen, contrastSel, effectMeasure){
+  effM <- as.numeric()
+  if (!is.null(effectMeasure)) {
+    effM <- effectMeasure
+  } else if (!is.null(ads)) {
+    if(regulationGen=='mRNAAbundance'){
+      regTmp <- 'totalmRNA'
+    } else {
+      regTmp <- regulationGen
+    }
+    scOut <- anota2seq::anota2seqGetOutput(ads, output = "singleDf", selContrast = contrastSel, getRVM = TRUE)
+    effM <- scOut[, grepl(paste(regTmp, "apvEff", sep = "."), colnames(scOut))]
+    names(effM) <- scOut$identifier
+  } else {
+    stop("Please provide anota2seq object or custom effect measure to be explained by provided features")
+  }
+  return(effM)
+}
+
 
 addStats <- function(comparisons, plotType, resOut, coloursOut){
   #
@@ -303,12 +316,13 @@ addStats <- function(comparisons, plotType, resOut, coloursOut){
     }
     # stats
     pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
+    print(pvalTmp)
     #
     if (plotType == "boxplot" | plotType == "violin") {
-      yposTmp <- ifelse(range(as.numeric(unlist(resOut)))[2] <= 1, 1.1,range(as.numeric(unlist(resOut)))[2] + j*5)
-      rect(xleft = compTmp[1], xright = compTmp[2], ybottom = yposTmp, ytop = yposTmp, lwd = 2)
+      yposTmp <- ifelse(range(as.numeric(unlist(resOut)))[2] <= 1, 1.1,range(as.numeric(unlist(resOut)))[2]+ j*1)
+      rect(xleft = compTmp[1], xright = compTmp[2], ybottom = yposTmp , ytop = yposTmp, lwd = 2)
       #
-      text(sum(compTmp) / 2, ifelse(range(as.numeric(unlist(resOut)))[2] <= 1,yposTmp + 0.05,yposTmp + 2.5), pvalTmp, cex = 0.75)
+      text(sum(compTmp) / 2, ifelse(range(as.numeric(unlist(resOut)))[2] <= 1,yposTmp + 0.05,yposTmp + 0.5), pvalTmp, cex = 0.75)
     } else if (plotType == "ecdf") {
       tableOut[j, 1] <- paste(names(resOut)[compTmp[2]], "vs", names(resOut)[compTmp[1]], sep = " ")
       tableOut[j, 2] <- pvalTmp
@@ -341,32 +355,71 @@ addStats <- function(comparisons, plotType, resOut, coloursOut){
   }
 }
 
+resQuant <- function(qvec, a2sU){
+  resOut <- list()
+  if(!is.null(anota2seqUtilsGetBg(a2sU))){
+    res <- c(list(background=anota2seqUtilsGetBg(a2sU)),anota2seqUtilsGetDataIn(a2sU))
+  } else {
+    res <- anota2seqUtilsGetDataIn(a2sU)
+  }
 
+  for(i in 1:length(res)){
+    resOut[[names(res)[i]]] <- qvec[names(qvec) %in% res[[i]]]
+  }
+  return(resOut)
+}
+
+colPlot <- function(a2sU){
+  if(!is.null(anota2seqUtilsGetBg(a2sU))){
+    colOut <- c('grey45',anota2seqUtilsGetColours(a2sU))
+  } else {
+    colOut <- anota2seqUtilsGetColours(a2sU)
+  }
+  return(colOut)
+}
 # 
-plotBoxplots <- function(resOut, coloursOut, comparisons) {
+
+set_boxvio <- function(resOut, ylabel) {
+  #
+  dataTmp <- as.numeric(unlist(resOut))
+  xlimTmp <- c(0.5, length(resOut) + 1.5)
+  #
   par(mar = c(8, 12, 12, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-  xlimIn <- c(0.5, length(resOut) + 1.5)
-  
-  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOut)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-  
-  axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
-  mtext(side = 2, line = 6, "Log2 length", col = "black", font = 2, cex = 1.7, at = median(as.numeric(unlist(resOut))))
+  plot(1,1, xlim=xlimTmp, ylim=range(dataTmp), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  #
+  if(ylabel == 'Log2 length'){
+    axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
+    mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = median(dataTmp))
+  } else {
+    axis(side = 2, font = 2, las = 2, lwd = 2)
+    mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = median(dataTmp))
+    
+  }
   text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+}
+
+plotBoxplots <- function(resOut, colOut, comparisons, ylabel) {
+
+  set_boxvio(resOut, ylabel)
   
   if (names(resOut)[1] == 'background') {
     abline(lty = 5, h = median(resOut[[1]]))
   }
   #
   for (i in 1:length(resOut)) {
-    boxplot(resOut[[i]], add = TRUE, at = i, col = coloursOut[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-    text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
+    boxplot(resOut[[i]], add = TRUE, at = i, col = colOut[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
+    if(ylabel == 'Log2 length'){
+      text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
+    } else {
+      text(i, 0, round(mean(resOut[[i]]),0), font = 2)
+    }
   }
   if(!is.null(comparisons)){
-    addStats(comparisons, plotType='boxplot', resOut, coloursOut)
+    addStats(comparisons, plotType='boxplot', resOut, colOut)
   }
 }
 
-plotViolin <- function(resOut, coloursOut, comparisons) {
+plotViolin <- function(qvec, a2sU, comparisons) {
   par(mar = c(8, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
   xlimIn <- c(0.5, length(resOut) + 1.5)
   
@@ -390,7 +443,7 @@ plotViolin <- function(resOut, coloursOut, comparisons) {
 }
 
 # Helper function for plotting ECDF
-plotEcdf <- function(resOut, coloursOut, comparisons) {
+plotEcdf <- function(qvec, a2sU, comparisons) {
   xlim_min <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.01))
   xlim_max <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.99))
   par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -1389,3 +1442,19 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, isad
   dev.off()
 }
 
+getSeqs <- function(a2sU, region){
+  if(region == 'UTR5'){
+    seqOut <- anota2seqUtilsGetUTR5Seq(a2sU)
+    geneIDs <- anota2seqUtilsGetUTR5geneID(a2sU)
+  } else if (reg == 'UTR3'){
+    seqOut <- anota2seqUtilsGetUTR3Seq(a2sU)
+    geneIDs <- anota2seqUtilsGetUTR3geneID(a2sU)
+  } else if (reg == 'CDS'){
+    seqOut <- anota2seqUtilsGetCDSSeq(a2sU)
+    geneIDs <- anota2seqUtilsGetCDSgeneID(a2sU)
+  } else {
+    stop("no such region")
+  }
+  names(seqOut) <- geneIDs 
+  return(seqOut)
+}

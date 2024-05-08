@@ -18,8 +18,7 @@ featureIntegration(features, analysis_type, comparisons = NULL, rmCat = NULL, re
 \item{covarFilt}{ Minimum threshold for covariance between features to be dispayed for the network plot. The default is 20.  }
 \item{NetModelSel}{ Values for the variance explained for the network plot. The default is "Omnibus". Aternatively "Adjusted" or "Univariate" can be provided. }
 \item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
-\item{regulationGen}{ Desired name of regulation from the anota2seq. Choose from "translation", "buffering", "mRNAAbundance", "translatedmRNA", "totalmRNA". It is required even if regOnly is FALSE, to extract effectMeasure from the anota2seq object.
-}
+\item{regulationGen}{ Desired name of regulation from the anota2seq. Choose from "translation", "buffering", "mRNAAbundance", "translatedmRNA", "totalmRNA". It is required even if regOnly is FALSE, to extract effectMeasure from the anota2seq object.}
 \item{contrastSel}{ contrast in the anota2seq object to be analysed }
 \item{geneList}{ In addition or instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
 \item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }

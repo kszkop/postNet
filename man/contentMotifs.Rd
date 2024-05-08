@@ -5,24 +5,17 @@
 \title{ Calculation of motif presence }
 
 \usage{
-contentMotifs(annot, motifsIn, seqType="dna", dist=1, min_score=47, unitOut="number", resid=FALSE, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, selection = "random", region, subregion=NULL, subregionSel=NULL, comparisons=NULL, plotOut = TRUE, outDir=NULL, pdfName = NULL )
+contentMotifs(annot, motifsIn, seqType="dna", dist=1, min_score=47, unitOut="number", resid=FALSE, region, subregion=NULL, subregionSel=NULL, comparisons=NULL, plotOut = TRUE, outDir=NULL, pdfName = NULL )
 }
 
 \arguments{
-\item{annot}{ An object containing reference sequences is obtained by the retrieveFormatData function. It is data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq }
+\item{a2sU}{ anota2seqUtils class object created using anota2seqUtilsStart function }
 \item{motifsIn}{ motif sequences to be analyzed. IUPAC code or [ ] can be used for ambiguities. Provide "G4" for g-quadruplexes. G-quadruplexes presence is predicted using pqsfinder package https://bioconductor.org/packages/release/bioc/html/pqsfinder.html }
 \item{seqType}{ Sequence type of the motif. Choose from dna, rna, or protein. The default is "dna". }
 \item{dist}{ Minimal distance between motifs. The default is 1. }
 \item{min_score}{ Threshold for the quality of the g-quadruplexes prediction. It is required for "G4" option. The default is 47. }
 \item{unitOut}{ Select whether the output should be a "number" of uORFs. It will be output as a vector and can be directly fed into feature integration step or "position". In that case list of uORFs positions per gene with be provided. The default is "number". }
 \item{resid}{ Residuals after correction for the length of the sequences should be used instead. It can be TRUE only if unitOut is "number". The default is FALSE.}
-\item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
-\item{regulation}{ If the anota2seq object is provided, desired names of regulation modes from the anota2seq object are to be compared. To choose from "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNAUp", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
-\item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
-\item{geneList}{ In addition or instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
-\item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
-\item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
-\item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest for a given region will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }
 \item{region}{ Select the regions of interest. Choose from combination of "UTR5", "CDS", "UTR3" }
 \item{subregion}{ Optionally it is possible to select a subregion by indicating a number of nucleotides from the start if positive or end if negative. }
 \item{subregionSel}{ It is required if the subregion is provided. Choose whether the indicated subregion should be "select" or "exclude". }
@@ -41,15 +34,11 @@ The number of motifs in the selected region for each gene is calculated. There i
 }
 
 \examples{
-# Check available versions
-checkAvailableVersions(species = "human")
-# Load pre-existing reference sequences
-annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = "human")
+#First prepare anota2seqUtils class object
+# from anota2seq object
+a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, region = c("UTR5","CDS","UTR3"), selection ="random", source = 'load', species = 'human')
+# or from geneList
+a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, region = c("UTR5","CDS","UTR3"), selection ="random", comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
 
-# If only the anota2seq object
-motifsNum <- contentMotifs(annot = annot, motifsIn=c("ACTG","G4"), seqType="dna", dist=1, min_score=47,, unitOut = "number", resid=FALSE, ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = contrast = c(1,1), selection = "random", region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)))
-
-
-# If only the geneList
-motifsNum <- contentMotifs(annot = annot, motifsIn=c("ACTG","G4"), seqType="dna", dist=1, min_score=47,, unitOut = "number", resid=FALSE, geneList = inList, geneListcolours=c("#F2A104","#00743F"), selection = "random", region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)))
+motifsNum <- contentMotifs(a2sU = a2sU, motifsIn=c("ACTG","G4"), seqType="dna", dist=1, min_score=47,, unitOut = "number", resid=FALSE, region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)))
 }

@@ -5,22 +5,15 @@
 \title{ Presence of uORFs estimation }
 
 \usage{
-uorf_analysis(annot, startCodon="ATG", KozakContext="strong", onlyUTR5=FALSE, unitOut="number", ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours = NULL, customBg = NULL, selection = "random", comparisons=NULL, plotOut = TRUE, pdfName = NULL)
+uorf_analysis(a2sU, startCodon="ATG", KozakContext="strong", onlyUTR5=FALSE, unitOut="number", comparisons=NULL, plotOut = TRUE, pdfName = NULL)
 }
 
 \arguments{
-\item{annot}{ An object containing reference sequences is obtained by the retrieveFormatData function. It is data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq }
+\item{a2sU}{ anota2seqUtils class object created using anota2seqUtilsStart function }
 \item{startCodon}{ Select start codon. The default is canonical start codon "ATG". }
 \item{KozakContext}{ Select Kozak Context. The default is strong (i.e [AG]..startCodonG). Alternatively, there are options to choose "adequate1" ([AG]..startCodon.) or "adequate2" (...startCodonG) or "weak" (...startCodon.). If "any" is selected, the nucleotide context of the start codon is disregarded. }
 \item{onlyUTR5}{ Select whether the uORFs should be completely contained in the 5"UTR (ie start and stop codon). The default is FALSE, indicating that only the start codon should be in 5"UTR but with the possibility of having a stop codon in CDS or 3"UTR. }
 \item{unitOut}{ Select whether the output should be a "number" of uORFs. It will be output as a vector and can be directly fed into feature integration step or "position". In that case list of uORFs positions per gene with be provided. The default is "number". }
-\item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
-\item{regulation}{ If the anota2seq object is provided, desired names of regulation modes from the anota2seq object are to be compared. To choose from "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNAUp", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
-\item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
-\item{geneList}{ Instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
-\item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
-\item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
-\item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest 5"UTR will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end. }
 \item{plotOut}{ Logical whether plots and optionally comparisons should be performed. The default is TRUE. }
 \item{pdfName}{ Name of the output pdf files. }
@@ -35,14 +28,11 @@ Presence of uORFs with desired start codon in given Kozak context is calculated.
 }
 
 \examples{
-# Check available versions
-checkAvailableVersions(species = "human")
-# Load pre-existing reference sequences
-annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = "human")
+#First prepare anota2seqUtils class object
+# from anota2seq object
+a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, region = c("UTR5"), selection ="random", source = 'load', species = 'human')
+# or from geneList
+a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, region = c("UTR5"), selection ="random", comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
 
-# If only the anota2seq object
-uorf_strong <- uorf_analysis(annot = annot, startCodon="ATG", KozakContext="strong", onlyUTR5=FALSE, unitOut = "number", ads = anota2seqOutput, regulation =  c("translationUp","translationDown"),contrast = c(1,1), selection ="random", comparisons = list(c(0,1),c(0,2),c(1,2)))
-
-# If only the geneList
-uorf_strong <- uorf_analysis(annot = annot, startCodon="ATG", KozakContext="strong", onlyUTR5=FALSE, unitOut = "number", geneList = inList, geneListcolours=c("#F2A104","#00743F"), selection ="random", comparisons = list(c(1,2)))
+uorf_strong <- uorf_analysis(a2sU = a2sU, startCodon="ATG", KozakContext="strong", onlyUTR5=FALSE, unitOut = "number", comparisons = list(c(1,2)))
 }

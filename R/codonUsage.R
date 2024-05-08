@@ -1,8 +1,6 @@
-codonUsage <- function(annot=NULL,
-                       annotType = "ccds", # option: 'refseq' or 'ccds', 'custom', 'riboseq'
+codonUsage <- function(annotType = "ccds", # option: 'refseq' or 'ccds', 'custom', 'riboseq'
                        sourceSeq = "load", # option to 'load' available or create new 'create'
                        customFileCod = NULL,
-                       species = NULL, # it is required for ccds
                        analysis,
                        codonN = 1,
                        codSource = "sequence", # option: 'sequence' or if ribosomal profiling 'riboseq'
@@ -14,18 +12,20 @@ codonUsage <- function(annot=NULL,
                        thresY1 = 0.3,
                        thresX2 = 0.3,
                        thresY2 = 0.3,
-                       ads = NULL,
-                       regulation = NULL,
-                       contrast = NULL,
-                       geneList = NULL,
-                       geneListcolours = NULL,
-                       customBg = NULL,
-                       selection, # shortest, longest, random (default)
                        subregion = NULL, # number of nucleotides from start if positive or end if negative.
                        subregionSel= NULL, # select or exclude , required if subregion is not null.
                        inputTable=NULL,
                        comparisons,
                        pdfName = NULL) {
+  #
+  if (!checkUtils(a2sU)) {
+    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  }
+  #
+  species <- anota2seqUtilsGetSpecies(a2sU)
+  if(!is_valid_species(species)){
+    stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
+  }
   #
   if(tolower(codSource)=='riboseq'){
     message("Please make sure the 'annot' was created using 'source == createFromFiles' option, and providing fasta file and corresponding postion file that was used for ribosomal profiling reads alignment. Otherwise positions in the dpn file will not match")
@@ -50,13 +50,26 @@ codonUsage <- function(annot=NULL,
     #  }
     #}
   } else if(annotType=="refseq" | annotType=='riboseq'){
-    checkAnnot(annot)
+    
+    annot <- anota2seqUtilsGetCDS(a2sU)
+    
   } else if(annotType=="custom"){
     if (is.null(customFileCod)) {
       stop("Please provide an customFileCod.")
     }
-    annot <- read.delim(customFileCod, stringsAsFactors = FALSE)
-    checkAnnot(annot)
+    annotTmp <- read.delim(customFileCod, stringsAsFactors = FALSE)
+    checkAnnotCod (annotTmp)
+    #
+    lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
+    annotTmp$lenTmp <- lenTmp
+    #
+    annotBgSelTmp <- isoSel(annot = annotTmp, method = anota2seqUtilsGetSelection(a2sU))
+    #
+    
+    annot <- new("anota2seqUtilsRegion",
+                       id = annotBgSelTmp$id,
+                       geneID = annotBgSelTmp$geneID,
+                       seq = annotBgSelTmp$CDS_seq)
   }
   if(!is_valid_analysis(analysis)){
     stop("Please provide an 'analysis'. It can only be 'codon' or 'AA'")
@@ -69,44 +82,6 @@ codonUsage <- function(annot=NULL,
   codSourse <- tolower(codSource)
 
   #
-  if(!is.null(ads) && !is.null(geneList)){
-    stop("please provide anota2seq object or genelist, not both.")
-  }
-
-  if(!is.null(ads)){
-    if (!checkAds(ads)) {
-      stop("ads is not a valid 'Anota2seqDataSet' object.")
-    }
-    if (!is.null(regulation) && !is.character(regulation) && !regulation %in% c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","bufferingmRNAUp","bufferingmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown")) {
-      stop("'regulation' should be a character vector chosen from translationUp,translationDown,translatedmRNAUp,translatedmRNADown,bufferingmRNAUp,bufferingmRNADown,mRNAAbundanceUp,mRNAAbundanceDown,totalmRNAUp,totalmRNADown")
-    }
-    if (!is.null(regulation)){
-      if(!is.null(contrast) && !is.numeric(contrast) && !length(contrast) == length(regulation) && !contrast %in% seq(1,ncol(ads@contrasts),1)){
-        stop("'contrast' should be a numeric vector chosen from each regulation mode")
-      }
-    }
-  } 
-  if(is.null(ads)){
-    if(is.null(geneList)){
-      stop('Either anota2seq object of gene list must be provided')
-    } else {
-      if(!checkGeneList(geneList)){
-        stop("'geneList' is empty or not named")
-      }
-      if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours)== length(geneList)) {
-        stop("'geneListcolours' should be a character vector of the same length as geneList.")
-      }
-    }
-  }
-  if(!is.null(customBg)){
-    if(!is.character(customBg)){
-      stop("'customBg' is not character vector")
-    }
-    if(!length(setdiff(unlist(geneList), customBg))==0){
-      stop("There are entries in geneList that are not in 'customBg'")
-    }
-  }
-  
   if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
     stop("'subregion' must be a numeric and just number")
   }
@@ -118,21 +93,19 @@ codonUsage <- function(annot=NULL,
     if(!checkComparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(customBg) && is.null(ads)){
+    #
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(anota2seqUtilsGetBg(a2sU))){
       stop(" 0 is always a background, but no background provided")
     }
-  }
-
-  #
-  nameTmp <- ifelse(is.null(pdfName), analysis, paste(pdfName, analysis, sep = "_"))
-  nameOut <- nameTmp
-  #
-  if (is.null(comparisons)) {
+  } else {
     stop(
       "For further steps pairs of comparison of codon composition between regulations should be provided with direction for each.",
       call. = FALSE
     )
   }
+  #
+  nameTmp <- ifelse(is.null(pdfName), analysis, paste(pdfName, analysis, sep = "_"))
+  nameOut <- nameTmp
   #
   if (annotType == "ccds") {
     if (sourceSeq == "create") {
@@ -148,7 +121,7 @@ codonUsage <- function(annot=NULL,
         download.file("ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/CCDS_nucleotide.current.fna.gz",
           destfile = "CCDS_nucleotide_human.fna.gz"
         )
-        gunzip("CCDS_nucleotide_human.fna.gz")
+        R.utils::gunzip("CCDS_nucleotide_human.fna.gz")
         ccdsSeq <- seqinr::read.fasta("CCDS_nucleotide_human.fna", seqtype = "AA")
         unlink("CCDS_nucleotide_human.fna")
 
@@ -156,10 +129,22 @@ codonUsage <- function(annot=NULL,
         ccdsSeq <- ccdsSeq[!duplicated(sapply(strsplit(names(ccdsSeq), "\\|"), function(x) x[1]))]
 
         ccdsSeq <- data.frame(id = sub("\\..*", "", names(ccdsSeq)), CDS_seq = t(as.data.frame(lapply(ccdsSeq, function(x) paste(x, collapse = "")))), row.names = NULL, stringsAsFactors = FALSE)
-
-        annot <- merge(unique(ccds[, c("ccds_id_cl", "gene")]), ccdsSeq, by.x = "ccds_id_cl", by.y = "id", all.y = TRUE, all.x = FALSE)
-        colnames(annot) <- c("id", "geneID", "CDS_seq")
-        write.table(annot, file = "customDB_ccds.txt", col.names = T, row.names = F, sep = "\t", quote = F)
+        
+        annotTmp <- merge(unique(ccds[, c("ccds_id_cl", "gene")]), ccdsSeq, by.x = "ccds_id_cl", by.y = "id", all.y = TRUE, all.x = FALSE)
+        #
+        colnames(annotTmp)[2] <- 'geneID'
+        lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
+        annotTmp$lenTmp <- lenTmp
+        #
+        annotBgSelTmp <- isoSel(annot = annotTmp, method = anota2seqUtilsGetSelection(a2sU))
+        #
+        
+        annot <- new("anota2seqUtilsRegion",
+                           id = annotBgSelTmp$ccds_id_cl,
+                           geneID = annotBgSelTmp$geneID,
+                           seq = annotBgSelTmp$CDS_seq)
+        
+        #write.table(annot, file = "customDB_ccds.txt", col.names = T, row.names = F, sep = "\t", quote = F)
       } else if (species == "mouse") {
         #
         download.file("ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_mouse/CCDS.current.txt", destfile = "CCDS_mouse.txt")
@@ -172,7 +157,7 @@ codonUsage <- function(annot=NULL,
         download.file("ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_mouse/CCDS_nucleotide.current.fna.gz",
           destfile = "CCDS_nucleotide_mouse.fna.gz"
         )
-        gunzip("CCDS_nucleotide_mouse.fna.gz")
+        R.utils::gunzip("CCDS_nucleotide_mouse.fna.gz")
         ccdsSeq <- seqinr::read.fasta("CCDS_nucleotide_mouse.fna", seqtype = "AA")
         unlink("CCDS_nucleotide_mouse.fna")
 
@@ -181,45 +166,65 @@ codonUsage <- function(annot=NULL,
 
         ccdsSeq <- data.frame(id = sub("\\..*", "", names(ccdsSeq)), CDS_seq = t(as.data.frame(lapply(ccdsSeq, function(x) paste(x, collapse = "")))), row.names = NULL, stringsAsFactors = FALSE)
 
-        annot <- merge(unique(ccds[, c("ccds_id_cl", "gene")]), ccdsSeq, by.x = "ccds_id_cl", by.y = "id", all.y = TRUE, all.x = FALSE)
-        colnames(annot) <- c("id", "geneID", "CDS_seq")
-        write.table(annot, file = "customDB_ccds.txt", col.names = T, row.names = F, sep = "\t", quote = F)
+        annotTmp <- merge(unique(ccds[, c("ccds_id_cl", "gene")]), ccdsSeq, by.x = "ccds_id_cl", by.y = "id", all.y = TRUE, all.x = FALSE)
+        #
+        colnames(annotTmp)[2] <- 'geneID'
+        lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
+        annotTmp$lenTmp <- lenTmp
+        #
+        annotBgSelTmp <- isoSel(annot = annotTmp, method = anota2seqUtilsGetSelection(a2sU))
+        #
+        
+        annot <- new("anota2seqUtilsRegion",
+                           id = annotBgSelTmp$ccds_id_cl,
+                           geneID = annotBgSelTmp$geneID,
+                           seq = annotBgSelTmp$CDS_seq)
+        
+
+        #write.table(annot, file = "customDB_ccds.txt", col.names = T, row.names = F, sep = "\t", quote = F)
       }
     } else if (sourceSeq == "load") {
       # list existing species
       currTmp <- list.files(system.file("extdata/annotation/ccds", package = "anota2seqUtils"))
-
+      #
+      species <- anota2seqUtilsGetSpecies(a2sU)
+      #
       if (!species %in% currTmp) {
         stop("This option is only  available for species: human and mouse at the moment. Please use option createFromFile")
       }
       if (species == "human") {
-        annot <- read.delim(system.file(paste("extdata/annotation/ccds/human", sep = "/"), "humanDB_ccds.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE)
+        annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/human", sep = "/"), "humanDB_ccds.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE)
       }
       if (species == "mouse") {
-        annot <- read.delim(system.file(paste("extdata/annotation/ccds/mouse", sep = "/"), "mouseDB_ccds.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE) # }
+        annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/mouse", sep = "/"), "mouseDB_ccds.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE) # }
       }
+      lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
+      annotTmp$lenTmp <- lenTmp
+      #
+      annotBgSelTmp <- isoSel(annot = annotTmp, method = anota2seqUtilsGetSelection(a2sU))
+      #
+      
+      annot <- new("anota2seqUtilsRegion",
+                         id = annotBgSelTmp$ccds_id_cl,
+                         geneID = annotBgSelTmp$geneID,
+                         seq = annotBgSelTmp$CDS_seq)
     }
-  } 
-  # Subset annot for only expressed genes
-  annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
-  # Select region of interest
-  annotTmp <- regSel(annot = annotBg, region = "CDS")
-  # Per gene
-  annotBgSel <- isoSel(annot = annotTmp, method = selection)
+  }
   #
   if (!is.null(subregion)) {
+    seqTmp <- anota2seqUtilsGetSeq(annot)
     #
-    subSeq <- as.character(sapply(annotBgSel$seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel)))
+    subSeq <- as.character(sapply(seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel)))
     #
-    annotBgSel$seqTmp <- subSeq
+    seqTmp <- subSeq
   }
-  annotBgSel <- annotBgSel[!is.na(annotBgSel$seqTmp), ]
-  
+
   if (codSource == "sequence") {
+    geneID <- anota2seqUtilsGetGeneID(annot)
     #ptm <- proc.time()
     codonTmp <- list()
-    for (i in 1:nrow(annotBgSel)) {
-      codonTmp[[i]] <- codonCount(gene = annotBgSel$geneID[i], seq = annotBgSel$seqTmp[i], codonN = codonN)
+    for (i in 1:length(geneID)) {
+      codonTmp[[i]] <- codonCount(gene = geneID[i], seq = seqTmp[i], codonN = codonN)
     }
     #proc.time() - ptm
     codonAll <- do.call(rbind, lapply(codonTmp, data.frame, stringsAsFactors = FALSE))
@@ -227,6 +232,9 @@ codonUsage <- function(annot=NULL,
       codonAll <- codonAll[!codonAll$AA %in% c("Stp", "Trp", "Met"), ]
     }
   } else if (codSource == "riboSeq") {
+    #
+    stop('few things to correct')
+    
     # Load dpn
     if (!is.null(dpn_path)) {
       checkDirectory(dpn_path)
@@ -327,288 +335,154 @@ codonUsage <- function(annot=NULL,
       dataCodon[[d]] <- outTmp
     }
   }
-  
-  
-  
-  
   #
-  res <- list()
-  if (!is.null(ads) | !is.null(customBg)) {
-    res[["background"]] <- annotBgSel$geneID
-  }
+  #res <- list()
+  #if (!is.null(ads) | !is.null(customBg)) {
+  #  res[["background"]] <- annotBgSel$geneID
+  #}
 
-  if (!is.null(ads)) {
-    results <- anota2seqGetDirectedRegulations(ads)
-    #
-    resTmp <- vector("list", length = length(regulation))
-    for (i in unique(contrast)) {
-      resTmp[which(contrast == i)] <- results[[i]][regulation[contrast == i]]
-    }
-    names(resTmp) <- paste(regulation, paste("c", contrast, sep = ""), sep = "_")
-    if (!is.null(geneList)) {
-      resTmp <- append(resTmp, geneList)
-    }
-  } else {
-    resTmp <- geneList
-  }
-  res <- append(res, resTmp)
+  #if (!is.null(ads)) {
+  #  results <- anota2seqGetDirectedRegulations(ads)
+  #  #
+  #  resTmp <- vector("list", length = length(regulation))
+  #  for (i in unique(contrast)) {
+  #    resTmp[which(contrast == i)] <- results[[i]][regulation[contrast == i]]
+  #  }
+  #  names(resTmp) <- paste(regulation, paste("c", contrast, sep = ""), sep = "_")
+  #  if (!is.null(geneList)) {
+  #    resTmp <- append(resTmp, geneList)
+  #  }
+  #} else {
+  #  resTmp <- geneList
+  #}
+  #res <- append(res, resTmp)
   #
-  if (length(res) < 2) {
-    stop(
-      "For comparison of codon composition between regulations, at least two regulations should be provided.",
-      call. = FALSE
-    )
-  }
+  #if (length(res) < 2) {
+  #  stop(
+  #    "For comparison of codon composition between regulations, at least two regulations should be provided.",
+  #    call. = FALSE
+  #  )
+  #}
   #
-  resOut <- list()
-  for (i in 1:length(res)) {
-    tmp <- codonAll[codonAll$geneID %in% res[[i]], ]
-    if (analysis == "codon") {
-      tmp <- tmp %>% group_by(codon) %>% summarise(codonPerReg = sum(codonCount))
-      #
-      tmpSum <- tmp$codonPerReg
-      names(tmpSum) <- tmp$codon
-    } else if (analysis == "AA") {
-      tmp <- tmp %>% group_by(AA) %>% summarise(AAPerReg = sum(codonCount))
-      #
-      tmpSum <- tmp$AAPerReg
-      names(tmpSum) <- tmp$AA
-    }
-    resOut[[names(res)[i]]] <- tmpSum
-  }
   #
-  resOut <- do.call(rbind, resOut)
-  
   #indexes
-  if(analysis == "codon"){
+  if(analysis == "codon" & codonN==1){
     if (species == "human") {
       codind <- read.delim(system.file("extdata/indexes/human/", "IndexesHuman.txt", package = "anota2seqUtils"))
     } else if (species == "mouse") {
       codind <- read.delim(system.file("extdata/indexes/mouse/", "IndexesMouse.txt", package = "anota2seqUtils"))
-    } 
-    if(species == "human"|species == "mouse"){
-      #####CAI
-      index_sel <- codind[,which(colnames(codind)=='CAI')]
-      names(index_sel) <- codind$external_gene_name
+    } else {
+      message('no available indexes for ', species)
+    }
     
-      resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
+    #indexex
+    indNames <- c('CAI', 'CBI', 'Fop','GC3s','tai','L_aa')
     
-      ##
-      pdf(paste(nameOut,'_CAI_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
-      par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-      # 
-      if (!is.null(regulation)) {
-        xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
-      } else {
-        xlimIn <- c(0.5, length(geneList) + 1.5)
-      }
-      plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-    
-      axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
-      mtext(side = 2, line = 6, "CAI index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-    
-      if (!is.null(ads) | !is.null(customBg)) {
-        abline(lty = 5, h = median(resOutInd[[1]]))
-      }
-      #
-      for (i in 1:length(resOutInd)) {
-        boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-        text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
-      }
-      # Plot stats
-      if (!is.null(comparisons)) {
-        addStats(comparisons, plotType='boxplot', resOutInd, coloursOutInd)
-      }
-      dev.off()
-    
-      ######CBI
-      index_sel <- codind[,which(colnames(codind)=='CBI')]
+    for(ind in indNames){
+      #####
+      index_sel <- codind[,which(colnames(codind)==indNames)]
       names(index_sel) <- codind$external_gene_name
       
-      resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
+      resOutInd  <- resQuant(qvec = index_sel, a2sU = a2sU)
+      colOutInd <- colPlot(a2sU)
       
       ##
-      pdf(paste(nameOut,'_CBI_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
+      pdf(paste(nameOut, indNames,'_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
       par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-      # 
-      if (!is.null(regulation)) {
-        xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
-      } else {
-        xlimIn <- c(0.5, length(geneList) + 1.5)
-      }
-      plot(1, 1, xlim = xlimIn, ylim = c(-1, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-    
-      axis(side = 2, at=seq(-1,1,0.25),labels = seq(-1,1,0.25), font = 2, las = 2, lwd = 2)
-      mtext(side = 2, line = 6, "CBI index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-    
-      if (!is.null(ads) | !is.null(customBg)) {
-        abline(lty = 5, h = median(resOutInd[[1]]))
-      }
-      #
-      for (i in 1:length(resOutInd)) {
-        boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-        text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
-      }
-      # Plot stats
-      if (!is.null(comparisons)) {
-        addStats(comparisons, plotType='boxplot', resOutInd, coloursOutInd)
-      }
-      dev.off()
-    
-      ######Fop
-      index_sel <- codind[,which(colnames(codind)=='Fop')]
-      names(index_sel) <- codind$external_gene_name
-    
-      resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
       
-      ##
-      pdf(paste(nameOut,'_Fop_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
-      par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-      # 
-      if (!is.null(regulation)) {
-        xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
-      } else {
-        xlimIn <- c(0.5, length(geneList) + 1.5)
-      }
-      plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-    
-      axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
-      mtext(side = 2, line = 6, "Fop index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-    
-      if (!is.null(ads) | !is.null(customBg)) {
-        abline(lty = 5, h = median(resOutInd[[1]]))
-      }
-      #
-      for (i in 1:length(resOutInd)) {
-        boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-        text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
-      }
-      # Plot stats
-      if (!is.null(comparisons)) {
-        addStats(comparisons, plotType='boxplot', resOutInd, coloursOutInd)
-      }
-      dev.off()
-    
-      #####GC3s
-      index_sel <- codind[,which(colnames(codind)=='GC3s')]
-      names(index_sel) <- codind$external_gene_name
-    
-      resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
-      
-      ##
-      pdf(paste(nameOut,'_GC3s_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
-      par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-      # 
-      if (!is.null(regulation)) {
-        xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
-      } else {
-        xlimIn <- c(0.5, length(geneList) + 1.5)
-      }
-      plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-    
-      axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
-      mtext(side = 2, line = 6, "GC3s index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-    
-      if (!is.null(ads) | !is.null(customBg)) {
-        abline(lty = 5, h = median(resOutInd[[1]]))
-      }
-      #
-      for (i in 1:length(resOutInd)) {
-        boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-        text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
-      }
-      # Plot stats
-      if (!is.null(comparisons)) {
-        addStats(comparisons, plotType='boxplot', resOutInd, coloursOutInd)
-      }
-      dev.off()
-    
-      
-      #####tAI
-      index_sel <- codind[,which(colnames(codind)=='tai')]
-      names(index_sel) <- codind$external_gene_name
-    
-      resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
-      
-      ##
-      pdf(paste(nameOut,'_tAI_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
-      par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-      # 
-      if (!is.null(regulation)) {
-        xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
-      } else {
-        xlimIn <- c(0.5, length(geneList) + 1.5)
-      }
-      plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-    
-      axis(side = 2, at=seq(0,1,0.2),labels = seq(0,1,0.2), font = 2, las = 2, lwd = 2)
-      mtext(side = 2, line = 6, "tAI index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-    
-      if (!is.null(ads) | !is.null(customBg)) {
-        abline(lty = 5, h = median(resOutInd[[1]]))
-      }
-      #
-      for (i in 1:length(resOutInd)) {
-        boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-        text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
-      }
-      # Plot stats
-      if (!is.null(comparisons)) {
-        addStats(comparisons,plotType='boxplot', resOutInd, coloursOutInd)
-      }
-      dev.off()
-    
-      ###L_aa
-      index_sel <- log2(codind[,which(colnames(codind)=='L_aa')])
-      names(index_sel) <- codind$external_gene_name
-    
-      resOutInd <- resSel(vIn = index_sel, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-      coloursOutInd <- coloursSel(resOutInd, geneList = geneList, geneListcolours = geneListcolours)
-      
-      ##
-      pdf(paste(nameOut,'L_aa_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
-      par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-        # 
-      if (!is.null(regulation)) {
-        xlimIn <- c(0.5, length(regulation) + ifelse(!is.null(geneList), length(geneList), 0) + 1.5)
-      } else {
-        xlimIn <- c(0.5, length(geneList) + 1.5)
-      }
-      plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOutInd)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-  
-      axis(side = 2, at=seq(0,10,2),labels = seq(0,10,2), font = 2, las = 2, lwd = 2)
-      mtext(side = 2, line = 6, "log2 L_aa index", col = "black", font = 2, cex = 1.7, at = 0.5)
-      text(1:length(resOutInd), par("usr")[3] - 0.45, labels = names(resOutInd), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-  
-      if (!is.null(ads) | !is.null(customBg)) {
-        abline(lty = 5, h = median(resOutInd[[1]]))
-      }
-      #
-      for (i in 1:length(resOutInd)) {
-        boxplot(resOutInd[[i]], add = TRUE, at = i, col = coloursOutInd[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-        text(i, 0, round(mean(antilog(resOutInd[[i]], 2), 0)), font = 2)
-      }
-      # Plot stats
-      if (!is.null(comparisons)) {
-        addStats(comparisons, plotType='boxplot', resOutInd, coloursOutInd)
-      }
+      plotBoxplots(resOutInd, colOutInd, comparisons = comparisons, ylabel = paste(indNames,'index',sep='_')
+                   
       dev.off()
     }
   }
   #
+  compTmpAll <- sort(unique(unlist(comparisons)),decreasing = F)
+  compOut1 <- list()
+  compOut2 <- list()
+  compOut3 <- list()
+  
+  for (i in compTmpAll) {
+    if(i == 0){
+      selTmp <- anota2seqUtilsGetBg(a2sU)
+    } else {
+      resTmp <- anota2seqUtilsGetDataIn(a2sU)
+      selTmp <-  resTmp[[i]]
+    }
+    tmp <- codonAll[codonAll$geneID %in% selTmp, ]
+    if (analysis == "codon") {
+      
+      #####
+      tmp1 <- tmp %>% group_by(codon) %>% summarise(codonPerReg = sum(codonCount))
+      tmpSum <- tmp1$codonPerReg
+      names(tmpSum) <- tmp1$codon
+      
+      if(i == 0){
+        compOut1[["background"]] <- tmpSum
+      } else {
+        compOut1[[names(resTmp)[i]]] <- tmpSum
+      }
+      
+      ####
+      tmp2 <- tmp %>% group_by(codon) %>% summarise(freqPerReg = mean(codonFreq))
+      tmpFreq <- tmp2$freqPerReg
+      names(tmpFreq) <- tmp2$codon
+      
+      if(i == 0){
+        compOut2[["background"]] <- tmpFreq
+      } else {
+        compOut2[[names(resTmp)[i]]] <- tmpFreq
+      }
+      
+      #####
+      tmp3 <- tmp %>% group_by(codon) %>% mutate(codonPerReg = sum(codonCount))
+      tmp3 <- tmp3 %>% group_by(AA) %>%  mutate(AAPerReg = sum(AACountPerGene))
+      tmp3 <- subset(tmp3, !duplicated(codon))
+      tmp3$codonNormAA <- tmp3$codonPerReg / tmp3$AAPerReg
+      tmpcodonNormAA <- tmp3$codonNormAA
+      names(tmpcodonNormAA) <- tmp3$codon
+      
+      if(i == 0){
+        compOut3[["background"]] <- tmpcodonNormAA
+      } else {
+        compOut3[[names(resTmp)[i]]] <- tmpcodonNormAA
+      }
+    } else if (analysis == "AA") {
+      tmp1  <- tmp %>% group_by(AA) %>% summarise(AAPerReg = sum(codonCount))
+      #
+      tmpSum <- tmp1$AAPerReg
+      names(tmpSum) <- tmp1$AA
+    }
+    if(i == 0){
+      compOut1[["background"]] <- tmpSum
+    } else {
+      compOut1[[names(resTmp)[i]]] <- tmpSum
+    }
+    
+      resOutTmp <- data.frame(AA = colnames(resOut), t(resOut[compTmp, ]), row.names = NULL)
+      #
+      regComb <- combn(x = names(resSel), m = 2)
+      statOut <- statOnDf(df = resOutTmp, regs = regComb, analysis = analysis)
+    
+      #
+      freqTotal <- list()
+        #
+      gTmp <- union(resSelTmp[[1]], resSelTmp[[2]])
+      tmp <- codonAll[codonAll$geneID %in% gTmp, ]
+      #
+      tmp2 <- tmp %>% group_by(AA) %>% summarise(freq = sum(codonFreq))
+    
+      #
+     finalOut <- merge(tmp, data.frame(statOut), by.x = "AA", by.y = "row.names")
+     finalOut <- finalOut[finalOut$AA %in% signSel, ]
+    
+    
+  }
+
+  
+  #
   codonsOut <- list()
   for (j in 1:length(comparisons)) {
-    if (!is.null(ads) | !is.null(customBg)) {
+    if (!is.null(anota2seqUtilsGetBg(a2sU))) {
       compTmp <- comparisons[[j]] + 1
     } else {
       compTmp <- comparisons[[j]]
@@ -660,28 +534,33 @@ codonUsage <- function(annot=NULL,
     }
     #
     signSel <- colnames(StResiduals)[which(abs(StResiduals[1, ]) > signifLimit)]
-    #
-    if (analysis == "codon") {
-      resSelTmp <- res[compTmp]
+    
+    ###
+    if(length(signSel) == 0){
+      message(paste("There are no significant codons for comparison ", j, sep = ""))
+    } else {
+      #
+      if (analysis == "codon") {
+        resSelTmp <- res[compTmp]
 
-      compOut <- list()
-      for (i in 1:2) {
-        tmp <- codonAll[codonAll$geneID %in% resSelTmp[[i]], ]
-        #
-        tmp <- tmp %>%
-          group_by(codon) %>%
-          summarise(freqPerReg = mean(codonFreq))
-        #
-        tmpFreq <- tmp$freqPerReg
-        names(tmpFreq) <- tmp$codon
+        compOut <- list()
+        for (i in 1:2) {
+          tmp <- codonAll[codonAll$geneID %in% resSelTmp[[i]], ]
+          #
+          tmp <- tmp %>%
+            group_by(codon) %>%
+            summarise(freqPerReg = mean(codonFreq))
+          #
+          tmpFreq <- tmp$freqPerReg
+          names(tmpFreq) <- tmp$codon
 
-        #
-        compOut[[names(resSelTmp)[i]]] <- tmpFreq
-      }
-      compOut <- as.data.frame(do.call(cbind, compOut))
-      compOut$codon <- row.names(compOut)
-      compOut$AA <- seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(rownames(compOut)))))
-      compOut$AAcodon <- paste(seqinr::translate(seqinr::s2c(seqinr::c2s(rownames(compOut)))), rownames(compOut), sep = "_")
+          #
+          compOut[[names(resSelTmp)[i]]] <- tmpFreq
+        }
+        compOut <- as.data.frame(do.call(cbind, compOut))
+        compOut$codon <- row.names(compOut)
+        compOut$AA <- seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(rownames(compOut)))))
+        compOut$AAcodon <- paste(seqinr::translate(seqinr::s2c(seqinr::c2s(rownames(compOut)))), rownames(compOut), sep = "_")
 
       #
       xylim <- roundUpNice(max(compOut[, c(1, 2)]))
