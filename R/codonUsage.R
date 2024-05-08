@@ -390,7 +390,7 @@ codonUsage <- function(annotType = "ccds", # option: 'refseq' or 'ccds', 'custom
       pdf(paste(nameOut, indNames,'_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
       par(mar = c(12, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
       
-      plotBoxplots(resOutInd, colOutInd, comparisons = comparisons, ylabel = paste(indNames,'index',sep='_')
+      plotBoxplots(resOutInd, colOutInd, comparisons = comparisons, ylabel = paste(indNames,'index',sep='_'))
                    
       dev.off()
     }
