@@ -13,7 +13,7 @@ contentMotifs <- function(a2sU,
                           plotOut = TRUE) {
   
   #
-  if (!checkAds(a2sU)) {
+  if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
   checkRegion(region)
