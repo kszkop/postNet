@@ -1446,10 +1446,10 @@ getSeqs <- function(a2sU, region){
   if(region == 'UTR5'){
     seqOut <- anota2seqUtilsGetUTR5Seq(a2sU)
     geneIDs <- anota2seqUtilsGetUTR5geneID(a2sU)
-  } else if (reg == 'UTR3'){
+  } else if (region == 'UTR3'){
     seqOut <- anota2seqUtilsGetUTR3Seq(a2sU)
     geneIDs <- anota2seqUtilsGetUTR3geneID(a2sU)
-  } else if (reg == 'CDS'){
+  } else if (region == 'CDS'){
     seqOut <- anota2seqUtilsGetCDSSeq(a2sU)
     geneIDs <- anota2seqUtilsGetCDSgeneID(a2sU)
   } else {
