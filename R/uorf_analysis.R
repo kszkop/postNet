@@ -56,7 +56,13 @@ uorf_analysis <- function(a2sU,
   seqTmp <- getSeqs(a2sU,"UTR5")
   #
   if (!isTRUE(onlyUTR5)) {
-    uorfOut <- mapply(calc_uORF, seqTmp=seqTmp, ext = annotBgSel$extSeq, context = context, unit = tolower(unitOut), USE.NAMES=FALSE)
+    seq <- list()
+    seq[[1]] <- getSeqs(a2sU, 'CDS')
+    seq[[2]] <- getSeqs(a2sU, 'UTR3')
+    extSeq <- combSeq(seqIn = seq)
+    extSeq <- unlist(extSeq)
+    #
+    uorfOut <- mapply(calc_uORF, seqTmp=seqTmp, ext = extSeq, context = context, unit = tolower(unitOut), USE.NAMES=FALSE)
   } else {
     uorfOut <- sapply(seqTmp, function(x) calc_uORF(x, ext=NULL, context = context, unit = tolower(unitOut)), USE.NAMES=FALSE)
   }

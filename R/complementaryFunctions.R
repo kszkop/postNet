@@ -132,23 +132,23 @@ gSel <- function(annot,ads,customBg,geneList){
   return(annotOut)
 }
 
-regSel <- function(annot, region, ext=FALSE){
+regSel <- function(annot, region){#, ext=FALSE){
   nc <- grep(region, colnames(annot))
   #
   seqTmp <- annot[,nc]
   lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
   #
-  if(isTRUE(ext)){
-    seq <- list()
-    seq[[1]] <- annot$CDS_seq
-    seq[[2]] <- annot$UTR3_seq
-    extSeq <- combSeq(seqIn = seq)
-    extSeq <- unlist(extSeq)
-    #
-    annotOut <- cbind(annot[,c(1:2)], seqTmp,lenTmp,extSeq)
-  } else {
-    annotOut <- cbind(annot[,c(1:2)], seqTmp,lenTmp)
-  }
+  #if(isTRUE(ext)){
+  #  seq <- list()
+  #  seq[[1]] <- annot$CDS_seq
+  #  seq[[2]] <- annot$UTR3_seq
+  #  extSeq <- combSeq(seqIn = seq)
+  #  extSeq <- unlist(extSeq)
+  #  #
+  #  annotOut <- cbind(annot[,c(1:2)], seqTmp,lenTmp,extSeq)
+  #} else {
+  annotOut <- cbind(annot[,c(1:2)], seqTmp,lenTmp)
+  #}
   #
   return(annotOut)
 }
