@@ -1,8 +1,55 @@
+
+---
+title: | 
+  <center> Anota2seqUtils  </center>
+  <center> integration of mRNA regulatory features <center>
+output: rmarkdown::html_vignette
+description: >
+  mRNAs often harbor multiple features that can impact their regulation. To understand underlying mechanism of the regulation, it is   important     not only to identify cis- and trans-acting factors but also to understand relationship between them. Anota2seqUtils        includes methods to     identify, quantify and perform statistical analysis to assess how the compendium of these features impacts on    mRNA fate, while allowing         establishment of the functional relationship between them. 
+---
+
+
+
+
+%\VignetteIndexEntry{Anota2seqUtils for integration of mRNA regulatory features}
+%\VignetteKeywords{Translation, feature integration}
+%\VignettePackage{anota2seqUtils}
+%\VignetteEngine{knitr::knitr}
+
+\documentclass{article}
+\usepackage{float}
+
+<<style-knitr, eval=TRUE, echo=FALSE, results="asis">>=
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, error = FALSE, tidy = FALSE, eval = TRUE) # turn off verbosity
+if(packageVersion("BiocStyle") < '2.5.0'){
+    BiocStyle::latex2()
+} else if(packageVersion("BiocStyle") >= '2.5.0'){
+    BiocStyle::latex()
+}
+@
+
+\begin{document}
+
+\bioctitl{Anota2seqUtils for integration of mRNA regulatory features}
+\author{Krzysztof J. Szkop, Ola Larsson (+ add later) \thanks{\email{krzysztof.szkop@ki.se, ola.larsson@se}}}
+\maketitle
+\tableofcontents
+
+\newpage
+\addcontentsline{toc}{section}{Introduction}
+\section*{Introduction}
+
+Post-transcriptional regulation of gene expression occurs at multiple levels including perturbations in mRNA stability and translation. The selectivity of post-transcriptional regulatory mechanisms is chiefly achieved via the interplay between a plethora of cis- (i.e. mRNA elements and features) and trans-acting factors (e.g. RBPs, miRNAs). Individual mRNAs, however, frequently harbor not just one, but many of the features that can impact on their regulation. This makes identification of RNA features underlying post-transcriptional programs challenging, and may lead to erroneous conclusions when RNA features covary across transcripts. Here, we propose \emph{in silico} approach to systematically identify, integrate and model how well RNA features associate with e.g. translational efficiencies obtained from transcriptome-wide studies of mRNA translation employing polysome- or ribosome-profiling. Anota2seqUtils includes methods to identify and quantify RNA features (e.g. GC content, length and folding energy of UTRs and CDS, RNA motifs, uORFs, codon composition etc.) associated with selective alterations in different steps of post-transcriptional regulation of gene expression (e.g. mRNA translation and stability). This is coupled with statistical analysis to assess how the compendium of identified features impacts on mRNA fate, while allowing establishment of the functional relationship between different features of mRNA.\\
+
+The package was primarily designed to be complementary to anota2seq \cite{Oertlin} method for analysis of differential translation, so it is sufficient to have an output of function \Rfunction{anota2seq::anota2seqRun} to perform all the steps. However, it is also possible to expand analysis by providing additional genes or even use own gene selection and own values that might not necessarily represent translational efficiences from anota2seq analysis.\\
+
+
+
 ---
 title: "Anota2seqUtils for integration of mRNA regulatory features"
 output: rmarkdown::html_vignette
 description: >
-  mRNAs often harbor multiple features that can impact their regulation. To understand underlying mechanism of the regulation, it is important not only to identify cis- and trans-acting factors but also to understand relationship between them. Anota2seqUtils includes methods to identify, quantify and perform statistical analysis to assess how the compedium of these features impacts on mRNA fate, while allowing establishment of the functional relationship between them. 
+mRNAs often harbor multiple features that can impact their regulation. To understand underlying mechanism of the regulation, it is important not only to identify cis- and trans-acting factors but also to understand relationship between them. Anota2seqUtils includes methods to identify, quantify and perform statistical analysis to assess how the compendium of these features impacts on mRNA fate, while allowing establishment of the functional relationship between them. 
 
 vignette: >
   %\VignetteIndexEntry{Introduction to anota2seqUtils}
@@ -16,11 +63,6 @@ options(tibble.print_min = 4L, tibble.print_max = 4L)
 library(anota2seqUtils)
 set.seed(0517)
 ```
-
-
-
-
-
 
 %\VignetteIndexEntry{Anota2seqUtils for integration of mRNA regulatory features }
 %\VignetteKeywords{RNA, Translation, Feature Integration}
@@ -44,7 +86,7 @@ if(packageVersion("BiocStyle") < '2.5.0'){
 
 \bioctitle[Anota2seqUtils for integration of mRNA regulatory features]{Anota2seqUtils\\
 Anota2seqUtils for integration of mRNA regulatory features}
-\author{Krzysztof Szkop, Ola Larsson \thanks{\email{krzysztof.szkop@ki.se , ola.larsson@ki.se}}}
+\author{Krzysztof Szkop, Ola Larsson + add later \thanks{\email{krzysztof.szkop@ki.se , ola.larsson@ki.se _ add later}}}
 \maketitle
 \tableofcontents
 
@@ -57,10 +99,11 @@ Post-transcriptional regulation of gene expression occurs at multiple levels inc
 The package was primarily designed to be complementary to anota2seq \cite{Oertlin} method for analysis of differential translation, so it is sufficient to have an output of function \Rfunction{anota2seq::anota2seqRun} to perform all the steps. However, it is also possible to expand analysis by providing additional genes or even use own gene selection and own values that might not necessarily represent translational efficiences from anota2seq analysis.
 
 \section{Quick start}
-The easiest way to start is using anota2seqUtils wrapper function \Rfunction{anota2seqUtilsRun}. 
+The easiest way to start is by using anota2seqUtils wrapper function \Rfunction{anota2seqUtilsRun}. 
 <<Quick start, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=
 library(anota2seqUtils)
-data(anota2seqUtils_exampleData)
+data(anota2seqUtils_data)
+
 @
 
 <<gettingStarted, echo = TRUE, message = FALSE, results = 'hide', eval = TRUE >>=

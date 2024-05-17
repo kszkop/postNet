@@ -5,16 +5,13 @@
 \title{ Signature calculations}
 
 \usage{
-codonCalc(annot, addSign, ads = NULL, geneList = NULL, customBg = NULL)
+codonCalc(a2sU, addSign)
 }
 
 
 \arguments{
-\item{annot}{ An object containing reference sequences is obtained by the retrieveFormatData function. It is data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq }
+\item{a2sU}{ anota2seqUtils class object created using anota2seqUtilsStart function }
 \item{addSign}{ named list with vectors with geneIDs signatures }
-\item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
-\item{geneList}{ In addition or instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
-\item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
 }
 
 \value{
@@ -27,13 +24,15 @@ Function indicate which genes among all expressed are present in given gene sign
 
 \examples{
 # Check available versions
-checkAvailableVersions(species = "human")
-# Load pre-existing reference sequences
-annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = "human")
+#First prepare anota2seqUtils class object
+# from anota2seq object
+a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, selection ="random", source = 'load', species = 'human')
+# or from geneList
+a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn,selection ="random")
 
 addSign<-list()
 addSign[["TOP"]] <- c("RPL4", "RPL5","EEF1A1","EIF3D")
 addSign[["Senescence"]] <- c("SLC40A1","TGFB2","MASP1","ARRDC4","SLC16A6","ARHGAP28")
 
-outSign <- signCalc(annot=annot, addSign = addSign, ads = anota2seqOutput)
+outSign <- signCalc(a2sU=a2sU, addSign = addSign)
 }               

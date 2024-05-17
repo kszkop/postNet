@@ -30,9 +30,9 @@ Presence of uORFs with desired start codon in given Kozak context is calculated.
 \examples{
 #First prepare anota2seqUtils class object
 # from anota2seq object
-a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, region = c("UTR5"), selection ="random", source = 'load', species = 'human')
+a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, selection ="random", source = 'load', species = 'human')
 # or from geneList
-a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, region = c("UTR5"), selection ="random", comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
+a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, selection ="random")
 
 uorf_strong <- uorf_analysis(a2sU = a2sU, startCodon="ATG", KozakContext="strong", onlyUTR5=FALSE, unitOut = "number", comparisons = list(c(1,2)))
 }

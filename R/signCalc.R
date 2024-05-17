@@ -1,14 +1,11 @@
-signCalc <- function(addSign,
-                     annot,
-                     ads = NULL,
-                     customBg = NULL,
-                     geneList = NULL) {
-  annotBg <- gSel(annot = annot, ads = ads, customBg = customBg, geneList = geneList)
+signCalc <- function(a2sU,
+                     addSign) {
   #
   outSign <- list()
+  #
+  Outvec <- rep(0, length(anota2seqUtilsGetCDSgeneID(a2sU)))
+  names(Outvec) <- anota2seqUtilsGetCDSgeneID(a2sU)
   for (i in 1:length(addSign)) {
-    Outvec <- rep(0, length(unique(annotBg$geneID)))
-    names(Outvec) <- unique(annotBg$geneID)
     #
     signature <- addSign[[i]]
     #
