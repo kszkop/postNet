@@ -9,7 +9,7 @@ codonCalc <- function(a2sU,
                       plotType = NULL,
                       pdfName = NULL) {
   #
-  if (!checkAds(a2sU)) {
+  if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
   check_codonIn(codonIn)

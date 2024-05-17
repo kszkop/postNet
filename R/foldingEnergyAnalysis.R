@@ -76,55 +76,60 @@ foldingEnergyAnalysis <- function(a2sU,
   }
   #
   if (sourceFE == "create") {
+    ##
+    message('This option will only calculate folding energies and output txt file. Please use it with option "load" to use it for analysis')
     if (isTRUE(fromFasta)) {
       #
       runMfold(customFileFE)
       #
       #if (!isTRUE(onlyRun)) {
-        energyIn <- read.delim(gsub(".fa", "_foldEnergy.txt", customFileFE), stringsAsFactors = FALSE)
-        energyIn <- energyIn[!grepl("NM_", energyIn$fold_energy), ]
-        energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
+      #  energyIn <- read.delim(gsub(".fa", "_foldEnergy.txt", customFileFE), stringsAsFactors = FALSE)
+      #  energyIn <- energyIn[!grepl("NM_", energyIn$fold_energy), ]
+      #  energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       #}
     } else {
       currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "anota2seqUtils"))
       
       if (!species %in% currTmp) {
-        stop("This option is only  available for species: human and mouse at the moment. Please use option createFromFile")
+        stop("This option is only  available for species: human and mouse at the moment. Please use option fromFasta = TRUE")
       }
+      message('Just a reminder. The calculations can take a long time, particulariy if there are many long sequences ')
       #
-      if (is.null(version)) {
-        version <- checkAvailableVersions(species = species)
-        # extract the latest
-        versionInd <- sub("^[^.]*.", "", version)
-        versionInd <- sort(versionInd, decreasing = T)[1]
-        version <- version[grep(versionInd, version)]
-      }
+      #if (is.null(version)) {
+      #  version <- checkAvailableVersions(species = species)
+      #  # extract the latest
+      #  versionInd <- sub("^[^.]*.", "", version)
+      #  versionInd <- sort(versionInd, decreasing = T)[1]
+      #  version <- version[grep(versionInd, version)]
+      #}
       
-      annot <- retrieveFormatData(source='load', species='human', version = version)
+      #annot <- retrieveFormatData(source='load', species='human', version = version)
       
       for(reg in region){
         # Select region of interest
-        if (reg  == "UTR5") {
-          # Write out sequences
-          seqinr::write.fasta(sequences = as.list(annot$UTR5_seq), names = annot$id, file.out = paste(reg, ".fa", sep = ""))
-          #
-          runMfold(paste(reg, ".fa", sep = ""))
-        }
-        if (reg == "UTR3") {
-          # Write out sequences
-          seqinr::write.fasta(sequences = as.list(annot$UTR3_seq), names = annot$id, file.out = paste(reg, ".fa", sep = ""))
-          #
-          runMfold(paste(reg, ".fa", sep = ""))
-        }
-        if (region == "CDS") {
-          # Write out sequences
-          seqinr::write.fasta(sequences = as.list(annot$CDS_seq), names = annot$id, file.out = paste(reg, ".fa", sep = ""))
-          #
-          runMfold(paste(reg, ".fa", sep = ""))
+        #if (reg  == "UTR5") {
+        seqTmp <- getSeqs(a2sU,reg)
+        # Write out sequences
+        seqinr::write.fasta(sequences = as.list(as.character(seqTmp)), names = names(seqTmp), file.out = paste(reg, ".fa", sep = ""))
         #
-        }
+        runMfold(paste(reg, ".fa", sep = ""))
+        #}
+        #if (reg == "UTR3") {
+        #  # Write out sequences
+        #  seqinr::write.fasta(sequences = as.list(annot$UTR3_seq), names = annot$id, file.out = paste(reg, ".fa", sep = ""))
+        #  #
+        #  runMfold(paste(reg, ".fa", sep = ""))
+        #}
+        #if (region == "CDS") {
+        #  # Write out sequences
+        #  seqinr::write.fasta(sequences = as.list(annot$CDS_seq), names = annot$id, file.out = paste(reg, ".fa", sep = ""))
+        #  #
+        #  runMfold(paste(reg, ".fa", sep = ""))
+        #
+        #}
       }
     }
+    message('Folding energy calculations finished. ')
   } else if (sourceFE == "custom") {
     #
     feOut <- list()
@@ -132,8 +137,28 @@ foldingEnergyAnalysis <- function(a2sU,
     energyIn <- read.delim(customFileFE, stringsAsFactors = FALSE)
     energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
     #
-    feOutTmp <- runFE(energyIn = energyIn, a2sU, comparisons=comparisons, residFE = residFE,  plotOut=plotOut, plotType = plotType, pdfName=pdfName)
+    feOutTmp <- runFE(energyIn = energyIn, a2sU = a2sU, residFE = residFE)
+    #
+    if (isTRUE(plotOut)) {
+      resOut <- resQuant(qvec = feOutTmp, a2sU = a2sU)
+      if(length(resOut)==0){
+        stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
+      }
+      colOut <- colPlot(a2sU)
+      # Plot
+      pdf(ifelse(is.null(pdfName), paste(reg, plotType, "foldEnergyAnalysis.pdf", sep = "_"), paste(pdfName, reg, plotType, "foldEnergyAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
+      ylabel <- ifelse(isTRUE(residFE), 'residuals (fe ~ length)', 'folding energy')
+      if (tolower(plotType) == "boxplot"){
+        plotBoxplots(resOut, colOut, comparisons = comparisons, ylabel = ylabel)
+      } else if (tolower(plotType) == "violin") {
+        plotViolin(qvec = lenForAnalysis, a2sU = a2sU, comparisons = comparisons, ylabel = ylabel)
+      } else if (tolower(plotType) == "ecdf") {
+        plotEcdf(qvec = lenForAnalysis, a2sU = a2sU, comparisons = comparisons, ylabel = ylabel)
+      }
+      dev.off()
+    }
     feOut[['custom']] <- feOutTmp
+    return(feOut)
     #
   } else if (sourceFE == "load") {
     #
@@ -145,14 +170,6 @@ foldingEnergyAnalysis <- function(a2sU,
       stop("This option is only  available for species: human and mouse at the moment. Please use option createFromFile")
     }
     #
-    if (is.null(version)) {
-      version <- checkAvailableVersions(species = species)
-      # extract the latest
-      versionInd <- sub("^[^.]*.", "", version)
-      versionInd <- sort(versionInd, decreasing = T)[1]
-      version <- version[grep(versionInd, version)]
-    }
-    #
     for(reg in region){
       if (species == "human") {
         energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), paste("humanDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "anota2seqUtils"), stringsAsFactors = FALSE)
@@ -162,58 +179,50 @@ foldingEnergyAnalysis <- function(a2sU,
         energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), paste("mouseDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "anota2seqUtils"), stringsAsFactors = FALSE)
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
-      feOutTmp <- runFE(energyIn = energyIn, annot = annot,  ads = ads, region = reg, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList, geneListcolours = geneListcolours, comparisons=comparisons, selection = selection, residFE = residFE,  plotOut=plotOut, plotType = plotType, pdfName=pdfName)
+      feOutTmp <- runFE(energyIn = energyIn, a2sU = a2sU, residFE = residFE)
       feOut[[paste(reg, "foldingEnergy",sep='_')]] <- feOutTmp
+      #
+      if (isTRUE(plotOut)) {
+        resOut <- resQuant(qvec = feOutTmp, a2sU = a2sU)
+        if(length(resOut)==0){
+          stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
+        }
+        colOut <- colPlot(a2sU)
+        # Plot
+        pdf(ifelse(is.null(pdfName), paste(reg, plotType, "foldEnergyAnalysis.pdf", sep = "_"), paste(pdfName, reg, plotType, "foldEnergyAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
+        ylabel <- ifelse(isTRUE(residFE), 'residuals (fe ~ length)', 'folding energy')
+        if (tolower(plotType) == "boxplot"){
+          plotBoxplots(resOut, colOut, comparisons = comparisons, ylabel = ylabel)
+        } else if (tolower(plotType) == "violin") {
+          plotViolin(qvec = lenForAnalysis, a2sU = a2sU, comparisons = comparisons, ylabel = ylabel)
+        } else if (tolower(plotType) == "ecdf") {
+          plotEcdf(qvec = lenForAnalysis, a2sU = a2sU, comparisons = comparisons, ylabel = ylabel)
+        }
+        dev.off()
+      }
     }
+    return(feOut)
   } else {
     stop("No correct option for source file provided")
   }
-  #
-  return(feOut)
 }
 
 #
 runFE <- function(energyIn,
-                  a2sU,
-                  region = NULL,
-                  comparisons = NULL,
-                  residFE = FALSE, 
-                  plotOut = TRUE,
-                  plotType = "boxplot",
-                  pdfName = NULL){
+                  residFE = FALSE,
+                  a2sU){
   #
-  energyInGene <- merge(energyIn, annot[, c(1, 2)], by = "id", all.x = T)
-  energyInGene <- na.omit(energyInGene)
-  colnames(energyInGene) <- c("id", "fold_energy", "lenTmp", "geneID")
-  
-  energyInGeneBg <- gSel(annot = energyInGene, ads = ads, customBg = customBg, geneList = geneList)
-  energyInGeneSel <- isoSel(annot = energyInGeneBg, method = selection)
-  
+  colnames(energyIn) <- c("id", "fold_energy", "length")
+  energyIn$geneID <- anota2seqUtilsGetCDSgeneID(a2sU)[match(energyIn$id,anota2seqUtilsGetCDSid(a2sU))]
+  energyIn <- na.omit(energyIn)
   #
   if (isTRUE(residFE)) {
-    feForAnalysis <- lm(as.numeric(energyInGeneSel$fold_energy) ~ as.numeric(energyInGeneSel$lenTmp))$residuals
-    names(feForAnalysis) <- energyInGeneSel$geneID
+    feForAnalysis <- lm(as.numeric(energyIn$fold_energy) ~ as.numeric(energyIn$length))$residuals
+    names(feForAnalysis) <- energyIn$geneID
   } else {
-    feForAnalysis <- as.numeric(energyInGeneSel$fold_energy)
-    names(feForAnalysis) <- energyInGeneSel$geneID
-  }
-  
-  #
-  if (isTRUE(plotOut)) {
-    resOut <- resSel(vIn = feForAnalysis, ads = ads, regulation = regulation, contrast = contrast, customBg = customBg, geneList = geneList)
-    coloursOut <- coloursSel(resOut=resOut, geneList = geneList, geneListcolours = geneListcolours)
-    
-    pdf(ifelse(is.null(pdfName), paste(ifelse(!is.null(region), region, ""), plotType, "foldEnergyAnalysis.pdf", sep = "_"), paste(pdfName, ifelse(!is.null(region), region, ""), plotType, "foldenergyAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
-    #
-    if (tolower(plotType) == "boxplot"){
-      plotBoxplots(resOut, coloursOut, comparisons)
-    } else if (tolower(plotType) == "violin") {
-      plotViolin(resOut, coloursOut, comparisons)
-    } else if (tolower(plotType) == "ecdf") {
-      plotEcdf(resOut, coloursOut, comparisons)
-    }
-    #
-    dev.off()
+    feForAnalysis <- as.numeric(energyIn$fold_energy)
+    names(feForAnalysis) <- energyIn$geneID
   }
   return(feForAnalysis)
 }
+
