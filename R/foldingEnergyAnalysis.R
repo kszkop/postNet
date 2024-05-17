@@ -1,10 +1,7 @@
 foldingEnergyAnalysis <- function(a2sU,
                                   sourceFE = "load",
-                                  #version = NULL,
-                                  #species = NULL,
                                   fromFasta = FALSE,
                                   customFileFE = NULL,
-                                  #onlyRun = FALSE,
                                   residFE = FALSE,
                                   region = NULL,
                                   comparisons = NULL,
@@ -77,56 +74,30 @@ foldingEnergyAnalysis <- function(a2sU,
   #
   if (sourceFE == "create") {
     ##
-    message('This option will only calculate folding energies and output txt file. Please use it with option "load" to use it for analysis')
+    message('The calculations can take a very long time, particulariy if there are many long sequences. Using pre-calculation is recommended (option: "load")')
+    message('Furthermore, this option will only calculate folding energies and output txt file. Susequently, please use it with option "load" to use them for analysis')
     if (isTRUE(fromFasta)) {
       #
       runMfold(customFileFE)
       #
-      #if (!isTRUE(onlyRun)) {
-      #  energyIn <- read.delim(gsub(".fa", "_foldEnergy.txt", customFileFE), stringsAsFactors = FALSE)
-      #  energyIn <- energyIn[!grepl("NM_", energyIn$fold_energy), ]
-      #  energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
-      #}
     } else {
+      if(is.null(region)){
+        stop("Please provide region")
+      }
+      checkRegion(region)
+      #
       currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "anota2seqUtils"))
-      
       if (!species %in% currTmp) {
         stop("This option is only  available for species: human and mouse at the moment. Please use option fromFasta = TRUE")
       }
-      message('Just a reminder. The calculations can take a long time, particulariy if there are many long sequences ')
       #
-      #if (is.null(version)) {
-      #  version <- checkAvailableVersions(species = species)
-      #  # extract the latest
-      #  versionInd <- sub("^[^.]*.", "", version)
-      #  versionInd <- sort(versionInd, decreasing = T)[1]
-      #  version <- version[grep(versionInd, version)]
-      #}
-      
-      #annot <- retrieveFormatData(source='load', species='human', version = version)
-      
       for(reg in region){
-        # Select region of interest
-        #if (reg  == "UTR5") {
+        #
         seqTmp <- getSeqs(a2sU,reg)
         # Write out sequences
         seqinr::write.fasta(sequences = as.list(as.character(seqTmp)), names = names(seqTmp), file.out = paste(reg, ".fa", sep = ""))
         #
         runMfold(paste(reg, ".fa", sep = ""))
-        #}
-        #if (reg == "UTR3") {
-        #  # Write out sequences
-        #  seqinr::write.fasta(sequences = as.list(annot$UTR3_seq), names = annot$id, file.out = paste(reg, ".fa", sep = ""))
-        #  #
-        #  runMfold(paste(reg, ".fa", sep = ""))
-        #}
-        #if (region == "CDS") {
-        #  # Write out sequences
-        #  seqinr::write.fasta(sequences = as.list(annot$CDS_seq), names = annot$id, file.out = paste(reg, ".fa", sep = ""))
-        #  #
-        #  runMfold(paste(reg, ".fa", sep = ""))
-        #
-        #}
       }
     }
     message('Folding energy calculations finished. ')

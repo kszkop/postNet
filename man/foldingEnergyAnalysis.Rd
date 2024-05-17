@@ -5,25 +5,15 @@
 \title{ Calculation of folding energy}
 
 \usage{
-foldingEnergyAnalysis(annot, sourceFE = "load", version=NULL, species=NULL, fromFasta = FALSE, customFileFE = NULL, residFE = TRUE, ads = NULL, regulation = NULL, contrast = NULL, geneList = NULL, geneListcolours=NULL, customBg = NULL, selection = "random", region=NULL, subregion=NULL, subregionSel=NULL, comparisons=NULL, plotOut = TRUE, pdfName = NULL )
+foldingEnergyAnalysis(a2sU, sourceFE = "load",fromFasta = FALSE, customFileFE = NULL, residFE = TRUE, region=NULL, comparisons=NULL, plotOut = TRUE, pdfName = NULL )
 }
 
 \arguments{
-\item{annot}{ An object containing reference sequences is obtained by the retrieveFormatData function. It is data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq }
-\item{sourceFE}{ selecting the source of the folding energy calculations. If "load", it will use precalculated folding energies for selected species. However, there is an option to automatically calculate new ("create") based on the selected region in annot or fromFasta ( fasta file with sequences and transcript ids as names) or load custom 'custom' file with precalculated folding energies calculations in the format: transcript ID, folding energy, length of the sequence. The default is "load". }
-\item{version}{ Indicate which pre-prepared NCBI RefSeq releases should be loaded. Use the function checkAvailableVersions to check available versions for given specie. If left NULL, it will automatically look for the most recent. It is only relevant if sourceFE = "load". }
-\item{species}{ Select a specie of interest. It is required if sourceFE = "load" or sourceFE="create" and fromFasta TRUE. At the moment, it can be human or mouse only. }
-
+\item{a2sU}{ anota2seqUtils class object created using anota2seqUtilsStart function }
+\item{sourceFE}{ selecting the source of the folding energy calculations. If "load", it will use precalculated folding energies for selected species ("human" and "mouse" available at the moment). However, there is an option to automatically calculate new ("create") based on the selection of regions or fromFasta ( fasta file with sequences and transcript ids as names) or load custom 'custom' file with precalculated folding energies calculations in the format: transcript ID, folding energy, length of the sequence. The default is "load". }
 \item{fromFasta}{ If TRUE, it will calculate folding energy values with mfold using a custom fasta file. The default is FALSE. }
 \item{customFileFE}{ Name of a file including a path to the customFile. It is required for sourceFE=='custom' or if sourceFE=='create' and fromFasta==TRUE. In the former case, it must be the file with calculated folding energies in the format: transcript ID, folding energy, length of the sequence, or in the latter fasta files with sequences and transcript ids as names. }
 \item{residFE}{ Residuals after correction for the length of the sequences should be used instead. The default is TRUE.}
-\item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
-\item{regulation}{ If the anota2seq object is provided, desired names of regulation modes from the anota2seq object are to be compared. To choose from "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNAUp", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
-\item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
-\item{geneList}{ Instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
-\item{geneListcolours}{ If geneList is provided, please provide colours for each gene selection }
-\item{customBg}{ There is an option to provide a custom set of background genes as a character vector. }
-\item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest for a given region will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }
 \item{region}{ Select the regions of interest. Choose from combination of "UTR5", "CDS", "UTR3" }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end. }
 \item{plotOut}{ Logical whether plots and optionally comparisons should be performed. The default is TRUE. }
@@ -36,7 +26,7 @@ Vector with calculated folding energy values for each gene. The function will al
 }
 
 \description{
-Calculation of folding energy is performed. The function applies the mfold algorithm (it requires installed mfold with executables in the path). Mfold can be run from provided a fasta file or from prepared by retrieveFormatData annotation. As the process of calculating folding energy is very long (even weeks for a large number of long sequences), it is also possible just to use already precalculated values for available reference sequences (available for mouse and human). Furthermore, differences in folding energy between selected modes of regulation can be also assessed and plotted.
+Calculation of folding energy is performed. mfold algorithm is used for calculations (if the function is used for calulcuating folding energies (sourceFE = "create"), it requires installed mfold with executables in the path). Mfold can be run from provided a fasta file or from prepared by anota2seqUtilsStart function. As the process of calculating folding energy is very long (even weeks for a large number of long sequences), it is also possible just to use already precalculated values for available reference sequences (available for mouse and human). Furthermore, differences in folding energy between selected modes of regulation can be also assessed and plotted.
 }
 
 \details{
@@ -47,15 +37,14 @@ M. Zuker. Mfold web server for nucleic acid folding and hybridization prediction
 
 
 \examples{
-# Check available versions
-checkAvailableVersions(species = "human")
-# Load pre-existing reference sequences
-annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = "human")
+#First prepare anota2seqUtils class object
+# from anota2seq object
+a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, region = c("UTR5"), selection ="random", source = 'load', species = 'human')
+# or from geneList
+a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, region = c("UTR5"), selection ="random", comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
 
-# If only the anota2seq object
-feOut <- foldingEnergyAnalysis(annot = annot, sourceFE = "load", version="rel_109.20201120", species = "human", residFE = TRUE, ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = contrast = c(1,1), selection = "random", region = "UTR5", comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE, plotType = "ecdf")
+feOut <- foldingEnergyAnalysis(a2sU = a2sU, sourceFE = "load", residFE = TRUE, region = c("UTR5","CDS","UTR3"),comparisons = list(c(1,2)),plotOut = TRUE, pdfName = NULL )
 
-
-# If only the geneList
-feOut <- foldingEnergyAnalysis(annot = annot, sourceFE = "load", version="rel_109.20201120", species = "human", residFE = TRUE, geneList = inList, geneListcolours=c("#F2A104","#00743F"), selection = "random", region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)), plotOut = TRUE, plotType = "ecdf")
+#If only calculating folding energies
+foldingEnergyAnalysis(a2sU = a2sU, sourceFE = "create", region = c("UTR5"))
 }
