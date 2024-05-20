@@ -80,7 +80,7 @@ gseaAnalysis <- function(a2sU,
   #
   a2sU@analysis@GSEA <- gseaOut
   #
-  return(gseaOut)
+  return(a2sU)
 }
 
 ####
@@ -89,13 +89,12 @@ gseaPlot <- function(a2sU,
                      genesSlopeFiltOut = NULL,
                      gseaParam = 1,
                      ticksSize = 0.3,
-                     pdfName = NULL
-){
+                     pdfName = NULL ){
   #
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
-  if(is.null(anota2seqUtilsGetGSEA(a2sU)){
+  if(is.null(anota2seqUtilsGetGSEA(a2sU))){
     stop("Please run gseaAnalysis first ")
   } else {
     gseaOut <- anota2seqUtilsGetGSEA(a2sU)
