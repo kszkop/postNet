@@ -1,10 +1,11 @@
-goAnalysis <- function(ads=NULL,
-                       regulation=NULL,
-                       contrast=NULL,
+goAnalysis <- function(a2sU,
+                       #ads=NULL,
+                       #regulation=NULL,
+                       #contrast=NULL,
                        genesSlopeFiltOut = NULL,
-                       geneList = NULL,
-                       customBg = NULL,
-                       species,
+                       #geneList = NULL,
+                       #customBg = NULL,
+                       #species,
                        category, #To choose from (gene ontologies) 'BP', 'CC', 'MF' or 'KEGG'
                        maxSize = 500,
                        minSize = 10,
@@ -13,42 +14,53 @@ goAnalysis <- function(ads=NULL,
                        name = NULL
 ){
   #
+  if (!checkUtils(a2sU)) {
+    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  }
+  species <- anota2seqUtilsGetSpecies(a2sU)
   if (!species %in% c("human","mouse")) {
-    stop("Only available for 'human' or 'mouse' at the moment")
+    stop("This option is only  available for species: human and mouse at the moment")
   }
   #
   if (!category %in% c("BP","CC","MF","KEGG")) {
     stop("Wrong category! Only available for 'BP','CC','MF','KEGG'")
   }
-
+  if(!is_number(maxSize) | !is_number(minSize) | !is_number(counts) |!is_number(FDR)){
+    stop("please provide numeric value")
+  }
+  #
   GOout <- list()
   #Extract all results
-  if(!is.null(ads)){
-    results <- anota2seqGetDirectedRegulations(ads)
-    #
-    res <- vector("list", length = length(regulation))
-    for(i in unique(contrast)){
-      resTmp <- results[[i]][regulation[contrast==i]]
-      res[which(contrast==i)] <- resTmp
-    }
-    names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
-    if(!is.null(geneList)){
-      res <- append(res, geneList)
-    }
-  } else {
-    res <- geneList
-  }
-
+  #if(!is.null(ads)){
+  #  results <- anota2seqGetDirectedRegulations(ads)
+  #  #
+  #  res <- vector("list", length = length(regulation))
+  #  for(i in unique(contrast)){
+  #    resTmp <- results[[i]][regulation[contrast==i]]
+  #    res[which(contrast==i)] <- resTmp
+  #  }
+  #  names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
+  #  if(!is.null(geneList)){
+  #    res <- append(res, geneList)
+  #  }
+  #} else {
+  #  res <- geneList
+  #}
   #
-  if(!is.null(ads)){
-    bg <- row.names(ads@dataP)
-    if(!is.null(geneList)){
-      bg <- unique(c(bg, as.character(unlist(geneList))))
-    }
-  } else if(!is.null(customBg)){
-    bg <- customBg
-  } else {
-    stop("please provide background genes")
+  #if(!is.null(ads)){
+  #  bg <- row.names(ads@dataP)
+  #  if(!is.null(geneList)){
+  #    bg <- unique(c(bg, as.character(unlist(geneList))))
+  #  }
+  #} else if(!is.null(customBg)){
+  #  bg <- customBg
+  #} else {
+  #  stop("please provide background genes")
+  #}
+  res  <- anota2seqUtilsGetDataIn(a2sU)
+  bg <- unlist(anota2seqUtilsGetBg(a2sU))
+  if(length(setdiff(bg,unique(unlist(res))))==0){
+    warning('Background seems not right as all genes are regulated')
   }
   
   #filter for slopes if indicated

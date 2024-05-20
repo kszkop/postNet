@@ -28,6 +28,18 @@ setClass("anota2seqUtilsDataIn",
          )
 )
 
+setClass("anota2seqUtilsAnalysis",
+         slots = c(
+           featureIntegration = "listOrNULL",
+           motifs  = "listOrNULL",
+           codons = "listOrNULL",
+           GO = "listOrNULL",
+           GSEA = "listOrNULL",
+           GAGE = "listOrNULL",
+           miRNA = "listOrNULL"
+         )
+)
+
 setClass("anota2seqUtilsFeatures",
          slots = c(
            features = "listOrNULL"
@@ -41,7 +53,8 @@ setClass("anota2seqUtilsData",
            selection = "character",
            annot =  "anota2seqUtilsAnnot",
            dataIn = "anota2seqUtilsDataIn",
-           features = "anota2seqUtilsFeatures"
+           features = "anota2seqUtilsFeatures",
+           analysis = "anota2seqUtilsAnalysis"
          )
 )
 

@@ -5,18 +5,13 @@
 \title{ miRNA enrichment analysis }
 
 \usage{
-miRNAanalysis(annot, miRNATargetScanFile, genesSlopeFiltOut = NULL, ads=NULL, regulationGen=NULL, contrastSel=NULL, customBg=NULL, rankIn=NULL)
+miRNAanalysis(a2sU, miRNATargetScanFile, genesSlopeFiltOut = NULL)
 }
 
 \arguments{
-\item{annot}{ An object containing reference sequences is obtained by the retrieveFormatData function. It is data.frame in format: id, geneID, UTR5_seq, CDS_seq, UTR3_seq }
+\item{a2sU}{ anota2seqUtils class object created using anota2seqUtilsStart function }
 \item{miRNATargetScanFile}{ name of a file including a path with predicted (conserved) targets of conserved miRNA families with context++ scores downloaded from the Target Scan database (https://www.targetscan.org). Important, please subset the file for only desired specie. }
 \item{genesSlopeFiltOut}{ optionally, a character vector with gene ids to be filtered out based on slopes calculated by anota2seq for translation and buffering. The required object can be obtained using the slopeFilt function }
-\item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
-\item{regulationGen}{ desired name of regulation from the anota2seq. Genes will be filtered out based on slope values calculated to the mode. Choose from "translation" or "buffering" }
-\item{contrastSel}{ contrast in the anota2seq object to be analysed }
-\item{customBg}{ There is an option to provide a custom set of background genes as a character vector instead of the anota2seq object. }
-\item{rankIn}{ Rank index for customBg. If customBg is used instead of the anota2seq object, it is required. }
 }
 
 \value{
@@ -36,17 +31,18 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 }
 
 \examples{
-# Check available versions
-checkAvailableVersions(species = "human")
-# Load pre-existing reference sequences
-annot <- retrieveFormatData(source="load", version="rel_109.20201120",species = "human")
+#First prepare anota2seqUtils class object
+# from anota2seq object
+a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, selection ="random", source = 'load', species = 'human')
+# or from geneList
+a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, selection ="random")
 
-# run slope filtering 
+# Optionally run slope filtering 
 filtOutGenes <- slopeFilt(ads = anota2seqOutput, regulationGen="translation", contrastSel=1, minSlope=-1, maxSlope=2)
 
 # Download file with predicted (conserved) targets of conserved miRNA families with context++ scores from Target Scan database (https://www.targetscan.org) 
 # Important, please subset the file for only desired specie:
 {downloaded file}_filt <- {downloaded file}[{downloaded file}$Gene.Tax.ID == "9606",]
 
-miRNAsign <- miRNAanalysis(annot=annot, miRNATargetScanFile= {downloaded file}_filt , ads = anota2seqOutput regulationGen="translation", contrastSel=1)
+miRNAsign <- miRNAanalysis(a2sU = a2sU, miRNATargetScanFile= {downloaded file}_filt , genesSlopeFiltOut = filtOutGenes)
 }

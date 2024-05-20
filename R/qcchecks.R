@@ -97,13 +97,6 @@ checkUtils <- function(obj) {
   return(TRUE)
 }
 
-checkGeneList <- function(obj) {
-  if (is.list(obj) && length(obj) > 0 && any(names(obj) != "")) {
-    return(TRUE)
-  }
-  return(FALSE)
-}
-
 checkComparisons <- function(obj) {
   if (!is.list(obj)) {
     return(FALSE)
@@ -337,4 +330,71 @@ check_codons <- function(featSel) {
       x %in% all_codons
     }
   }))
+}
+
+isValidSlope <- function(slope) {
+  return(!is.null(slope) && is.numeric(slope) && !is.na(slope))
+}
+
+checkSlopes <- function(minSlope, maxSlope) {
+  if (!isValidSlope(minSlope)) {
+    stop("minSlope is either NULL, not numeric, or NA.")
+  }
+  if (!isValidSlope(maxSlope)) {
+    stop("maxSlope is either NULL, not numeric, or NA.")
+  }
+  return(TRUE)
+}
+
+
+checkFileColumns <- function(filePath) {
+  if (is.null(filePath)) {
+    stop("File path is NULL.")
+  }
+
+  if (!file.exists(filePath)) {
+    stop("File does not exist.")
+  }
+
+  fileData <- read.delim(filePath)
+  
+  requiredColumns <- c('Gene.Tax.ID','weighted.context...score','Site.Type','Gene.Symbol','miRNA')
+  missingColumns <- setdiff(requiredColumns, colnames(fileData))
+  if (length(missingColumns) > 0) {
+    stop(paste("The following required columns are missing:", paste(missingColumns, collapse = ", ")))
+  }
+  
+  noS <- length(unique(fileData$Gene.Tax.ID))
+  if(noS>1){
+    stop('Please subset the file for only desired specie')
+  }
+  return(fileData)
+}
+
+checkCollection <- function(collection) {
+  if (is.null(collection)) {
+    stop('Please provide collection or geneSet')
+  }
+  
+  collections <- c('c1', 'c2', 'c3', 'c4', 'c5', 'c6', 'h')
+
+  for (choice in collections) {
+    if (!choice %in% collections) {
+      stop('Please provide valid collections (to choose from c1,c2,c3,c4,c5,c6,h)')
+    }
+  }
+}
+
+checkGeneList <- function(obj) {
+  if (!is.list(obj)) {
+    stop("The input is not a list.")
+  }
+  
+  if (length(obj) == 0) {
+    stop("The list is empty.")
+  }
+  
+  if (all(names(obj) == "")) {
+    stop("The list is not a named list.")
+  }
 }

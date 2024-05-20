@@ -154,3 +154,10 @@ setMethod("anota2seqUtilsGetSelection", "anota2seqUtilsData",
             x@selection
           })
 
+setGeneric("anota2seqUtilsGetGSEA",
+           function(x) standardGeneric("anota2seqUtilsGetGSEA"))
+setMethod("anota2seqUtilsGetGSEA", "anota2seqUtilsData",
+          function(x){
+            x@analysis@GSEA
+          })
+

@@ -42,9 +42,8 @@ anota2seqUtilsStart <- function(ads = NULL,
     if(is.null(geneList)){
       stop('Either anota2seq object of gene list must be provided')
     } else {
-      if(!checkGeneList(geneList)){
-        stop("'geneList' is empty or not named")
-      }
+      checkGeneList(geneList)
+      
       if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours)== length(geneList)) {
         stop("'geneListcolours' should be a character vector of the same length as geneList.")
       }
@@ -305,6 +304,14 @@ anota2seqUtilsStart <- function(ads = NULL,
   featIn <- new("anota2seqUtilsFeatures",
                 features = NULL)
   
+  analysis <- new("anota2seqUtilsAnalysis",
+                  featureIntegration = NULL,
+                  motifs= NULL,
+                  codons = NULL,
+                  GO = NULL,
+                  GSEA = NULL,
+                  GAGE = NULL,
+                  miRNA = NULL)
   
   # initialize the anota2seqUtils
   anota2seqUtilsData <- new("anota2seqUtilsData",
@@ -313,7 +320,8 @@ anota2seqUtilsStart <- function(ads = NULL,
                              selection = selection,
                              annot = annot,
                              dataIn = dataIn,
-                             features = featIn)
+                             features = featIn,
+                             analysis = analysis)
   
   
   return(anota2seqUtilsData)

@@ -1,45 +1,54 @@
-gseaAnalysis <- function(ads,
-                         regulationGen=NULL,
-                         contrastSel=NULL,
+gseaAnalysis <- function(a2sU,
                          genesSlopeFiltOut = NULL,
-                         rankIn = NULL,
-                         species,
                          collection = NULL,
                          subcollection = NULL,
                          subsetNames = NULL,
                          geneSet = NULL,
-                         name = NULL
-                        
-){
-  #
-  if (!species %in% c("human","mouse")) {
-    stop("This option is only  available for species: human and mouse at the moment")
+                         name = NULL){
+  if (!checkUtils(a2sU)) {
+    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  }
+  if(is.null(geneSet) && is.null(collection)){
+    stop("please provide geneSet or collection")
   }
   #
-  if(!is.null(ads)){
-    tmpAds <- anota2seq::anota2seqGetOutput(ads,
-                                            analysis = regulationGen,
-                                            output = "full",
-                                            selContrast = contrastSel,
-                                            getRVM = TRUE)
-    #
-    if (!is.null(genesSlopeFiltOut)) {
-      tmpAdsFilt <- tmpAds[!row.names(tmpAds) %in% genesSlopeFiltOut, ]
-    }  else {
-      tmpAdsFilt <- tmpAds
-    }
-    #
-    tmpP <- tmpAdsFilt[, "apvRvmP"]
-    tmpEff <- tmpAdsFilt[, "apvEff"]
+  #if(!is.null(ads)){
+  #  tmpAds <- anota2seq::anota2seqGetOutput(ads,
+  #                                          analysis = regulationGen,
+  #                                          output = "full",
+  #                                          selContrast = contrastSel,
+  #                                          getRVM = TRUE)
+  #  #
+  #  if (!is.null(genesSlopeFiltOut)) {
+  #    tmpAdsFilt <- tmpAds[!row.names(tmpAds) %in% genesSlopeFiltOut, ]
+  #  }  else {
+  #    tmpAdsFilt <- tmpAds
+  #  }
+  #  #
+  #  tmpP <- tmpAdsFilt[, "apvRvmP"]
+  #  tmpEff <- tmpAdsFilt[, "apvEff"]
     #rankedRVMP <- rank(-log10(tmpP) * sign(tmpEff))
-    rankIn <- tmpEff[order(tmpEff,decreasing = T)]
-  } else if (!is.null(rankIn)){
-    rankIn <- rankIn[order(rankIn,decreasing = T)]
-  } else {
-    stop("No anota2seq object or ranks provided")
+  #  rankIn <- tmpEff[order(tmpEff,decreasing = T)]
+  #} else if (!is.null(rankIn)){
+  #  rankIn <- rankIn[order(rankIn,decreasing = T)]
+  #} else {
+  #  stop("No anota2seq object or ranks provided")
+  #}
+  #
+  effTmp <- anota2seqUtilsGetEff(a2sU)
+  if (!is.null(genesSlopeFiltOut)) {
+    effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
+  }  else {
+    effIn <- effTmp
   }
   #
+  rankIn <- effIn[order(effIn,decreasing = T)]
   if(is.null(geneSet)){
+    species <- anota2seqUtilsGetSpecies(a2sU)
+    if (!species %in% c("human","mouse")) {
+      stop("This option is only  available for species: human and mouse at the moment")
+    }
+    checkCollection(collection)
     eh <- ExperimentHub::ExperimentHub()
     AnnotationHub::query(eh , 'msigdb')
   
@@ -55,6 +64,7 @@ gseaAnalysis <- function(ads,
     }
     geneSet_ids <- GSEABase::geneIds(collectionTmp)
   } else {
+    checkGeneList(geneSet)
     geneSet_ids <- geneSet
   }
   resOut <- fgsea::fgsea(pathways = geneSet_ids, stat = rankIn, minSize  = 5, maxSize  = 500)
@@ -65,48 +75,65 @@ gseaAnalysis <- function(ads,
   resOut <- resOut[,c(1,5,6,4,9,7,2,3,8)]
   gseaOut <- resOut[order(resOut$adjusted_pvalue),]
   
-  nameTmp <- paste("gseaAnalysis", regulationGen, paste("c",contrastSel, sep=''),sep='_')
-  nameTmp <- ifelse(!is.null(name), paste(name, nameTmp, sep='_'), nameTmp)
+  nameTmp <- ifelse(!is.null(name), paste(name, "gseaAnalysis", sep='_'), "gseaAnalysis")
   data.table::fwrite(gseaOut, file=paste(nameTmp,".txt",sep=''), sep="\t", sep2=c("", ":", ""))
+  #
+  a2sU@analysis@GSEA <- gseaOut
   #
   return(gseaOut)
 }
 
 ####
-gseaPlot <- function(gseaOut,
+gseaPlot <- function(a2sU,
                      termNames,
-                     ads,
-                     regulationGen=NULL,
-                     contrastSel=NULL,
                      genesSlopeFiltOut = NULL,
-                     rankIn = NULL,
                      gseaParam = 1,
                      ticksSize = 0.3,
                      pdfName = NULL
 ){
   #
-  if(!is.null(ads)){
-    tmpAds <- anota2seq::anota2seqGetOutput(ads,
-                                            analysis = regulationGen,
-                                            output = "full",
-                                            selContrast = contrastSel,
-                                            getRVM = TRUE)
-    #
-    if (!is.null(genesSlopeFiltOut)) {
-      tmpAdsFilt <- tmpAds[!row.names(tmpAds) %in% genesSlopeFiltOut, ]
-    }  else {
-      tmpAdsFilt <- tmpAds
-    }
-    #
-    tmpP <- tmpAdsFilt[, "apvRvmP"]
-    tmpEff <- tmpAdsFilt[, "apvEff"]
-    #rankedRVMP <- rank(-log10(tmpP) * sign(tmpEff))
-    rankIn <- tmpEff[order(tmpEff,decreasing = T)]
-  } else if (!is.null(rankIn)){
-    rankIn <- rankIn[order(rankIn,decreasing = T)]
-  } else {
-    stop("No anota2seq object or ranks provided")
+  if (!checkUtils(a2sU)) {
+    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
+  if(is.null(anota2seqUtilsGetGSEA(a2sU)){
+    stop("Please run gseaAnalysis first ")
+  } else {
+    gseaOut <- anota2seqUtilsGetGSEA(a2sU)
+  }
+  if(!is_number(gseaParam) | !is_number(ticksSize)){
+    stop("please provide numeric value")
+  }
+  #
+  effTmp <- anota2seqUtilsGetEff(a2sU)
+  if (!is.null(genesSlopeFiltOut)) {
+    effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
+  }  else {
+    effIn <- effTmp
+  }
+  #
+  rankIn <- effIn[order(effIn,decreasing = T)]
+  #if(!is.null(ads)){
+  #  tmpAds <- anota2seq::anota2seqGetOutput(ads,
+  #                                          analysis = regulationGen,
+  #                                          output = "full",
+  #                                          selContrast = contrastSel,
+  #                                          getRVM = TRUE)
+  #  #
+  #  if (!is.null(genesSlopeFiltOut)) {
+  #    tmpAdsFilt <- tmpAds[!row.names(tmpAds) %in% genesSlopeFiltOut, ]
+  #  }  else {
+  #    tmpAdsFilt <- tmpAds
+  #  }
+  #  #
+  #  tmpP <- tmpAdsFilt[, "apvRvmP"]
+  #  tmpEff <- tmpAdsFilt[, "apvEff"]
+  #  #rankedRVMP <- rank(-log10(tmpP) * sign(tmpEff))
+  #  rankIn <- tmpEff[order(tmpEff,decreasing = T)]
+  #} else if (!is.null(rankIn)){
+  #  rankIn <- rankIn[order(rankIn,decreasing = T)]
+  #} else {
+  #  stop("No anota2seq object or ranks provided")
+  #}
   #
   #
   rnk <- rank(-rankIn)
@@ -134,7 +161,7 @@ gseaPlot <- function(gseaOut,
     
     pdf(paste(nameOut,".pdf",sep=''), width = 8, height = 4, useDingbats = F)
     par(mar = c(5, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
-    peOut <- ggplot2::ggplot(toPlot, ggplot2::aes(x = x, y = y)) + ggplot2::geom_line(color = "firebrick1", linetype=1, size = 0.75)  + ggplot2::geom_line(color = "firebrick1") + ggplot2::theme_bw() + 
+    peOut <- ggplot2::ggplot(toPlot, ggplot2::aes(x = x, y = y)) + ggplot2::geom_line(color = "grey75", linetype=1, size = 0.75)  + ggplot2::geom_line(color = "grey75") + ggplot2::theme_bw() + 
       ggplot2::theme(panel.border = ggplot2::element_blank(),panel.grid.major = ggplot2::element_blank(),panel.grid.minor = ggplot2::element_blank()) + 
       ggplot2::theme(axis.line.x = ggplot2::element_line(color="black", linewidth = 0.5),axis.line.y = ggplot2::element_line(color="black", linewidth = 0.5)) +
       ggplot2::labs(title=termTmp, x = "rank", y = "enrichment score") +

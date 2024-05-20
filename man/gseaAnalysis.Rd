@@ -5,17 +5,13 @@
 \title{ Gene Set Enrichment Analysis }
 
 \usage{
-gseaAnalysis(ads, genesSlopeFiltOut = NULL, regulationGen=NULL, contrastSel=NULL, rankIn=NULL, species, collection = NULL, subcollection = NULL, subsetNames = NULL, geneSet = NULL, name = NULL)
+gseaAnalysis(a2sU, genesSlopeFiltOut = NULL, collection = NULL, subcollection = NULL, subsetNames = NULL, geneSet = NULL, name = NULL)
 }
 
 \arguments{
-\item{ads}{ An anota2seq object (an output of anota2seqRun function from anota2seq package) }
+\item{a2sU}{ anota2seqUtils class object created using anota2seqUtilsStart function }
 \item{genesSlopeFiltOut}{ optionally, a character vector with gene ids to be filtered out based on slopes calculated by anota2seq for translation and buffering. The required object can be obtained using the slopeFilt function }
-\item{regulationGen}{ desired name of regulation from the anota2seq. Genes will be filtered out based on slope values calculated to the mode. Choose from "translation" or "buffering" }
-\item{contrastSel}{ contrast in the anota2seq object to be analysed }
-\item{rankIn}{ Alternatively, instead of anota2seq object, ranked genes with their fold change values can be provided. }
-\item{species}{ Select a specie of interest. At the moment, it can be human or mouse only. }
-\item{collection}{ Choose collections of interest: 'c1','c2','c3','c4','c5','c6','h'. Although possible, it is not advisable to run all of them together. See how to check available options below in usage example or check: https://www.gsea-msigdb.org/gsea/msigdb/human/collections.jsp }
+\item{collection}{ Choose collections of interest: 'c1','c2','c3','c4','c5','c6','h'. Although possible, it is not advisable to run all of them together. See how to check available options below in usage example or check: https://www.gsea-msigdb.org/gsea/msigdb/human/collections.jsp . At the moment, it can be human or mouse only}
 \item{subcollection}{ Choose subcollection of interest. See how to check available options below in usage example or check: https://www.gsea-msigdb.org/gsea/msigdb/human/collections.jsp}
 \item{subsetNames}{ It is possible to select only specific terms by providing names of pathways. }
 \item{geneSet}{ Alternatively,indstead GSEA collection, provide named list of character vector with gene signatures. }
@@ -35,6 +31,16 @@ gseaAnalysis(ads, genesSlopeFiltOut = NULL, regulationGen=NULL, contrastSel=NULL
 }
 
 \examples{
+#First prepare anota2seqUtils class object
+# from anota2seq object
+a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, selection ="random", source = 'load', species = 'human')
+# or from geneList
+a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, selection ="random")
+
+# Optionally run slope filtering 
+filtOutGenes <- slopeFilt(ads = anota2seqOutput, regulationGen="translation", contrastSel=1, minSlope=-1, maxSlope=2)
+
+####If GSEA collection are to be selection:
 #Check available versions
 version <- msigdb::getMsigdbVersions()
 #Get data 
@@ -43,12 +49,21 @@ msigdbOut <- msigdb::getMsigdb(org = 'hs', id = 'SYM', version = version)
 msigdb::listCollections(msigdbOut)
 msigdb::listSubCollections(msigdbOut)
 
-#Extract genes with outlier slopes
-genesSlopeFiltOut <- slopeFilt(ads=ads,regulationGen='translation',contrastSel=1,minSlope=-1, maxSlope=2)
-
 #Run GSEA on Hallmark collection
-gseaOut <- gseaAnalysis(ads, genesSlopeFiltOut = genesSlopeFiltOut, regulationGen='translation', contrastSel=1, species = 'human', collection = 'h'))
+gseaOut <- gseaAnalysis(a2sU = a2sU, genesSlopeFiltOut = genesSlopeFiltOut, collection = 'h'))
+
+####Alternatively provide geneSets
+inSet <- list()
+inSet[['set1']] <- c("MED13","NIPBL","SYNGAP1","GRIN2B","ASH1L")
+inSet[['set2']] <- c("WAC","STXBP1","SATB2","TCF20")
+
+#Run GSEA on geneSets
+gseaOut <- gseaAnalysis(a2sU = a2sU, genesSlopeFiltOut = genesSlopeFiltOut, geneSet = inSet)
+
 
 #Plot terms of interest
+#Extract results if not already in there
+gseaOut <- anota2seqUtilsGetGSEA(a2sU)
 
+gseaPlot(a2sU = a2sU,termNames = gseaOut$Term[1:2], genesSlopeFiltOut = NULL, gseaParam = 1, ticksSize = 0.3,pdfName = NULL)
 }
