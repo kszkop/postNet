@@ -50,7 +50,7 @@ msigdb::listCollections(msigdbOut)
 msigdb::listSubCollections(msigdbOut)
 
 #Run GSEA on Hallmark collection
-gseaOut <- gseaAnalysis(a2sU = a2sU, genesSlopeFiltOut = genesSlopeFiltOut, collection = 'h'))
+a2sU <- gseaAnalysis(a2sU = a2sU, genesSlopeFiltOut = genesSlopeFiltOut, collection = 'h'))
 
 ####Alternatively provide geneSets
 inSet <- list()
@@ -58,7 +58,7 @@ inSet[['set1']] <- c("MED13","NIPBL","SYNGAP1","GRIN2B","ASH1L")
 inSet[['set2']] <- c("WAC","STXBP1","SATB2","TCF20")
 
 #Run GSEA on geneSets
-gseaOut <- gseaAnalysis(a2sU = a2sU, genesSlopeFiltOut = genesSlopeFiltOut, geneSet = inSet)
+a2sU <- gseaAnalysis(a2sU = a2sU, genesSlopeFiltOut = genesSlopeFiltOut, geneSet = inSet)
 
 
 #Plot terms of interest

@@ -385,7 +385,7 @@ set_boxvio <- function(resOut, ylabel) {
   xlimTmp <- c(0.5, length(resOut) + 1.5)
   #
   par(mar = c(8, 12, 12, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-  plot(1,1, xlim=xlimTmp, ylim=range(dataTmp), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+  plot(1,1, xlim=xlimTmp, ylim=c(0,100), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
   #
   if(ylabel == 'Log2 length'){
     axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
@@ -1442,19 +1442,4 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, isad
   dev.off()
 }
 
-getSeqs <- function(a2sU, region){
-  if(region == 'UTR5'){
-    seqOut <- anota2seqUtilsGetUTR5Seq(a2sU)
-    geneIDs <- anota2seqUtilsGetUTR5geneID(a2sU)
-  } else if (region == 'UTR3'){
-    seqOut <- anota2seqUtilsGetUTR3Seq(a2sU)
-    geneIDs <- anota2seqUtilsGetUTR3geneID(a2sU)
-  } else if (region == 'CDS'){
-    seqOut <- anota2seqUtilsGetCDSSeq(a2sU)
-    geneIDs <- anota2seqUtilsGetCDSgeneID(a2sU)
-  } else {
-    stop("no such region")
-  }
-  names(seqOut) <- geneIDs 
-  return(seqOut)
-}
+

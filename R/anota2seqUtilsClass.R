@@ -1,5 +1,8 @@
 ## anota2seqUtils S4 class implementation
 setClassUnion("RegionOrNULL",members=c("anota2seqUtilsRegion", "NULL"))
+setClassUnion("miRNAOrNULL",members=c("anota2seqUtilsmiRNA", "NULL"))
+setClassUnion("GOOrNULL",members=c("anota2seqUtilsGO", "NULL"))
+setClassUnion("GAGEOrNULL",members=c("anota2seqUtilsGAGE", "NULL"))
 setClassUnion("characterOrNULL",members=c("character", "NULL"))
 setClassUnion("listOrNULL",members=c("list", "NULL"))
 
@@ -28,15 +31,40 @@ setClass("anota2seqUtilsDataIn",
          )
 )
 
+setClass("anota2seqUtilsmiRNA",
+         slots = c(
+          miRNA_analysis = "listOrNULL",
+          miRNA_to_gene = "listOrNULL"
+         )
+)
+
+setClass("anota2seqUtilsGO",
+         slots = c(
+           BP = "listOrNULL",
+           CC = "listOrNULL",
+           MF = "listOrNULL",
+           KEGG = "listOrNULL"
+         )
+)
+
+setClass("anota2seqUtilsGAGE",
+         slots = c(
+           BP = "listOrNULL",
+           CC = "listOrNULL",
+           MF = "listOrNULL",
+           KEGG = "listOrNULL"
+         )
+)
+
 setClass("anota2seqUtilsAnalysis",
          slots = c(
            featureIntegration = "listOrNULL",
            motifs  = "listOrNULL",
            codons = "listOrNULL",
-           GO = "listOrNULL",
+           GO = "GOOrNULL",
            GSEA = "listOrNULL",
-           GAGE = "listOrNULL",
-           miRNA = "listOrNULL"
+           GAGE = "GAGEOrNULL",
+           miRNA = "miRNAOrNULL"
          )
 )
 

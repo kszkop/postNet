@@ -105,10 +105,8 @@ checkComparisons <- function(obj) {
 }
 
 checkLogicalArgument <- function(arg) {
-  if (is.logical(arg) && length(arg) == 1) {
-    return(TRUE)
-  } else {
-    return(FALSE)
+  if (!is.logical(arg) | length(arg) != 1) {
+    stop("pool argument can be only TRUE or FALSE")
   }
 }
 
@@ -396,5 +394,30 @@ checkGeneList <- function(obj) {
   
   if (all(names(obj) == "")) {
     stop("The list is not a named list.")
+  }
+}
+
+checkDirection <- function(direction) {
+  if (is.null(direction)) {
+    stop("The direction cannot be NULL.")
+  }
+  if (!direction %in% c("greater", "less")) {
+    stop('The direction must be either "greater" or "less".')
+  }
+}
+
+checkCategory <- function(category) {
+  if (is.null(category)) {
+    stop("The category cannot be NULL.")
+  }
+  selCat <- c("BP", "CC", "MF", "KEGG")
+  if (!all(category %in% selCat)) {
+    stop('The "category" must be a combination of "BP", "CC", "MF", and "KEGG" ')
+  }
+}
+
+check_size <- function(size) {
+  if (is.null(size) || !(size == "Count" || size == "geneRatio")) {
+    stop("The 'size' must be not null and only can be 'Count' or 'geneRatio'" )
   }
 }

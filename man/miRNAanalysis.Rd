@@ -15,7 +15,7 @@ miRNAanalysis(a2sU, miRNATargetScanFile, genesSlopeFiltOut = NULL)
 }
 
 \value{
-named list (by enriched miRNA ID) with gene signature vectors for a given miRNA. Genes in the signature are indicated by 1, not by 0. At first position of the list, the complete results are appended.
+
 }
 
 \description{
@@ -44,5 +44,11 @@ filtOutGenes <- slopeFilt(ads = anota2seqOutput, regulationGen="translation", co
 # Important, please subset the file for only desired specie:
 {downloaded file}_filt <- {downloaded file}[{downloaded file}$Gene.Tax.ID == "9606",]
 
-miRNAsign <- miRNAanalysis(a2sU = a2sU, miRNATargetScanFile= {downloaded file}_filt , genesSlopeFiltOut = filtOutGenes)
+a2sU <- miRNAanalysis(a2sU = a2sU, miRNATargetScanFile= {downloaded file}_filt , genesSlopeFiltOut = filtOutGenes)
+
+#To extract results, with direction to choose 'greater' or 'less'
+resOut <- get_miRNA_results(a2sU = a2sU, direction)
+
+#To extract miRNA targets with miRNAs vector of miRNAs id (for example: c("ptr-miR-497","ptr-miR-16"))
+targetsOut <- get_miRNA_geneTargets(a2sU = a2sU, miRNAs)
 }
