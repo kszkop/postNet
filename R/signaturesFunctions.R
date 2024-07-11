@@ -9,7 +9,6 @@ signatureFunction <- function(signatureList,
                               scatterXY=NULL,
                               tableCex,
                               pdfName){
-  #
   signNames <- names(signatureList)
   ##apvEff of effect
   regData <- data.frame(geneSymb = rownames(ads@dataP))
