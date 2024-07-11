@@ -11,13 +11,13 @@ miRNAanalysis <- function(a2sU,
     stop("please provide numeric value")
   }
   miRNATargetScan <- checkFileColumns(miRNATargetScanFile)
-  if(length(intersect(unique(miRNATargetScan$Gene.Symbol), anota2seqUtilsGetBg(a2sU)))<2){
+  if(length(intersect(unique(miRNATargetScan$Gene.Symbol), a2sU_bg(a2sU)))<2){
     stop('no overlap between genes the dataset and in the miRNATargetScanFile')
   }
   #
   miRNAOut <- list()
   #
-  effTmp <- anota2seqUtilsGetEff(a2sU)
+  effTmp <- a2sU_eff(a2sU)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
   }  else {

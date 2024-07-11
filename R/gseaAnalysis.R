@@ -35,7 +35,7 @@ gseaAnalysis <- function(a2sU,
   #  stop("No anota2seq object or ranks provided")
   #}
   #
-  effTmp <- anota2seqUtilsGetEff(a2sU)
+  effTmp <- a2sU_eff(a2sU)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
   }  else {
@@ -44,7 +44,7 @@ gseaAnalysis <- function(a2sU,
   #
   rankIn <- effIn[order(effIn,decreasing = T)]
   if(is.null(geneSet)){
-    species <- anota2seqUtilsGetSpecies(a2sU)
+    species <- a2sU_species(a2sU)
     if (!species %in% c("human","mouse")) {
       stop("This option is only  available for species: human and mouse at the moment")
     }
@@ -94,16 +94,16 @@ gseaPlot <- function(a2sU,
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
-  if(is.null(anota2seqUtilsGetGSEA(a2sU))){
+  if(is.null(a2sU_gsea(a2sU))){
     stop("Please run gseaAnalysis first ")
   } else {
-    gseaOut <- anota2seqUtilsGetGSEA(a2sU)
+    gseaOut <- a2sU_gsea(a2sU)
   }
   if(!is_number(gseaParam) | !is_number(ticksSize)){
     stop("please provide numeric value")
   }
   #
-  effTmp <- anota2seqUtilsGetEff(a2sU)
+  effTmp <- a2sU_eff(a2sU)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
   }  else {

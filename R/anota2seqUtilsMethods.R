@@ -268,7 +268,7 @@ a2sU_GO <- function(a2sU,
   } else {
     message('there are no GO categories to output')
   }
-  return(resOut)
+  return(GOresOut)
 }
 
 ###
@@ -292,3 +292,40 @@ a2sU_gsea <- function(a2sU,
   }
   return(gseaOut)
 }
+
+a2sU_gage <- function(a2sU,
+                      category,
+                      direction,
+                      threshold) {
+  #
+  checkDirection(tolower(direction))
+  if (!checkUtils(a2sU)) {
+    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  }
+  if(!is_number(threshold)){
+    stop("'threshold' must be a number")
+  }
+  checkCategory(category)
+  if(is.null(slot(a2sU@analysis, 'GAGE'))){
+    stop("Please run mi first miRNAanalysis")
+  } else {
+    GAGEres <- slot(a2sU@analysis@GAGE, category)
+  }
+  
+  if(tolower(direction)=='greater'){
+    resOut <- GAGEres$greater
+  } else if (tolower(direction)=='less') {
+    resOut <- GAGEres$less
+  }
+  #
+  resOut <- resOut[which(resOut[,4]< threshold),]
+  #
+  if(nrow(resOut)>0){
+    resOut <- resOut[,c(1,2,5,3,4)]
+    resOut <-  data.frame(id=row.names(resOut),resOut,row.names = NULL)
+  } else {
+    message('there are no enriched terms')
+  }
+  return(resOut)
+}
+

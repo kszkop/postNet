@@ -18,7 +18,7 @@ uorf_analysis <- function(a2sU,
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(anota2seqUtilsGetBg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
       stop(" 0 is always a background, but no background provided")
     }
   }
@@ -53,12 +53,12 @@ uorf_analysis <- function(a2sU,
   #
   uORFFinal <- list()
   
-  seqTmp <- getSeqs(a2sU,"UTR5")
+  seqTmp <- a2sU_sequences(a2sU,"UTR5")
   #
   if (!isTRUE(onlyUTR5)) {
     seq <- list()
-    seq[[1]] <- getSeqs(a2sU, 'CDS')
-    seq[[2]] <- getSeqs(a2sU, 'UTR3')
+    seq[[1]] <- a2sU_sequences(a2sU, 'CDS')
+    seq[[2]] <- a2sU_sequences(a2sU, 'UTR3')
     extSeq <- combSeq(seqIn = seq)
     extSeq <- unlist(extSeq)
     #

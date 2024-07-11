@@ -26,7 +26,7 @@ lengthAnalysis <- function(a2sU,
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(anota2seqUtilsGetBg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
       stop(" 0 is always a background, but no background provided")
     }
   }
@@ -34,7 +34,7 @@ lengthAnalysis <- function(a2sU,
   lengthFinal <- list()
   for(reg in region){
     #
-    seqTmp <- getSeqs(a2sU = a2sU,region = reg)
+    seqTmp <- a2sU_sequences(a2sU = a2sU,region = reg)
     #
     lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
     #

@@ -357,10 +357,10 @@ addStats <- function(comparisons, plotType, resOut, coloursOut){
 
 resQuant <- function(qvec, a2sU){
   resOut <- list()
-  if(!is.null(anota2seqUtilsGetBg(a2sU))){
-    res <- c(list(background=anota2seqUtilsGetBg(a2sU)),anota2seqUtilsGetDataIn(a2sU))
+  if(!is.null(a2sU_bg(a2sU))){
+    res <- c(list(background=a2sU_bg(a2sU)),a2sU_dataIn(a2sU))
   } else {
-    res <- anota2seqUtilsGetDataIn(a2sU)
+    res <- a2sU_dataIn(a2sU)
   }
 
   for(i in 1:length(res)){
@@ -370,10 +370,10 @@ resQuant <- function(qvec, a2sU){
 }
 
 colPlot <- function(a2sU){
-  if(!is.null(anota2seqUtilsGetBg(a2sU))){
-    colOut <- c('grey45',anota2seqUtilsGetColours(a2sU))
+  if(!is.null(a2sU_bg(a2sU))){
+    colOut <- c('grey45',a2sU_colours(a2sU))
   } else {
-    colOut <- anota2seqUtilsGetColours(a2sU)
+    colOut <- a2sU_colours(a2sU)
   }
   return(colOut)
 }

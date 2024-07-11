@@ -11,8 +11,8 @@ foldingEnergyAnalysis <- function(a2sU,
   #
   checkRegion(region)
   
-  species <- anota2seqUtilsGetSpecies(a2sU)
-  version <- anota2seqUtilsGetVersion(a2sU)
+  species <- a2sU_species(a2sU)
+  version <- a2sU_version(a2sU)
   
   # Validate the source input
   tryCatch({
@@ -38,7 +38,7 @@ foldingEnergyAnalysis <- function(a2sU,
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(anota2seqUtilsGetBg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
       stop(" 0 is always a background, but no background provided")
     }
   }
@@ -93,7 +93,7 @@ foldingEnergyAnalysis <- function(a2sU,
       #
       for(reg in region){
         #
-        seqTmp <- getSeqs(a2sU,reg)
+        seqTmp <- a2sU_sequences(a2sU,reg)
         # Write out sequences
         seqinr::write.fasta(sequences = as.list(as.character(seqTmp)), names = names(seqTmp), file.out = paste(reg, ".fa", sep = ""))
         #
@@ -184,7 +184,7 @@ runFE <- function(energyIn,
                   a2sU){
   #
   colnames(energyIn) <- c("id", "fold_energy", "length")
-  energyIn$geneID <- anota2seqUtilsGetCDSgeneID(a2sU)[match(energyIn$id,anota2seqUtilsGetCDSid(a2sU))]
+  energyIn$geneID <- a2sU_geneID(a2sU)[match(energyIn$id,a2sU_id(a2sU))]
   energyIn <- na.omit(energyIn)
   #
   if (isTRUE(residFE)) {

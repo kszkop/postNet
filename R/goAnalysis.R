@@ -17,7 +17,7 @@ goAnalysis <- function(a2sU,
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
-  species <- anota2seqUtilsGetSpecies(a2sU)
+  species <- a2sU_species(a2sU)
   if (!species %in% c("human","mouse")) {
     stop("This option is only  available for species: human and mouse at the moment")
   }
@@ -56,8 +56,8 @@ goAnalysis <- function(a2sU,
   #} else {
   #  stop("please provide background genes")
   #}
-  res  <- anota2seqUtilsGetDataIn(a2sU)
-  bg <- unlist(anota2seqUtilsGetBg(a2sU))
+  res  <- a2sU_dataIn(a2sU)
+  bg <- unlist(a2sU_bg(a2sU))
   if(length(setdiff(bg,unique(unlist(res))))==0){
     warning('Background seems not right as all genes are regulated')
   }
@@ -237,7 +237,7 @@ goDotplot <- function(a2sU,
         
         #
         colOut <- colPlot(a2sU)[-1]
-        names(colOut) <- names(a2sU@dataIn@geneList)
+        names(colOut) <- names(a2sU_dataIn(a2sU))
         #
         pdf(nameOut, width = 8, height = 8, useDingbats = F)
         par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)

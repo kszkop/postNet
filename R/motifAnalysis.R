@@ -7,12 +7,12 @@ motifAnalysis <- function(a2sU,
                           subregion = NULL,
                           subregionSel = NULL) {
   ####
-  if (!checkAds(a2sU)) {
+  if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
   checkRegion(region)
 
-  if (is.null(anota2seqUtilsGetBg(a2sU))){
+  if (is.null(a2sU_bg(a2sU))){
     stop("Background must be provided for motif analysis")
   }
   if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
@@ -38,7 +38,7 @@ motifAnalysis <- function(a2sU,
   motifsStemeOutRegion <- list()
   for(reg in region){
     #
-    seqTmp <- getSeqs(a2sU,reg)
+    seqTmp <- a2sU_sequences(a2sU,reg)
     
     if (tolower(seqType) == "protein") {
       if(!is_by_3(seqTmp)){
