@@ -6,6 +6,8 @@ uorf_analysis <- function(a2sU,
                           comparisons = NULL,
                           plotOut = TRUE,
                           pdfName = NULL) {
+  
+}
   #
   #if (!checkUtils(a2sU)) {
   #  stop("a2sU is not a valid 'anota2seqUtilsData' object.")
@@ -116,4 +118,4 @@ uorf_analysis <- function(a2sU,
   #uORFFinal[[paste('uORFs',startCodon,KozakContext,sep='_')]] <- uorfOut
   #
   #return(uORFFinal)
-}
+#}
