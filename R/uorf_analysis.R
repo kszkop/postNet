@@ -7,66 +7,66 @@ uorf_analysis <- function(a2sU,
                           plotOut = TRUE,
                           pdfName = NULL) {
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
-  }
-  if(!checkLogicalArgument(plotOut)){
-    
-    stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  } 
-  if(!is.null(comparisons)){
-    if(!checkComparisons(comparisons)){
-      stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
-    }
-    #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
-      stop(" 0 is always a background, but no background provided")
-    }
-  }
-  if(!isStartCodon(startCodon)){
-    stop("'startCodon' must be a character vector of length one, and contain only 3 nucleotide sequence, ex. 'ATG'")
-  }
-  if(!isKozakContext(KozakContext)){
-    stop("'KozakContext' must be one from these: 'strong','adequate1','adequate2','weak','any'")
-  }
-  if(!checkLogicalArgument(onlyUTR5)){
-    stop("'onlyUTR5' can only be only be logical: TRUE of FALSE ")
-  }
-  if(!isUnitOut(unitOut)){
-    stop("'unitOut' must be one from these: 'numeric' or 'position'")
-  }
+  #if (!checkUtils(a2sU)) {
+  #  stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  #}
+  #if(!checkLogicalArgument(plotOut)){
+  #  
+  #  stop("'plotOut' can only be only be logical: TRUE of FALSE ")
+  #} 
+  #if(!is.null(comparisons)){
+  #  if(!checkComparisons(comparisons)){
+  #    stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
+  #  }
+  #  #
+  #  if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
+  #    stop(" 0 is always a background, but no background provided")
+  #  }
+  #}
+  #if(!isStartCodon(startCodon)){
+  #  stop("'startCodon' must be a character vector of length one, and contain only 3 nucleotide sequence, ex. 'ATG'")
+  #}
+  #if(!isKozakContext(KozakContext)){
+  #  stop("'KozakContext' must be one from these: 'strong','adequate1','adequate2','weak','any'")
+  #}
+  #if(!checkLogicalArgument(onlyUTR5)){
+  #  stop("'onlyUTR5' can only be only be logical: TRUE of FALSE ")
+  #}
+  #if(!isUnitOut(unitOut)){
+  #  stop("'unitOut' must be one from these: 'numeric' or 'position'")
+  #}
   
   #
-  KozakContext <- tolower(KozakContext)
-  if (KozakContext == "strong") {
-    context <-  paste("[AG][ATGC][ATGC]", toupper(startCodon), "G", sep = "")
-  } else if (KozakContext == "adequate1") {
-    context <- paste("[AG][ATGC][ATGC]", toupper(startCodon), "[ATC]", sep = "")
-  } else if (KozakContext == "adequate2") {
-    context <- paste("[TC][ATGC][ATGC]", toupper(startCodon), "G", sep = "")
-  } else if (KozakContext == "weak") {
-    context <- paste("[TC][ATGC][ATGC]", toupper(startCodon), "[ATC]", sep = "")
-  } else if (KozakContext == "any") {
-    context <- paste("[ATGC][ATGC][ATGC]", toupper(startCodon), "[ATGC]", sep = "")
-  } else {
-    stop("Please provide correct Kozak context")
-  }
+  #KozakContext <- tolower(KozakContext)
+  #if (KozakContext == "strong") {
+  #  context <-  paste("[AG][ATGC][ATGC]", toupper(startCodon), "G", sep = "")
+  #} else if (KozakContext == "adequate1") {
+  #  context <- paste("[AG][ATGC][ATGC]", toupper(startCodon), "[ATC]", sep = "")
+  #} else if (KozakContext == "adequate2") {
+  #  context <- paste("[TC][ATGC][ATGC]", toupper(startCodon), "G", sep = "")
+  #} else if (KozakContext == "weak") {
+  #  context <- paste("[TC][ATGC][ATGC]", toupper(startCodon), "[ATC]", sep = "")
+  #} else if (KozakContext == "any") {
+  #  context <- paste("[ATGC][ATGC][ATGC]", toupper(startCodon), "[ATGC]", sep = "")
+  #} else {
+  #  stop("Please provide correct Kozak context")
+  #}
   #
-  uORFFinal <- list()
-  
-  seqTmp <- a2sU_sequences(a2sU,"UTR5")
+  #uORFFinal <- list()
   #
-  if (!isTRUE(onlyUTR5)) {
-    seq <- list()
-    seq[[1]] <- a2sU_sequences(a2sU, 'CDS')
-    seq[[2]] <- a2sU_sequences(a2sU, 'UTR3')
-    extSeq <- combSeq(seqIn = seq)
-    extSeq <- unlist(extSeq)
-    #
-    uorfOut <- mapply(calc_uORF, seqTmp=seqTmp, ext = extSeq, context = context, unit = tolower(unitOut), USE.NAMES=FALSE)
-  } else {
-    uorfOut <- sapply(seqTmp, function(x) calc_uORF(x, ext=NULL, context = context, unit = tolower(unitOut)), USE.NAMES=FALSE)
-  }
+  #seqTmp <- a2sU_sequences(a2sU,"UTR5")
+  ##
+  #if (!isTRUE(onlyUTR5)) {
+  #  seq <- list()
+  #  seq[[1]] <- a2sU_sequences(a2sU, 'CDS')
+  #  seq[[2]] <- a2sU_sequences(a2sU, 'UTR3')
+  #  extSeq <- combSeq(seqIn = seq)
+  #  extSeq <- unlist(extSeq)
+  #  #
+  #  uorfOut <- mapply(calc_uORF, seqTmp=seqTmp, ext = extSeq, context = context, unit = tolower(unitOut), USE.NAMES=FALSE)
+  #} else {
+  #  uorfOut <- sapply(seqTmp, function(x) calc_uORF(x, ext=NULL, context = context, unit = tolower(unitOut)), USE.NAMES=FALSE)
+  #}
   #
   names(uorfOut) <- names(seqTmp)
   #
