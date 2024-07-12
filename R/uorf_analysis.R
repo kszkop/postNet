@@ -92,7 +92,7 @@ uorf_analysis <- function(a2sU,
     axis(side = 2, font = 2, las = 2, lwd = 2, at = seq(0, 1, 0.2), labels = seq(0, 1, 0.2))
     text(seq(0.5, length(resOut), 1), par("usr")[3] - 0.05, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1.1)
 
-    mtext(side = 2, line = 6, paste("proportion of uORFs in \n", KozakContext, " Kozak context", sep = ""), col = "black", font = 2, cex = 1.7, at = 0.5)
+    mtext(side = 2, line = 6, paste("proportion of uORFs in \n", KozakContext, "Kozak context", sep = ""), col = "black", font = 2, cex = 1.7, at = 0.5)
 
     # Plot stats
     if (!is.null(comparisons)) {
