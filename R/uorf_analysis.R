@@ -1,13 +1,14 @@
-uorf_analysis <- function(a2sU,
-                          startCodon = "ATG",
-                          KozakContext = "strong",
-                          onlyUTR5 = FALSE,
-                          unitOut = "number",
-                          comparisons = NULL,
-                          plotOut = TRUE,
-                          pdfName = NULL) {
-  
-}
+uorf_analysis <- function(){}
+#  a2sU,
+#                          startCodon = "ATG",
+#                          KozakContext = "strong",
+#                          onlyUTR5 = FALSE,
+#                          unitOut = "number",
+#                          comparisons = NULL,
+#                          plotOut = TRUE,
+#                          pdfName = NULL) {
+#  
+#}
   #
   #if (!checkUtils(a2sU)) {
   #  stop("a2sU is not a valid 'anota2seqUtilsData' object.")
