@@ -8,9 +8,9 @@ setClassUnion("listOrNULL",members=c("list", "NULL"))
 
 setClass("anota2seqUtilsRegion",
          slots = c(
-           id = "character",
-           geneID = "character",
-           seq =  "character"
+           id = "characterOrNULL",
+           geneID = "characterOrNULL",
+           seq =  "characterOrNULL"
          )
 )
 
