@@ -263,7 +263,8 @@ anota2seqUtilsStart <- function(ads = NULL,
   annot <- new("anota2seqUtilsAnnot",
               UTR5 = NULL,
               CDS = NULL,
-              UTR3 = NULL)
+              UTR3 = NULL,
+              CCDS = NULL)
   
   for(reg in c('UTR5','CDS','UTR3')){
     annotTmp <- regSel(annot = annotBg, region = reg)

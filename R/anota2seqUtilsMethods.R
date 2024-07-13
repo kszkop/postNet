@@ -24,7 +24,7 @@ setMethod("a2sU_sequences", "anota2seqUtilsData",
           function(x){
             checkRegion(region)
             if(length(region)>1){
-              stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'.")
+              stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis performed with CCDS annotation.")
             }
             tmpReg <- slot(x@annot, region)
             seqOut <- tmpReg@seq
@@ -37,7 +37,7 @@ setMethod("a2sU_id", "anota2seqUtilsData",
           function(x){
             checkRegion(region)
             if(length(region)>1){
-              stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'.")
+              stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis performed with CCDS annotation.")
             }
             tmpReg <- slot(x@annot, region)
             idOut <- tmpReg@id
@@ -50,7 +50,7 @@ setMethod("a2sU_geneID", "anota2seqUtilsData",
           function(x){
             checkRegion(region)
             if(length(region)>1){
-              stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'.")
+              stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis performed with CCDS annotation.")
             }
             tmpReg <- slot(x@annot, region)
             geneIDOut <- tmpReg@geneID

@@ -18,7 +18,8 @@ setClass("anota2seqUtilsAnnot",
          slots = c(
            UTR5 = "listOrNULL",
            CDS = "listOrNULL",
-           UTR3 = "listOrNULL"
+           UTR3 = "listOrNULL",
+           CCDS = "listOrNULL"
          )
 )
 

@@ -46,7 +46,7 @@ contentAnalysis <- function(a2sU,
   contentFinal <- list()
   for(reg in toupper(region)){
     #
-    seqTmp <- a2sU_sequences(a2sU = a2sU,region = reg)
+    seqTmp <- a2sU_sequences(a2sU = a2sU, region = reg)
     #
     if (!is.null(subregion)) {
       if(is.null(subregionSel)){
