@@ -1,5 +1,5 @@
 ## anota2seqUtils S4 class implementation
-setClassUnion("anota2seqUtilsRegionOrNULL",members=c("anota2seqUtilsRegion", "NULL"))
+setClassUnion("RegionOrNULL",members=c("anota2seqUtilsRegion", "NULL"))
 #setClassUnion("miRNAOrNULL",members=c("anota2seqUtilsmiRNA", "NULL"))
 #setClassUnion("GOOrNULL",members=c("anota2seqUtilsGO", "NULL"))
 #setClassUnion("GAGEOrNULL",members=c("anota2seqUtilsGAGE", "NULL"))
@@ -16,10 +16,10 @@ setClass("anota2seqUtilsRegion",
 
 setClass("anota2seqUtilsAnnot",
          slots = c(
-           UTR5 = "anota2seqUtilsRegionOrNULL",
-           CDS = "anota2seqUtilsRegionOrNULL",
-           UTR3 = "anota2seqUtilsRegionOrNULL",
-           CCDS = "anota2seqUtilsRegionOrNULL"
+           UTR5 = "RegionOrNULL",
+           CDS = "RegionOrNULL",
+           UTR3 = "RegionOrNULL",
+           CCDS = "RegionOrNULL"
          )
 )
 
