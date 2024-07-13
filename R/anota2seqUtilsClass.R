@@ -1,8 +1,4 @@
 ## anota2seqUtils S4 class implementation
-setClassUnion("RegionOrNULL",members=c("anota2seqUtilsRegion", "NULL"))
-#setClassUnion("miRNAOrNULL",members=c("anota2seqUtilsmiRNA", "NULL"))
-#setClassUnion("GOOrNULL",members=c("anota2seqUtilsGO", "NULL"))
-#setClassUnion("GAGEOrNULL",members=c("anota2seqUtilsGAGE", "NULL"))
 setClassUnion("characterOrNULL",members=c("character", "NULL"))
 setClassUnion("listOrNULL",members=c("list", "NULL"))
 
@@ -13,6 +9,8 @@ setClass("anota2seqUtilsRegion",
            seq =  "character"
          )
 )
+
+setClassUnion("RegionOrNULL",members=c("anota2seqUtilsRegion", "NULL"))
 
 setClass("anota2seqUtilsAnnot",
          slots = c(
@@ -57,15 +55,19 @@ setClass("anota2seqUtilsGAGE",
          )
 )
 
+setClassUnion("miRNAOrNULL",members=c("anota2seqUtilsmiRNA", "NULL"))
+setClassUnion("GOOrNULL",members=c("anota2seqUtilsGO", "NULL"))
+setClassUnion("GAGEOrNULL",members=c("anota2seqUtilsGAGE", "NULL"))
+
 setClass("anota2seqUtilsAnalysis",
          slots = c(
            featureIntegration = "listOrNULL",
            motifs  = "listOrNULL",
            codons = "listOrNULL",
-           GO = "listOrNULL",
+           GO = "GOOrNULL",
            GSEA = "listOrNULL",
-           GAGE = "listOrNULL",
-           miRNA = "listOrNULL"
+           GAGE = "GAGEOrNULL",
+           miRNA = "miRNAOrNULL"
          )
 )
 
