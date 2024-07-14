@@ -418,7 +418,7 @@ plotBoxplots <- function(resOut, colOut, comparisons, ylabel) {
   }
 }
 
-plotViolin <- function(qvec, a2sU, comparisons) {
+plotViolin <- function(qvec, a2sU, comparisons, colOut) {
   par(mar = c(8, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
   xlimIn <- c(0.5, length(resOut) + 1.5)
   
@@ -433,22 +433,22 @@ plotViolin <- function(qvec, a2sU, comparisons) {
   }
   #
   for (i in 1:length(resOut)) {
-    vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = coloursOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+    vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = colOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
     text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
   }
   if(!is.null(comparisons)){
-    addStats(comparisons, plotType='violin', resOut, coloursOut)
+    addStats(comparisons, plotType='violin', resOut, colOut)
   }
 }
 
 # Helper function for plotting ECDF
-plotEcdf <- function(qvec, a2sU, comparisons) {
+plotEcdf <- function(qvec, a2sU, comparisons, colOut) {
   xlim_min <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.01))
   xlim_max <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.99))
   par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
   
   #
-  plot(ecdf(resOut[[1]]), col = coloursOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(xlim_min, xlim_max), xaxt = "none")
+  plot(ecdf(resOut[[1]]), col = colOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(xlim_min, xlim_max), xaxt = "none")
   
   mtext(side = 1, line = 4, "Log2 length", col = "black", font = 2, cex = 1.2)
   mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
@@ -456,10 +456,10 @@ plotEcdf <- function(qvec, a2sU, comparisons) {
   axis(side = 1, seq(floor(xlim_min), ceiling(xlim_max), 1), font = 2, lwd = 2)
   axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
   for (i in 2:length(resOut)) {
-    lines(ecdf(resOut[[i]]), col = coloursOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
+    lines(ecdf(resOut[[i]]), col = colOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
   }
   if(!is.null(comparisons)){
-    addStats(comparisons, plotType='ecdf', resOut, coloursOut)
+    addStats(comparisons, plotType='ecdf', resOut, colOut)
   }
 }
 

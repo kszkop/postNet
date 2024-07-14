@@ -1,23 +1,4 @@
 
-# accessor regions data
-#setGeneric("anota2seqUtilsGetUTR5Seq",
-#           function(x) standardGeneric("anota2seqUtilsGetUTR5Seq"))
-#setMethod("anota2seqUtilsGetUTR5Seq", "anota2seqUtilsData",
-#            function(x){
-#              x@annot@UTR5@seq
-#            })
-#setGeneric("anota2seqUtilsGetCDSSeq",
-#           function(x) standardGeneric("anota2seqUtilsGetCDSSeq"))
-#setMethod("anota2seqUtilsGetCDSSeq", "anota2seqUtilsData",
-#          function(x){
-#            x@annot@CDS@seq
-#          })
-#setGeneric("anota2seqUtilsGetUTR3Seq",
-#           function(x) standardGeneric("anota2seqUtilsGetUTR3Seq"))
-#setMethod("anota2seqUtilsGetUTR3Seq", "anota2seqUtilsData",
-#          function(x){fd
-#            x@annot@UTR3@seq
-#          })
 setGeneric("a2sU_sequences",
            function(x, region) standardGeneric("a2sU_sequences"))
 setMethod("a2sU_sequences", "anota2seqUtilsData",
@@ -56,85 +37,6 @@ setMethod("a2sU_geneID", "anota2seqUtilsData",
             geneIDOut <- tmpReg@geneID
             return(geneIDOut)
           })
-
-
-#getSeqs <- function(a2sU, region){
-#  if(region == 'UTR5'){
-#    seqOut <- anota2seqUtilsGetUTR5Seq(a2sU)
-#    geneIDs <- anota2seqUtilsGetUTR5geneID(a2sU)
-#  } else if (region == 'UTR3'){
-#    seqOut <- anota2seqUtilsGetUTR3Seq(a2sU)
-#    geneIDs <- anota2seqUtilsGetUTR3geneID(a2sU)
-#  } else if (region == 'CDS'){
-#    seqOut <- anota2seqUtilsGetCDSSeq(a2sU)
-#    geneIDs <- anota2seqUtilsGetCDSgeneID(a2sU)
-#  } else {
-#    stop("no such region")
-#  }
-#  names(seqOut) <- geneIDs 
-#  return(seqOut)
-#}
-
-#setGeneric("anota2seqUtilsGetUTR5id",
-#           function(x) standardGeneric("anota2seqUtilsGetUTR5id"))
-#setMethod("anota2seqUtilsGetUTR5id", "anota2seqUtilsData",
-#          function(x){
-#            x@annot@UTR5@id
-#          })
-#setGeneric("anota2seqUtilsGetCDSid",
-#           function(x) standardGeneric("anota2seqUtilsGetCDSid"))
-#setMethod("anota2seqUtilsGetCDSid", "anota2seqUtilsData",
-#          function(x){
-#            x@annot@CDS@id
-#          })
-#setGeneric("anota2seqUtilsGetUTR3id",
-#           function(x) standardGeneric("anota2seqUtilsGetUTR3id"))
-#setMethod("anota2seqUtilsGetUTR3id", "anota2seqUtilsData",
-#          function(x){
-#            x@annot@UTR3@id
-#          })
-#setGeneric("anota2seqUtilsGetCDSgeneID",
-#           function(x) standardGeneric("anota2seqUtilsGetCDSgeneID"))
-#setMethod("anota2seqUtilsGetCDSgeneID", "anota2seqUtilsData",
-#          function(x){
-#            x@annot@CDS@geneID
-#          })
-#setGeneric("anota2seqUtilsGetUTR3",
-#           function(x) standardGeneric("anota2seqUtilsGetUTR3"))
-#setMethod("anota2seqUtilsGetUTR3", "anota2seqUtilsData",
-#          function(x){
-#            x@annot@UTR3
-#          })
-#setGeneric("anota2seqUtilsGetUTR5",
-#           function(x) standardGeneric("anota2seqUtilsGetUTR5"))
-#setMethod("anota2seqUtilsGetUTR5", "anota2seqUtilsData",
-#          function(x){
-#            x@annot@UTR5
-#          })
-#setGeneric("anota2seqUtilsGetCDS",
-#           function(x) standardGeneric("anota2seqUtilsGetCDS"))
-#setMethod("anota2seqUtilsGetCDS", "anota2seqUtilsData",
-#          function(x){
-#            x@annot@CDS
-#          })
-#setGeneric("anota2seqUtilsGetID",
-#           function(x) standardGeneric("anota2seqUtilsGetID"))
-#setMethod("anota2seqUtilsGetID", "anota2seqUtilsRegion",
-#          function(x){
-#            x@id
-#          })
-#setGeneric("anota2seqUtilsGetGeneID",
-#           function(x) standardGeneric("anota2seqUtilsGetGeneID"))
-#setMethod("anota2seqUtilsGetGeneID", "anota2seqUtilsRegion",
-#          function(x){
-#            x@geneID
-#          })
-#setGeneric("anota2seqUtilsGetSeq",
-#           function(x) standardGeneric("anota2seqUtilsGetSeq"))
-#setMethod("anota2seqUtilsGetSeq", "anota2seqUtilsRegion",
-#          function(x){
-#            x@seq
-#          })
 
 setGeneric("a2sU_dataIn",
            function(x) standardGeneric("a2sU_dataIn"))
@@ -183,6 +85,35 @@ setGeneric("a2sU_selection",
 setMethod("a2sU_selection", "anota2seqUtilsData",
           function(x){
             x@selection
+          })
+
+setGeneric("a2sU_motifs",
+           function(x, region) standardGeneric("a2sU_motifs"))
+setMethod("a2sU_motifs", "anota2seqUtilsData",
+          function(x, region){
+            checkRegion(region)
+            if(length(region)>1){
+              stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'")
+            }
+            tmpReg <- slot(x@analysis@motifs, region)
+            motifsOut <- tmpReg$motifsOut
+            return(motifsOut)
+          })
+
+setGeneric("a2sU_motifsAnalysis",
+           function(x, region, geneList) standardGeneric("a2sU_motifsAnalysis"))
+setMethod("a2sU_motifsAnalysis", "anota2seqUtilsData",
+          function(x, region, geneList){
+            checkRegion(region)
+            if(length(region)>1){
+              stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'")
+            }
+            if(!any(geneList %in% names(a2sU_dataIn(x)))){
+              stop('the regulatory geneList not in a2sU')
+            }
+            tmpReg <- slot(x@analysis@motifs, region)
+            motifsAnalysisOut <- tmpReg[[geneList]]
+            return(motifsAnalysisOut)
           })
 
 

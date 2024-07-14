@@ -57,7 +57,7 @@ contentMotifs <- function(a2sU,
   motifFinalRegion <- list()
   for(reg in region){
     
-    seqTmp <- a2sU_sequences(a2sU,reg)
+    seqTmp <- a2sU_sequences(a2sU,region=reg)
     #
     if (tolower(seqType) == "protein") {
       if(!is_by_3(seqTmp)){
@@ -102,10 +102,10 @@ contentMotifs <- function(a2sU,
         lenTmp <- sapply(seqTmp, function(x) length(seqinr::s2c(x)))
         #
         motifOut <- lm(as.numeric(motifOutTmp) ~ log2(as.numeric(lenTmp)))$residuals
-        names(motifOut) <- names(motifOutTmp)
       } else {
         motifOut <- motifOutTmp
       }
+      names(motifOut) <- a2sU_geneID(a2sU, region=reg)
       #
       if (tolower(unitOut) == "number" & isTRUE(plotOut)) {
         nameTmp <- ifelse(is.null(pdfName), paste(region, motif, "content.pdf", sep = "_"), paste(pdfName, reg, motif, "content.pdf", sep = "_"))
@@ -117,7 +117,7 @@ contentMotifs <- function(a2sU,
         # Plot
         pdf(nameOut, width = 8, height = 8, useDingbats = F)
 
-        plotEcdf(qvec = motifOut, a2sU = a2sU, comparisons = comparisons)
+        plotEcdf(qvec = motifOut, a2sU = a2sU, comparisons = comparisons, colOut = colOut)
         dev.off()
       }
       motifsFinal[[paste(reg, motif, sep = "_")]] <- motifOut

@@ -6,7 +6,7 @@ foldingEnergyAnalysis <- function(a2sU,
                                   region = NULL,
                                   comparisons = NULL,
                                   plotOut = TRUE,
-                                  plotType = "boxplot",
+                                  plotType = "ecdf",
                                   pdfName = NULL) {
   #
   checkRegion(region)
@@ -83,7 +83,6 @@ foldingEnergyAnalysis <- function(a2sU,
       if(is.null(region)){
         stop("Please provide region")
       }
-      checkRegion(region)
       #
       currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "anota2seqUtils"))
       if (!species %in% currTmp) {
@@ -92,7 +91,7 @@ foldingEnergyAnalysis <- function(a2sU,
       #
       for(reg in region){
         #
-        seqTmp <- a2sU_sequences(a2sU,reg)
+        seqTmp <- a2sU_sequences(a2sU,region = reg)
         # Write out sequences
         seqinr::write.fasta(sequences = as.list(as.character(seqTmp)), names = names(seqTmp), file.out = paste(reg, ".fa", sep = ""))
         #
@@ -131,6 +130,10 @@ foldingEnergyAnalysis <- function(a2sU,
     return(feOut)
     #
   } else if (sourceFE == "load") {
+    #
+    if(is.null(region)){
+      stop("Please provide region")
+    }
     #
     feOut <- list()
     # list existing species
