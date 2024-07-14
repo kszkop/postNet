@@ -14,7 +14,7 @@ codonCalc <- function(a2sU,
   }
   check_codonIn(codonIn)
   #
-  if(!checkLogicalArgument(plotOut)){
+  if(!is_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
   } 
   #

@@ -11,7 +11,7 @@ gageAnalysis <- function(a2sU,
   if (!species %in% c("human","mouse")) {
     stop("This option is only  available for species: human and mouse at the moment")
   }
-  if(!is_number(maxSize) | !is_number(minSize) | !is_number(counts) |!is_number(FDR)){
+  if(!is_number(maxSize) | !is_number(minSize)){
     stop("please provide numeric value")
   }
   #

@@ -10,10 +10,9 @@ uorf_analysis <- function(a2sU,
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
-  if(!checkLogicalArgument(plotOut)){
-    
+  if(!is_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  } 
+  }
   if(!is.null(comparisons)){
     if(!checkComparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
@@ -29,7 +28,7 @@ uorf_analysis <- function(a2sU,
   if(!isKozakContext(KozakContext)){
     stop("'KozakContext' must be one from these: 'strong','adequate1','adequate2','weak','any'")
   }
-  if(!checkLogicalArgument(onlyUTR5)){
+  if(!is_logical(onlyUTR5)){
     stop("'onlyUTR5' can only be only be logical: TRUE of FALSE ")
   }
   if(!isUnitOut(unitOut)){

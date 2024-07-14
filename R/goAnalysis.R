@@ -152,7 +152,9 @@ goDotplot <- function(a2sU,
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
-  checkLogicalArgument(pool)
+  if(!is_logical(pool)){
+    stop("'pool' can only be only be logical: TRUE of FALSE ")
+  }
   if(!is_number(nCategories)) {
     stop("please provide numeric value")
   }

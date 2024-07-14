@@ -18,9 +18,9 @@ contentMotifs <- function(a2sU,
   }
   checkRegion(region)
 
-  if(!checkLogicalArgument(plotOut)){
+  if(!is_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  } 
+  }
   
   if(!is.null(comparisons)){
     if(!checkComparisons(comparisons)){
@@ -44,9 +44,9 @@ contentMotifs <- function(a2sU,
   if(!isUnitOut(unitOut)){
     stop("'unitOut' must be one from these: 'numeric' or 'position'")
   }
-  if(!checkLogicalArgument(resid)){
-    stop("'resid', i.e whether the values should be normalised for the length, can only be only be logical: TRUE of FALSE ")
-  } 
+  if(!is_logical(resid)){
+      stop("'resid', i.e whether the values should be normalised for the length, can only be only be logical: TRUE of FALSE ")
+  }
   if(!is_valid_seq_type(seqType)){
     stop("'seqType' sequence type must be selected from one of these: 'dna', 'rna' or 'protein' ")
   } 

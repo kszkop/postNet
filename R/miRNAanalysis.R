@@ -7,7 +7,7 @@ miRNAanalysis <- function(a2sU,
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
-  if(!is_number(maxSize) | !is_number(minSize) | !is_number(counts) |!is_number(FDR)){
+  if(!is_number(maxSize) | !is_number(minSize)){
     stop("please provide numeric value")
   }
   miRNATargetScan <- checkFileColumns(miRNATargetScanFile)

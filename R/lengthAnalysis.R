@@ -10,7 +10,7 @@ lengthAnalysis <- function(a2sU,
   }
   checkRegion(region)
   #
-  if(!checkLogicalArgument(plotOut)){
+  if(!is_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
   } 
   if(isTRUE(plotOut)){

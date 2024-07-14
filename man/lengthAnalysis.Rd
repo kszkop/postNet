@@ -33,6 +33,6 @@ a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationU
 a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, selection ="random")
 
 
-len_utr5 <- lengthAnalysis(a2sU = a2sU, region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
+len <- lengthAnalysis(a2sU = a2sU, region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
 
 }

@@ -179,11 +179,11 @@ adjustSeq <- function(annot,
     if (is.null(region_adj) | !all(region_adj %in% valid_regions)) {
       stop("'region_adj' has to be provided and can be only: 'UTR5','UTR3'. It should also match named entries in the list adjObj ")
     }
-    if(!checkLogicalArgument(excl)){
-      stop("'excl' can be only TRUE or FALSE ")
+    if(!is_logical(excl)){
+      stop("'excl' can only be only be logical: TRUE of FALSE ")
     }
-    if(!checkLogicalArgument(keepAll)){
-      stop("'keepAll' can be only TRUE or FALSE ")
+    if(!is_logical(keepAll)){
+      stop("'keepAll' can only be only be logical: TRUE of FALSE ")
     }
   }
   annotTmp <- annot

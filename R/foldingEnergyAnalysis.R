@@ -22,9 +22,9 @@ foldingEnergyAnalysis <- function(a2sU,
     stop("Source check failed: ", e$message)
   })
 
-  if(!checkLogicalArgument(plotOut)){
+  if(!is_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  } 
+  }
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
       checkPlotType(plotType)
@@ -42,13 +42,12 @@ foldingEnergyAnalysis <- function(a2sU,
       stop(" 0 is always a background, but no background provided")
     }
   }
-  if(!checkLogicalArgument(residFE)){
-    stop("'residFE', i.e whether the values should be normalised for the length, can only be only be logical: TRUE of FALSE ")
-  } 
-  
+  if(!is_logical(residFE)){
+      stop("'residFE', i.e whether the values should be normalised for the length, can only be only be logical: TRUE of FALSE ")
+  }
   if(sourceFE=='create'){
-    if(!checkLogicalArgument(fromFasta)){
-      stop("'fromFasta', can only be only be logical: TRUE of FALSE ")
+    if(!is_logical(fromFasta)){
+      stop("'fromFasta' can only be only be logical: TRUE of FALSE ")
     }
     if (isTRUE(fromFasta)) {
       if(is.null(customFileFE)){

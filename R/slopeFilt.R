@@ -10,7 +10,7 @@ slopeFilt <- function(ads,
   if (!regulationGen %in% c("translation","buffering")) {
     stop("For filtering slopes, 'regulationGen' should be a character vector chosen from 'translation' or 'buffering' ")
   }
-  if(!is.numeric(contrastSel) | !contrast %in% seq(1,ncol(ads@contrasts),1)){
+  if(!is.numeric(contrastSel) | !contrastSel %in% seq(1,ncol(ads@contrasts),1)){
     stop("'contrastSel' should be a numeric for the desired contrast in anota2seq object")
   }
   checkSlopes(minSlope, maxSlope)

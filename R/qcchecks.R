@@ -104,10 +104,8 @@ checkComparisons <- function(obj) {
   all(sapply(obj, function(x) is.numeric(x) && length(x) == 2))
 }
 
-checkLogicalArgument <- function(arg) {
-  if (!is.logical(arg) | length(arg) != 1) {
-    stop("pool argument can be only TRUE or FALSE")
-  }
+is_logical <- function(x) {
+  is.logical(x) && length(x) == 1
 }
 
 is_number <- function(x) {

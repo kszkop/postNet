@@ -197,7 +197,7 @@ a2sU_miRNA <- function(a2sU,
   if(!is_number(threshold)){
     stop("'threshold' must be a number")
   }
-  if(is.null(slot(a2sU@analysis, 'miRNA_analysis'))){
+  if(is.null(slot(a2sU@analysis, 'miRNA'))){
     stop("Please run mi first miRNAanalysis")
   } else {
     miRNAres <- a2sU@analysis@miRNA@miRNA_analysis
@@ -273,20 +273,24 @@ a2sU_GO <- function(a2sU,
 
 ###
 a2sU_gsea <- function(a2sU,
-                      threshold) {
+                      threshold=NULL) {
   
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
-  if(!is_number(threshold)){
-    stop("'threshold' must be a number")
+  if(!is.null(threshold)){
+    if(!is_number(threshold)){
+      stop("'threshold' must be a number")
+    }
   }
   if(is.null(slot(a2sU@analysis, 'GSEA'))){
     stop("Please run GSEA analysis first")
   } else {
     gseaOut <- slot(a2sU@analysis, 'GSEA')
   }
-  gseaOut <- gseaOut[which(gseaOut[,8]< threshold),]
+  if(!is.null(threshold)){
+    gseaOut <- gseaOut[which(gseaOut[,8] < threshold),]
+  }
   if(nrow(gseaOut)==0){
     message('there are no GSEA gene sets to output')
   }
