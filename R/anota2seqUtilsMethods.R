@@ -21,7 +21,7 @@
 setGeneric("a2sU_sequences",
            function(x, region) standardGeneric("a2sU_sequences"))
 setMethod("a2sU_sequences", "anota2seqUtilsData",
-          function(x){
+          function(x, region){
             checkRegion(region)
             if(length(region)>1){
               stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis performed with CCDS annotation.")
@@ -34,7 +34,7 @@ setMethod("a2sU_sequences", "anota2seqUtilsData",
 setGeneric("a2sU_id",
            function(x, region) standardGeneric("a2sU_id"))
 setMethod("a2sU_id", "anota2seqUtilsData",
-          function(x){
+          function(x, region){
             checkRegion(region)
             if(length(region)>1){
               stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis performed with CCDS annotation.")
@@ -47,7 +47,7 @@ setMethod("a2sU_id", "anota2seqUtilsData",
 setGeneric("a2sU_geneID",
            function(x, region) standardGeneric("a2sU_geneID"))
 setMethod("a2sU_geneID", "anota2seqUtilsData",
-          function(x){
+          function(x, region){
             checkRegion(region)
             if(length(region)>1){
               stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis performed with CCDS annotation.")
