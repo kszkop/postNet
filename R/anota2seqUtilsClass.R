@@ -30,6 +30,14 @@ setClass("anota2seqUtilsDataIn",
          )
 )
 
+setClass("anota2seqUtilsMotifs",
+         slots = c(
+           UTR5 = "listOrNULL",
+           CDS = "listOrNULL",
+           UTR3 = "listOrNULL"
+         )
+)
+
 setClass("anota2seqUtilsmiRNA",
          slots = c(
           miRNA_analysis = "listOrNULL",
@@ -55,6 +63,7 @@ setClass("anota2seqUtilsGAGE",
          )
 )
 
+setClassUnion("motifsOrNULL",members=c("anota2seqUtilsMotifs", "NULL"))
 setClassUnion("miRNAOrNULL",members=c("anota2seqUtilsmiRNA", "NULL"))
 setClassUnion("GOOrNULL",members=c("anota2seqUtilsGO", "NULL"))
 setClassUnion("GAGEOrNULL",members=c("anota2seqUtilsGAGE", "NULL"))
@@ -62,7 +71,7 @@ setClassUnion("GAGEOrNULL",members=c("anota2seqUtilsGAGE", "NULL"))
 setClass("anota2seqUtilsAnalysis",
          slots = c(
            featureIntegration = "listOrNULL",
-           motifs  = "listOrNULL",
+           motifs  = "motifsOrNULL",
            codons = "listOrNULL",
            GO = "GOOrNULL",
            GSEA = "listOrNULL",

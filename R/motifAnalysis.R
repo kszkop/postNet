@@ -33,12 +33,16 @@ motifAnalysis <- function(a2sU,
   if(!is_valid_seq_type(seqType)){
     stop("'seqType' sequence type must be selected from one of these: 'dna', 'rna' or 'protein' ")
   } 
-
+  
+  motifsOut <- new("anota2seqUtilsMotifs",
+                  UTR5 = NULL,
+                  CDS = NULL,
+                  UTR3 = NULL)
   #
   motifsStemeOutRegion <- list()
   for(reg in region){
     #
-    seqTmp <- a2sU_sequences(a2sU,reg)
+    seqTmp <- a2sU_sequences(a2sU, region = reg)
     
     if (tolower(seqType) == "protein") {
       if(!is_by_3(seqTmp)){
@@ -60,7 +64,7 @@ motifAnalysis <- function(a2sU,
     }
     #
     seqForAnalysis <- seqTmp
-    names(seqForAnalysis) <- names(seqTmp)
+    names(seqForAnalysis) <- a2sU_geneID(a2sU, region=reg)
     #
     resOut <- resQuant(qvec = seqForAnalysis, a2sU = a2sU)
     
@@ -86,7 +90,15 @@ motifAnalysis <- function(a2sU,
       motifsTmpOut[[names(resOut)[j]]] <- streme_out
     }
     motifsStemeOut <- append(list(motifsOut = as.character(unlist(lapply(motifsTmpOut, function(x) x$consensus)))), motifsTmpOut)
-    motifsStemeOutRegion[[reg]] <- motifsStemeOut
+    if(reg == 'UTR5'){
+      motifsOut@UTR5 <- motifsStemeOut
+    } else if (reg == 'CDS'){
+      motifsOut@CDS <- motifsStemeOut
+    } else if (reg == 'UTR3'){
+      motifsOut@UTR3 <- motifsStemeOut
+    }
   }
-  return(motifsStemeOutRegion)
+  a2sU@analysis@motifs <- motifsOut
+  
+  return(a2sU)
 }

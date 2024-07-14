@@ -34,12 +34,12 @@ lengthAnalysis <- function(a2sU,
   lengthFinal <- list()
   for(reg in region){
     #
-    seqTmp <- a2sU_sequences(a2sU = a2sU,region = reg)
+    seqTmp <- a2sU_sequences(a2sU,region = reg)
     #
     lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
     #
     lenForAnalysis <- log2(as.numeric(lenTmp))
-    names(lenForAnalysis) <- names(seqTmp)
+    names(lenForAnalysis) <- a2sU_geneID(a2sU, region=reg)
     #
     if (isTRUE(plotOut)) {
       resOut <- resQuant(qvec = lenForAnalysis, a2sU = a2sU)

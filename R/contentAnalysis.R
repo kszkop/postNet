@@ -46,7 +46,7 @@ contentAnalysis <- function(a2sU,
   contentFinal <- list()
   for(reg in toupper(region)){
     #
-    seqTmp <- a2sU_sequences(a2sU = a2sU, region = reg)
+    seqTmp <- a2sU_sequences(a2sU, region = reg)
     #
     if (!is.null(subregion)) {
       if(is.null(subregionSel)){
@@ -65,7 +65,7 @@ contentAnalysis <- function(a2sU,
         tmpCont <- sapply(seqinr::s2c(toupper(content)), function(x) calc_content(tmpSeq, x))
         contentOut[i] <- sum(tmpCont)
       }
-      names(contentOut) <- names(seqTmp)
+      names(contentOut) <- a2sU_geneID(a2sU, region=reg)
       #
       if (isTRUE(plotOut)) {
         resOut <- resQuant(qvec = contentOut, a2sU = a2sU)
