@@ -9,8 +9,6 @@ foldingEnergyAnalysis <- function(a2sU,
                                   plotType = "ecdf",
                                   pdfName = NULL) {
   #
-  checkRegion(region)
-  
   species <- a2sU_species(a2sU)
   version <- a2sU_version(a2sU)
   
@@ -83,6 +81,7 @@ foldingEnergyAnalysis <- function(a2sU,
       if(is.null(region)){
         stop("Please provide region")
       }
+      checkRegion(region)
       #
       currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "anota2seqUtils"))
       if (!species %in% currTmp) {
@@ -134,6 +133,7 @@ foldingEnergyAnalysis <- function(a2sU,
     if(is.null(region)){
       stop("Please provide region")
     }
+    checkRegion(region)
     #
     feOut <- list()
     # list existing species
@@ -173,6 +173,7 @@ foldingEnergyAnalysis <- function(a2sU,
         }
         dev.off()
       }
+      print('test7')
     }
     return(feOut)
   } else {
@@ -186,7 +187,7 @@ runFE <- function(energyIn,
                   a2sU){
   #
   colnames(energyIn) <- c("id", "fold_energy", "length")
-  energyIn$geneID <- a2sU_geneID(a2sU)[match(energyIn$id,a2sU_id(a2sU))]
+  energyIn$geneID <- a2sU_geneID(a2sU,region='CDS')[match(energyIn$id,a2sU_id(a2sU, region='CDS'))]
   energyIn <- na.omit(energyIn)
   #
   if (isTRUE(residFE)) {

@@ -74,9 +74,10 @@ gseaAnalysis <- function(a2sU,
   colnames(resOut) <- c("Term","pvalue",'adjusted_pvalue','log2err',"ES",'NES','Size',"Genes",'Count')
   resOut <- resOut[,c(1,5,6,4,9,7,2,3,8)]
   gseaOut <- resOut[order(resOut$adjusted_pvalue),]
-  
+  gseaOut$Genes <- sapply(gseaOut$Genes, function(x) paste(x, collapse=':'))
+
   nameTmp <- ifelse(!is.null(name), paste(name, "gseaAnalysis", sep='_'), "gseaAnalysis")
-  data.table::fwrite(gseaOut, file=paste(nameTmp,".txt",sep=''), sep="\t", sep2=c("", ":", ""))
+  data.table::fwrite(gseaOut, file=paste(nameTmp,".txt",sep=''), sep="\t")#, sep2=c("", ":", ""))
   #
   a2sU@analysis@GSEA <- gseaOut
   #
@@ -143,8 +144,9 @@ gseaPlot <- function(a2sU,
   #
   for(tname in termNames){
     termTmp <- tname
-    pathGenes <- unlist(gseaOut[gseaOut$Term %in% termTmp]$Genes)
-    pathGenes<- unname(as.vector(na.omit(match(pathGenes, names(statsAdj)))))
+    pathGenes <- unlist(strsplit(gseaOut[gseaOut$Term %in% termTmp]$Genes,':'))
+    #pathGenes<- unname(as.vector(na.omit(match(pathGenes, names(statsAdj)))))
+    pathGenes <- match(pathGenes, names(statsAdj))
     pathGenes <- sort(pathGenes)
     gseaRes <- fgsea::calcGseaStat(statsAdj, selectedStats = pathGenes, returnAllExtremes = TRUE)
     bottoms <- gseaRes$bottoms

@@ -61,16 +61,47 @@ gageAnalysis <- function(a2sU,
       } else if(sel == 'CC') {
         pathwaysIn <- pathwayGO$go.sets[pathwayGO$go.subs$CC]
       } 
-      #for(pw in 1:length(pathwaysIn)){
-      #  pathwaysIn[[pw]] <-  convertEntrezIDToSymbol(pathwaysIn[[pw]],species = species)
-      #}
     }
     resOut <- gage::gage(exprs = rankIn,
                          gsets = pathwaysIn,
                          set.size= c(minSize, maxSize),
                          rank.test = TRUE,
                          use.fold = FALSE)
+    
+    #
+    pathwaysGenes <- list()
+    for(pw in 1:length(pathwaysIn)){
+      glist <- unlist(pathwaysIn[pw])
+      tmpGenes <- glist[glist %in% names(rankIn)]
+      if(length(tmpGenes)>0){
+        tmpGenes_conv <- names(convTab)[match(as.character(tmpGenes),convTab)]
+        #tmpGenes_conv <- convertEntrezIDToSymbol(pathwaysIn[[pw]], species = species)
+        #AnnotationDbi::mapIds(x = org.Hs.eg.db, keys = as.character(glist), column="SYMBOL", keytype="ENTREZID")
+      } else {
+        tmpGenes_conv <- NA
+      }
+      pathwaysGenes[[pw]] <-  paste(tmpGenes_conv,collapse=':')
+    }
+    names(pathwaysGenes) <- names(pathwaysIn)
+    pathwaysGenes <- pathwaysGenes[as.numeric(which(unlist(lapply(pathwaysGenes, function(x) x!='NA'))))]
+
+    if(nrow(resOut$greater)>0){
+      grTmpG <- resOut$greater
+      grTmpG <- grTmpG[,c(1,2,5,3,4)]
+      grTmpG <-  data.frame(id=row.names(grTmpG),grTmpG,row.names = NULL)
       
+      grTmpG$Genes <- as.character(pathwaysGenes)[match(grTmpG$id, names(pathwaysGenes))]
+      resOut$greater <- grTmpG
+    }
+    if(nrow(resOut$less)>0){
+      grTmpL <- resOut$less
+      grTmpL <- grTmpL[,c(1,2,5,3,4)]
+      grTmpL <-  data.frame(id=row.names(grTmpL),grTmpL,row.names = NULL)
+      
+      grTmpL$Genes <- as.character(pathwaysGenes)[match(grTmpL$id, names(pathwaysGenes))]
+      resOut$less <- grTmpL
+    }
+    #
     slot(GAGEout, sel) <- resOut
   }
   a2sU@analysis@GAGE <- GAGEout

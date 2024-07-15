@@ -392,7 +392,6 @@ set_boxvio <- function(resOut, ylabel) {
   } else {
     axis(side = 2, font = 2, las = 2, lwd = 2)
     mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = median(dataTmp))
-    
   }
   text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
 }
@@ -418,7 +417,7 @@ plotBoxplots <- function(resOut, colOut, comparisons, ylabel) {
   }
 }
 
-plotViolin <- function(qvec, a2sU, comparisons, colOut) {
+plotViolin <- function(qvec, a2sU, comparisons, colOut, ylabel) {
   par(mar = c(8, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
   xlimIn <- c(0.5, length(resOut) + 1.5)
   
@@ -442,7 +441,7 @@ plotViolin <- function(qvec, a2sU, comparisons, colOut) {
 }
 
 # Helper function for plotting ECDF
-plotEcdf <- function(qvec, a2sU, comparisons, colOut) {
+plotEcdf <- function(qvec, a2sU, comparisons, colOut, ylabel) {
   xlim_min <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.01))
   xlim_max <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.99))
   par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)

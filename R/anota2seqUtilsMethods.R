@@ -234,6 +234,9 @@ a2sU_gage <- function(a2sU,
                       threshold) {
   #
   checkDirection(tolower(direction))
+  if(length(direction) != 1){
+    stop("Please provide only one: greater or leas")
+  }
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
@@ -241,6 +244,9 @@ a2sU_gage <- function(a2sU,
     stop("'threshold' must be a number")
   }
   checkCategory(category)
+  if(length(category) != 1){
+    stop("Please provide only one category")
+  }
   if(is.null(slot(a2sU@analysis, 'GAGE'))){
     stop("Please run mi first miRNAanalysis")
   } else {
@@ -253,14 +259,12 @@ a2sU_gage <- function(a2sU,
     resOut <- GAGEres$less
   }
   #
-  resOut <- resOut[which(resOut[,4]< threshold),]
+  resOut <- resOut[which(resOut[,6] < threshold),]
   #
-  if(nrow(resOut)>0){
-    resOut <- resOut[,c(1,2,5,3,4)]
-    resOut <-  data.frame(id=row.names(resOut),resOut,row.names = NULL)
-  } else {
+  if(nrow(resOut)==0){
     message('there are no enriched terms')
+  } else {
+    return(resOut)
   }
-  return(resOut)
 }
 

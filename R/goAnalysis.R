@@ -123,7 +123,7 @@ goAnalysis <- function(a2sU,
       tabTmp <- tabTmp[tabTmp$p.adjust < FDR, ]
       #
       geneIDs_temp <- tabTmp$geneID
-      tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
+      tabTmp$Genes <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
       #
       resOut[[i]]@result <- tabTmp
       resWrite <- lapply(resOut, function(x) x@result)
