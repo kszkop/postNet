@@ -75,14 +75,8 @@ contentAnalysis <- function(a2sU,
         colOut <- colPlot(a2sU)
         # Plot
         pdf(ifelse(is.null(pdfName), paste(reg, content, "content.pdf", sep = "_"), paste(pdfName, reg, content, "content.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
-        
-        if (tolower(plotType) == "boxplot"){
-          plotBoxplots(resOut, colOut, comparisons, ylabel = paste(reg, '%', paste0(content, "content"), sep = "_"))
-        } else if (tolower(plotType) == "violin") {
-          plotViolin(qvec = lenForAnalysis, a2sU = a2sU, comparisons = comparisons, ylabel = paste(reg, '%', paste0(content, "content"), sep = "_"))
-        } else if (tolower(plotType) == "ecdf") {
-          plotEcdf(qvec = lenForAnalysis, a2sU = a2sU, comparitsons = comparisons)
-        }
+        ylabel = paste(reg, '%', paste0(content, "content"), sep = "_")
+        plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
         dev.off()
       }
       contentFinal[[paste(reg, content, sep = "_")]] <- contentOut

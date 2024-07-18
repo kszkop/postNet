@@ -164,16 +164,9 @@ foldingEnergyAnalysis <- function(a2sU,
         # Plot
         pdf(ifelse(is.null(pdfName), paste(reg, plotType, "foldEnergyAnalysis.pdf", sep = "_"), paste(pdfName, reg, plotType, "foldEnergyAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
         ylabel <- ifelse(isTRUE(residFE), 'residuals (fe ~ length)', 'folding energy')
-        if (tolower(plotType) == "boxplot"){
-          plotBoxplots(resOut, colOut, comparisons = comparisons, ylabel = ylabel)
-        } else if (tolower(plotType) == "violin") {
-          plotViolin(qvec = lenForAnalysis, a2sU = a2sU, comparisons = comparisons, ylabel = ylabel)
-        } else if (tolower(plotType) == "ecdf") {
-          plotEcdf(qvec = lenForAnalysis, a2sU = a2sU, comparisons = comparisons, ylabel = ylabel)
-        }
+        plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
         dev.off()
       }
-      print('test7')
     }
     return(feOut)
   } else {

@@ -144,7 +144,7 @@ gseaPlot <- function(a2sU,
   #
   for(tname in termNames){
     termTmp <- tname
-    pathGenes <- unlist(strsplit(gseaOut[gseaOut$Term %in% termTmp]$Genes,':'))
+    pathGenes <- unlist(strsplit(as.character(gseaOut[gseaOut$Term %in% termTmp,]$Genes),':'))
     #pathGenes<- unname(as.vector(na.omit(match(pathGenes, names(statsAdj)))))
     pathGenes <- match(pathGenes, names(statsAdj))
     pathGenes <- sort(pathGenes)

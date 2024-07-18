@@ -300,6 +300,29 @@ effectSel <- function(ads, regulationGen, contrastSel, effectMeasure){
   return(effM)
 }
 
+resQuant <- function(qvec, a2sU){
+  resOut <- list()
+  if(!is.null(a2sU_bg(a2sU))){
+    res <- c(list(background=a2sU_bg(a2sU)),a2sU_dataIn(a2sU))
+  } else {
+    res <- a2sU_dataIn(a2sU)
+  }
+  
+  for(i in 1:length(res)){
+    resOut[[names(res)[i]]] <- qvec[names(qvec) %in% res[[i]]]
+  }
+  return(resOut)
+}
+
+colPlot <- function(a2sU){
+  if(!is.null(a2sU_bg(a2sU))){
+    colOut <- c('grey45',a2sU_colours(a2sU))
+  } else {
+    colOut <- a2sU_colours(a2sU)
+  }
+  return(colOut)
+}
+
 
 addStats <- function(comparisons, plotType, resOut, coloursOut){
   #
@@ -318,10 +341,12 @@ addStats <- function(comparisons, plotType, resOut, coloursOut){
     pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
     #
     if (plotType == "boxplot" | plotType == "violin") {
-      yposTmp <- ifelse(range(as.numeric(unlist(resOut)))[2] <= 1, 1.1,range(as.numeric(unlist(resOut)))[2]+ j*1)
-      rect(xleft = compTmp[1], xright = compTmp[2], ybottom = yposTmp , ytop = yposTmp, lwd = 2)
+      #yposTmp <- #range(as.numeric(unlist(resOut)))[2]#ifelse(range(as.numeric(unlist(resOut)))[2] <= 1, 1.1,range(as.numeric(unlist(resOut)))[2]+ j*1)
+      
+      rect(xleft = compTmp[1], xright = compTmp[2], ybottom = j-1  , ytop = j-1, lwd = 2)
       #
-      text(sum(compTmp) / 2, ifelse(range(as.numeric(unlist(resOut)))[2] <= 1,yposTmp + 0.05,yposTmp + 0.5), pvalTmp, cex = 0.75)
+      #text(sum(compTmp) / 2, ifelse(range(as.numeric(unlist(resOut)))[2] <= 1,yposTmp + 0.05,yposTmp + 1), pvalTmp, cex = 0.75)
+      text(sum(compTmp) / 2, j-0.5, pvalTmp, cex = 0.75)
     } else if (plotType == "ecdf") {
       tableOut[j, 1] <- paste(names(resOut)[compTmp[2]], "vs", names(resOut)[compTmp[1]], sep = " ")
       tableOut[j, 2] <- pvalTmp
@@ -354,115 +379,73 @@ addStats <- function(comparisons, plotType, resOut, coloursOut){
   }
 }
 
-resQuant <- function(qvec, a2sU){
-  resOut <- list()
-  if(!is.null(a2sU_bg(a2sU))){
-    res <- c(list(background=a2sU_bg(a2sU)),a2sU_dataIn(a2sU))
-  } else {
-    res <- a2sU_dataIn(a2sU)
-  }
-
-  for(i in 1:length(res)){
-    resOut[[names(res)[i]]] <- qvec[names(qvec) %in% res[[i]]]
-  }
-  return(resOut)
-}
-
-colPlot <- function(a2sU){
-  if(!is.null(a2sU_bg(a2sU))){
-    colOut <- c('grey45',a2sU_colours(a2sU))
-  } else {
-    colOut <- a2sU_colours(a2sU)
-  }
-  return(colOut)
-}
 # 
 
-set_boxvio <- function(resOut, ylabel) {
-  #
-  dataTmp <- as.numeric(unlist(resOut))
-  xlimTmp <- c(0.5, length(resOut) + 1.5)
-  #
-  par(mar = c(8, 12, 12, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-  plot(1,1, xlim=xlimTmp, ylim=c(0,100), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-  #
-  if(ylabel == 'Log2 length'){
-    axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
-    mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = median(dataTmp))
-  } else {
-    axis(side = 2, font = 2, las = 2, lwd = 2)
-    mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = median(dataTmp))
-  }
-  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-}
-
-plotBoxplots <- function(resOut, colOut, comparisons, ylabel) {
-
-  set_boxvio(resOut, ylabel)
+plotUtils <- function(resOut, colOut, comparisons, ylabel, plotType) {
   
-  if (names(resOut)[1] == 'background') {
-    abline(lty = 5, h = median(resOut[[1]]))
-  }
-  #
-  for (i in 1:length(resOut)) {
-    boxplot(resOut[[i]], add = TRUE, at = i, col = colOut[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
-    if(ylabel == 'Log2 length'){
-      text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
-    } else {
-      text(i, 0, round(mean(resOut[[i]]),0), font = 2)
+  if(plotType == "boxplot" | plotType == "violin"){
+    m <- layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1), heights = c(1, 5))
+    xlimTmp <- c(0.5, length(resOut) + 1.5)
+    #
+    par(mar = c(0, 8, 3, 0),bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+    ylimTmp1 <- ifelse(!is.null(comparisons), length(comparisons), 0)
+    plot(1,ylimTmp1, xlim=xlimTmp, ylim=c(0,ylimTmp1),xaxt = "n",type="n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
+    if(!is.null(comparisons)){
+      addStats(comparisons, plotType='boxplot', resOut, colOut)
     }
-  }
-  if(!is.null(comparisons)){
-    addStats(comparisons, plotType='boxplot', resOut, colOut)
+    #
+    dataTmp <- as.numeric(unlist(resOut))
+    ylimTmp2 <- roundNice(max(dataTmp), direction='up')
+    par(mar = c(8, 8, 0, 0), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+    plot(1,ylimTmp2, xlim=xlimTmp, ylim=c(0,ylimTmp2), xaxt = "n",type="n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
+    #
+    if(ylabel == 'Log2 length'){
+      axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
+      mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = median(dataTmp))
+    } else {
+      axis(side = 2, font = 2, las = 2, lwd = 2)
+      mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = roundNice(median(dataTmp), direction='up'))
+    }
+    text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+    #
+    if (names(resOut)[1] == 'background') {
+      abline(lty = 5, h = median(resOut[[1]]))
+    }
+    #
+    for (i in 1:length(resOut)) {
+      if(plotType=='boxplot'){
+        boxplot(resOut[[i]], add = TRUE, at = i, col = colOut[i], xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE, outcol = "grey65", whiskcol = "grey65", outline = FALSE, medcol = "black", staplelty = 0, whisklty = 1)
+      } else if (plotType=='violin'){
+        vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = colOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
+      } 
+      if(ylabel == 'Log2 length'){
+        text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
+      } else {
+        text(i, 0, round(mean(resOut[[i]]),0), font = 2)
+      }
+    } 
+  } else if(plotType == "ecdf"){
+    xlim_min <- roundNice(as.numeric(quantile(as.numeric(unlist(resOut)), 0.01)),direction='down')
+    xlim_max <- roundNice(as.numeric(quantile(as.numeric(unlist(resOut)), 0.99)),direction='up')
+    
+    par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+    plot(ecdf(resOut[[1]]), col = colOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(xlim_min, xlim_max), xaxt = "none")
+    
+    mtext(side = 1, line = 4, ylabel, col = "black", font = 2, cex = 1.2)
+    mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
+    
+    axis(side = 1, seq(xlim_min, xlim_max, 1), font = 2, lwd = 2)
+    axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
+    for (i in 2:length(resOut)) {
+      lines(ecdf(resOut[[i]]), col = colOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
+    }
+    if(!is.null(comparisons)){
+      addStats(comparisons, plotType='ecdf', resOut, colOut)
+    }
+  }  else {
+      stop("Please provide correct 'plotType'")
   }
 }
-
-plotViolin <- function(qvec, a2sU, comparisons, colOut, ylabel) {
-  par(mar = c(8, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-  xlimIn <- c(0.5, length(resOut) + 1.5)
-  
-  plot(1, 1, xlim = xlimIn, ylim = c(0, range(as.numeric(unlist(resOut)))[2] + (1.25 * length(comparisons))), xaxt = "n", xlab = "", ylab = "", type = "n", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-  
-  axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
-  mtext(side = 2, line = 6, "Log2 length", col = "black", font = 2, cex = 1.7, at = median(as.numeric(unlist(resOut))))
-  text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-  
-  if (names(resOut)[1] == 'background') {
-    abline(lty = 5, h = median(resOut[[1]]))
-  }
-  #
-  for (i in 1:length(resOut)) {
-    vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = colOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
-    text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
-  }
-  if(!is.null(comparisons)){
-    addStats(comparisons, plotType='violin', resOut, colOut)
-  }
-}
-
-# Helper function for plotting ECDF
-plotEcdf <- function(qvec, a2sU, comparisons, colOut, ylabel) {
-  xlim_min <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.01))
-  xlim_max <- as.numeric(quantile(as.numeric(unlist(resOut)), 0.99))
-  par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-  
-  #
-  plot(ecdf(resOut[[1]]), col = colOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(xlim_min, xlim_max), xaxt = "none")
-  
-  mtext(side = 1, line = 4, "Log2 length", col = "black", font = 2, cex = 1.2)
-  mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
-  
-  axis(side = 1, seq(floor(xlim_min), ceiling(xlim_max), 1), font = 2, lwd = 2)
-  axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
-  for (i in 2:length(resOut)) {
-    lines(ecdf(resOut[[i]]), col = colOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
-  }
-  if(!is.null(comparisons)){
-    addStats(comparisons, plotType='ecdf', resOut, colOut)
-  }
-}
-
-
 
 antilog<-function(lx,base){ 
   lbx<-lx/log(exp(1),base=base) 
@@ -675,9 +658,15 @@ statOnDf <- function(df, # dataframe with summed codon counts for each regulatio
 }
 
 
-roundUpNice <- function(x, nice=c(1,2,4,5,6,8,10)) {
+roundNice <- function(x, nice=c(1,2,4,5,6,8,10), direction) {
      if(length(x) != 1) stop("'x' must be of length 1")
-     10^floor(log10(x)) * nice[[which(x <= 10^floor(log10(x)) * nice)[[1]]]]
+     if(direction == 'up'){
+      10^floor(log10(x)) * nice[[which(x <= 10^floor(log10(x)) * nice)[[1]]]]
+     } else if (direction == 'down'){
+       10^floor(log10(x))
+     } else {
+       stop('wrong input for rounding function')
+     }
 }
 
 combSeq <- function(seqIn){

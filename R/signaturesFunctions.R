@@ -20,7 +20,7 @@ signatureFunction <- function(signatureList,
   
   #Select for scatter
   if(is.null(scatterXY)){
-    scatterXY <- roundUpNice(max(abs(c(range(regData$totalApvEff),range(regData$polyApvEff)))))
+    scatterXY <- roundNice(max(abs(c(range(regData$totalApvEff),range(regData$polyApvEff)))),direction='up')
   }
   #
   pdf(ifelse(is.null(pdfName),paste('data_',dataName,'_signature_',generalName,'.pdf',sep=''), paste(pdfName,paste('data_',dataName,'_signature_',generalName,'.pdf',sep=''),sep='_')),width= 18,height=4, useDingbats = F)
@@ -91,8 +91,8 @@ signatureFunction <- function(signatureList,
         xmin <- xlim[1]
         xmax <- xlim[2]
       } else {
-        xmin <- ifelse(as.numeric(quantile(as.numeric(unlist(tmpBgOut)),0.01))<0, -roundUpNice(abs(as.numeric(quantile(as.numeric(tmpBg),0.01)))),roundUpNice(as.numeric(quantile(as.numeric(unlist(tmpBgOut)),0.01))))
-        xmax <- ifelse(as.numeric(quantile(as.numeric(unlist(tmpBgOut)),0.99))<0, -roundUpNice(abs(as.numeric(quantile(as.numeric(tmpBg),0.01)))),roundUpNice(as.numeric(quantile(as.numeric(unlist(tmpBgOut)),0.99))))
+        xmin <- ifelse(as.numeric(quantile(as.numeric(unlist(tmpBgOut)),0.01))<0, -roundNice(abs(as.numeric(quantile(as.numeric(tmpBg),0.01))),direction='up'),roundNice(as.numeric(quantile(as.numeric(unlist(tmpBgOut)),0.01))),direction='up')
+        xmax <- ifelse(as.numeric(quantile(as.numeric(unlist(tmpBgOut)),0.99))<0, -roundNice(abs(as.numeric(quantile(as.numeric(tmpBg),0.01))),direction='up'),roundNice(as.numeric(quantile(as.numeric(unlist(tmpBgOut)),0.99))),direction='up')
       }
       plot(ecdf(as.numeric(regData[regData[,(5+i)]=='bkg',][,eff])),col='grey55',main='',xlab=effects_names[eff-1],verticals=TRUE, do.p=FALSE,lwd=3,xlim=c(xmin,xmax))
       legend(xmin,0.95,fill='grey55',border='grey55','Background',bty='n',cex=1.3)
@@ -127,8 +127,8 @@ signatureFunction <- function(signatureList,
         xmin <- xlim[1]
         xmax <- xlim[2]
       } else {
-        xmin <- ifelse(as.numeric(quantile(as.numeric(tmpBg),0.01))<0, -roundUpNice(abs(as.numeric(quantile(as.numeric(tmpBg),0.01)))),roundUpNice(as.numeric(quantile(as.numeric(tmpBg),0.01))))
-        xmax <- ifelse(as.numeric(quantile(as.numeric(tmpBg),0.99))<0, -roundUpNice(abs(as.numeric(quantile(as.numeric(tmpBg),0.01)))),roundUpNice(as.numeric(quantile(as.numeric(tmpBg),0.99))))
+        xmin <- ifelse(as.numeric(quantile(as.numeric(tmpBg),0.01))<0, -roundNice(abs(as.numeric(quantile(as.numeric(tmpBg),0.01))),direction='up'),roundNice(as.numeric(quantile(as.numeric(tmpBg),0.01))),direction='up')
+        xmax <- ifelse(as.numeric(quantile(as.numeric(tmpBg),0.99))<0, -roundNice(abs(as.numeric(quantile(as.numeric(tmpBg),0.01))),direction='up'),roundNice(as.numeric(quantile(as.numeric(tmpBg),0.99))),direction='up')
       }
       plot(ecdf(as.numeric(regData[regData$signature=='bkg',][,eff])),col='grey55',main='',xlab=effects_names[eff-1],verticals=TRUE, do.p=FALSE,lwd=3,xlim=c(xmin,xmax))
       legend(xmin,0.95,fill='grey55',border='grey55','Background',bty='n',cex=1.3)

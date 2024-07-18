@@ -116,8 +116,8 @@ contentMotifs <- function(a2sU,
         colOut <- colPlot(a2sU)
         # Plot
         pdf(nameOut, width = 8, height = 8, useDingbats = F)
-
-        plotEcdf(qvec = motifOut, a2sU = a2sU, comparisons = comparisons, colOut = colOut)
+        ylabel <- paste(region, motif, sep = "_")
+        plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
         dev.off()
       }
       motifsFinal[[paste(reg, motif, sep = "_")]] <- motifOut
