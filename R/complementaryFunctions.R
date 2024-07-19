@@ -395,7 +395,7 @@ plotUtils <- function(resOut, colOut, comparisons, ylabel, plotType) {
     }
     #
     dataTmp <- as.numeric(unlist(resOut))
-    ylimTmp2 <- roundNice(max(dataTmp), direction='up')
+    ylimTmp2 <- roundNice(quantile(dataTmp,0.9), direction='up')
     par(mar = c(8, 8, 0, 0), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
     plot(1,ylimTmp2, xlim=xlimTmp, ylim=c(0,ylimTmp2), xaxt = "n",type="n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
     #

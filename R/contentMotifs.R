@@ -10,6 +10,7 @@ contentMotifs <- function(a2sU,
                           subregionSel=NULL,
                           comparisons = NULL,
                           pdfName = NULL,
+                          plotType = "ecdf",
                           plotOut = TRUE) {
   
   #
@@ -20,6 +21,13 @@ contentMotifs <- function(a2sU,
 
   if(!is_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
+  }
+  if(isTRUE(plotOut)){
+    if(!is.null(plotType)){
+      checkPlotType(plotType)
+    } else {
+      stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
+    }
   }
   
   if(!is.null(comparisons)){
