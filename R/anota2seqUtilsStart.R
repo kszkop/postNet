@@ -213,9 +213,7 @@ anota2seqUtilsStart <- function(ads = NULL,
     outDB <- read.delim(customFile, stringsAsFactors = FALSE)
     colnames(outDB) <- c('id', 'geneID', 'UTR5_seq', 'CDS_seq', 'UTR3_seq')
   } else if (source == "createFromFiles") {
-    if(!is_valid_species(species)){
-      stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
-    }
+    
     posTmp <- read.delim(posFile, stringsAsFactors = FALSE)
     colnames(posTmp) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
     
@@ -230,9 +228,13 @@ anota2seqUtilsStart <- function(ads = NULL,
     
     # Path to ftp refSeq db
     if (is.null(genomic_gff_file)) {
+      if(!is_valid_species(species)){
+        stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
+      }
+      #
       url <- switch(species,
                     "human" = "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/",
-                    "mouse" = "https://ftp.ncbi.nlm.gov/refseq/M_musculus/annotation_releases/current/GCF_000001635.27-RS_2023_04/"
+                    "mouse" = "https://ftp.ncbi.nlm.gov/refseq/M_musculus/annotation_releases/current/GCF_000001635.27-RS_2024_02/"
       )
       
       download.file(paste(url, switch(species, "human" = "GRCh38_latest_genomic.gff.gz", "mouse" = "GCF_000001635.27_GRCm39_genomic.gff.gz"), sep = ""), destfile = "GeneRef.gff.gz")

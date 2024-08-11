@@ -1,8 +1,8 @@
 checkRegion <- function(region, convertToUppercase = TRUE) {
-  valid_regions <- c('UTR3', 'CDS', 'UTR5')
+  valid_regions <- c('UTR3', 'CDS', 'UTR5', 'CCDS')
   
   if (is.null(region) || !is.character(region) || length(region) == 0) {
-    stop("'region' must be a non-empty character vector with valid values, to choose from 'UTR3', 'CDS', 'UTR5'.")
+    stop("'region' must be a non-empty character vector with valid values, to choose from 'UTR3', 'CDS', 'UTR5', 'CCDS'")
   }
   
   if (convertToUppercase) {
@@ -10,7 +10,7 @@ checkRegion <- function(region, convertToUppercase = TRUE) {
   }
   
   if (!all(region %in% valid_regions)) {
-    stop("'region' must contain valid values: 'UTR3', 'CDS', 'UTR5'.")
+    stop("'region' must contain valid values: 'UTR3', 'CDS', 'UTR5','CCDS'.")
   }
 }
 
