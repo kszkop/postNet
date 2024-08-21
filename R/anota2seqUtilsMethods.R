@@ -137,7 +137,7 @@ setMethod("a2sU_codonsSel", "anota2seqUtilsData",
             if(!checkUtils(x)){
               stop("It is not valid anota2seqUtils object")
             } else {
-              tmpOut <- x@analysis@codons@codons@
+              tmpOut <- x@analysis@codons@
               
               out <- s4_to_dataframe(tmpOut)
               return(out)
