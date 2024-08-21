@@ -1,4 +1,4 @@
-uorf_analysis <- function(a2sU,
+uorfAnalysis <- function(a2sU,
                           startCodon = "ATG",
                           KozakContext = "strong",
                           onlyUTR5 = FALSE,

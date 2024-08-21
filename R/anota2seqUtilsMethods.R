@@ -131,15 +131,14 @@ setMethod("a2sU_codonsAll", "anota2seqUtilsData",
           })
 
 setGeneric("a2sU_codonsSel",
-           function(x) standardGeneric("a2sU_codonsSel"))
+           function(x,comparison) standardGeneric("a2sU_codonsSel"))
 setMethod("a2sU_codonsSel", "anota2seqUtilsData",
           function(x, comparison){
             if(!checkUtils(x)){
               stop("It is not valid anota2seqUtils object")
             } else {
-              tmpOut <- x@analysis@codons@
-              
-              out <- s4_to_dataframe(tmpOut)
+              out <- x@analysis@codons@codonsSel[[comparison]]
+
               return(out)
             }
           })
