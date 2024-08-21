@@ -286,27 +286,13 @@ checkcodSource <- function(codSource) {
 }
 
 check_codonIn<- function(codonIn) {
-  #is it a list
-  if (!is.list(codonIn)) {
-    stop('"codonIn" is not a list, and so probably not an output of codonUsage function')
-  }
-  #'codonAll' exists and is a list
-  if (!"codonAll" %in% names(codonIn) || !is.list(codonIn$codonAll)) {
-    stop('"codonIn" does not contain codonAll element, and so probably not an output of codonUsage function')
-  }
-  
-  #'codonAll' list contains required elements
+  #
   required_elements <- c("geneID", "codon", "AA", "codonCount", "codonFreq", "AACountPerGene")
-  if (!all(required_elements %in% names(codonIn$codonAll))) {
-    stop('"codonIn$codonAll" element does not contain all required elements, and so probably "codonIn" is not an output of codonUsage function')
-  }
-  
-  # elements are of correct types
-  if (!all(sapply(codonIn$codonAll[grep("geneID|codon|AA", names(codonIn$codonAll))], is.character)) ||
-      !all(sapply(codonIn$codonAll[grep("codonCount|codonFreq|AACountPerGene", names(codonIn$codonAll))], is.double))) {
-    stop('"codonIn$codonAll" elements are not of correct types, and so probably "codonIn" is not an output of codonUsage function')
+  if (!all(required_elements %in% colnames(tmp)) || is.null(tmp)) {
+    stop('"codonsAll" element does not contain all required elements, and so probably it is not an output of codonUsage function')
   }
 }
+
 
 check_codons <- function(featSel) {
   # Define a vector of all possible codons
@@ -317,6 +303,23 @@ check_codons <- function(featSel) {
                   "GGA", "GGC", "GGG", "GGT", "GTA", "GTC", "GTG", "GTT", "TAA", "TAC",
                   "TAG", "TAT", "TCA", "TCC", "TCG", "TCT", "TGA", "TGC", "TGG", "TGT",
                   "TTA", "TTC", "TTG", "TTT")
+  
+  # Check if all elements of featSel are either single codons or combinations of codons
+  all(sapply(featSel, function(x) {
+    if (nchar(x) %% 3 == 0 && all(strsplit(x, "")[[1]] %in% c("A", "C", "G", "T"))) {
+      all(substring(x, seq(1, nchar(x), by = 3), seq(3, nchar(x), by = 3)) %in% all_codons)
+    } else {
+      x %in% all_codons
+    }
+  }))
+}
+
+check_AA <- function(featSel) {
+  #
+  single_to_three <- c(A = "Ala", R = "Arg", N = "Asn", D = "Asp", C = "Cys", 
+                       Q = "Gln", E = "Glu", G = "Gly", H = "His", I = "Ile", 
+                       L = "Leu", K = "Lys", M = "Met", F = "Phe", P = "Pro", 
+                       S = "Ser", T = "Thr", W = "Trp", Y = "Tyr", V = "Val")
   
   # Check if all elements of featSel are either single codons or combinations of codons
   all(sapply(featSel, function(x) {

@@ -1,5 +1,4 @@
 codonCalc <- function(a2sU,
-                      codonIn,
                       featsel,
                       featselName=NULL,
                       analysis="codon",
@@ -12,7 +11,12 @@ codonCalc <- function(a2sU,
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
-  check_codonIn(codonIn)
+  if(!is.null(a2sU_codonsAll(a2sU))){
+    codonsAll <- a2sU_codonsAll(a2sU)
+    check_codonIn(codonsAll)
+  } else {
+    stop("codons analysis is null, please provide valid 'anota2seqUtilsData' object and run codonUsage analysis")
+  }
   #
   if(!is_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
@@ -31,7 +35,7 @@ codonCalc <- function(a2sU,
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(anota2seqUtilsGetBg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
       stop(" 0 is always a background, but no background provided")
     }
   }

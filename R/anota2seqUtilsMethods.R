@@ -116,6 +116,34 @@ setMethod("a2sU_motifsAnalysis", "anota2seqUtilsData",
             return(motifsAnalysisOut)
           })
 
+setGeneric("a2sU_codonsAll",
+           function(x) standardGeneric("a2sU_codonsAll"))
+setMethod("a2sU_codonsAll", "anota2seqUtilsData",
+          function(x){
+            if(!checkUtils(x)){
+              stop("It is not valid anota2seqUtils object")
+            } else {
+              tmpOut <- x@analysis@codons@codonsAll
+              
+              out <- s4_to_dataframe(tmpOut)
+              return(out)
+            }
+          })
+
+setGeneric("a2sU_codonsSel",
+           function(x) standardGeneric("a2sU_codonsSel"))
+setMethod("a2sU_codonsSel", "anota2seqUtilsData",
+          function(x, comparison){
+            if(!checkUtils(x)){
+              stop("It is not valid anota2seqUtils object")
+            } else {
+              tmpOut <- x@analysis@codons@codons@
+              
+              out <- s4_to_dataframe(tmpOut)
+              return(out)
+            }
+          })
+
 
 a2sU_miRNA <- function(a2sU,
                        direction,

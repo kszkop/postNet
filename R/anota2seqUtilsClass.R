@@ -1,7 +1,10 @@
 ## anota2seqUtils S4 class implementation
 setClassUnion("characterOrNULL",members=c("character", "NULL"))
-setClassUnion("listOrNULL",members=c("list", "NULL"))
 setClassUnion("numericOrNULL",members=c("numeric", "NULL"))
+setClassUnion("listOrNULL",members=c("list", "NULL"))
+setClassUnion("numericOrNULLOrlogical",members=c("numeric", "NULL", "logical"))
+setClassUnion("characterOrNULLOrlogical",members=c("character", "NULL", "logical"))
+
 
 setClass("anota2seqUtilsRegion",
          slots = c(
@@ -51,10 +54,11 @@ setClass("anota2seqUtilsCodonsAll",
          slots = c(
            geneID = "characterOrNULL",
            codon = "characterOrNULL",
-           AA = "characterOrNULL",
-           codonCount = "numericOrNULL",
-           codonFreq = "numericOrNULL",
-           AACountPerGene = "numericOrNULL"
+           AA = "characterOrNULLOrlogical",
+           count = "numericOrNULL",
+           frequency = "numericOrNULL",
+           AACountPerGene = "numericOrNULLOrlogical",
+           relative_frequency = "numericOrNULLOrlogical"
          )
 )
 
@@ -63,8 +67,7 @@ setClassUnion("codonsAllOrNULL",members=c("anota2seqUtilsCodonsAll", "NULL"))
 setClass("anota2seqUtilsCodons",
          slots = c(
            codonsAll = "codonsAllOrNULL",
-           codonsSel = "listOrNULL",
-           codonsSign = "listOrNULL"
+           codonsSel = "listOrNULL"
          )
 )
 

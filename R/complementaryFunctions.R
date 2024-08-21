@@ -563,6 +563,15 @@ replaceProtAmbig <- function(motif){
   return(tmpConv)
 }
 
+remove_last3 <- function(seq) {
+  seqOut <- sapply(seq, function(x) {
+    #
+    substring(x, 1, nchar(x) - 3)
+  })
+  return(seqOut)
+}
+
+
 #
 codonCount <- function(seq, gene, codonN=1){
   #
@@ -571,24 +580,42 @@ codonCount <- function(seq, gene, codonN=1){
     tmpEff <- seqinr::uco(seqinr::s2c(seq),index = "eff")
     tmpFreq <- seqinr::uco(seqinr::s2c(seq),index = "freq")
     #
-    tmpCodon <- data.frame(geneID=gene,codon=toupper(names(tmpEff)),AA=seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(toupper(names(tmpEff)))))), codonCount=as.numeric(tmpEff),codonFreq=as.numeric(tmpFreq))
-    tmpCodon <- tmpCodon %>% group_by(AA) %>% mutate(AACountPerGene=sum(codonCount))
+    tmpCodon <- data.frame(geneID=gene,codon=toupper(names(tmpEff)),AA=seqinr::translate(seqinr::s2c(seqinr::c2s(toupper(names(tmpEff))))), count=as.numeric(tmpEff),frequency=as.numeric(tmpFreq))
+    tmpCodon <- tmpCodon %>% mutate(AA = case_when(codon == "TGA" ~ "U",codon == "TAG" ~ "O",codon == "TAA" ~ "Stop", TRUE ~ AA))
+    
+    tmpCodon <- tmpCodon %>% group_by(AA) %>% mutate(AACountPerGene=sum(count))
+    tmpCodon$relative_frequency <- tmpCodon$count/tmpCodon$AACountPerGene
+    tmpCodon$relative_frequency[is.na(tmpCodon$relative_frequency)] <- 0
   } else if(codonN > 1){
     seqIn <- seqinr::s2c(tolower(seq))
     
     tmpEff <- seqinr::count(seq = seqIn, wordsize = 3*codonN, start = 3, by = 3,freq = FALSE)
-    tmpFreq<- length(seqIn)/(3*codonN)
-    #tmpFreq <- seqinr::count(seq = seqIn, wordsize = 3*codonN, start = 3, by = 3,freq = TRUE)
-    #
-    #indSel <- which(tmpEff>0)
-    #
-    #tmpCodon <- data.frame(geneID=gene,codon=toupper(names(tmpEff)[indSel]),AA=NA, codonCount=as.numeric(tmpEff)[indSel],codonFreq=as.numeric(tmpFreq)[indSel])
-    tmpCodon <- data.frame(geneID=gene,codon=toupper(names(tmpEff)),AA=NA, codonCount=as.numeric(tmpEff),codonFreq=as.numeric(tmpFreq))
+    tmpFreq <- tmpEff/sum(tmpEff)
     
+    tmpCodon <- data.frame(geneID=gene,codon=toupper(names(tmpEff)), count=as.numeric(tmpEff), AA=NA, frequency=as.numeric(tmpFreq),AACountPerGene=NA, relative_frequency=NA)
   }
   #
   return(tmpCodon)
 }
+
+
+#divide_3 <- function(stringIn) {
+#  # Check if the string length is divisible by 3
+#  if (nchar(stringIn) %% 3 != 0) {
+#    stop("The length of the string is not divisible by 3.")
+#  }
+#  #
+#  tmpChar <- strsplit(stringIn, "")[[1]]
+#  #
+#  tmpLen <- nchar(stringIn)
+#  
+##  # Divide the string into groups of three
+#  out <- sapply(seq(1, tmpLen, by = 3), function(i) {
+#    paste(tmpChar[i:min(i+2, tmpLen)], collapse = "")
+#  })
+#  
+#  return(out)
+#}
 
 #
 statOnDf <- function(df, # dataframe with summed codon counts for each regulation
@@ -939,6 +966,14 @@ readRiboDpn <- function(dpnFile, dpn_path=NULL, annot, cds_filt=TRUE){
   ##add summary to output and return
   dataList <- refListMod
   return(dataList)
+}
+
+s4_to_dataframe <- function(obj) {
+  tmpNames <- slotNames(obj)
+  
+  tmpOut <- lapply(tmpNames, function(x) slot(obj, x))
+  out <- as.data.frame(setNames(tmpOut, tmpNames))
+  return(out)
 }
 
 #
