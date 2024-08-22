@@ -425,17 +425,17 @@ plotUtils <- function(resOut, colOut, comparisons, ylabel, plotType) {
       }
     } 
   } else if(plotType == "ecdf"){
-    xlim_min <- roundNice(as.numeric(quantile(as.numeric(unlist(resOut)), 0.01)),direction='down')
-    xlim_max <- roundNice(as.numeric(quantile(as.numeric(unlist(resOut)), 0.99)),direction='up')
+    #xlim_min <- roundNice(as.numeric(quantile(as.numeric(unlist(resOut)), 0.01)),direction='down')
+    #xlim_max <- roundNice(as.numeric(quantile(as.numeric(unlist(resOut)), 0.99)),direction='up')
     
     par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-    plot(ecdf(resOut[[1]]), col = colOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", yaxt = "none", font = 2, xlim = c(xlim_min, xlim_max), xaxt = "none")
+    plot(ecdf(resOut[[1]]), col = colOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", font = 2)#, yaxt = "none", xlim = c(xlim_min, xlim_max), xaxt = "none")
     
     mtext(side = 1, line = 4, ylabel, col = "black", font = 2, cex = 1.2)
     mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
     
-    axis(side = 1, seq(xlim_min, xlim_max, 1), font = 2, lwd = 2)
-    axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
+    #axis(side = 1, seq(xlim_min, xlim_max, 1), font = 2, lwd = 2)
+    #axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
     for (i in 2:length(resOut)) {
       lines(ecdf(resOut[[i]]), col = colOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
     }
@@ -685,16 +685,35 @@ statOnDf <- function(df, # dataframe with summed codon counts for each regulatio
 }
 
 
+#roundNice <- function(x, nice=c(1,2,4,5,6,8,10), direction) {
+#     if(length(x) != 1) stop("'x' must be of length 1")
+#     if(direction == 'up'){
+#      10^floor(log10(x)) * nice[[which(x <= 10^floor(log10(x)) * nice)[[1]]]]
+#     } else if (direction == 'down'){
+#       10^floor(log10(x))
+#     } else {
+#       stop('wrong input for rounding function')
+#     }
+#}
+
 roundNice <- function(x, nice=c(1,2,4,5,6,8,10), direction) {
-     if(length(x) != 1) stop("'x' must be of length 1")
-     if(direction == 'up'){
-      10^floor(log10(x)) * nice[[which(x <= 10^floor(log10(x)) * nice)[[1]]]]
-     } else if (direction == 'down'){
-       10^floor(log10(x))
-     } else {
-       stop('wrong input for rounding function')
-     }
+  if(length(x) != 1) stop("'x' must be of length 1")
+  
+  # Handling the sign of the input
+  sign_x <- sign(x)
+  x_abs <- abs(x)
+  
+  if(direction == 'up'){
+    result <- 10^floor(log10(x_abs)) * nice[[which(x_abs <= 10^floor(log10(x_abs)) * nice)[[1]]]]
+  } else if (direction == 'down'){
+    result <- 10^floor(log10(x_abs)) * nice[[tail(which(x_abs >= 10^floor(log10(x_abs)) * nice), 1)]]
+  } else {
+    stop('wrong input for rounding function')
+  }
+  
+  return(sign_x * result)
 }
+
 
 combSeq <- function(seqIn){
   seqTmp <- lapply(seqIn, function(x) lapply(x, function(y) seqinr::s2c(y)))

@@ -182,6 +182,8 @@ codonUsage <- function(a2sU,
     seqTmp <- a2sU_sequences(a2sU, region = 'CDS')
     names(seqTmp) <- a2sU_geneID(a2sU, region = 'CDS')
   }
+  #remove last codon (stop codon)
+  seqTmp <- remove_last3(seqTmp)
   #
   if (!is.null(subregion)) {
     #
@@ -198,18 +200,20 @@ codonUsage <- function(a2sU,
       codonTmp[[i]] <- codonCount(gene = geneIDs[i], seq = seqTmp[i], codonN = codonN)
     }
     #proc.time() - ptm
-    codonAll <- do.call(rbind, lapply(codonTmp, data.frame, stringsAsFactors = FALSE))
+    codonAll <- data.table::rbindlist(codonTmp, use.names = TRUE, fill = TRUE)
+    #proc.time() - ptm
+  
     if (codonN == 1) {
-      codonAll <- codonAll[!codonAll$AA %in% c("Stp", "Trp", "Met"), ]
+      codonAll <- codonAll[!codonAll$AA %in% c("Stop", "W", "M", "O", "U"), ]
     }
     codonsAllOut <- new("anota2seqUtilsCodonsAll",
                        geneID = codonAll$geneID,
                        codon  = codonAll$codon,
                        AA = codonAll$AA,
-                       codonCount = codonAll$codonCount,
-                       codonFreq = codonAll$codonFreq,
-                       AACountPerGene = codonAll$AACountPerGene)
-    
+                       count = codonAll$count,
+                       frequency = codonAll$frequency,
+                       AACountPerGene = codonAll$AACountPerGene,
+                       relative_frequency = codonAll$relative_frequency)
   } else if (codSource == "riboSeq") {
     #
     stop('few things to correct')
@@ -388,7 +392,7 @@ codonUsage <- function(a2sU,
     tmp <- codonAll[codonAll$geneID %in% selTmp, ]
     if (analysis == "codon") {
       #####
-      tmp1 <- tmp %>% group_by(codon) %>% summarise(codonPerReg = sum(codonCount))
+      tmp1 <- tmp %>% group_by(codon) %>% summarise(codonPerReg = sum(count))
       tmpSum <- tmp1$codonPerReg
       names(tmpSum) <- tmp1$codon
       
@@ -399,7 +403,7 @@ codonUsage <- function(a2sU,
       }
       
       ####
-      tmp2 <- tmp %>% group_by(codon) %>% summarise(freqPerReg = mean(codonFreq))
+      tmp2 <- tmp %>% group_by(codon) %>% summarise(freqPerReg = mean(frequency))
       tmpFreq <- tmp2$freqPerReg
       names(tmpFreq) <- tmp2$codon
       
@@ -410,7 +414,7 @@ codonUsage <- function(a2sU,
       }
       
       #####
-      tmp3 <- tmp %>% group_by(codon) %>% mutate(codonPerReg = sum(codonCount))
+      tmp3 <- tmp %>% group_by(codon) %>% mutate(codonPerReg = sum(count))
       tmp3 <- tmp3 %>% group_by(AA) %>%  mutate(AAPerReg = sum(AACountPerGene))
       tmp3 <- subset(tmp3, !duplicated(codon))
       tmp3$codonNormAA <- tmp3$codonPerReg / tmp3$AAPerReg
@@ -423,7 +427,7 @@ codonUsage <- function(a2sU,
         compOut3[[names(resTmp)[i]]] <- tmpcodonNormAA
       }
       #
-      tmp4 <- tmp %>%  group_by(codon) %>% summarise(freq = sum(codonFreq))
+      tmp4 <- tmp %>%  group_by(codon) %>% summarise(freq = sum(frequency))
       tmpSumFreq <- tmp4$freq
       names(tmpSumFreq) <- tmp4$codon
       if(i == 0){
@@ -432,7 +436,7 @@ codonUsage <- function(a2sU,
         compOut4[[names(resTmp)[i]]] <- tmpSumFreq
       }
     } else if (analysis == "AA") {
-      tmp1  <- tmp %>% group_by(AA) %>% summarise(AAPerReg = sum(codonCount))
+      tmp1  <- tmp %>% group_by(AA) %>% summarise(AAPerReg = sum(count))
       #
       tmpSum <- tmp1$AAPerReg
       names(tmpSum) <- tmp1$AA
@@ -443,7 +447,7 @@ codonUsage <- function(a2sU,
         compOut1[[names(resTmp)[i]]] <- tmpSum
       }
       
-      tmp4 <- tmp %>%  group_by(AA) %>% summarise(freq = sum(codonFreq))
+      tmp4 <- tmp %>%  group_by(AA) %>% summarise(freq = sum(frequency))
       tmpSumFreq <- tmp4$freq
       names(tmpSumFreq) <- tmp4$AA
       if(i == 0){
@@ -453,6 +457,7 @@ codonUsage <- function(a2sU,
       }
     }
   }
+  print('test')
   #
   codonsSel <- list()
   for (j in 1:length(comparisons)) {
@@ -677,8 +682,7 @@ codonUsage <- function(a2sU,
   }
   codonsOut <- new("anota2seqUtilsCodons",
                    codonsAll = codonsAllOut,
-                   codonsSel  = codonsSel,
-                   codonsSign = NULL)
+                   codonsSel  = codonsSel)
 
   
   a2sU@analysis@codons <- codonsOut
