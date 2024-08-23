@@ -1,17 +1,17 @@
 signCalc <- function(a2sU,
-                     addSign) {
+                     signatures) {
   #
   outSign <- list()
   #
-  Outvec <- rep(0, length(anota2seqUtilsGetCDSgeneID(a2sU)))
-  names(Outvec) <- anota2seqUtilsGetCDSgeneID(a2sU)
-  for (i in 1:length(addSign)) {
+  Outvec <- rep(0, length(a2sU_geneID(a2sU, 'CDS')))
+  names(Outvec) <- a2sU_geneID(a2sU, 'CDS')
+  for (i in 1:length(signatures)) {
     #
-    signature <- addSign[[i]]
+    tmpSignature <- signatures[[i]]
     #
-    Outvec[names(Outvec) %in% as.character(signature)] <- 1
+    Outvec[names(Outvec) %in% as.character(tmpSignature)] <- 1
     #
-    outSign[[names(addSign)[i]]] <- Outvec
+    outSign[[names(signatures)[i]]] <- Outvec
   }
   #
   return(outSign)

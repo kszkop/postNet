@@ -143,6 +143,18 @@ setMethod("a2sU_codonsSel", "anota2seqUtilsData",
             }
           })
 
+setGeneric("a2sU_features",
+           function(x) standardGeneric("a2sU_features"))
+setMethod("a2sU_features", "anota2seqUtilsData",
+          function(x){
+            if(!checkUtils(x)){
+              stop("It is not valid anota2seqUtils object")
+            } else {
+              out <- x@features
+              return(out)
+            }
+          })
+
 
 a2sU_miRNA <- function(a2sU,
                        direction,

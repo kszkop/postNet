@@ -2,6 +2,7 @@
 setClassUnion("characterOrNULL",members=c("character", "NULL"))
 setClassUnion("numericOrNULL",members=c("numeric", "NULL"))
 setClassUnion("listOrNULL",members=c("list", "NULL"))
+setClassUnion("dataframeOrNULL",members=c("data.frame", "NULL"))
 setClassUnion("numericOrNULLOrlogical",members=c("numeric", "NULL", "logical"))
 setClassUnion("characterOrNULLOrlogical",members=c("character", "NULL", "logical"))
 
@@ -114,11 +115,6 @@ setClass("anota2seqUtilsAnalysis",
          )
 )
 
-setClass("anota2seqUtilsFeatures",
-         slots = c(
-           features = "listOrNULL"
-         )
-)
 
 setClass("anota2seqUtilsData",
          slots = c(
@@ -127,7 +123,7 @@ setClass("anota2seqUtilsData",
            selection = "character",
            annot =  "anota2seqUtilsAnnot",
            dataIn = "anota2seqUtilsDataIn",
-           features = "anota2seqUtilsFeatures",
+           features = "dataframeOrNull",
            analysis = "anota2seqUtilsAnalysis"
          )
 )

@@ -104,6 +104,36 @@ checkComparisons <- function(obj) {
   all(sapply(obj, function(x) is.numeric(x) && length(x) == 2))
 }
 
+is_valid_named_list <- function(obj) {
+  # Check if the object is NULL
+  if (is.null(obj)) {
+    return(FALSE)
+  }
+  
+  # Check if the object is a list
+  if (!is.list(obj)) {
+    return(FALSE)
+  }
+  
+  # Check if the list has names
+  if (is.null(names(obj)) || any(names(obj) == "")) {
+    return(FALSE)
+  }
+  
+  # Check if each element in the list is a numeric vector
+  for (item in obj) {
+    if (!is.numeric(item) || !is.vector(item)) {
+      return(FALSE)
+    }
+  }
+  return(TRUE)
+}
+
+is_numeric_vector <- function(obj) {
+  return(is.numeric(obj) && is.vector(obj))
+}
+
+
 is_logical <- function(x) {
   is.logical(x) && length(x) == 1
 }
@@ -426,4 +456,24 @@ check_size <- function(size) {
   if (is.null(size) || !(size == "Count" || size == "geneRatio")) {
     stop("The 'size' must be not null and only can be 'Count' or 'geneRatio'" )
   }
+}
+
+is_valid_analysis_type <- function(analysis_type) {
+  if (is.null(analysis_type)) {
+    return(FALSE)
+  }
+  if (analysis_type %in% c("lm", "rf")) {
+    return(TRUE)
+  }
+  return(FALSE)
+}
+
+is_valid_NetModelSel <- function(NetModelSel) {
+  if (is.null(NetModelSel)) {
+    return(FALSE)
+  }
+  if (NetModelSel %in% c("omnibus", "adjusted", "univariate")) {
+    return(TRUE)
+  }
+  return(FALSE)
 }

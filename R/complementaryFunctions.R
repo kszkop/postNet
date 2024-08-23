@@ -1134,12 +1134,40 @@ runMfold <- function(fastaFile){
   close(pb1)
 }
 
-runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, isads=NULL, regulationGen=NULL){
+prepFeatures <- function(a2sU, 
+                         features){
+  if (!checkUtils(a2sU)) {
+    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  }
+  if (!is_valid_named_list(features)){
+    stop("features should be a named list of numeric vectors only")
+  }
   #
+  featureNames <- names(features)
+  featuresTmp <- append(features, list(effM))
+  #featuresTmp <- unname(featuresTmp)
+  
+  tmpDf <- data.frame(t(plyr::ldply(featuresTmp, rbind,.id = NULL)))
+  colnames(tmpDf) <- c(featureNames,'effM')
+  
+  datOut <- na.omit(tmpDf)
+  message(paste(nrow(tmpDf)-nrow(datOut), 'genes removed because of NAs', sep=' '))
+  
+  a2sU@features <- datOut
+  return(a2sU)
+}
+
+
+runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
+  
+  fval <- list()
+  pval <- list()
+  
   #Univariate
-  models_prerun <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
+  models <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
     anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dataIn))
   })
+  names(models) <- namesDf$originalNames
   #
   step1expl <- round(sapply(models_prerun, function(x) (x[1, 2] / (sum(x[1, 2], x[2, 2]))) * 100), 2)
   names(step1expl) <- namesDf$originalNames
@@ -1147,28 +1175,25 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, isad
   step1pval <- sapply(models_prerun, function(x) (x[1, 5]))
   names(step1pval) <- namesDf$originalNames
   
-  step1pval_fdr <- p.adjust(step1pval)
-  names(step1pval_fdr) <- namesDf$originalNames
+  step1fdr <- p.adjust(step1pval)
+  names(step1fdr) <- namesDf$originalNames
 
-  presel <- as.numeric(which(step1pval_fdr > 0.05 | is.na(step1pval_fdr)))
+  presel <- as.numeric(which(step1fdr > 0.05 | is.na(step1fdr)))
 
   if (length(presel) > 0) {
     step1expl <- step1expl[-presel]
     step1pval <- step1pval[-presel]
-    step1pval_fdr <- step1pval_fdr[-presel]
+    step1fdr <- step1fdr[-presel]
   }
 
   if (!isTRUE(allFeat) & length(presel) > 0) {
     dataIn <- dataIn[, -presel]
-    #featureNames <- featureNames[-presel]
+    models <- models[-presel]
   }
-  #
-  fval <- list()
-  pval <- list()
 
-  models <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
-    anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dataIn))
-  })
+  #models <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
+  #  anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dataIn))
+  #})
   #
   fvalTmp <- sapply(models, function(x) x[1, 4])
   names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))]
