@@ -32,7 +32,7 @@ codonUsage(annotType = "ccds", annot=NULL, sourceSeq = "load", customFileCod = N
 \item{selection}{ There are multiple isoforms for a given gene, In this option, it is decided which isoform is selected to represent the gene, whether the longest or the shortest for a given region will be taken into consideration or simply random one.  Choose from  "longest", "shortest", or "random". The default is "random". }
 \item{subregion}{ Optionally it is possible to select a subregion by indicating a number of nucleotides from the start if positive or end if negative. }
 \item{subregionSel}{ It is required if the subregion is provided. Choose whether the indicated subregion should be "select" or "exclude". }
-\item{InputTable} {Dataframe containing names of dpn files in the first column, condition in numeric format in the second column.}
+\item{InputTable}{ Dataframe containing names of dpn files in the first column, condition in numeric format in the second column.}
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end. }
 \item{pdfName}{ Name of the output pdf files. }
 }
