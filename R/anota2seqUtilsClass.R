@@ -123,7 +123,7 @@ setClass("anota2seqUtilsData",
            selection = "character",
            annot =  "anota2seqUtilsAnnot",
            dataIn = "anota2seqUtilsDataIn",
-           features = "dataframeOrNull",
+           features = "dataframeOrNULL",
            analysis = "anota2seqUtilsAnalysis"
          )
 )
