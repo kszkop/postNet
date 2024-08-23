@@ -296,10 +296,6 @@ anota2seqUtilsStart <- function(ads = NULL,
   
   coloursIn <- coloursSel(ads = ads, genesIn = genesIn, geneList = geneList, geneListcolours = geneListcolours)
   effIn <- effectSel(ads = ads, regulationGen = regulationGen, contrastSel = contrastSel, effectMeasure = effectMeasure)
-  if(!is_numeric_vector(a2sU_eff(a2sU))){
-    stop("'effectMeasure' should be a numeric vector")
-  }
-  
   bgIn <- getBg(ads = ads, customBg = customBg, geneList = geneList)
   #
   dataIn <- new("anota2seqUtilsDataIn",

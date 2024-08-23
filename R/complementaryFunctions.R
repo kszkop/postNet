@@ -1142,6 +1142,10 @@ prepFeatures <- function(a2sU,
   if (!is_valid_named_list(features)){
     stop("features should be a named list of numeric vectors only")
   }
+  effM <- a2sU_eff(a2sU)
+  if(!is_numeric_vector(a2sU_eff(a2sU))){
+    stop("'effectMeasure' should be a numeric vector")
+  }
   #
   featureNames <- names(features)
   featuresTmp <- append(features, list(effM))
