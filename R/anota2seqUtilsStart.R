@@ -304,9 +304,6 @@ anota2seqUtilsStart <- function(ads = NULL,
                 effect = effIn,
                 colours = coloursIn)
   
-  featIn <- new("anota2seqUtilsFeatures",
-                features = NULL)
-  
   analysis <- new("anota2seqUtilsAnalysis",
                   featureIntegration = NULL,
                   motifs= NULL,
@@ -323,7 +320,7 @@ anota2seqUtilsStart <- function(ads = NULL,
                              selection = selection,
                              annot = annot,
                              dataIn = dataIn,
-                             features = featIn,
+                             features = NULL,
                              analysis = analysis)
   
   
