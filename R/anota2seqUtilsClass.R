@@ -128,14 +128,12 @@ setClass("anota2seqUtilsFeatureIntegration_lm",
 
 setClass("anota2seqUtilsFeatureIntegration_rf",
          slots = c(
-            = "",
-           
+            rf = "NULL"
          )
 )
 
 setClassUnion("lmOrNULL",members=c("anota2seqUtilsFeatureIntegration_lm", "NULL"))
 setClassUnion("rfOrNULL",members=c("anota2seqUtilsFeatureIntegration_rf", "NULL"))
-
 
 setClass("anota2seqUtilsFeatureIntegration",
          slots = c(
