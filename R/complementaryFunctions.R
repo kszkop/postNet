@@ -1162,8 +1162,8 @@ prepFeatures <- function(a2sU,
 }
 
 
-runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
-  
+runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, colours){
+  #
   fval <- list()
   pval <- list()
   
@@ -1173,15 +1173,17 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   })
   names(models) <- namesDf$originalNames
   #
-  step1expl <- round(sapply(models_prerun, function(x) (x[1, 2] / (sum(x[1, 2], x[2, 2]))) * 100), 2)
-  names(step1expl) <- namesDf$originalNames
-
-  step1pval <- sapply(models_prerun, function(x) (x[1, 5]))
-  names(step1pval) <- namesDf$originalNames
-  
+  step1expl <- round(sapply(models, function(x) (x[1, 2] / (sum(x[1, 2], x[2, 2]))) * 100), 2)
+  step1pval <- sapply(models, function(x) (x[1, 5]))
   step1fdr <- p.adjust(step1pval)
-  names(step1fdr) <- namesDf$originalNames
-
+  
+  #
+  uniOut <- new("anota2seqUtilsUnivariate",
+                pvalue = step1pval,
+                fdr = step1fdr,
+                varianceExplained = step1expl
+  )
+  
   presel <- as.numeric(which(step1fdr > 0.05 | is.na(step1fdr)))
 
   if (length(presel) > 0) {
@@ -1198,6 +1200,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   #models <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
   #  anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dataIn))
   #})
+  stepwiseModels <- list()
   #
   fvalTmp <- sapply(models, function(x) x[1, 4])
   names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))]
@@ -1210,11 +1213,11 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   pval[[1]] <- pvalTmp
 
   #
-  bestTmp <- which.max(sapply(models, function(x) x[1, 4]))
-  outTmp <- which(sapply(models, function(x) x[1, 5]) > 0.05 | is.na(sapply(models, function(x) x[1, 5])))
+  #bestTmp <- names(which.max(fvalTmp)) #which.max(sapply(models, function(x) x[1, 4]))
+  #outTmp <- which(pvalTmp > 0.05 | is.na(pvalTmp))#which(sapply(models, function(x) x[1, 5]) > 0.05 | is.na(sapply(models, function(x) x[1, 5])))
 
-  bestSel <- colnames(dataIn)[-length(colnames(dataIn))][bestTmp]
-  outSel <- colnames(dataIn)[-length(colnames(dataIn))][outTmp]
+  bestSel <- names(which.max(fvalTmp))#colnames(dataIn)[-length(colnames(dataIn))][bestTmp]
+  outSel <- names(which(pvalTmp > 0.05 | is.na(pvalTmp)))#colnames(dataIn)[-length(colnames(dataIn))][outTmp]
 
   i <- 1
   # 
@@ -1222,24 +1225,27 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
     #
     i <- i + 1
     #
-    tmpIn <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
+    #tmpIn <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
     models2 <- list()
     #
     x_sel <- paste(bestSel, collapse = " + ")
-  
+    #
     for (j in 1:(length(colnames(dataIn)[-length(colnames(dataIn))]) - length(c(bestSel, outSel)))) {
       varx <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)][j]
       design <- as.formula(paste(paste("effM", paste(x_sel, collapse = " + "), sep = "~"), varx, sep = "+"))
       models2[[j]] <- anova(lm(design, data = dataIn))
+      rownames(models2[[j]]) <- c(namesDf$originalNames[match(rownames(models2[[j]])[-length(rownames(models2[[j]]))], namesDf$newNames)],"Residuals")
     }
+    #
+    stepwiseModels[[paste('step', i, sep=' ')]] <- models2
     #
     #if(length(which(is.na(lm(design, data = dataIn)$coefficients)))>0){
     #  fvalTmp  <- NA
     #  fval[[i]] <- fvalTmp
     #} else {
-      fvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 4])
-      names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
-      fval[[i]] <- fvalTmp
+    fvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 4])
+    names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
+    fval[[i]] <- fvalTmp
     #}
   
     #
@@ -1247,34 +1253,32 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
     #  pvalTmp  <- NA
     #  pval[[i]] <- pvalTm <- fvalTmp
     #} else {
-      pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
-      names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
-      pval[[i]] <- pvalTmp
+    pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
+    names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
+    pval[[i]] <- pvalTmp
     #}
-    
     #
-    bestTmp <- which.max(sapply(models2, function(x) x[nrow(x) - 1, 4]))
-    outTmp <- which(sapply(models2, function(x) x[nrow(x) - 1, 5]) > 0.05)
+    bestTmp <- names(which.max(fvalTmp))#which.max(sapply(models2, function(x) x[nrow(x) - 1, 4]))
+    outTmp <- names(which(pvalTmp > 0.05 | is.na(pvalTmp)))#which(sapply(models2, function(x) x[nrow(x) - 1, 5]) > 0.05)
     #
     if (length(outTmp) > 0) {
       if (!bestTmp %in% outTmp) {
-        bestSel <- append(bestSel, tmpIn[bestTmp])
+        bestSel <- append(bestSel, bestTmp)#tmpIn[bestTmp])
       }
     } else {
-      bestSel <- append(bestSel, tmpIn[bestTmp])
+      bestSel <- append(bestSel, bestTmp)#tmpIn[bestTmp])
     }
-    outSel <- append(outSel, tmpIn[outTmp])
+    outSel <- append(outSel, outTmp)#tmpIn[outTmp])
     #outSel <- append(outSel, 'a8')
-    
   }
   #
-  tmp <- t(plyr::ldply(fval, rbind))
-  tmp <- tmp[c(bestSel, rev(outSel)), ]
+  tmp_fval <- t(plyr::ldply(fval, rbind))
+  tmp_fval <- tmp[c(bestSel, rev(outSel)), ]
 
   tmp_pval <- t(plyr::ldply(pval, rbind))
   tmp_pval <- tmp_pval[c(bestSel, rev(outSel)), ]
   
-  tb1Out <- round(apply(tmp, 2, as.numeric), 2)
+  tb1Out <- round(apply(tmp_fval, 2, as.numeric), 2)
   row.names(tb1Out) <- namesDf$originalNames[match(row.names(tmp), namesDf$newNames)]
   tb1Out[is.na(tb1Out)] <- ""
   colnames(tb1Out) <- paste("step", seq(1, ncol(tb1Out), 1), sep = "")
@@ -1300,13 +1304,13 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   linkIn[which(abs(linkIn) < covarFilt)] <- NA
   row.names(linkIn) <- row.names(tmp)
   #
-  tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))
+  tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))#,colhead=list(fg_params=list(rot=90,hjust=0, y=0)))
   tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
-  
-  #check whether any of the cooeficients is NA as it will be removed
-  
   #
-  
+  stepWiseout <- new("anota2seqUtilsStepWise",
+                     models = stepwiseModels,
+                     table = tb1Out)
+  #
   varExpl <- anova(lm(as.formula(paste("effM", paste(bestSel, collapse = " + "), sep = "~")), data = dataIn))
   varExpldepend <- numeric()
   for (i in 1:length(bestSel)) {
@@ -1323,48 +1327,56 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
     restFeat <- bestSel[-i]
     
     design <- as.formula(paste(paste("effM", paste(restFeat, collapse = " + "), sep = "~"), tmpFeat, sep = "+"))
-    tmpM <- anova(lm(design, data = dat))
+    tmpM <- anova(lm(design, data = dataIn))
 
     varExplIndepend[i] <- round((tmpM[nrow(tmpM) - 1, 2] / sum(tmpM$`Sum Sq`)) * 100, 2)
   }
   names(varExplIndepend) <- bestSel
   
   #
-  varExplIndepend2 <- numeric()
+  #varExplIndepend2 <- numeric()
   #
-  if (length(presel) > 0) {
-    step1sel <- namesDf$newNames[-presel]
-  } else {
-    step1sel <- namesDf$newNames
-  }
-  for (i in 1:length(step1sel)) {
-    tmpFeat2 <- step1sel[i]
-    restFeat2 <- step1sel[-i]
-    
-    design2 <- as.formula(paste(paste("effM", paste(restFeat2, collapse = " + "), sep = "~"), tmpFeat2, sep = "+"))
-    tmpM2 <- anova(lm(design2, data = dat))
-
-    varExplIndepend2[i] <- round((tmpM2[nrow(tmpM2) - 1, 2] / sum(tmpM2$`Sum Sq`)) * 100, 2)
-  }
-  names(varExplIndepend2) <- step1sel
+  #if (length(presel) > 0) {
+  #  step1sel <- namesDf$newNames[-presel]
+  #} else {
+  #  step1sel <- namesDf$newNames
+  #}
+  #for (i in 1:length(step1sel)) {
+  #  tmpFeat2 <- step1sel[i]
+  #  restFeat2 <- step1sel[-i]
+  #  
+  #  design2 <- as.formula(paste(paste("effM", paste(restFeat2, collapse = " + "), sep = "~"), tmpFeat2, sep = "+"))
+  #  tmpM2 <- anova(lm(design2, data = dataIn))
+  #
+  #  varExplIndepend2[i] <- round((tmpM2[nrow(tmpM2) - 1, 2] / sum(tmpM2$`Sum Sq`)) * 100, 2)
+  #}
+  #names(varExplIndepend2) <- step1sel
   
   #
   tb2out <- data.frame(Features = namesDf$originalNames[match(bestSel, namesDf$newNames)], Pvalue = format(varExpl$`Pr(>F)`[1:length(bestSel)], scientific = T, digits = 2), VarianceExplained_Omnibus = as.numeric(varExpldepend), VarianceExplained_Adjusted = as.numeric(varExplIndepend))
   tg2 <- gridExtra::tableGrob(tb2out, rows = NULL)
   
-  tb3out <- data.frame(Features = names(step1expl), Pvalue_Univariate = format(as.numeric(step1pval), scientific = T, digits = 2), FDRvalue_Univariate = format(as.numeric(step1pval_fdr), scientific = T, digits = 2), VarianceExplained_Univariate = as.numeric(step1expl))
+  rownames(tmpM) <- c(namesDf$originalNames[match(rownames(tmpM)[-length(rownames(tmpM))], namesDf$newNames)],"Residuals")
+  
+  finalModelout <- new("anota2seqUtilsFinalModel",
+                       totalVarianceExplained = sum(as.numeric(varExpldepend)),
+                       finalModel = tmpM,
+                       table = tb2out)
+
+  
+  tb3out <- data.frame(Features = names(step1expl), Pvalue_Univariate = format(as.numeric(step1pval), scientific = T, digits = 2), FDRvalue_Univariate = format(as.numeric(step1fdr), scientific = T, digits = 2), VarianceExplained_Univariate = as.numeric(step1expl))
   tb3out <- tb3out[with(tb3out, order(-tb3out$VarianceExplained_Univariate)), ]
   
   tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
   
   # 
-  tb4out <- data.frame(Features = namesDf$originalNames[match(names(varExplIndepend2), namesDf$newNames)], VarianceExplained_IndependentAll = as.numeric(varExplIndepend2))
-  tb4out <- tb4out[with(tb4out, order(-tb4out$VarianceExplained_IndependentAll)), ]
-  tg4 <- gridExtra::tableGrob(tb4out, rows = NULL)
+  #tb4out <- data.frame(Features = namesDf$originalNames[match(names(varExplIndepend2), namesDf$newNames)], VarianceExplained_IndependentAll = as.numeric(varExplIndepend2))
+  #tb4out <- tb4out[with(tb4out, order(-tb4out$VarianceExplained_IndependentAll)), ]
+  #tg4 <- gridExtra::tableGrob(tb4out, rows = NULL)
   
-  pdf(paste(nameOut, "varexpl_independAll.pdf", sep = "_") , width = dim(tg4)[2] + dim(tg4)[2] + 4, height = dim(tg4)[1] / 2, useDingbats = F)
-  gridExtra::grid.arrange(tg4, ncol = 1, nrow = 1)
-  dev.off()
+  #pdf(paste(nameOut, "varexpl_independAll.pdf", sep = "_") , width = dim(tg4)[2] + dim(tg4)[2] + 4, height = dim(tg4)[1] / 2, useDingbats = F)
+  #gridExtra::grid.arrange(tg4, ncol = 1, nrow = 1)
+  #dev.off()
   
   # 
   linkOut <- list()
@@ -1390,8 +1402,8 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
       f1tmp <- linkOut[i,]$from
       f2tmp <- linkOut[i,]$to
       #
-      f1dat <- dat[,colnames(dat)==f1tmp]
-      f2dat <- dat[,colnames(dat)==f2tmp]
+      f1dat <- dataIn[,colnames(dataIn)==f1tmp]
+      f2dat <- dataIn[,colnames(dataIn)==f2tmp]
       #
       corOut <- cor(f1dat,f2dat)
       linkOut$weight[i] <- corOut
@@ -1415,10 +1427,10 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
     grid::grid.text(paste("Total variance explained: ", sum(as.numeric(varExpldepend)), "%", sep = ""), x = grid::unit(0.75, "npc"), y = grid::unit(0.90, "npc"), gp = grid::gpar(fontsize = 15))
     dev.off()
   }
-  ### tb3out
-  if (NetModelSel == "Adjusted") {
+  ###
+  if (NetModelSel == "adjusted") {
     nodeOut <- tb2out[, c(1, 4)]
-  } else if (NetModelSel == "Univariate") {
+  } else if (NetModelSel == "univariate") {
     nodeOut <- tb3out[, c(1, 4)]
   } else {
     nodeOut <- tb2out[, c(1, 3)]
@@ -1454,33 +1466,34 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
   igraph::V(net)$label <- wrapNames(gsub(" 0%", "", paste(igraph::V(net)$Features, paste(igraph::V(net)$VarianceExplained, "%", sep = ""), sep = " ")), 8)
   
   ###introduce direction here to colour
-  if(isTRUE(isads)){
-    AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
-    names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
-    coloursTmp <- as.character(AnotaColours[grep(regulationGen, names(AnotaColours))])
-    #
-    direct <- as.character()
-    for(i in 1:nrow(nodeOutAll)){
-      if(nodeOutAll[i,]$varexpl==1){
-        IDtmp <- nodeOutAll[i,]$ID
-        #
-        directTmp <- as.numeric(cor.test(dataIn[,colnames(dataIn)==IDtmp,], dataIn$effM)[4])
-        direct[i] <- ifelse(directTmp>0, 'plus','minus')
-      } else {
-        direct[i] <- 'nonsign'
-      }
+  #if(isTRUE(isads)){
+  #  AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
+  #  names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
+  #  coloursTmp <- as.character(AnotaColours[grep(regulationGen, names(AnotaColours))])
+  
+  #
+  direct <- as.character()
+  for(i in 1:nrow(nodeOutAll)){
+    if(nodeOutAll[i,]$varexpl==1){
+      IDtmp <- nodeOutAll[i,]$ID
+      #
+      directTmp <- as.numeric(cor.test(dataIn[,colnames(dataIn)==IDtmp,], dataIn$effM)[4])
+      direct[i] <- ifelse(directTmp>0, 'plus','minus')
+    } else {
+      direct[i] <- 'nonsign'
     }
-    nodeOutAll$direct <- direct
-    #
-    colrs <- rep("white", nrow(nodeOutAll))
-    colrs[which(nodeOutAll$direct == 'plus')] <- coloursTmp[1]
-    colrs[which(nodeOutAll$direct == 'minus')] <- coloursTmp[2]
-    igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
-  } else {
-    colrs <- rep("#B0F2BC", nrow(nodeOutAll))
-    colrs[which(nodeOutAll$varexpl == 2)] <- "white"
-    igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
   }
+  nodeOutAll$direct <- direct
+  #
+  colrs <- rep("white", nrow(nodeOutAll))
+  colrs[which(nodeOutAll$direct == 'plus')] <- coloursTmp[1]
+  colrs[which(nodeOutAll$direct == 'minus')] <- coloursTmp[2]
+  igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
+  #} else {
+  #  colrs <- rep("#B0F2BC", nrow(nodeOutAll))
+  #  colrs[which(nodeOutAll$varexpl == 2)] <- "white"
+  #  igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
+  #}
   # Set edges width based on weight:
   if (length(igraph::E(net)$weight) > 0) {
     if(isTRUE(useCorel)){
@@ -1498,18 +1511,30 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel){
         
   # We can also override the attributes explicitly in the plot:
   pdf(paste(nameOut, "network.pdf", sep = "_"), height = 8, width = 8, useDingbats = F,family = "Helvetica")
+  m <- layout(mat = matrix(c(1, 2, 3), nrow = 3, ncol = 1), heights = c(2, 8, 1))
+  #
+  par(mar = c(0, 5, 5, 5),bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+
+  plot(-2,2,xlim=c(-2,2), ylim=c(-2,2), xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE,xaxt = "n",type="n", yaxt = "n")
+  legend(-2, 2, lwd = c(7, 3, 3, 7), col = c(rep(grDevices::adjustcolor("#F40009", alpha.f = 0.2), 2), rep(grDevices::adjustcolor("#1C39BB",alpha.f = 0.2), 2)), title = ifelse(isTRUE(useCorel),"Correlation", "Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
+  legend(-1.5, 2, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
+  
   par(bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 1.9, cex.lab = 1.5)
-  par(mar = c(5, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
+  par(mar = c(0, 5, 0, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
   plot(net, shape = "sphere", vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "black", layout = layoutCalc(net, n = 2))
-  if(isTRUE(isads)){
-    tmpCoord <- legend("bottomleft", fill = coloursTmp, c("Positive regulation","Negative regulation"), cex = 1.1, bty = "n", xpd = T, inset = -0.1)
-    legend(-1.5, 1.1, "Covary with significant features", bty="n",text.col="#B14D8E")
-  } else {
-    tmpCoord <-legend("bottomleft", fill = c("#B0F2BC"), "In Omnibus model", cex = 1.3, bty = "n", xpd = T, inset = -0.1)
-  }
-  legend(-1.5, 1.5, lwd = c(7, 3, 3, 7), col = c(rep(grDevices::adjustcolor("#F40009", alpha.f = 0.2), 2), rep(grDevices::adjustcolor("#1C39BB",alpha.f = 0.2), 2)), title = ifelse(isTRUE(useCorel),"Correlation", "Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
-  legend(-0.8, 1.5, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
+  
+  par(mar = c(5, 5, 0, 5),bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+  plot(-2,2,xlim=c(-2,2), ylim=c(-2,2), xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE,xaxt = "n",type="n", yaxt = "n")
+  tmpCoord <- legend(-2,-2, fill = coloursTmp, c("Positive regulation","Negative regulation"), cex = 1.1, bty = "n", xpd = T, inset = -0.1)
+  legend('topright', "Covary with significant features", bty="n",text.col="#B14D8E")
   dev.off()
+  
+  lmOut <- new("anota2seqUtilsFeatureIntegration_lm",
+               univariateModel = uniOut,
+               stepwiseModel = stepWiseout,
+               finalModel = finalModelout
+  )
+  return(lmOut)
 }
 
 

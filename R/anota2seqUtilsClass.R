@@ -3,9 +3,10 @@ setClassUnion("characterOrNULL",members=c("character", "NULL"))
 setClassUnion("numericOrNULL",members=c("numeric", "NULL"))
 setClassUnion("listOrNULL",members=c("list", "NULL"))
 setClassUnion("dataframeOrNULL",members=c("data.frame", "NULL"))
+setClassUnion("matrixOrNULL",members=c("matrix", "NULL"))
 setClassUnion("numericOrNULLOrlogical",members=c("numeric", "NULL", "logical"))
 setClassUnion("characterOrNULLOrlogical",members=c("character", "NULL", "logical"))
-
+setClassUnion("anovaOrNULL",members=c("anova", "logical"))
 
 setClass("anota2seqUtilsRegion",
          slots = c(
@@ -43,13 +44,6 @@ setClass("anota2seqUtilsMotifs",
          )
 )
 
-setClass("anota2seqUtilsMotifs",
-         slots = c(
-           UTR5 = "listOrNULL",
-           CDS = "listOrNULL",
-           UTR3 = "listOrNULL"
-         )
-)
 
 setClass("anota2seqUtilsCodonsAll",
          slots = c(
@@ -97,15 +91,70 @@ setClass("anota2seqUtilsGAGE",
          )
 )
 
+setClass("anota2seqUtilsUnivariate",
+         slots = c(
+           pvalue = "numericOrNULL",
+           fdr = "numericOrNULL",
+           varianceExplained = "numericOrNULL"
+         )
+)
+
+setClass("anota2seqUtilsStepWise",
+         slots = c(
+           models = "listOrNULL",
+           table = "matrixOrNULL"
+         )
+)
+
+setClass("anota2seqUtilsFinalModel",
+         slots = c(
+           totalVarianceExplained = "numericOrNULL",
+           finalModel = "anovaOrNULL",
+           table = "dataframeOrNULL"
+         )
+)
+
+setClassUnion("univariateOrNULL",members=c("anota2seqUtilsUnivariate", "NULL"))
+setClassUnion("stepwiseOrNULL",members=c("anota2seqUtilsStepWise", "NULL"))
+setClassUnion("finalmodelOrNULL",members=c("anota2seqUtilsFinalModel", "NULL"))
+
+setClass("anota2seqUtilsFeatureIntegration_lm",
+         slots = c(
+           univariateModel = "univariateOrNULL",
+           stepwiseModel = "stepwiseOrNULL",
+           finalModel = "finalmodelOrNULL"
+         )
+)
+
+setClass("anota2seqUtilsFeatureIntegration_rf",
+         slots = c(
+            = "",
+           
+         )
+)
+
+setClassUnion("lmOrNULL",members=c("anota2seqUtilsFeatureIntegration_lm", "NULL"))
+setClassUnion("rfOrNULL",members=c("anota2seqUtilsFeatureIntegration_rf", "NULL"))
+
+
+setClass("anota2seqUtilsFeatureIntegration",
+         slots = c(
+           lm = "lmOrNULL",
+           rf  = "rfOrNULL"
+         )
+)
+
 setClassUnion("motifsOrNULL",members=c("anota2seqUtilsMotifs", "NULL"))
 setClassUnion("codonsOrNULL",members=c("anota2seqUtilsCodons", "NULL"))
 setClassUnion("miRNAOrNULL",members=c("anota2seqUtilsmiRNA", "NULL"))
 setClassUnion("GOOrNULL",members=c("anota2seqUtilsGO", "NULL"))
 setClassUnion("GAGEOrNULL",members=c("anota2seqUtilsGAGE", "NULL"))
+setClassUnion("FIOrNULL",members=c("anota2seqUtilsFeatureIntegration", "NULL"))
+
 
 setClass("anota2seqUtilsAnalysis",
          slots = c(
-           featureIntegration = "listOrNULL",
+           featureIntegration = "FIOrNULL",
            motifs  = "motifsOrNULL",
            codons = "codonsOrNULL",
            GO = "GOOrNULL",
@@ -114,7 +163,6 @@ setClass("anota2seqUtilsAnalysis",
            miRNA = "miRNAOrNULL"
          )
 )
-
 
 setClass("anota2seqUtilsData",
          slots = c(
