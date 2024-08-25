@@ -268,6 +268,23 @@ getBg <- function(ads=NULL, customBg=NULL, geneList=NULL){
   return(bgOut)
 }
 
+check_id_type <- function(id) {
+  # Check if the ID is purely numeric (likely an Entrez ID)
+  if (grepl("^[0-9]+$", id)) {
+    return("entrezID")
+  }
+  # Check if the ID is alphabetic or alphanumeric (likely a GeneID)
+  else if (grepl("^[A-Za-z0-9]+$", id)) {
+    return("geneID")
+  } 
+  # If it doesn't match either, return unknown
+  else {
+    return("unknown")
+  }
+}
+
+
+
 coloursSel <- function(ads, genesIn, geneList, geneListcolours){
   coloursOut <- as.character()
   if(!is.null(ads)){

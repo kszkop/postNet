@@ -93,6 +93,7 @@ goAnalysis <- function(a2sU,
                                         qvalueCutoff  = 1,
                                         minGSSize = minSize,
                                         maxGSSize = maxSize)
+        #
         resOut[[names(GoLists)[i]]] <- resTmp
       }
     } else if(sel=='BP'|sel=='MF'|sel=='CC'){
@@ -123,7 +124,13 @@ goAnalysis <- function(a2sU,
       tabTmp <- tabTmp[tabTmp$p.adjust < FDR, ]
       #
       geneIDs_temp <- tabTmp$geneID
-      tabTmp$Genes <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
+      
+      checkID <- check_id_type(seqinr::c2s(strsplit(geneIDs_temp[[1]],'/')[[1]][1:5]))
+      if(checkID=="entrezID"){
+        tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(convertEntrezIDToSymbol(unlist(strsplit(x,'/')),species=species)),collapse=':'),USE.NAMES = F)
+      } else {
+        tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
+      }
       #
       resOut[[i]]@result <- tabTmp
       resWrite <- lapply(resOut, function(x) x@result)
@@ -208,8 +215,9 @@ goDotplot <- function(a2sU,
         ggplot2::theme_bw() +
         ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = 'dashed', linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(),panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, 'cm')) +   
         ggplot2::xlab('-log10 FDR') +
-        ggplot2::ylab(" ") +
-        ggplot2::ggtitle(paste(names(goIn)[i],sel, sep='_'))
+        ggplot2::ylab(" ") 
+        #+
+        #ggplot2::ggtitle(paste(names(goIn)[i],sel, sep='_'))
       plot(pOut)
       dev.off()
     } else{
