@@ -1559,6 +1559,9 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, colo
   return(lmOut)
 }
 
+
+
+
 plotScatterInd <- function(set1, set2=NULL, orgName, coloursIn, nameOut ){
   
   pdf(paste(nameOut, orgName, "individually.pdf", sep = "_"), width = 8, height = 8, useDingbats = F)
