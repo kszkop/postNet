@@ -477,3 +477,18 @@ is_valid_NetModelSel <- function(NetModelSel) {
   }
   return(FALSE)
 }
+
+check_model <- function(model, analysis_type) {
+  if (is.null(model)) {
+    return(FALSE)
+  }
+  
+  if (analysis_type == "lm" && model %in% c("univariate", "stepwise", "final")) {
+    return(TRUE)
+  }
+  
+  if (analysis_type == "rf" && model %in% c("pre", "boruta", "final")) {
+    return(TRUE)
+  }
+  return(FALSE)
+}

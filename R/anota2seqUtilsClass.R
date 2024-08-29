@@ -122,23 +122,29 @@ setClass("anota2seqUtilsFeatureIntegration_lm",
          slots = c(
            univariateModel = "univariateOrNULL",
            stepwiseModel = "stepwiseOrNULL",
-           finalModel = "finalmodelOrNULL"
+           finalModel = "finalmodelOrNULL",
+           selectedFeatures = "characterOrNULL",
+           networkGraph = "ANY"
          )
 )
 
 setClass("anota2seqUtilsFeatureIntegration_rf",
          slots = c(
-            rf = "NULL"
+            preModel = "ANY",
+            borutaModel = "ANY",
+            finalModel = "ANY",
+            selectedFeatures = "numericOrNULL"
          )
 )
+
 
 setClassUnion("lmOrNULL",members=c("anota2seqUtilsFeatureIntegration_lm", "NULL"))
 setClassUnion("rfOrNULL",members=c("anota2seqUtilsFeatureIntegration_rf", "NULL"))
 
 setClass("anota2seqUtilsFeatureIntegration",
          slots = c(
-           lm = "lmOrNULL",
-           rf  = "rfOrNULL"
+           lm = "listOrNULL",
+           rf  = "listOrNULL"
          )
 )
 

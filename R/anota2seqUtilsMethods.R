@@ -1,4 +1,3 @@
-
 setGeneric("a2sU_sequences",
            function(x, region) standardGeneric("a2sU_sequences"))
 setMethod("a2sU_sequences", "anota2seqUtilsData",
@@ -307,3 +306,47 @@ a2sU_gage <- function(a2sU,
   }
 }
 
+a2sU_model <- function(a2sU,analysis_type, model){
+  if (!checkUtils(a2sU)) {
+    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  }
+  if(!is_valid_analysis_type(analysis_type)){
+    stop("'analysis_type' can be only 'lm' for linear model or 'rf' for random forest")
+  }
+  if(!check_model(model, analysis_type = analysis_type)){
+    stop("please provide correct model for a analysis type")
+  }
+  tmpIn <- slot(a2sU@analysis@featureIntegration,analysis_type)
+  #
+  tmpOut <- slot(tmpIn,model)
+  #
+  return(tmpOut)
+}
+
+
+a2sU_selectedFeatures <- function(a2sU, analysis_type){
+  if (!checkUtils(a2sU)) {
+    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  }
+  if(!is_valid_analysis_type(analysis_type)){
+    stop("'analysis_type' can be only 'lm' for linear model or 'rf' for random forest")
+  }
+  
+  tmpIn <- slot(a2sU@analysis@featureIntegration,analysis_type)
+  #
+  tmpOut <- slot(tmpIn, "selectedFeatures")
+  #
+  return(tmpOut)
+}
+
+setGeneric("a2sU_networkGraph",
+           function(x) standardGeneric("a2sU_networkGraph"))
+setMethod("a2sU_networkGraph", "anota2seqUtilsData",
+          function(x){
+            if(!checkUtils(x)){
+              stop("It is not valid anota2seqUtils object")
+            } else {
+              tmpOut <- x@analysis@featureIntegration@lm@networkGraph
+              return(tmpOut)
+            }
+          })

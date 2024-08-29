@@ -1290,13 +1290,13 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, colo
   }
   #
   tmp_fval <- t(plyr::ldply(fval, rbind))
-  tmp_fval <- tmp[c(bestSel, rev(outSel)), ]
+  tmp_fval <- tmp_fval[c(bestSel, rev(outSel)), ]
 
   tmp_pval <- t(plyr::ldply(pval, rbind))
   tmp_pval <- tmp_pval[c(bestSel, rev(outSel)), ]
   
   tb1Out <- round(apply(tmp_fval, 2, as.numeric), 2)
-  row.names(tb1Out) <- namesDf$originalNames[match(row.names(tmp), namesDf$newNames)]
+  row.names(tb1Out) <- namesDf$originalNames[match(row.names(tmp_fval), namesDf$newNames)]
   tb1Out[is.na(tb1Out)] <- ""
   colnames(tb1Out) <- paste("step", seq(1, ncol(tb1Out), 1), sep = "")
 
@@ -1319,7 +1319,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, colo
   #
   colours[which(tmp_pval > 0.05)] <- "#B14D8E"
   linkIn[which(abs(linkIn) < covarFilt)] <- NA
-  row.names(linkIn) <- row.names(tmp)
+  row.names(linkIn) <- row.names(tmp_fval)
   #
   tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))#,colhead=list(fg_params=list(rot=90,hjust=0, y=0)))
   tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
@@ -1546,12 +1546,57 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, colo
   legend('topright', "Covary with significant features", bty="n",text.col="#B14D8E")
   dev.off()
   
+  selectedFeatures <- nodeOutAll[nodeOutAll$varexpl==1,]$VarianceExplained
+  names(selectedFeatures) <- nodeOutAll[nodeOutAll$varexpl==1,]$Features
+  
   lmOut <- new("anota2seqUtilsFeatureIntegration_lm",
                univariateModel = uniOut,
                stepwiseModel = stepWiseout,
-               finalModel = finalModelout
+               finalModel = finalModelout,
+               selectedFeatures = selectedFeatures
+               networkGraph = net
   )
   return(lmOut)
 }
 
+plotScatterInd <- function(set1, set2=NULL, orgName, coloursIn, nameOut ){
+  
+  pdf(paste(nameOut, orgName, "individually.pdf", sep = "_"), width = 8, height = 8, useDingbats = F)
+  par(mar = c(9, 5, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.7, cex.main = 1.7, cex.lab = 1.3)
+  #
+  if(is.null(set2)){
+    set <- set1
+  } else {
+    set <- rbind(set1, set2)
+  }
+  
+  xlim_min <- roundNice(min(set[,1]),direction = 'down')
+  xlim_max <- roundNice(max(set[,1]),direction = 'up')
+  ylim_min <- roundNice(min(set[,2]),direction = 'down')
+  ylim_max <- roundNice(max(set[,2]),direction = 'up')
+  
+  plot(set1[,1], set1[,2], col = coloursIn[1], xlim=c(xlim_min,xlim_max), ylim=c(ylim_min,ylim_max), pch = 16, cex = 1, xlab = "", ylab = "", lwd = 1, bty = "n", font = 2)
+  if(!is.null(set2)){
+    points(set2[,1], set2[,2], pch = 16, col = colours[2])
+  }
+  #
+  mtext(side = 2, line = 3, 'effM', col = "black", font = 2, cex = 1.7)
+  #axis(side = 2, seq(-ylim, ylim, 2), font = 2, las = 2, lwd = 2)
 
+  mtext(side = 1, line = 4, featTmp, col = "black", font = 2, cex = 1.7, at = (xlim_min + xlim_max) / 2)
+  #axis(side = 1, seq(xlim_min, xlim_max, ifelse((xlim_max - xlim_min) / 5 >= 0, roundUpNice((xlim_max - xlim_min) / 5), -roundUpNice(abs((xlim_max - xlim_min) / 5)))), font = 2, lwd = 2)
+  #
+  if (length(unique(set[,1])) > 2 & IQR(set[,1]) > 0) {
+    f1 <- predict(smooth.spline(set[,2] ~ set[,1]))
+    lines(f1$x[which(f1$x > xlim_min & f1$x < xlim_max)], f1$y[which(f1$x > xlim_min & f1$x < xlim_max)], col = "#AFBADC", lwd = 4, lend = 2)
+    lines(f1$x[which(f1$x > xlim_min & f1$x < xlim_max)], f1$y[which(f1$x > xlim_min & f1$x < xlim_max)], col = "black", lwd = 1, lend = 2, lty = 3)
+  }
+  #
+  if (!is.na(as.numeric(coefficients(lm(set[,2] ~ set[,1]))[2]))) {
+    plotrix::ablineclip(lm(set[,2] ~ set[,1]), col = "#AFBADC", lwd = 4, x1 = xlim_min, x2 = xlim_max)
+    plotrix::ablineclip(lm(set[,2] ~ set[,1]), col = "black", lwd = 1, x1 = xlim_min, x2 = xlim_max)
+  
+    text((xlim_min + xlim_max) / 2, ylim_max, paste("pvalue ", format(as.numeric(cor.test(set[,1], set[,2])[3]), scientific = T, digits = 3), ", r=", round(as.numeric(cor.test(set[,1], set[,2])[4]), 3), sep = ""), bty = "n", col = "black", cex = 1.25, font = 2)
+  }
+  dev.off()
+}

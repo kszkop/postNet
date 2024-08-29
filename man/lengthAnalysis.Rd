@@ -9,7 +9,7 @@ lengthAnalysis(a2sU, region, comparisons=NULL, plotOut = TRUE, plotType = "boxpl
 }
 
 \arguments{
-\item{a2sU}{ anota2seqUtils class object created using anota2seqUtilsStart function }
+\item{a2sU}{ anota2seqUtilsData class object created using anota2seqUtilsStart function }
 \item{region}{ Select the regions of interest. Choose from combination of "UTR5", "CDS", "UTR3" }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. }
 \item{plotOut}{ Logical whether plots and optionally comparisons should be performed. The default is TRUE. }
