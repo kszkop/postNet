@@ -1553,7 +1553,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, colo
                univariateModel = uniOut,
                stepwiseModel = stepWiseout,
                finalModel = finalModelout,
-               selectedFeatures = selectedFeatures
+               selectedFeatures = selectedFeatures,
                networkGraph = net
   )
   return(lmOut)
