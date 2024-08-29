@@ -1179,7 +1179,7 @@ prepFeatures <- function(a2sU,
 }
 
 
-runLM <- function(dataIn, namesDf, allFeat, useCorel, nameOut, NetModelSel, colours){
+runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, colours){
   #
   fval <- list()
   pval <- list()

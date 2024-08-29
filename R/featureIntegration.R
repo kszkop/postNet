@@ -75,13 +75,13 @@ featureIntegration <- function(a2sU,
         listSel <- c(names(resOut[[compTmp[1]]]), names(resOut[[compTmp[2]]]))
         dataTmpSel <- dataTmp[row.names(dataTmp) %in% listSel, ]
         #
-        lmOut <- runLM(dataIn = dataTmpSel, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, nameOut = pdfName, NetModelSel = NetModelSel,colours=coloursTmp)
+        lmOut <- runLM(dataIn = dataTmpSel, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel,colours=coloursTmp)
       }
       fiOut@lm[[paste(names(resOut)[compTmp], collapse='_')]] <- lmOut
     } else {
       #
       coloursTmp <- c('salmon','skyblue')
-      lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, nameOut = pdfName, NetModelSel = NetModelSel, colours=coloursTmp)
+      lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel,  covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, colours=coloursTmp)
       fiOut@lm[['allData']] <- lmOut
     }
   } else if (analysis_type == "rf") {
