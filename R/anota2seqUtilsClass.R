@@ -6,6 +6,8 @@ setClassUnion("dataframeOrNULL",members=c("data.frame", "NULL"))
 setClassUnion("matrixOrNULL",members=c("matrix", "NULL"))
 setClassUnion("numericOrNULLOrlogical",members=c("numeric", "NULL", "logical"))
 setClassUnion("characterOrNULLOrlogical",members=c("character", "NULL", "logical"))
+setClassUnion("characterOrnumericOrNULL",members=c("character", "numeric", "NULL"))
+
 setClassUnion("anovaOrNULL",members=c("anova", "logical"))
 
 setClass("anota2seqUtilsRegion",
@@ -133,7 +135,7 @@ setClass("anota2seqUtilsFeatureIntegration_rf",
             preModel = "ANY",
             borutaModel = "ANY",
             finalModel = "ANY",
-            selectedFeatures = "numericOrNULL"
+            selectedFeatures = "characterOrnumericOrNULL"
          )
 )
 
