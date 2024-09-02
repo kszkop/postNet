@@ -1179,7 +1179,7 @@ prepFeatures <- function(a2sU,
 }
 
 
-runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, colours){
+runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, coloursIn){
   #
   fval <- list()
   pval <- list()
@@ -1503,8 +1503,8 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   nodeOutAll$direct <- direct
   #
   colrs <- rep("white", nrow(nodeOutAll))
-  colrs[which(nodeOutAll$direct == 'plus')] <- colours[1]
-  colrs[which(nodeOutAll$direct == 'minus')] <- colours[2]
+  colrs[which(nodeOutAll$direct == 'plus')] <- coloursIn[1]
+  colrs[which(nodeOutAll$direct == 'minus')] <- coloursIn[2]
   igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
   #} else {
   #  colrs <- rep("#B0F2BC", nrow(nodeOutAll))
@@ -1542,7 +1542,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   
   par(mar = c(5, 5, 0, 5),bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
   plot(-2,2,xlim=c(-2,2), ylim=c(-2,2), xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE,xaxt = "n",type="n", yaxt = "n")
-  tmpCoord <- legend(-2,-2, fill = coloursTmp, c("Positive regulation","Negative regulation"), cex = 1.1, bty = "n", xpd = T, inset = -0.1)
+  tmpCoord <- legend(-2,-2, fill = colours, c("Positive regulation","Negative regulation"), cex = 1.1, bty = "n", xpd = T, inset = -0.1)
   legend('topright', "Covary with significant features", bty="n",text.col="#B14D8E")
   dev.off()
   
