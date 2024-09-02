@@ -1503,8 +1503,8 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   nodeOutAll$direct <- direct
   #
   colrs <- rep("white", nrow(nodeOutAll))
-  colrs[which(nodeOutAll$direct == 'plus')] <- coloursTmp[1]
-  colrs[which(nodeOutAll$direct == 'minus')] <- coloursTmp[2]
+  colrs[which(nodeOutAll$direct == 'plus')] <- colours[1]
+  colrs[which(nodeOutAll$direct == 'minus')] <- colours[2]
   igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
   #} else {
   #  colrs <- rep("#B0F2BC", nrow(nodeOutAll))

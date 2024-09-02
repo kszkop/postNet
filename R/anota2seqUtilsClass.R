@@ -125,7 +125,7 @@ setClass("anota2seqUtilsFeatureIntegration_lm",
            univariateModel = "univariateOrNULL",
            stepwiseModel = "stepwiseOrNULL",
            finalModel = "finalmodelOrNULL",
-           selectedFeatures = "characterOrNULL",
+           selectedFeatures = "characterOrnumericOrNULL",
            networkGraph = "ANY"
          )
 )
