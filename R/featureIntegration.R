@@ -76,13 +76,47 @@ featureIntegration <- function(a2sU,
         dataTmpSel <- dataTmp[row.names(dataTmp) %in% listSel, ]
         #
         lmOut <- runLM(dataIn = dataTmpSel, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel,coloursIn=coloursTmp)
+        fiOut@lm[[paste(names(resOut)[compTmp], collapse='_')]] <- lmOut
+        
+        bestSel <- names(lmOut@selectedFeatures)
+        
+        for (feat in bestSel) {
+          print(feat)
+          #
+          featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
+          #
+          set <- dataTmpSel[,colnames(dataTmpSel) %in% c(featTmp,'effM')]
+          #
+          set1 <- names(resOut[[compTmp[1]]])
+          setSel1 <- set[row.names(set) %in% set1,]
+          set2 <- names(resOut[[compTmp[2]]])
+          setSel2 <- set[row.names(set) %in% set2,]
+          #
+          plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=nameOut)
+        }
       }
-      fiOut@lm[[paste(names(resOut)[compTmp], collapse='_')]] <- lmOut
     } else {
       #
       coloursTmp <- c('salmon','skyblue')
       lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel,  covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp)
       fiOut@lm[['allData']] <- lmOut
+      #
+      bestSel <- names(lmOut@selectedFeatures)
+      
+      for (feat in bestSel) {
+        print(feat)
+        #
+        featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
+        #
+        set <- dataTmpSel[,colnames(dataTmpSel) %in% c(featTmp,'effM')]
+        #
+        set1 <- names(resOut[[compTmp[1]]])
+        setSel1 <- set[row.names(set) %in% set1,]
+        set2 <- names(resOut[[compTmp[2]]])
+        setSel2 <- set[row.names(set) %in% set2,]
+        
+        plotScatterInd(set1=setSel1, set2=NULL, orgName=feat, coloursIn=coloursTmp, nameOut=nameOut)
+      }
     }
   } else if (analysis_type == "rf") {
     dataTmp <- dataTmp[, colnames(dataTmp) != "effM"]
@@ -190,40 +224,25 @@ featureIntegration <- function(a2sU,
                    selectedFeatures = varImpIn)
       #
       fiOut@rf[[paste(names(resOut)[compTmp], collapse='_')]] <- rfOut
-    }
-  } else {
-    stop("Please provide correct type: lm for linear regression or rf for random forest")
-  }
-  if (analysis_type == "rf") {
-    bestSel <- featComf
-  }
-  for (feat in bestSel) {
-    print(feat)
-    #
-    featTmp <- namesDf[namesDf$newNames == feat, ]$originalNames
-    featTmp <- gsub(" ", "_", featTmp)
-    #
-    set <- dataTmp[,colnames(dataTmp) %in% c(feat,'effM')]
-    #
-    if (isTRUE(regOnly)) {
-      for (i in 1:length(comparisons)) {
-        coloursTmp <- a2sU_colours(a2sU)
-        if (names(resOut)[1] == 'background') {
-          compTmp <- comparisons[[i]] + 1
-          coloursTmp <- c('grey75',coloursTmp)[compTmp]
-        } else {
-          compTmp <- comparisons[[i]]
-          coloursTmp <- coloursTmp[compTmp]
-        }
+    
+      bestSel <- names(lmOut@selectedFeatures)
+        
+      for (feat in bestSel) {
+        print(feat)
+        #
+        featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
+        #
+        set <- dataTmpSel[,colnames(dataTmpSel) %in% c(featTmp,'effM')]
+        #
         set1 <- names(resOut[[compTmp[1]]])
-        setSel1 <- set[row.names(set) %in% set1,]
+        etSel1 <- set[row.names(set) %in% set1,]
         set2 <- names(resOut[[compTmp[2]]])
         setSel2 <- set[row.names(set) %in% set2,]
         #
-        plotScatterInd(set1=setSel1, set2=setSel2, orgName=featTmp, coloursIn=coloursTmp, nameOut=nameOut)
+        plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=nameOut)
       }
-    } else {
-      plotScatterInd(set1=set,set2=NULL,orgName=featTmp, colours=coloursTmp, nameOut=nameOut)
     }
+  } else {
+    stop("Please provide correct type: lm for linear regression or rf for random forest")
   }
 }
