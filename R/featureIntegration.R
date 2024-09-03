@@ -92,7 +92,7 @@ featureIntegration <- function(a2sU,
           set2 <- names(resOut[[compTmp[2]]])
           setSel2 <- set[row.names(set) %in% set2,]
           #
-          plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=nameOut)
+          plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
         }
       }
     } else {
@@ -115,7 +115,7 @@ featureIntegration <- function(a2sU,
         set2 <- names(resOut[[compTmp[2]]])
         setSel2 <- set[row.names(set) %in% set2,]
         
-        plotScatterInd(set1=setSel1, set2=NULL, orgName=feat, coloursIn=coloursTmp, nameOut=nameOut)
+        plotScatterInd(set1=setSel1, set2=NULL, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
       }
     }
   } else if (analysis_type == "rf") {
@@ -239,7 +239,7 @@ featureIntegration <- function(a2sU,
         set2 <- names(resOut[[compTmp[2]]])
         setSel2 <- set[row.names(set) %in% set2,]
         #
-        plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=nameOut)
+        plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
       }
     }
   } else {
