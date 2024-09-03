@@ -1580,7 +1580,7 @@ plotScatterInd <- function(set1, set2=NULL, orgName, coloursIn, nameOut ){
   
   plot(set1[,1], set1[,2], col = coloursIn[1], xlim=c(xlim_min,xlim_max), ylim=c(ylim_min,ylim_max), pch = 16, cex = 1, xlab = "", ylab = "", lwd = 1, bty = "n", font = 2)
   if(!is.null(set2)){
-    points(set2[,1], set2[,2], pch = 16, col = colours[2])
+    points(set2[,1], set2[,2], pch = 16, col = coloursIn[2])
   }
   #
   mtext(side = 2, line = 3, 'effM', col = "black", font = 2, cex = 1.7)
