@@ -242,7 +242,9 @@ featureIntegration <- function(a2sU,
         plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
       }
     }
+    a2sU@analysis@featureIntegration <- fiOut
   } else {
     stop("Please provide correct type: lm for linear regression or rf for random forest")
   }
+  return(a2sU)
 }
