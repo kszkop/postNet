@@ -118,7 +118,7 @@ featureIntegration <- function(a2sU,
       }
     }
   } else if (analysis_type == "rf") {
-    dataTmp <- dataTmp[, colnames(dataTmp) != "effM"]
+    dataTmpReg <- dataTmp[, colnames(dataTmp) != "effM"]
     #
     for (i in 1:length(comparisons)) {
       coloursTmp <- a2sU_colours(a2sU)
@@ -130,7 +130,7 @@ featureIntegration <- function(a2sU,
         coloursTmp <- coloursTmp[compTmp]
       }
       #regTmp <- names(resOut)[compTmp]
-      dataTmpSel <- dataTmp
+      dataTmpSel <- dataTmpReg
       dataTmpSel$reg <- NA
       for(i in compTmp) {
         regTmp <- names(resOut[[i]])
@@ -227,14 +227,13 @@ featureIntegration <- function(a2sU,
       bestSel <- names(rfOut@selectedFeatures)
         
       for (feat in bestSel) {
-        print(feat)
         #
         featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
         #
-        set <- dataTmpSel[,colnames(dataTmpSel) %in% c(featTmp,'effM')]
+        set <- dataTmp[,colnames(dataTmp) %in% c(featTmp,'effM')]
         #
         set1 <- names(resOut[[compTmp[1]]])
-        etSel1 <- set[row.names(set) %in% set1,]
+        setSel1 <- set[row.names(set) %in% set1,]
         set2 <- names(resOut[[compTmp[2]]])
         setSel2 <- set[row.names(set) %in% set2,]
         #

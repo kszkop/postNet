@@ -483,11 +483,11 @@ check_model <- function(model, analysis_type) {
     return(FALSE)
   }
   
-  if (analysis_type == "lm" && model %in% c("univariate", "stepwise", "final")) {
+  if (analysis_type == "lm" && model %in% c("univariateModel", "stepwiseModel", "finalModel")) {
     return(TRUE)
   }
   
-  if (analysis_type == "rf" && model %in% c("pre", "boruta", "final")) {
+  if (analysis_type == "rf" && model %in% c("preModel", "borutaModel", "finalModel")) {
     return(TRUE)
   }
   return(FALSE)

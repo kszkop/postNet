@@ -306,7 +306,7 @@ a2sU_gage <- function(a2sU,
   }
 }
 
-a2sU_model <- function(a2sU,analysis_type, model){
+a2sU_model <- function(a2sU, analysis_type, model, comparison){
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
   }
@@ -316,7 +316,14 @@ a2sU_model <- function(a2sU,analysis_type, model){
   if(!check_model(model, analysis_type = analysis_type)){
     stop("please provide correct model for a analysis type")
   }
+  if (!is_number(comparison)) {
+    stop("please provide correct comparison number")
+    if(length(comparison) != 1){
+      stop("comparison can be only one")
+    }
+  }
   tmpIn <- slot(a2sU@analysis@featureIntegration,analysis_type)
+  tmpIn <- tmpIn[[comparison]]
   #
   tmpOut <- slot(tmpIn,model)
   #
