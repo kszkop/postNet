@@ -217,14 +217,14 @@ featureIntegration <- function(a2sU,
       dev.off()
       
       rfOut <- new("anota2seqUtilsFeatureIntegration_rf",
-                   premodel = model1,
+                   preModel = model1,
                    borutaModel = model1Imp,
                    finalModel = model2,
                    selectedFeatures = varImpIn)
       #
       fiOut@rf[[paste(names(resOut)[compTmp], collapse='_')]] <- rfOut
     
-      bestSel <- names(lmOut@selectedFeatures)
+      bestSel <- names(rfOut@selectedFeatures)
         
       for (feat in bestSel) {
         print(feat)
