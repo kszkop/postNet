@@ -1586,7 +1586,7 @@ plotScatterInd <- function(set1, set2=NULL, orgName, coloursIn, nameOut ){
   mtext(side = 2, line = 3, 'effM', col = "black", font = 2, cex = 1.7)
   #axis(side = 2, seq(-ylim, ylim, 2), font = 2, las = 2, lwd = 2)
 
-  mtext(side = 1, line = 4, featTmp, col = "black", font = 2, cex = 1.7, at = (xlim_min + xlim_max) / 2)
+  mtext(side = 1, line = 4, orgName, col = "black", font = 2, cex = 1.7, at = (xlim_min + xlim_max) / 2)
   #axis(side = 1, seq(xlim_min, xlim_max, ifelse((xlim_max - xlim_min) / 5 >= 0, roundUpNice((xlim_max - xlim_min) / 5), -roundUpNice(abs((xlim_max - xlim_min) / 5)))), font = 2, lwd = 2)
   #
   if (length(unique(set[,1])) > 2 & IQR(set[,1]) > 0) {
