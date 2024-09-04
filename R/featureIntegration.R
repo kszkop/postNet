@@ -81,7 +81,6 @@ featureIntegration <- function(a2sU,
         bestSel <- names(lmOut@selectedFeatures)
         
         for (feat in bestSel) {
-          print(feat)
           #
           featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
           #
@@ -242,9 +241,9 @@ featureIntegration <- function(a2sU,
         plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
       }
     }
-    a2sU@analysis@featureIntegration <- fiOut
   } else {
     stop("Please provide correct type: lm for linear regression or rf for random forest")
   }
+  a2sU@analysis@featureIntegration <- fiOut
   return(a2sU)
 }
