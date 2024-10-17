@@ -7,6 +7,7 @@ codonUsage <- function(a2sU,
                        dpn_path = NULL, # path to dpn files if riboseq
                        cds_filt = TRUE,
                        pAdj = 0.01,
+                       rem5=TRUE,
                        plotHeatmap = TRUE,
                        thresX1 = 0.3,
                        thresY1 = 0.3,
@@ -146,6 +147,9 @@ codonUsage <- function(a2sU,
   }
   if(!is_number(codonN)){
     stop("Please provide numerical value for 'codonN'")
+  }
+  if(!is_logical(rem5)){
+    stop("rem5 can be only TRUE or FALSE")
   }
   checkcodSource(codSource)
   codSourse <- tolower(codSource)
@@ -359,7 +363,7 @@ codonUsage <- function(a2sU,
     }
     
     #indexex
-    indNames <- c('CAI', 'CBI', 'Fop','GC3s','tai','L_aa')
+    indNames <- c('CAI', 'CBI', 'Fop','GC3s','tAI','L_aa')
     
     for(ind in indNames){
       #####
@@ -457,7 +461,6 @@ codonUsage <- function(a2sU,
       }
     }
   }
-  print('test')
   #
   codonsSel <- list()
   for (j in 1:length(comparisons)) {
@@ -469,18 +472,28 @@ codonUsage <- function(a2sU,
     resIn <- compOut1[compTmp]
     resIn <- do.call(rbind, resIn)
     
+    #remove with 0 in both
+    remInd <- as.numeric(which(apply(resIn, 2, sum)==0))
+    resIn <- resIn[,-remInd]
+    
     #
+    if (sum(apply(resIn, 2, min) < 5) > 0) {
+      if(isTRUE(rem5)){
+        rem5Ind <- as.numeric(which(apply(resIn, 2, min) < 5))
+        resIn <- resIn[,-rem5Ind]
+      } else {
+        warning("In the contingency table (counts of codons by geneset), some counts are lower than 5 which may invalidate the chi-squared test. It might be relevant to perform the analysis on a subset or groups of codons instead",
+                call. = FALSE
+        )
+      }
+    }
+    
     chisqTest <- chisq.test(resIn)
 
     if (is.na(chisqTest$p.value)) {
       stop("The Chi-squared test could not be performed. Please check that all codons have at least one count for at least one geneset.")
     }
 
-    if (sum(apply(resIn, 2, min) < 5) > 0) {
-      warning("In the contingency table (counts of codons by geneset), some counts are lower than 5 which may invalidate the chi-squared test. It might be relevant to perform the analysis on a subset or groups of codons instead",
-        call. = FALSE
-      )
-    }
 
     StResiduals <- chisqTest$stdres
     signifLimit <- sqrt(qchisq(pAdj / (dim(resIn)[1] * dim(resIn)[2]), lower.tail = FALSE, df = 1))
@@ -521,7 +534,7 @@ codonUsage <- function(a2sU,
       message(paste("There are no significant codons for comparison ", j, sep = ""))
     } else {
       #
-      if (analysis == "codon") {
+      if (analysis == "codon" & codonN==1) {
         resIn2 <- compOut2[compTmp]
         resIn2 <- as.data.frame(do.call(cbind, resIn2))
         resIn2$codon <- row.names(resIn2)
@@ -578,6 +591,7 @@ codonUsage <- function(a2sU,
           print(pOut)
           dev.off()
         #
+     
         resIn4 <- data.frame(codon = colnames(resIn), t(resIn), row.names = NULL)
         resIn4$AA <- seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(resIn4$codon))))
 

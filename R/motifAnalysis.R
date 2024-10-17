@@ -80,12 +80,12 @@ motifAnalysis <- function(a2sU,
       outdirTmp <- paste("stremeOut", reg, names(resOut)[j], sep = "_")
       streme_out <- memes::runStreme(input = paste(paste("Regulated", reg, names(resOut)[j], sep = "_"), ".fa", sep = ""), control = paste(paste("Control", reg, sep = "_"), ".fa", sep = ""), meme_path = memePath, alph = tolower(seqType), outdir = outdirTmp, minw = minwidth)
       if(nrow(streme_out)==0){
-        message(paste('No motifs found among genes: ', motifsSel,sep=''))
+        message(paste('No motifs found in: ',paste(reg, names(resOut)[j], sep = "_"),sep=''))
       }
       #
       streme_out <- streme_out[streme_out$pval < stremeThreshold, ]
       if(nrow(streme_out)==0){
-        message(paste('No motifs passed thresholds for: ', motifsSel,sep=''))
+        message(paste('No motifs passed thresholds in: ',paste(reg, names(resOut)[j], sep = "_"),sep=''))
       }
       motifsTmpOut[[names(resOut)[j]]] <- streme_out
     }
