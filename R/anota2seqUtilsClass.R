@@ -172,7 +172,7 @@ setClass("anota2seqUtilsAnalysis",
 
 setClass("anota2seqUtilsData",
          slots = c(
-           species = "character",
+           species = "characterOrNULL",
            version = "character",
            selection = "character",
            annot =  "anota2seqUtilsAnnot",
