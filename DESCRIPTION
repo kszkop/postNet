@@ -13,7 +13,8 @@ Depends:
   R (>= 4.1.0),
   dplyr (>= 1.0.7),
   pqsfinder (>= 2.8.0),
-  Biostrings (>= 2.60.2)
+  Biostrings (>= 2.60.2),
+  foreach (>= 1.5.2)
 Imports:
   gridExtra (>= 2.3),
   curl (>= 4.3.1),

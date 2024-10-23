@@ -526,7 +526,7 @@ calc_motif <- function(x, motifIn, dist, unit){
       nMot <- list()
       #nMot[["start"]] <- as.numeric(start(gROut@ranges))
       #nMot[["end"]] <- as.numeric(end(gROut@ranges)) + lenTmp - 1
-      nMot[["start"]] <- as.numeric(dtTmp$start
+      nMot[["start"]] <- as.numeric(dtTmp$start)
       nMot[["end"]] <- as.numeric(dtTmp$end)  + lenTmp - 1
     }
   } else {
