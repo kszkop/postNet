@@ -94,7 +94,7 @@ contentMotifs <- function(a2sU,
     cl <- parallel::makeCluster(num_threads)
     doParallel::registerDoParallel(cl)
 
-    motifsFinal <- foreach::foreach(i = 1:length(motifsIn), .combine = 'c', .packages = c('anota2seqUtils','foreach')) %dopar% {
+    motifsFinal <- foreach::foreach(i = 1:length(motifsIn), .combine = 'c', .packages = c('anota2seqUtils','data.table')) %dopar% {
       
     #motifsFinal <- list()
     #for (i in 1:length(motifsIn)) {
