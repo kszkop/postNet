@@ -229,7 +229,7 @@ a2sU_GO <- function(a2sU,
   } else {
     GOres <- slot(a2sU@analysis@GO,category)
   }
-  GOresOut <- GOres[[which(geneList %in% names(GOres))]]@result
+  GOresOut <- GOres[[which(geneList == names(GOres))]]@result
   GOresOut <- GOresOut[which(GOresOut[,6]< threshold),]
 
   if(nrow(GOresOut)>0){

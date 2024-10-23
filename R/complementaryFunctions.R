@@ -512,14 +512,22 @@ calc_motif <- function(x, motifIn, dist, unit){
   motOut  <- seqinr::words.pos(motifIn,seqTmp)
   if(length(motOut)>0){
     #Check overlapping and collapse them
-    gROut <- GenomicRanges::reduce(GenomicRanges::GRanges(seqnames='tmp', ranges=IRanges::IRanges(start=motOut,end=motOut)),min.gapwidth=len)
+    #gROut <- GenomicRanges::reduce(GenomicRanges::GRanges(seqnames='tmp', ranges=IRanges::IRanges(start=motOut,end=motOut)),min.gapwidth=len)
     #
+    dtTmp <- data.table::data.table(start = motOut, end = motOut)
+    data.table::setorder(dtTmp, start)
+    dtTmp[, group := cumsum(c(1, diff(start) > len))]
+    dtTmp <- dtTmp[, .(start = min(start), end = max(end)), by = group]
+
     if(unit == 'number'){
-      nMot <- length(gROut)
+      #nMot <- length(gROut)
+      nMot <- nrow(dtTmp)
     } else if (unit == 'position') {
       nMot <- list()
-      nMot[["start"]] <- as.numeric(start(gROut@ranges))
-      nMot[["end"]] <- as.numeric(end(gROut@ranges)) + lenTmp - 1
+      #nMot[["start"]] <- as.numeric(start(gROut@ranges))
+      #nMot[["end"]] <- as.numeric(end(gROut@ranges)) + lenTmp - 1
+      nMot[["start"]] <- as.numeric(dtTmp$start
+      nMot[["end"]] <- as.numeric(dtTmp$end)  + lenTmp - 1
     }
   } else {
     nMot <- ifelse(unit == "number", 0, NA)

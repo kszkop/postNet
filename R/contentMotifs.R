@@ -11,6 +11,7 @@ contentMotifs <- function(a2sU,
                           comparisons = NULL,
                           pdfName = NULL,
                           plotType = "ecdf",
+                          num_threads = 1,
                           plotOut = TRUE) {
   
   #
@@ -49,6 +50,15 @@ contentMotifs <- function(a2sU,
   if(!is_number(dist)){
     stop("please provide numeric minimal distance between motifs")
   }
+  if(!is_number(num_threads)){
+    stop("please provide numeric number of threads you wish to use 'num_threads' ")
+  } else {
+    num_avail <- parallel::detectCores()
+    if(num_threads > 0.75 *num_avail){
+      num_threads <- round(0.75 *num_avail, digits = 0)
+      message(paste('Number of threads were reduced to: ',num_threads,', i.e around 75% of your available resources', sep=''))
+    }
+  }
   if(!isUnitOut(unitOut)){
     stop("'unitOut' must be one from these: 'numeric' or 'position'")
   }
@@ -81,8 +91,13 @@ contentMotifs <- function(a2sU,
       seqTmp <- subSeq
     }
     
-    motifsFinal <- list()
-    for (i in 1:length(motifsIn)) {
+    cl <- parallel::makeCluster(num_threads)
+    doParallel::registerDoParallel(cl)
+
+    motifsFinal <- foreach::foreach(i = 1:length(motifsIn), .combine = 'c', .packages = c('anota2seqUtils','foreach')) %dopar% {
+      
+    #motifsFinal <- list()
+    #for (i in 1:length(motifsIn)) {
       motif <- motifsIn[i]
       #
       if (motif == "G4" & !tolower(seqType)=='protein') {
@@ -100,6 +115,13 @@ contentMotifs <- function(a2sU,
         }
         #
         motifOutTmp <- lapply(seqTmp, function(x) calc_motif(x, motifIn = motifTmp, dist = dist, unit = unitOut))
+
+        #cl2 <- parallel::makeCluster(num_threads)
+        #doParallel::registerDoParallel(cl2)
+        #motifOutTmp <- foreach(x = seqTmp, .combine = 'c', .packages = c('anota2seqUtils')) %dopar% {
+        #  calc_motif(x, motifIn = motifTmp, dist = dist, unit = unitOut)
+        #}        
+        #parallel::stopCluster(cl2)
         if(unitOut == "number"){
           motifOutTmp <- unlist(motifOutTmp)
         } 
@@ -128,8 +150,12 @@ contentMotifs <- function(a2sU,
         plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
         dev.off()
       }
-      motifsFinal[[paste(reg, motif, sep = "_")]] <- motifOut
+      #motifsFinal[[paste(reg, motif, sep = "_")]] <- motifOut
+      setNames(list(motifOut), paste(reg, motif, sep = "_"))
+      #list(paste(reg, motif, sep = "_") = motifOut)
     }
+    parallel::stopCluster(cl)
+    #
     motifFinalRegion <-  append(motifFinalRegion,motifsFinal)
   }
   return(motifFinalRegion)
