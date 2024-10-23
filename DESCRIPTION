@@ -14,7 +14,6 @@ Depends:
   dplyr (>= 1.0.7),
   pqsfinder (>= 2.8.0),
   Biostrings (>= 2.60.2),
-  foreach (>= 1.5.2),
   data.table (>= 1.14.6)
 Imports:
   gridExtra (>= 2.3),
