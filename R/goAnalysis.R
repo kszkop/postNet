@@ -122,8 +122,6 @@ goAnalysis <- function(a2sU,
       
       if(nrow(tabTmp)>0){
         #tabTmp$p.adjust <- stats::p.adjust( tabTmp$pvalue, method = 'BH')
-        tabTmp$Size <- as.numeric(sub("\\/.*", "", tabTmp$BgRatio))
-        tabTmp <- tabTmp[,c(1,2,9,10,5,6,8)]
       
         #tabTmp <- tabTmp[tabTmp$p.adjust < FDR, ]
         
@@ -135,16 +133,20 @@ goAnalysis <- function(a2sU,
         } else {
           tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
         }
-        #
-        resOut[[i]]@result <- tabTmp
-        resWrite <- lapply(resOut, function(x) x@result)
-        #
-        nameOut <- ifelse(is.null(name), paste('GO_',sel, '.xlsx',sep=''), paste(name,'_GO_', sel, '.xlsx',sep=''))
-        WriteXLS::WriteXLS(resWrite,SheetNames = names(resWrite), ExcelFileName = nameOut, row.names=FALSE)
+
       } else {
         message('No significant results')
       }
+      tabTmp$Size <- as.numeric(sub("\\/.*", "", tabTmp$BgRatio))
+      tabTmp <- tabTmp[,c(1,2,9,10,5,6,8)]
+        
+      resOut[[i]]@result <- tabTmp
     }
+    resWrite <- lapply(resOut, function(x) x@result)
+    #
+    nameOut <- ifelse(is.null(name), paste('GO_',sel, '.xlsx',sep=''), paste(name,'_GO_', sel, '.xlsx',sep=''))
+    WriteXLS::WriteXLS(resWrite,SheetNames = names(resWrite), ExcelFileName = nameOut, row.names=FALSE)
+
     slot(GOout, sel) <- resOut
   }
   a2sU@analysis@GO <- GOout
