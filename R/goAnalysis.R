@@ -114,29 +114,36 @@ goAnalysis <- function(a2sU,
     }
     #remove counts below 10 and recalculate adjp and reformat
     for(i in 1:length(resOut)){
+      print(i)
       tabTmp <- resOut[[i]]@result
       #
       tabTmp <- tabTmp[tabTmp$Count > counts,]
-      tabTmp$p.adjust <- stats::p.adjust( tabTmp$pvalue, method = 'BH')
-      tabTmp$Size <- as.numeric(sub("\\/.*", "", tabTmp$BgRatio))
-      tabTmp <- tabTmp[,c(1,2,9,10,5,6,8)]
-      #
       tabTmp <- tabTmp[tabTmp$p.adjust < FDR, ]
-      #
-      geneIDs_temp <- tabTmp$geneID
       
-      checkID <- check_id_type(seqinr::c2s(strsplit(geneIDs_temp[[1]],'/')[[1]][1:5]))
-      if(checkID=="entrezID"){
-        tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(convertEntrezIDToSymbol(unlist(strsplit(x,'/')),species=species)),collapse=':'),USE.NAMES = F)
+      if(nrow(tabTmp)>0){
+        #tabTmp$p.adjust <- stats::p.adjust( tabTmp$pvalue, method = 'BH')
+        tabTmp$Size <- as.numeric(sub("\\/.*", "", tabTmp$BgRatio))
+        tabTmp <- tabTmp[,c(1,2,9,10,5,6,8)]
+      
+        #tabTmp <- tabTmp[tabTmp$p.adjust < FDR, ]
+        
+        geneIDs_temp <- tabTmp$geneID
+      
+        checkID <- check_id_type(seqinr::c2s(strsplit(geneIDs_temp[[1]],'/')[[1]][1:5]))
+        if(checkID=="entrezID"){
+          tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(convertEntrezIDToSymbol(unlist(strsplit(x,'/')),species=species)),collapse=':'),USE.NAMES = F)
+        } else {
+          tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
+        }
+        #
+        resOut[[i]]@result <- tabTmp
+        resWrite <- lapply(resOut, function(x) x@result)
+        #
+        nameOut <- ifelse(is.null(name), paste('GO_',sel, '.xlsx',sep=''), paste(name,'_GO_', sel, '.xlsx',sep=''))
+        WriteXLS::WriteXLS(resWrite,SheetNames = names(resWrite), ExcelFileName = nameOut, row.names=FALSE)
       } else {
-        tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
+        message('No significant results')
       }
-      #
-      resOut[[i]]@result <- tabTmp
-      resWrite <- lapply(resOut, function(x) x@result)
-      #
-      nameOut <- ifelse(is.null(name), paste('GO_',sel, '.xlsx',sep=''), paste(name,'_GO_', sel, '.xlsx',sep=''))
-      WriteXLS::WriteXLS(resWrite,SheetNames = names(resWrite), ExcelFileName = nameOut, row.names=FALSE)
     }
     slot(GOout, sel) <- resOut
   }
