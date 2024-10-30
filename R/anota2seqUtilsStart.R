@@ -21,6 +21,9 @@ anota2seqUtilsStart <- function(ads = NULL,
                                 region_adj = NULL,
                                 excl = FALSE,
                                 keepAll = FALSE) {
+  
+  
+  message("test")
   #
   if(!is.null(ads) && !is.null(geneList)){
     stop("please provide anota2seq object or genelist, not both.")
