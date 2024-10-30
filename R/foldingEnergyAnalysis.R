@@ -106,6 +106,7 @@ foldingEnergyAnalysis <- function(a2sU,
     energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
     #
     feOutTmp <- runFE(energyIn = energyIn, a2sU = a2sU, residFE = residFE)
+    feOut[['custom']] <- feOutTmp
     #
     if (isTRUE(plotOut)) {
       resOut <- resQuant(qvec = feOutTmp, a2sU = a2sU)
@@ -118,11 +119,7 @@ foldingEnergyAnalysis <- function(a2sU,
       ylabel <- ifelse(isTRUE(residFE), 'residuals (fe ~ length)', 'folding energy')
       plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
       dev.off()
-      }
     }
-    feOut[['custom']] <- feOutTmp
-    return(feOut)
-    #
   } else if (sourceFE == "load") {
     #
     if(is.null(region)){
