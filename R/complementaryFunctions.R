@@ -1302,7 +1302,11 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
           bestSel <- append(bestSel, bestTmp)#tmpIn[bestTmp])
         }
       }
-    } 
+    } else {
+      if( length(bestTmp) > 0) {
+        bestSel <- append(bestSel, bestTmp)
+      }
+    }
     #outTmp <- names(which(pvalTmp > 0.05 | is.na(pvalTmp)))#which(sapply(models2, function(x) x[nrow(x) - 1, 5]) > 0.05)
     #tmpIn[outTmp])
     #outSel <- append(outSel, 'a8')
