@@ -1270,9 +1270,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     #} else {
     fvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 4])
     names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
-    fval[[i]] <- fvalTmp
     #}
-  
     #
     #if(length(which(is.na(lm(design, data = dataIn)$coefficients)))>0){
     #  pvalTmp  <- NA
@@ -1280,20 +1278,33 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     #} else {
     pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
     names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
+    #
+    isOut <- names(lm(design, data = dataIn)[[1]][which(is.na(lm(design, data = dataIn)[[1]]))])
+    if(length(isOut)>0){
+      pvalTmp[which(names(pvalTmp) %in% isOut )] <- NA
+      fvalTmp[which(names(fvalTmp) %in% isOut )] <- NA
+    }
+    fval[[i]] <- fvalTmp
     pval[[i]] <- pvalTmp
     #}
-    #
+    #    #
+    #if(length(which.max(fvalTmp))>0){
     bestTmp <- names(which.max(fvalTmp))#which.max(sapply(models2, function(x) x[nrow(x) - 1, 4]))
+    #} else {
+    #  bestTmp <- NULL
+    #}
     outTmp <- names(which(pvalTmp > 0.05 | is.na(pvalTmp)))#which(sapply(models2, function(x) x[nrow(x) - 1, 5]) > 0.05)
     #
     if (length(outTmp) > 0) {
-      if (!bestTmp %in% outTmp) {
-        bestSel <- append(bestSel, bestTmp)#tmpIn[bestTmp])
+      outSel <- append(outSel, outTmp)
+      if( length(bestTmp) > 0) {
+        if (!bestTmp %in% outTmp) {
+          bestSel <- append(bestSel, bestTmp)#tmpIn[bestTmp])
+        }
       }
-    } else {
-      bestSel <- append(bestSel, bestTmp)#tmpIn[bestTmp])
-    }
-    outSel <- append(outSel, outTmp)#tmpIn[outTmp])
+    } 
+    #outTmp <- names(which(pvalTmp > 0.05 | is.na(pvalTmp)))#which(sapply(models2, function(x) x[nrow(x) - 1, 5]) > 0.05)
+    #tmpIn[outTmp])
     #outSel <- append(outSel, 'a8')
   }
   #
