@@ -1344,6 +1344,14 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   linkIn[which(abs(linkIn) < covarFilt)] <- NA
   row.names(linkIn) <- row.names(tmp_fval)
   #
+  if(ncol(colours) != length(bestSel)){
+    toChange <- ncol(colours) - (ncol(colours) - length(bestSel)-1)
+    for(i in seq(toChange,ncol(colours),1)){
+      colours[i, i] <- "#B14D8E"
+      tb1Out[i,i] <- NA
+    }
+  }
+  #
   tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))#,colhead=list(fg_params=list(rot=90,hjust=0, y=0)))
   tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
   #

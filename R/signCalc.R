@@ -3,9 +3,10 @@ signCalc <- function(a2sU,
   #
   outSign <- list()
   #
-  Outvec <- rep(0, length(a2sU_geneID(a2sU, 'CDS')))
-  names(Outvec) <- a2sU_geneID(a2sU, 'CDS')
   for (i in 1:length(signatures)) {
+    #
+    Outvec <- rep(0, length(a2sU_geneID(a2sU, 'CDS')))
+    names(Outvec) <- a2sU_geneID(a2sU, 'CDS')
     #
     tmpSignature <- signatures[[i]]
     #
