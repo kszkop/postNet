@@ -118,13 +118,12 @@ goAnalysis <- function(a2sU,
       tabTmp <- resOut[[i]]@result
       #
       tabTmp <- tabTmp[tabTmp$Count > counts,]
+      if(nrow(tabTmp)>0){
+        tabTmp$p.adjust <- stats::p.adjust(tabTmp$pvalue, method = 'BH')
+      }
       tabTmp <- tabTmp[tabTmp$p.adjust < FDR, ]
       
       if(nrow(tabTmp)>0){
-        #tabTmp$p.adjust <- stats::p.adjust( tabTmp$pvalue, method = 'BH')
-      
-        #tabTmp <- tabTmp[tabTmp$p.adjust < FDR, ]
-        
         geneIDs_temp <- tabTmp$geneID
       
         checkID <- check_id_type(seqinr::c2s(strsplit(geneIDs_temp[[1]],'/')[[1]][1:5]))
@@ -133,7 +132,6 @@ goAnalysis <- function(a2sU,
         } else {
           tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
         }
-
       } else {
         message('No significant results')
       }
