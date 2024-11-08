@@ -875,6 +875,44 @@ writeExcel <- function(listOfData=NULL, listNames=NULL, fileName=NULL){
   WriteXLS::WriteXLS(listToWrite,fileName,SheetNames =listNames, row.names=TRUE)
 }
 
+dup_tolerance <- function(numIn, tol = 1e-8) {
+  sapply(seq_along(numIn), function(i) {
+    any(abs(numIn[i] - numIn[-i]) < tol)
+  })
+}
+
+getDup <- function(numIn, tol = 1e-8) {
+  #
+  dupsOut <- list()
+
+  #
+  checked <- rep(FALSE, length(numIn))
+  
+  #
+  for (i in seq_along(numIn)) {
+    if (!checked[i]) {
+      #
+      dups <- which(abs(numIn - numIn[i]) < tol)
+      
+      #
+      if (length(dups) > 1) {
+        dupsOut[[length(dupsOut) + 1]] <- dups
+      }
+      checked[dups] <- TRUE
+    }
+  }
+  return(dupsOut)
+}
+
+
+printDup <- function(dupIn) {
+  for (i in seq_along(dupIn)) {
+    namesMerged <- paste(names(dupIn[[i]]), collapse = " and ")
+    messageOut <- paste("These elements are too corelated to each other: ", namesMerged)
+    print(messageOut)
+  }
+}
+
 #For nodes sizes:
 rescale <- function(x,a,b,c,d){
   c + (x-a)/(b-a)*(d-c)
@@ -1222,27 +1260,25 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     models <- models[-presel]
   }
 
-  #models <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
-  #  anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dataIn))
-  #})
   stepwiseModels <- list()
   #
   fvalTmp <- sapply(models, function(x) x[1, 4])
   names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))]
-  fvalTmp[is.na(fvalTmp)] <- 0
+  #
+  if(length(getDup(fvalTmp))>0){
+    names(fvalTmp) <- getOrgNames(names(fvalTmp),namesDf)
+    dupTmp <- getDup(fvalTmp)
+    printDup(dupTmp)
+    stop('Two of the input features are almost perfectly correlated. Only one of the correlated features should be included')
+  }
   fval[[1]] <- fvalTmp
 
   pvalTmp <- sapply(models, function(x) x[1, 5])
   names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))]
-  pvalTmp[is.na(pvalTmp)] <- 1
   pval[[1]] <- pvalTmp
 
-  #
-  #bestTmp <- names(which.max(fvalTmp)) #which.max(sapply(models, function(x) x[1, 4]))
-  #outTmp <- which(pvalTmp > 0.05 | is.na(pvalTmp))#which(sapply(models, function(x) x[1, 5]) > 0.05 | is.na(sapply(models, function(x) x[1, 5])))
-
-  bestSel <- names(which.max(fvalTmp))#colnames(dataIn)[-length(colnames(dataIn))][bestTmp]
-  outSel <- names(which(pvalTmp > 0.05 | is.na(pvalTmp)))#colnames(dataIn)[-length(colnames(dataIn))][outTmp]
+  bestSel <- names(which.max(fvalTmp))
+  outSel <- names(which(pvalTmp > 0.05 | is.na(pvalTmp)))
 
   i <- 1
   # 
@@ -1250,7 +1286,6 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     #
     i <- i + 1
     #
-    #tmpIn <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
     models2 <- list()
     #
     x_sel <- paste(bestSel, collapse = " + ")
@@ -1259,47 +1294,42 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
       varx <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)][j]
       design <- as.formula(paste(paste("effM", paste(x_sel, collapse = " + "), sep = "~"), varx, sep = "+"))
       models2[[j]] <- anova(lm(design, data = dataIn))
-      rownames(models2[[j]]) <- c(namesDf$originalNames[match(rownames(models2[[j]])[-length(rownames(models2[[j]]))], namesDf$newNames)],"Residuals")
+
+      isNAout <- names(lm(design, data = dataIn)[[1]][which(is.na(lm(design, data = dataIn)[[1]]))])
+      
+      if(length(isNAout)>0){
+        stop(paste('Consider removing: ',getOrgNames(names(isNAout),namesDf),' as it is too correlated with other features'))
+      }
+      rownames(models2[[j]]) <- c(getOrgNames(rownames(models2[[j]])[-length(rownames(models2[[j]]))],namesDf),"Residuals")
     }
     #
     stepwiseModels[[paste('step', i, sep=' ')]] <- models2
     #
-    #if(length(which(is.na(lm(design, data = dataIn)$coefficients)))>0){
-    #  fvalTmp  <- NA
-    #  fval[[i]] <- fvalTmp
-    #} else {
     fvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 4])
     names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
-    #}
     #
-    #if(length(which(is.na(lm(design, data = dataIn)$coefficients)))>0){
-    #  pvalTmp  <- NA
-    #  pval[[i]] <- pvalTm <- fvalTmp
-    #} else {
+    if(length(getDup(fvalTmp))>0){
+      names(fvalTmp) <- getOrgNames(names(fvalTmp), namesDf)
+      dupTmp <- getDup(fvalTmp)
+      printDup(dupTmp)
+      stop('Two of the input features are almost perfectly correlated. Only one of the correlated features should be included')
+    }
+    #
     pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
     names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
     #
-    isOut <- names(lm(design, data = dataIn)[[1]][which(is.na(lm(design, data = dataIn)[[1]]))])
-    if(length(isOut)>0){
-      pvalTmp[which(names(pvalTmp) %in% isOut )] <- NA
-      fvalTmp[which(names(fvalTmp) %in% isOut )] <- NA
-    }
+
     fval[[i]] <- fvalTmp
     pval[[i]] <- pvalTmp
-    #}
-    #    #
-    #if(length(which.max(fvalTmp))>0){
-    bestTmp <- names(which.max(fvalTmp))#which.max(sapply(models2, function(x) x[nrow(x) - 1, 4]))
-    #} else {
-    #  bestTmp <- NULL
-    #}
-    outTmp <- names(which(pvalTmp > 0.05 | is.na(pvalTmp)))#which(sapply(models2, function(x) x[nrow(x) - 1, 5]) > 0.05)
+
+    bestTmp <- names(which.max(fvalTmp))
+    outTmp <- names(which(pvalTmp > 0.05 | is.na(pvalTmp)))
     #
     if (length(outTmp) > 0) {
       outSel <- append(outSel, outTmp)
       if( length(bestTmp) > 0) {
         if (!bestTmp %in% outTmp) {
-          bestSel <- append(bestSel, bestTmp)#tmpIn[bestTmp])
+          bestSel <- append(bestSel, bestTmp)
         }
       }
     } else {
@@ -1307,9 +1337,6 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
         bestSel <- append(bestSel, bestTmp)
       }
     }
-    #outTmp <- names(which(pvalTmp > 0.05 | is.na(pvalTmp)))#which(sapply(models2, function(x) x[nrow(x) - 1, 5]) > 0.05)
-    #tmpIn[outTmp])
-    #outSel <- append(outSel, 'a8')
   }
   #
   tmp_fval <- t(plyr::ldply(fval, rbind))
@@ -1343,14 +1370,6 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   colours[which(tmp_pval > 0.05)] <- "#B14D8E"
   linkIn[which(abs(linkIn) < covarFilt)] <- NA
   row.names(linkIn) <- row.names(tmp_fval)
-  #
-  if(ncol(colours) != length(bestSel)){
-    toChange <- ncol(colours) - (ncol(colours) - length(bestSel)-1)
-    for(i in seq(toChange,ncol(colours),1)){
-      colours[i, i] <- "#B14D8E"
-      tb1Out[i,i] <- NA
-    }
-  }
   #
   tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))#,colhead=list(fg_params=list(rot=90,hjust=0, y=0)))
   tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
@@ -1633,4 +1652,9 @@ plotScatterInd <- function(set1, set2=NULL, orgName, coloursIn, nameOut ){
     text((xlim_min + xlim_max) / 2, ylim_max, paste("pvalue ", format(as.numeric(cor.test(set[,1], set[,2])[3]), scientific = T, digits = 3), ", r=", round(as.numeric(cor.test(set[,1], set[,2])[4]), 3), sep = ""), bty = "n", col = "black", cex = 1.25, font = 2)
   }
   dev.off()
+}
+
+getOrgNames <- function(newN, namesDf){
+    outN <- namesDf$originalNames[match(newN, namesDf$newNames)]
+    return(outN)
 }
