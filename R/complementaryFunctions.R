@@ -937,6 +937,7 @@ layoutCalc <- function(Gobject, n){
   return(lOut)
 }
 
+
 extractRegSeq <- function(annotSeq){
   #
   annotOut <- annotSeq
@@ -1224,8 +1225,14 @@ prepFeatures <- function(a2sU,
   return(a2sU)
 }
 
+normalizeLayout <- function(layout) {
+  layout[, 1] <- (layout[, 1] - min(layout[, 1])) / (max(layout[, 1]) - min(layout[, 1])) * 2 - 1
+  layout[, 2] <- (layout[, 2] - min(layout[, 2])) / (max(layout[, 2]) - min(layout[, 2])) * 2 - 1
+  return(layout)
+}
 
-runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, coloursIn){
+
+runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, coloursIn, lmfeatGroup, lmfeatGroupColour){
   #
   fval <- list()
   pval <- list()
@@ -1356,11 +1363,13 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   for (k in 2:nrow(colours)) {
     trow <- as.numeric(na.omit(as.numeric(tb1Out[k, ])))
     #
-    tsel_tab <- which((lag(trow) / trow) > 2)
-    tsel_net <- lag(trow) - trow
-    #
-    colours[k, tsel_tab] <- "#FDE0C5"
-    linkIn[k, 1:length(tsel_net)] <- tsel_net
+    if(length(trow)>0){
+      tsel_tab <- which((lag(trow) / trow) > 2)
+      tsel_net <- lag(trow) - trow
+      #
+      colours[k, tsel_tab] <- "#FDE0C5"
+      linkIn[k, 1:length(tsel_net)] <- tsel_net
+    }
   }
   
   for (k in 1:ncol(colours)) {
@@ -1368,6 +1377,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   }
   #
   colours[which(tmp_pval > 0.05)] <- "#B14D8E"
+  #colours <- colours[apply(colours, 1, function(x) any(x != "white")), ]
   linkIn[which(abs(linkIn) < covarFilt)] <- NA
   row.names(linkIn) <- row.names(tmp_fval)
   #
@@ -1522,7 +1532,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     nodeOutAll <- nodeOut
   }
   # create igraph object
-  net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed = T)
+  net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed = F)
   # rescale to size ans other attributes
   lsize <- rescale(igraph::V(net)$VarianceExplained, 0, 100, 0, 75)
   lsize[which(lsize > 0)] <- lsize[which(lsize > 0)] + 2
@@ -1531,12 +1541,6 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   lcol[which(nodeOutAll$varexpl == 2)] <- "#B14D8E"
   igraph::V(net)$label.color <- lcol
   igraph::V(net)$label <- wrapNames(gsub(" 0%", "", paste(igraph::V(net)$Features, paste(igraph::V(net)$VarianceExplained, "%", sep = ""), sep = " ")), 8)
-  
-  ###introduce direction here to colour
-  #if(isTRUE(isads)){
-  #  AnotaColours <- c(RColorBrewer::brewer.pal(8,"Reds")[c(4,8)],RColorBrewer::brewer.pal(8,"Reds")[c(2,6)],RColorBrewer::brewer.pal(8,"Greens")[c(4,8)], RColorBrewer::brewer.pal(8,"Greens")[c(2,6)],RColorBrewer::brewer.pal(8,"Blues")[c(4,8)])
-  #  names(AnotaColours) <- c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown","bufferingmRNAUp","bufferingmRNADown")
-  #  coloursTmp <- as.character(AnotaColours[grep(regulationGen, names(AnotaColours))])
   
   #
   direct <- as.character()
@@ -1556,12 +1560,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   colrs[which(nodeOutAll$direct == 'plus')] <- coloursIn[1]
   colrs[which(nodeOutAll$direct == 'minus')] <- coloursIn[2]
   igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
-  #} else {
-  #  colrs <- rep("#B0F2BC", nrow(nodeOutAll))
-  #  colrs[which(nodeOutAll$varexpl == 2)] <- "white"
-  #  igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
-  #}
-  # Set edges width based on weight:
+
   if (length(igraph::E(net)$weight) > 0) {
     if(isTRUE(useCorel)){
       igraph::E(net)$width <- rescale(abs(igraph::E(net)$weight), 0, 1, 0, 15)
@@ -1570,13 +1569,27 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     }
   }
       
-  # change arrow size and edge color:
+  # 
   igraph::E(net)$arrow.size <- .0
   ecolor <- rep(grDevices::adjustcolor("#F40009", alpha.f = 0.2), length(igraph::E(net)$width))
   ecolor[which(igraph::E(net)$weight < 0)] <- grDevices::adjustcolor("#1C39BB",alpha.f = 0.2)
   igraph::E(net)$color <- ecolor
-        
-  # We can also override the attributes explicitly in the plot:
+  
+  if(!is.null(lmfeatGroup)){
+    igraph::E(net)$weight <- 1
+    
+    igraph::V(net)$Group <- as.vector(lmfeatGroup[match(igraph::V(net)$name, names(lmfeatGroup))])
+  #
+    for(i in unique(igraph::V(net)$Group)) {
+      GroupV <- which(igraph::V(net)$Group == i)
+      net <- igraph::add_edges(net, combn(GroupV, 2), attr=list(weight=5))
+    } 
+    layOut <-  igraph::layout.fruchterman.reingold(net,weights=igraph::E(net)$weight)
+  }
+  layOut <- layoutCalc(net, n = 2)
+  layOut<- normalizeLayout(layOut)
+  
+  #
   pdf(paste(nameOut, "network.pdf", sep = "_"), height = 8, width = 8, useDingbats = F,family = "Helvetica")
   m <- layout(mat = matrix(c(1, 2, 3), nrow = 3, ncol = 1), heights = c(2, 8, 1))
   #
@@ -1587,8 +1600,34 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   legend(-1.5, 2, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
   
   par(bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 1.9, cex.lab = 1.5)
-  par(mar = c(0, 5, 0, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
-  plot(net, shape = "sphere", vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "black", layout = layoutCalc(net, n = 2))
+  par(mar = c(2, 5, 0, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
+  plot(net, vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "black", edge.curved = FALSE,rescale = FALSE,layout = layOut)#,shape = "sphere")#,layoutCalc(net, n = 2))
+  
+  if(!is.null(lmfeatGroup)){
+    for (group in unique(igraph::V(net)$Group)) {
+      #
+      group_nodes <- which(igraph::V(net)$Group == group)
+      # 
+      group_coords <- layOut[group_nodes, ]
+      #
+      if (is.vector(group_coords)) {
+        group_coords <- matrix(group_coords, nrow = 1)
+      }
+      #
+      group_center <- colMeans(group_coords)
+    
+      #
+      layout_range_x <- max(layOut[, 1]) - min(layOut[, 1])
+      layout_range_y <- max(layOut[, 2]) - min(layOut[, 2])
+      margin_x <- 0.06 * layout_range_x
+      margin_y <- 0.06 * layout_range_y
+      x_radius <- (max(group_coords[, 1]) - min(group_coords[, 1])) / 2 + margin_x
+      y_radius <- (max(group_coords[, 2]) - min(group_coords[, 2])) / 2 + margin_y
+
+      #
+      plotrix::draw.ellipse(x = group_center[1], y = group_center[2], a = x_radius, b = y_radius,border = lmfeatGroupColour[group], lwd = 2)
+    }
+  }
   
   par(mar = c(5, 5, 0, 5),bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
   plot(-2,2,xlim=c(-2,2), ylim=c(-2,2), xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE,xaxt = "n",type="n", yaxt = "n")

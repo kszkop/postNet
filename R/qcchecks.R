@@ -492,3 +492,56 @@ check_model <- function(model, analysis_type) {
   }
   return(FALSE)
 }
+
+checkfeatures <- function(features) {
+  #
+  if (is.null(features)) {
+    stop("Error: 'features' cannot be NULL.")
+  }
+  
+  # 
+  if (!is.list(features)) {
+    stop("Error: 'features' must be a list.")
+  }
+  
+  #
+  if (is.null(names(features)) || any(names(features) == "")) {
+    stop("Error: 'features' must be a named list.")
+  }
+  
+  # 
+  if (!all(sapply(features, is.vector))) {
+    stop("Error: Each element in 'features' must be a vector.")
+  }
+}
+
+checklmfeatGroup <- function(lmfeatGroup, numfeatures) {
+  if (!is.null(lmfeatGroup)) {
+    #
+    if (!is.vector(lmfeatGroup)) {
+      stop("Error: 'lmfeatGroup' must be a vector when provided.")
+    }
+    
+    # 
+    if (length(lmfeatGroup) != numfeatures) {
+      stop("Error: Length of 'lmfeatGroup' must match the number of 'features' when 'lmfeatGroup' is not NULL.")
+    }
+  }
+}
+
+checklmfeatGroupColour <- function(lmfeatGroupColour, lmfeatGroup) {
+  #
+  if (!is.null(lmfeatGroupColour)) {
+    #
+    if (is.null(lmfeatGroup)) {
+      stop("Error: 'lmfeatGroup' cannot be NULL when 'lmfeatGroupColour' is provided.")
+    }
+    # 
+    unique_lmfeatGroup <- length(unique(lmfeatGroup))
+    
+    #
+    if (length(lmfeatGroupColour) != unique_lmfeatGroup) {
+      stop("Error: Length of 'lmfeatGroupColour' must match the number of unique values in 'lmfeatGroup'.")
+    }
+  }
+}

@@ -114,7 +114,6 @@ goAnalysis <- function(a2sU,
     }
     #remove counts below 10 and recalculate adjp and reformat
     for(i in 1:length(resOut)){
-      print(i)
       tabTmp <- resOut[[i]]@result
       #
       tabTmp <- tabTmp[tabTmp$Count > counts,]
