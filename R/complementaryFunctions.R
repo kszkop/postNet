@@ -1598,9 +1598,11 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   plot(-2,2,xlim=c(-2,2), ylim=c(-2,2), xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE,xaxt = "n",type="n", yaxt = "n")
   legend(-2, 2, lwd = c(7, 3, 3, 7), col = c(rep(grDevices::adjustcolor("#F40009", alpha.f = 0.2), 2), rep(grDevices::adjustcolor("#1C39BB",alpha.f = 0.2), 2)), title = ifelse(isTRUE(useCorel),"Correlation", "Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
   legend(-1.5, 2, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
+  legend(0.5, 2, paste('Total variance explained: ', sum(igraph::V(net)$VarianceExplained), '%'),cex=1.25, col='grey30')
+  
   
   par(bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 1.9, cex.lab = 1.5)
-  par(mar = c(2, 5, 0, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
+  par(mar = c(2, 5, 1, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
   plot(net, vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "black", edge.curved = FALSE,rescale = FALSE,layout = layOut)#,shape = "sphere")#,layoutCalc(net, n = 2))
   
   if(!is.null(lmfeatGroup)){
@@ -1619,14 +1621,27 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
       #
       layout_range_x <- max(layOut[, 1]) - min(layOut[, 1])
       layout_range_y <- max(layOut[, 2]) - min(layOut[, 2])
-      margin_x <- 0.06 * layout_range_x
-      margin_y <- 0.06 * layout_range_y
+      margin_x <- 0.075 * layout_range_x
+      margin_y <- 0.075 * layout_range_y
       x_radius <- (max(group_coords[, 1]) - min(group_coords[, 1])) / 2 + margin_x
       y_radius <- (max(group_coords[, 2]) - min(group_coords[, 2])) / 2 + margin_y
 
       #
-      plotrix::draw.ellipse(x = group_center[1], y = group_center[2], a = x_radius, b = y_radius,border = lmfeatGroupColour[group], lwd = 2)
+      plotrix::draw.ellipse(x = group_center[1], y = group_center[2], a = x_radius, b = y_radius,border = adjustcolor(lmfeatGroupColour[group],alpha.f = 0.5), lwd = 10)
+      
+      text_x <- group_center[1] + x_radius * 0.75
+      text_y <- group_center[2] + y_radius * 0.75
+      
+      # Add group label at the calculated text position
+      text(x = text_x, y = text_y, labels = paste(sum(igraph::V(net)$VarianceExplained[which(igraph::V(net)$Group == group)]),'%',sep=''), col = lmfeatGroupColour[names(lmfeatGroupColour) == group], cex = 1, font = 2, pos = 4)
     }
+
+    #varexplTmp <- as.numeric()
+    #for (i in 1:length(unique(igraph::V(net)$Group))) {
+    #  varexplTmp[i] <- sum(igraph::V(net)$VarianceExplained[which(igraph::V(net)$Group == unique(igraph::V(net)$Group)[i])])
+    #}
+    #names(varexplTmp)<- unique(igraph::V(net)$Group)
+    #legend(1, 1, paste(varexplTmp, '%',sep=''), cex=1.25, text.col=lmfeatGroupColour, bty = 'n')
   }
   
   par(mar = c(5, 5, 0, 5),bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)

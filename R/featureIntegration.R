@@ -4,7 +4,7 @@ featureIntegration <- function(a2sU,
                                lmfeatGroupColour=NULL,
                                analysis_type,
                                regOnly = TRUE,
-                               allFeat = TRUE,
+                               allFeat = FALSE,
                                useCorel=TRUE,
                                covarFilt = 20,
                                NetModelSel = "omnibus",
@@ -70,6 +70,7 @@ featureIntegration <- function(a2sU,
       names(lmfeatGroup) <- colnames(dataTmp)[1:ncol(dataTmp)-1]
       
       checklmfeatGroupColour(lmfeatGroupColour, lmfeatGroup)
+      names(lmfeatGroupColour) <- unique(lmfeatGroup)
     }
     #
     if (isTRUE(regOnly)){
