@@ -127,83 +127,126 @@ postNet requires:
 -------------------------------------------------
 
 ###Load postNet
-library(postNet)
+
+    library(postNet)
 
 ###Load example of anota2seq (it is one comparison from osmosis)
-data(postNetData)
+
+    data(postNetData)
 
 ###Preparation step
+
 ####if from anota2seqObject
-ptn <- postNetStart(ads = anota2seqObject, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, region = c("UTR5","CDS","UTR3"), selection ="random", source = 'load', species = 'human')
+
+    ptn <- postNetStart(ads = anota2seqObject, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, region = c("UTR5","CDS","UTR3"), selection ="random", source = 'load', species = 'human')
 
 ####Optional slope filtering - it is important if GO/GSEA/GAGE analysis is performed as these genes are excluded from the anota2seq analysis
-filtOutGenes <- slopeFilt(ads = ads, regulationGen="translation", contrastSel = 1, minSlope=-1, maxSlope=2)
+
+    filtOutGenes <- slopeFilt(ads = ads, regulationGen="translation", contrastSel = 1, minSlope=-1, maxSlope=2)
 
 ####if from gene list
-ptn <- postNetStart(geneList = geneList[1:2], geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, region = c("UTR5","CDS","UTR3"), selection ="random", source = 'load', species = 'human')
+
+    ptn <- postNetStart(geneList = geneList[1:2], geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, region = c("UTR5","CDS","UTR3"), selection ="random", source = 'load', species = 'human')
 
 
 ###GSEA analysis
+
 ####Perform gsea analysis
-ptn <- gseaAnalysis(ptn = ptn, genesSlopeFiltOut = filtOutGenes, collection = 'h')
+
+    ptn <- gseaAnalysis(ptn = ptn, genesSlopeFiltOut = filtOutGenes, collection = 'h')
+    
 ####Extract results
-gseaOut <- ptn_gsea(ptn, threshold = 0.05)
+
+    gseaOut <- ptn_gsea(ptn, threshold = 0.05)
+    
 ####Plot selected terms
-gseaPlot(ptn = ptn,termNames = gseaOut$Term[1:2], genesSlopeFiltOut = filtOutGenes, gseaParam = 1, ticksSize = 0.3)
+
+    gseaPlot(ptn = ptn,termNames = gseaOut$Term[1:2], genesSlopeFiltOut = filtOutGenes, gseaParam = 1, ticksSize = 0.3)
 
 ###GO analysis
+
 ####Perform go analysis
-ptn <- goAnalysis(ptn = ptn,genesSlopeFiltOut = filtOutGenes, category=c('BP', 'CC', 'MF', 'KEGG'))
+
+    ptn <- goAnalysis(ptn = ptn,genesSlopeFiltOut = filtOutGenes, category=c('BP', 'CC', 'MF', 'KEGG'))
+    
 ####Extract results for the desired category
-BP_GO <- ptn_GO(ptn, category = 'BP', geneList = 'translationUp_c1', threshold = 0.05)
+
+    BP_GO <- ptn_GO(ptn, category = 'BP', geneList = 'translationUp_c1', threshold = 0.05)
+    
 ####Plot results
-goDotplot(ptn=ptn, category = 'BP', nCategories=10, pool=F)
+
+    goDotplot(ptn=ptn, category = 'BP', nCategories=10, pool=F)
 
 ###GAGE analysis
+
 ####Perform go analysis
-ptn <- gageAnalysis(ptn, genesSlopeFiltOut = filtOutGenes, category=c('BP', 'CC', 'MF', 'KEGG'))
+
+    ptn <- gageAnalysis(ptn, genesSlopeFiltOut = filtOutGenes, category=c('BP', 'CC', 'MF', 'KEGG'))
+
 ####Extract results
-BP_GAGE <- ptn_gage(ptn,category = 'BP',direction = 'greater',threshold = 1)
+
+    BP_GAGE <- ptn_gage(ptn,category = 'BP',direction = 'greater',threshold = 1)
 
 ###miRNA analysis 
+
 ####Perform miRNA analysis
-ptn <- miRNAanalysis(ptn,genesSlopeFiltOut = filtOutGenes, miRNATargetScanFile = 'Predicted_Targets_Context_Scores_human.txt')
+
+    ptn <- miRNAanalysis(ptn,genesSlopeFiltOut = filtOutGenes, miRNATargetScanFile = 'Predicted_Targets_Context_Scores_human.txt')
+
 ####Extract results
-miRNAOut <- ptn_miRNA(ptn, direction = 'greater',threshold = 1)          
+
+    miRNAOut <- ptn_miRNA(ptn, direction = 'greater',threshold = 1)          
 
 ###Calculate features
+
 ####length
-len <- lengthAnalysis(ptn = ptn, region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)))
+
+    len <- lengthAnalysis(ptn = ptn, region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)))
+    
 ####nucleotide content
-content <- contentAnalysis(ptn = ptn, region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)), contentIn = c('C','G'))
+
+    content <- contentAnalysis(ptn = ptn, region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)), contentIn = c('C','G'))
+
 ####uORF presence
-uORFs <- uorfAnalysis(ptn = ptn,comparisons = list(c(0,1),c(0,2),c(1,2)))
+
+    uORFs <- uorfAnalysis(ptn = ptn,comparisons = list(c(0,1),c(0,2),c(1,2)))
 
 ####In order to find de novo motifs, run motif analysis
-ptn <- motifAnalysis(ptn = ptn, memePath="/opt/local/bin/", region = c('UTR5'))
+
+    ptn <- motifAnalysis(ptn = ptn, memePath="/opt/local/bin/", region = c('UTR5'))
+    
 ####motif presence
-motifs <- contentMotifs(ptn = ptn, motifsIn = ptn_motifs(ptn, region = 'UTR5'),region = 'UTR5', comparisons = list(c(1,2)))
+
+    motifs <- contentMotifs(ptn = ptn, motifsIn = ptn_motifs(ptn, region = 'UTR5'),region = 'UTR5', comparisons = list(c(1,2)))
 
 ####folding energy
-feOut <- foldingEnergyAnalysis(ptn = ptn, region=c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)), residFE = TRUE, plotType = 'ecdf')
+
+    feOut <- foldingEnergyAnalysis(ptn = ptn, region=c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)), residFE = TRUE, plotType = 'ecdf')
 
 ####run codonUsage analysis first
-ptn <- codonUsage(ptn = ptn,analysis='codon',comparisons = list(c(1,2)),annotType='ccds',sourceSeq='load',pAdj=0.01,plotHeatmap=TRUE, codonN=1)
+
+    ptn <- codonUsage(ptn = ptn,analysis='codon',comparisons = list(c(1,2)),annotType='ccds',sourceSeq='load',pAdj=0.01,plotHeatmap=TRUE, codonN=1)
+    
 ####calculate codons
-selCodonOut  <- codonCalc(ptn = ptn,analysis='codon', featsel= ptn_codonsSel(ptn, comparison = 1),unit='freq', comparisons = list(c(1,2)))
+
+    selCodonOut  <- codonCalc(ptn = ptn,analysis='codon', featsel= ptn_codonsSel(ptn, comparison = 1),unit='freq', comparisons = list(c(1,2)))
 
 ####calculte signatures
-data(humanSignatures)
-sign <- signCalc(ptn=ptn, signatures = humanSignatures)
+
+    data(humanSignatures)
+    sign <- signCalc(ptn=ptn, signatures = humanSignatures)
 
 ###Plot signatures
-signatureFunction(signatureList = humanSignatures[1:2] ,generalName = 'Lee_etal_2014_senescence', dataName= 'Treatment vs Control',colours = c(#FC9272", "#99000D"), ads = anota2seqObject, contrast = 1,pdfName = 'test',xlim = c(-3,3),scatterXY = 5,tableCex=1)
+
+    signatureFunction(signatureList = humanSignatures[1:2] ,generalName = 'Lee_etal_2014_senescence', dataName= 'Treatment vs Control',colours = c(#FC9272", "#99000D"), ads = anota2seqObject, contrast = 1,pdfName = 'test',xlim = c(-3,3),scatterXY = 5,tableCex=1)
 
 ###create input object with calculated features
-features <- c(len[c(1)], content, uORFs, motifs, sign, selCodonOut)
+
+    features <- c(len[c(1)], content, uORFs, motifs, sign, selCodonOut)
 
 ####run feature integration
-featureIntegration(ptn=ptn, features = features, pdfName = 'Test', regOnly=TRUE, allFeat = F, analysis_type ='lm',comparisons = list(c(1,2)))
+
+    featureIntegration(ptn=ptn, features = features, pdfName = 'Test', regOnly=TRUE, allFeat = F, analysis_type ='lm',comparisons = list(c(1,2)))
 
 ####Btw there are two new arguments for feature integration function that allow to categorise features into groups . It is still quite experimental and not sure how well it will work in different datasets. Grouping: (vector of respective group for features. I hope you can use names of groups instead of numbers
 ####lmfeatGroup = c(rep(1,8),rep(2,18),rep(3,13),rep(1,2))
