@@ -1,19 +1,19 @@
-setGeneric("a2sU_sequences",
-           function(x, region) standardGeneric("a2sU_sequences"))
-setMethod("a2sU_sequences", "anota2seqUtilsData",
+setGeneric("ptn_sequences",
+           function(x, region) standardGeneric("ptn_sequences"))
+setMethod("ptn_sequences", "postNetData",
           function(x, region){
             checkRegion(region)
             if(length(region)>1){
               stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis performed with CCDS annotation.")
             }
             tmpReg <- slot(x@annot, region)
-            seqOut <- tmpReg@seq
+            seqOut <- tmpReg@sequences
             return(seqOut)
           })
 
-setGeneric("a2sU_id",
-           function(x, region) standardGeneric("a2sU_id"))
-setMethod("a2sU_id", "anota2seqUtilsData",
+setGeneric("ptn_id",
+           function(x, region) standardGeneric("ptn_id"))
+setMethod("ptn_id", "postNetData",
           function(x, region){
             checkRegion(region)
             if(length(region)>1){
@@ -24,9 +24,9 @@ setMethod("a2sU_id", "anota2seqUtilsData",
             return(idOut)
           })
 
-setGeneric("a2sU_geneID",
-           function(x, region) standardGeneric("a2sU_geneID"))
-setMethod("a2sU_geneID", "anota2seqUtilsData",
+setGeneric("ptn_geneID",
+           function(x, region) standardGeneric("ptn_geneID"))
+setMethod("ptn_geneID", "postNetData",
           function(x, region){
             checkRegion(region)
             if(length(region)>1){
@@ -37,117 +37,124 @@ setMethod("a2sU_geneID", "anota2seqUtilsData",
             return(geneIDOut)
           })
 
-setGeneric("a2sU_dataIn",
-           function(x) standardGeneric("a2sU_dataIn"))
-setMethod("a2sU_dataIn", "anota2seqUtilsData",
+setGeneric("ptn_dataIn",
+           function(x) standardGeneric("ptn_dataIn"))
+setMethod("ptn_dataIn", "postNetData",
+          function(x){
+            x@dataIn
+          })
+
+setGeneric("ptn_geneList",
+           function(x) standardGeneric("ptn_geneList"))
+setMethod("ptn_geneList", "postNetData",
           function(x){
             x@dataIn@geneList
           })
 
-setGeneric("a2sU_bg",
-           function(x) standardGeneric("a2sU_bg"))
-setMethod("a2sU_bg", "anota2seqUtilsData",
+setGeneric("ptn_background",
+           function(x) standardGeneric("ptn_background"))
+setMethod("ptn_background", "postNetData",
           function(x){
             x@dataIn@background
           })
 
-setGeneric("a2sU_eff",
-           function(x) standardGeneric("a2sU_eff"))
-setMethod("a2sU_eff", "anota2seqUtilsData",
+setGeneric("ptn_effect",
+           function(x) standardGeneric("ptn_effect"))
+setMethod("ptn_effect", "postNetData",
           function(x){
             x@dataIn@effect
           })
 
-setGeneric("a2sU_colours",
-           function(x) standardGeneric("a2sU_colours"))
-setMethod("a2sU_colours", "anota2seqUtilsData",
+setGeneric("ptn_colours",
+           function(x) standardGeneric("ptn_colours"))
+setMethod("ptn_colours", "postNetData",
           function(x){
             x@dataIn@colours
           })
 
-setGeneric("a2sU_species",
-           function(x) standardGeneric("a2sU_species"))
-setMethod("a2sU_species", "anota2seqUtilsData",
+setGeneric("ptn_species",
+           function(x) standardGeneric("ptn_species"))
+setMethod("ptn_species", "postNetData",
           function(x){
             x@species
           })
 
-setGeneric("a2sU_version",
-           function(x) standardGeneric("a2sU_version"))
-setMethod("a2sU_version", "anota2seqUtilsData",
+setGeneric("ptn_version",
+           function(x) standardGeneric("ptn_version"))
+setMethod("ptn_version", "postNetData",
           function(x){
             x@version
           })
 
-setGeneric("a2sU_selection",
-           function(x) standardGeneric("a2sU_selection"))
-setMethod("a2sU_selection", "anota2seqUtilsData",
+setGeneric("ptn_selection",
+           function(x) standardGeneric("ptn_selection"))
+setMethod("ptn_selection", "postNetData",
           function(x){
             x@selection
           })
 
-setGeneric("a2sU_motifs",
-           function(x, region) standardGeneric("a2sU_motifs"))
-setMethod("a2sU_motifs", "anota2seqUtilsData",
+setGeneric("ptn_motifSelection",
+           function(x, region) standardGeneric("ptn_motifSelection"))
+setMethod("ptn_motifSelection", "postNetData",
           function(x, region){
             checkRegion(region)
             if(length(region)>1){
               stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'")
             }
             tmpReg <- slot(x@analysis@motifs, region)
-            motifsOut <- tmpReg$motifsOut
+            motifsOut <- tmpReg$motifSelection
             return(motifsOut)
           })
 
-setGeneric("a2sU_motifsAnalysis",
-           function(x, region, geneList) standardGeneric("a2sU_motifsAnalysis"))
-setMethod("a2sU_motifsAnalysis", "anota2seqUtilsData",
+setGeneric("ptn_motifgeneList",
+           function(x, region, geneList) standardGeneric("ptn_motifgeneList"))
+setMethod("ptn_motifgeneList", "postNetData",
           function(x, region, geneList){
             checkRegion(region)
             if(length(region)>1){
               stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'")
             }
-            if(!any(geneList %in% names(a2sU_dataIn(x)))){
-              stop('the regulatory geneList not in a2sU')
+            if(!any(geneList %in% names(ptn_dataIn(x)))){
+              stop('the regulatory geneList not in ptn')
             }
             tmpReg <- slot(x@analysis@motifs, region)
             motifsAnalysisOut <- tmpReg[[geneList]]
             return(motifsAnalysisOut)
           })
 
-setGeneric("a2sU_codonsAll",
-           function(x) standardGeneric("a2sU_codonsAll"))
-setMethod("a2sU_codonsAll", "anota2seqUtilsData",
+setGeneric("ptn_codonAnalysis",
+           function(x) standardGeneric("ptn_codonAnalysis"))
+setMethod("ptn_codonAnalysis", "postNetData",
           function(x){
-            if(!checkUtils(x)){
-              stop("It is not valid anota2seqUtils object")
+            if(!checkPtn(x)){
+              stop("It is not valid postNet object")
             } else {
-              tmpOut <- x@analysis@codons@codonsAll
+              tmpOut <- x@analysis@codons@codonAnalysis
               
               out <- s4_to_dataframe(tmpOut)
               return(out)
             }
           })
 
-setGeneric("a2sU_codonsSel",
-           function(x,comparison) standardGeneric("a2sU_codonsSel"))
-setMethod("a2sU_codonsSel", "anota2seqUtilsData",
+setGeneric("ptn_codonSelection",
+           function(x,comparison) standardGeneric("ptn_codonSelection"))
+setMethod("ptn_codonSelection", "postNetData",
           function(x, comparison){
-            if(!checkUtils(x)){
-              stop("It is not valid anota2seqUtils object")
+            if(!checkPtn(x)){
+              stop("It is not valid postNet object")
             } else {
-              out <- x@analysis@codons@codonsSel[[comparison]]
+              out <- x@analysis@codons@codonSelection[[comparison]]
 
               return(out)
             }
           })
 
-setGeneric("a2sU_features",
-           function(x) standardGeneric("a2sU_features"))
-setMethod("a2sU_features", "anota2seqUtilsData",
+setGeneric("ptn_features",
+           function(x) standardGeneric("ptn_features"))
+setMethod("ptn_features", "postNetData",
           function(x){
-            if(!checkUtils(x)){
-              stop("It is not valid anota2seqUtils object")
+            if(!checkPtn(x)){
+              stop("It is not valid postNet object")
             } else {
               out <- x@features
               return(out)
@@ -155,21 +162,21 @@ setMethod("a2sU_features", "anota2seqUtilsData",
           })
 
 
-a2sU_miRNA <- function(a2sU,
-                       direction,
-                       threshold) {
+ptn_miRNA_analysis <- function(ptn,
+                               direction,
+                               threshold) {
   #
   checkDirection(tolower(direction))
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  if (!checkPtn(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
   if(!is_number(threshold)){
     stop("'threshold' must be a number")
   }
-  if(is.null(slot(a2sU@analysis, 'miRNA'))){
+  if(is.null(slot(ptn@analysis, 'miRNA'))){
     stop("Please run mi first miRNAanalysis")
   } else {
-    miRNAres <- a2sU@analysis@miRNA@miRNA_analysis
+    miRNAres <- ptn@analysis@miRNA@miRNA_analysis
   }
   
   if(tolower(direction)=='greater'){
@@ -190,16 +197,16 @@ a2sU_miRNA <- function(a2sU,
 }
 
 
-a2sU_miRNA_geneTargets <- function(a2sU,
-                                   miRNAs){
+ptn_miRNA_to_gene <- function(ptn,
+                              miRNAs){
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  if (!checkPtn(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
-  if(is.null(slot(a2sU@analysis, 'miRNA_analysis'))){
+  if(is.null(slot(ptn@analysis, 'miRNA_analysis'))){
     stop("Please run mi first miRNAanalysis")
   } else {
-    miRNATmp <- a2sU@analysis@miRNA@miRNA_to_gene
+    miRNATmp <- ptn@analysis@miRNA@miRNA_to_gene
   }
   miRNAsOut <- miRNATmp[which(names(miRNATmp) %in% miRNAs)]
   
@@ -207,27 +214,27 @@ a2sU_miRNA_geneTargets <- function(a2sU,
 }
 
 ###
-a2sU_GO <- function(a2sU,
+ptn_GO <- function(ptn,
                     category,
                     geneList,
                     threshold) {
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  if (!checkPtn(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
   checkCategory(category)
   if(!is_number(threshold)){
     stop("'threshold' must be a number")
   }
   #
-  if(!any(geneList %in% names(a2sU_dataIn(a2sU)))){
-    stop('None of the regulatory geneList in a2sU')
+  if(!any(geneList %in% names(ptn_dataIn(ptn)))){
+    stop('None of the regulatory geneList in ptn')
   }
   #
-  if(is.null(slot(a2sU@analysis, 'GO'))){
+  if(is.null(slot(ptn@analysis, 'GO'))){
     stop("Please run mi first GO analysis")
   } else {
-    GOres <- slot(a2sU@analysis@GO,category)
+    GOres <- slot(ptn@analysis@GO,category)
   }
   GOresOut <- GOres[[which(geneList == names(GOres))]]@result
   GOresOut <- GOresOut[which(GOresOut[,6]< threshold),]
@@ -241,21 +248,21 @@ a2sU_GO <- function(a2sU,
 }
 
 ###
-a2sU_gsea <- function(a2sU,
+ptn_GSEA<- function(ptn,
                       threshold=NULL) {
   
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  if (!checkPtn(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
   if(!is.null(threshold)){
     if(!is_number(threshold)){
       stop("'threshold' must be a number")
     }
   }
-  if(is.null(slot(a2sU@analysis, 'GSEA'))){
+  if(is.null(slot(ptn@analysis, 'GSEA'))){
     stop("Please run GSEA analysis first")
   } else {
-    gseaOut <- slot(a2sU@analysis, 'GSEA')
+    gseaOut <- slot(ptn@analysis, 'GSEA')
   }
   if(!is.null(threshold)){
     gseaOut <- gseaOut[which(gseaOut[,8] < threshold),]
@@ -266,7 +273,7 @@ a2sU_gsea <- function(a2sU,
   return(gseaOut)
 }
 
-a2sU_gage <- function(a2sU,
+ptn_GAGE <- function(ptn,
                       category,
                       direction,
                       threshold) {
@@ -275,8 +282,8 @@ a2sU_gage <- function(a2sU,
   if(length(direction) != 1){
     stop("Please provide only one: greater or leas")
   }
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  if (!checkPtn(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
   if(!is_number(threshold)){
     stop("'threshold' must be a number")
@@ -285,10 +292,10 @@ a2sU_gage <- function(a2sU,
   if(length(category) != 1){
     stop("Please provide only one category")
   }
-  if(is.null(slot(a2sU@analysis, 'GAGE'))){
+  if(is.null(slot(ptn@analysis, 'GAGE'))){
     stop("Please run mi first miRNAanalysis")
   } else {
-    GAGEres <- slot(a2sU@analysis@GAGE, category)
+    GAGEres <- slot(ptn@analysis@GAGE, category)
   }
   
   if(tolower(direction)=='greater'){
@@ -306,9 +313,9 @@ a2sU_gage <- function(a2sU,
   }
 }
 
-a2sU_model <- function(a2sU, analysis_type, model, comparison){
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+ptn_model <- function(ptn, analysis_type, model, comparison){
+  if (!checkPtn(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
   if(!is_valid_analysis_type(analysis_type)){
     stop("'analysis_type' can be only 'lm' for linear model or 'rf' for random forest")
@@ -322,7 +329,7 @@ a2sU_model <- function(a2sU, analysis_type, model, comparison){
       stop("comparison can be only one")
     }
   }
-  tmpIn <- slot(a2sU@analysis@featureIntegration,analysis_type)
+  tmpIn <- slot(ptn@analysis@featureIntegration,analysis_type)
   tmpIn <- tmpIn[[comparison]]
   #
   tmpOut <- slot(tmpIn,model)
@@ -331,27 +338,27 @@ a2sU_model <- function(a2sU, analysis_type, model, comparison){
 }
 
 
-a2sU_selectedFeatures <- function(a2sU, analysis_type){
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+ptn_selectedFeatures <- function(ptn, analysis_type){
+  if (!checkPtn(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
   if(!is_valid_analysis_type(analysis_type)){
     stop("'analysis_type' can be only 'lm' for linear model or 'rf' for random forest")
   }
   
-  tmpIn <- slot(a2sU@analysis@featureIntegration,analysis_type)
+  tmpIn <- slot(ptn@analysis@featureIntegration,analysis_type)
   #
   tmpOut <- slot(tmpIn, "selectedFeatures")
   #
   return(tmpOut)
 }
 
-setGeneric("a2sU_networkGraph",
-           function(x) standardGeneric("a2sU_networkGraph"))
-setMethod("a2sU_networkGraph", "anota2seqUtilsData",
+setGeneric("ptn_networkGraph",
+           function(x) standardGeneric("ptn_networkGraph"))
+setMethod("ptn_networkGraph", "postNetData",
           function(x){
-            if(!checkUtils(x)){
-              stop("It is not valid anota2seqUtils object")
+            if(!checkPtn(x)){
+              stop("It is not valid postNet object")
             } else {
               tmpOut <- x@analysis@featureIntegration@lm@networkGraph
               return(tmpOut)

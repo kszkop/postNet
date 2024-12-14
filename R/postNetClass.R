@@ -10,17 +10,17 @@ setClassUnion("characterOrnumericOrNULL",members=c("character", "numeric", "NULL
 
 setClassUnion("anovaOrNULL",members=c("anova", "logical"))
 
-setClass("anota2seqUtilsRegion",
+setClass("postNetRegion",
          slots = c(
            id = "character",
            geneID = "character",
-           seq =  "character"
+           sequences =  "character"
          )
 )
 
-setClassUnion("RegionOrNULL",members=c("anota2seqUtilsRegion", "NULL"))
+setClassUnion("RegionOrNULL",members=c("postNetRegion", "NULL"))
 
-setClass("anota2seqUtilsAnnot",
+setClass("postNetAnnot",
          slots = c(
            UTR5 = "RegionOrNULL",
            CDS = "RegionOrNULL",
@@ -29,7 +29,7 @@ setClass("anota2seqUtilsAnnot",
          )
 )
 
-setClass("anota2seqUtilsDataIn",
+setClass("postNetDataIn",
          slots = c(
            background = "characterOrNULL",
            geneList = "list",
@@ -38,7 +38,7 @@ setClass("anota2seqUtilsDataIn",
          )
 )
 
-setClass("anota2seqUtilsMotifs",
+setClass("postNetMotifs",
          slots = c(
            UTR5 = "listOrNULL",
            CDS = "listOrNULL",
@@ -47,7 +47,7 @@ setClass("anota2seqUtilsMotifs",
 )
 
 
-setClass("anota2seqUtilsCodonsAll",
+setClass("postNetCodonsAll",
          slots = c(
            geneID = "characterOrNULL",
            codon = "characterOrNULL",
@@ -59,23 +59,23 @@ setClass("anota2seqUtilsCodonsAll",
          )
 )
 
-setClassUnion("codonsAllOrNULL",members=c("anota2seqUtilsCodonsAll", "NULL"))
+setClassUnion("codonsAllOrNULL",members=c("postNetCodonsAll", "NULL"))
 
-setClass("anota2seqUtilsCodons",
+setClass("postNetCodons",
          slots = c(
-           codonsAll = "codonsAllOrNULL",
-           codonsSel = "listOrNULL"
+           codonAnalysis = "codonsAllOrNULL",
+           codonSelection = "listOrNULL"
          )
 )
 
-setClass("anota2seqUtilsmiRNA",
+setClass("postNetmiRNA",
          slots = c(
           miRNA_analysis = "listOrNULL",
           miRNA_to_gene = "listOrNULL"
          )
 )
 
-setClass("anota2seqUtilsGO",
+setClass("postNetGO",
          slots = c(
            BP = "listOrNULL",
            CC = "listOrNULL",
@@ -84,7 +84,7 @@ setClass("anota2seqUtilsGO",
          )
 )
 
-setClass("anota2seqUtilsGAGE",
+setClass("postNetGAGE",
          slots = c(
            BP = "listOrNULL",
            CC = "listOrNULL",
@@ -93,7 +93,7 @@ setClass("anota2seqUtilsGAGE",
          )
 )
 
-setClass("anota2seqUtilsUnivariate",
+setClass("anopostNetUnivariate",
          slots = c(
            pvalue = "numericOrNULL",
            fdr = "numericOrNULL",
@@ -101,14 +101,14 @@ setClass("anota2seqUtilsUnivariate",
          )
 )
 
-setClass("anota2seqUtilsStepWise",
+setClass("postNetStepWise",
          slots = c(
            models = "listOrNULL",
            table = "matrixOrNULL"
          )
 )
 
-setClass("anota2seqUtilsFinalModel",
+setClass("postNetFinalModel",
          slots = c(
            totalVarianceExplained = "numericOrNULL",
            finalModel = "anovaOrNULL",
@@ -116,11 +116,11 @@ setClass("anota2seqUtilsFinalModel",
          )
 )
 
-setClassUnion("univariateOrNULL",members=c("anota2seqUtilsUnivariate", "NULL"))
-setClassUnion("stepwiseOrNULL",members=c("anota2seqUtilsStepWise", "NULL"))
-setClassUnion("finalmodelOrNULL",members=c("anota2seqUtilsFinalModel", "NULL"))
+setClassUnion("univariateOrNULL",members=c("postNetUnivariate", "NULL"))
+setClassUnion("stepwiseOrNULL",members=c("postNetStepWise", "NULL"))
+setClassUnion("finalmodelOrNULL",members=c("postNetFinalModel", "NULL"))
 
-setClass("anota2seqUtilsFeatureIntegration_lm",
+setClass("postNetFeatureIntegration_lm",
          slots = c(
            univariateModel = "univariateOrNULL",
            stepwiseModel = "stepwiseOrNULL",
@@ -130,7 +130,7 @@ setClass("anota2seqUtilsFeatureIntegration_lm",
          )
 )
 
-setClass("anota2seqUtilsFeatureIntegration_rf",
+setClass("postNetFeatureIntegration_rf",
          slots = c(
             preModel = "ANY",
             borutaModel = "ANY",
@@ -140,25 +140,25 @@ setClass("anota2seqUtilsFeatureIntegration_rf",
 )
 
 
-setClassUnion("lmOrNULL",members=c("anota2seqUtilsFeatureIntegration_lm", "NULL"))
-setClassUnion("rfOrNULL",members=c("anota2seqUtilsFeatureIntegration_rf", "NULL"))
+setClassUnion("lmOrNULL",members=c("postNetFeatureIntegration_lm", "NULL"))
+setClassUnion("rfOrNULL",members=c("postNetFeatureIntegration_rf", "NULL"))
 
-setClass("anota2seqUtilsFeatureIntegration",
+setClass("postNetFeatureIntegration",
          slots = c(
            lm = "listOrNULL",
            rf  = "listOrNULL"
          )
 )
 
-setClassUnion("motifsOrNULL",members=c("anota2seqUtilsMotifs", "NULL"))
-setClassUnion("codonsOrNULL",members=c("anota2seqUtilsCodons", "NULL"))
-setClassUnion("miRNAOrNULL",members=c("anota2seqUtilsmiRNA", "NULL"))
-setClassUnion("GOOrNULL",members=c("anota2seqUtilsGO", "NULL"))
-setClassUnion("GAGEOrNULL",members=c("anota2seqUtilsGAGE", "NULL"))
-setClassUnion("FIOrNULL",members=c("anota2seqUtilsFeatureIntegration", "NULL"))
+setClassUnion("motifsOrNULL",members=c("postNetMotifs", "NULL"))
+setClassUnion("codonsOrNULL",members=c("postNetCodons", "NULL"))
+setClassUnion("miRNAOrNULL",members=c("postNetmiRNA", "NULL"))
+setClassUnion("GOOrNULL",members=c("postNetGO", "NULL"))
+setClassUnion("GAGEOrNULL",members=c("postNetGAGE", "NULL"))
+setClassUnion("FIOrNULL",members=c("postNetFeatureIntegration", "NULL"))
 
 
-setClass("anota2seqUtilsAnalysis",
+setClass("postNetAnalysis",
          slots = c(
            featureIntegration = "FIOrNULL",
            motifs  = "motifsOrNULL",
@@ -170,15 +170,15 @@ setClass("anota2seqUtilsAnalysis",
          )
 )
 
-setClass("anota2seqUtilsData",
+setClass("postNetData",
          slots = c(
            species = "characterOrNULL",
            version = "characterOrNULL",
            selection = "character",
-           annot =  "anota2seqUtilsAnnot",
-           dataIn = "anota2seqUtilsDataIn",
+           annot =  "postNetAnnot",
+           dataIn = "postNetDataIn",
            features = "dataframeOrNULL",
-           analysis = "anota2seqUtilsAnalysis"
+           analysis = "postNetAnalysis"
          )
 )
 
