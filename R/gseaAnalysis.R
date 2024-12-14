@@ -4,6 +4,8 @@ gseaAnalysis <- function(a2sU,
                          subcollection = NULL,
                          subsetNames = NULL,
                          geneSet = NULL,
+                         maxSize = 500,
+                         minSize = 10,
                          name = NULL){
   if (!checkUtils(a2sU)) {
     stop("a2sU is not a valid 'anota2seqUtilsData' object.")
@@ -67,7 +69,7 @@ gseaAnalysis <- function(a2sU,
     checkGeneList(geneSet)
     geneSet_ids <- geneSet
   }
-  resOut <- fgsea::fgsea(pathways = geneSet_ids, stat = rankIn, minSize  = 5, maxSize  = 500)
+  resOut <- fgsea::fgsea(pathways = geneSet_ids, stat = rankIn, minSize  = minSize, maxSize  = maxSize)
   
   #format output
   resOut$Count <- unlist(lapply(resOut$leadingEdge, length))

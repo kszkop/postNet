@@ -1633,7 +1633,8 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
       text_y <- group_center[2] + y_radius * 0.75
       
       # Add group label at the calculated text position
-      text(x = text_x, y = text_y, labels = paste(sum(igraph::V(net)$VarianceExplained[which(igraph::V(net)$Group == group)]),'%',sep=''), col = lmfeatGroupColour[names(lmfeatGroupColour) == group], cex = 1, font = 2, pos = 4)
+      text(x = text_x, y = text_y, labels = paste(sum(igraph::V(net)$VarianceExplained[which(igraph::V(net)$Group == group)]),'%',sep=''), col = lmfeatGroupColour[names(lmfeatGroupColour) == group], cex = 1.25, font = 2, pos = 4)
+      legend('topright', bty='n', names(lmfeatGroupColour), title='Groups',text.col = lmfeatGroupColour, title.col = 'grey30')
     }
 
     #varexplTmp <- as.numeric()

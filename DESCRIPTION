@@ -1,7 +1,7 @@
-Package: anota2seqUtils
+Package: postNet
 Type: Package
 Title: 
-Version: 0.0.0.9000
+Version: 0.0.1
 Author: Krzysztof Szkop <krzysztof.szkop@ki.se>, Ola Larsson <ola.larsson@ki.se>
 Maintainer: Krzysztof Szkop <krzysztof.szkop@ki.se>
 Description: What the package does (one paragraph).
@@ -41,7 +41,6 @@ Imports:
   AnnotationHub (>= 3.6.0),
   GSEABase (>= 1.60.0),
   fgsea (>= 1.24.0),
-  GOstats (>= 2.64.0),
   org.Hs.eg.db (>= 3.16.0),
   org.Mm.eg.db (>= 3.16.0),
   RColorBrewer (>= 1.1-3)
