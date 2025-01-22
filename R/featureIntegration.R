@@ -1,4 +1,4 @@
-featureIntegration <- function(a2sU,
+featureIntegration <- function(ptn,
                                features,
                                lmfeatGroup=NULL,
                                lmfeatGroupColour=NULL,
@@ -11,16 +11,15 @@ featureIntegration <- function(a2sU,
                                comparisons = NULL,
                                pdfName = NULL) {
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
-  }
+  check_ptn(ptn)
+  
   checkfeatures(features)
   if(!is.null(comparisons)){
     if(!checkComparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_bg(ptn))){
       stop(" 0 is always a background, but no background provided")
     }
   }
@@ -50,16 +49,16 @@ featureIntegration <- function(a2sU,
     }
   }
   #
-  a2sU <- prepFeatures(a2sU, features)
+  ptn <- prepFeatures(ptn, features)
   
-  dataTmp <- a2sU_features(a2sU)
+  dataTmp <- ptn_features(ptn)
   colnames(dataTmp) <- c(paste("a", seq(1, ncol(dataTmp)-1, 1), sep = ""), "effM")
   
-  namesDf <- data.frame(originalNames = colnames(a2sU_features(a2sU))[1:ncol(dataTmp)-1], newNames = colnames(dataTmp)[1:ncol(dataTmp)-1], stringsAsFactors = F)
+  namesDf <- data.frame(originalNames = colnames(ptn_features(ptn))[1:ncol(dataTmp)-1], newNames = colnames(dataTmp)[1:ncol(dataTmp)-1], stringsAsFactors = F)
   #
-  resOut <- resQuant(qvec = a2sU_eff(a2sU), a2sU = a2sU)
+  resOut <- resQuant(qvec = ptn_eff(ptn), ptn = ptn)
   #
-  fiOut <- new("anota2seqUtilsFeatureIntegration",
+  fiOut <- new("postNetFeatureIntegration",
                lm = NULL,
                rf = NULL)
   ######
@@ -76,7 +75,7 @@ featureIntegration <- function(a2sU,
     if (isTRUE(regOnly)){
       #
       for (i in 1:length(comparisons)) {
-        coloursTmp <- a2sU_colours(a2sU)
+        coloursTmp <- ptn_colours(ptn)
         if (names(resOut)[1] == 'background') {
           compTmp <- comparisons[[i]] + 1
           coloursTmp <- c('grey75',coloursTmp)[compTmp]
@@ -133,7 +132,7 @@ featureIntegration <- function(a2sU,
     dataTmpReg <- dataTmp[, colnames(dataTmp) != "effM"]
     #
     for (i in 1:length(comparisons)) {
-      coloursTmp <- a2sU_colours(a2sU)
+      coloursTmp <- ptn_colours(ptn)
       if (names(resOut)[1] == 'background') {
         compTmp <- comparisons[[i]] + 1
         coloursTmp <- c('grey75',coloursTmp)[compTmp]
@@ -228,7 +227,7 @@ featureIntegration <- function(a2sU,
       text(0.8, 0.1, font = 2, cex = 1.7, paste("Specificity: ", round(caret::confusionMatrix(predValidc, ValidSet$reg)[[4]][2], 2), sep = ""))
       dev.off()
       
-      rfOut <- new("anota2seqUtilsFeatureIntegration_rf",
+      rfOut <- new("postNetFeatureIntegration_rf",
                    preModel = model1,
                    borutaModel = model1Imp,
                    finalModel = model2,
@@ -255,6 +254,6 @@ featureIntegration <- function(a2sU,
   } else {
     stop("Please provide correct type: lm for linear regression or rf for random forest")
   }
-  a2sU@analysis@featureIntegration <- fiOut
-  return(a2sU)
+  ptn@analysis@featureIntegration <- fiOut
+  return(ptn)
 }

@@ -27,9 +27,8 @@ anota2seqUtilsStart <- function(ads = NULL,
     stop("please provide anota2seq object or genelist, not both.")
   }
   if(!is.null(ads)){
-    if (!checkAds(ads)) {
-      stop("ads is not a valid 'Anota2seqDataSet' object.")
-    }
+    check_ads(ads)
+    
     if (!is.null(regulation) && !is.character(regulation) && !regulation %in% c("translationUp","translationDown","translatedmRNAUp","translatedmRNADown","bufferingmRNAUp","bufferingmRNADown","mRNAAbundanceUp","mRNAAbundanceDown","totalmRNAUp","totalmRNADown")) {
       stop("'regulation' should be a character vector chosen from translationUp,translationDown,translatedmRNAUp,translatedmRNADown,bufferingmRNAUp,bufferingmRNADown,mRNAAbundanceUp,mRNAAbundanceDown,totalmRNAUp,totalmRNADown")
     }
@@ -43,7 +42,7 @@ anota2seqUtilsStart <- function(ads = NULL,
     if(is.null(geneList)){
       stop('Either anota2seq object of gene list must be provided')
     } else {
-      checkGeneList(geneList)
+      check_geneList(geneList)
       
       if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours)== length(geneList)) {
         stop("'geneListcolours' should be a character vector of the same length as geneList.")
@@ -58,21 +57,9 @@ anota2seqUtilsStart <- function(ads = NULL,
       stop("There are entries in geneList that are not in 'customBg'")
     }
   }
-  # Validate the source input
-  tryCatch({
-    # Code that may throw an error
-    checkSource(source)
-  }, error = function(e) {
-    stop("Source check failed: ", e$message)
-  })
-  
-  # Validate specific parameters
-  tryCatch({
-    # Code that may throw an error
-    checkInput(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile)
-  }, error = function(e) {
-    stop("Parameters check failed: ", e$message)
-  })
+  check_source(source)
+  check_selection(selection)
+  checkinput(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile)
   
   if(!is.null(adjObj)){
     check_adjObj(adjObj)
@@ -95,18 +82,41 @@ anota2seqUtilsStart <- function(ads = NULL,
     ####Download files
     if (species == "human"
     ) {
-      url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/"
+      url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/"
+      
+      responseTmp <- httr::GET(url)
+      if (httr::status_code(responseTmp) == 200) {
+        
+        pageTmp <- httr::content(responseTmp, as = "text") %>% rvest::read_html()
+        linksTmp <- pageTmp %>% rvest::html_nodes("a") %>% rvest::html_attr("href")
+        #
+        version <- linksTmp[grepl("GCF_000001405", linksTmp)]
+      } else {
+        cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
+      }
       #
-      download.file(paste(url, "GRCh38_latest_rna.fna.gz", sep = ""), destfile = "customFasta.fa.gz")
-      download.file(paste(url, "GRCh38_latest_rna.gbff.gz", sep = ""), destfile = "customAnnot.gbff.gz")
-      download.file(paste(url, "GRCh38_latest_genomic.gff.gz", sep = ""), destfile = "GeneRef.gff.gz")
+      
+      download.file(paste(url, version, "_rna.fna.gz", sep = ""), destfile = "customFasta.fa.gz")
+      download.file(paste(url, version, "_rna.gbff.gz", sep = ""), destfile = "customAnnot.gbff.gz")
+      download.file(paste(url, version, "_genomic.gff.gz", sep = ""), destfile = "GeneRef.gff.gz")
     }
     if (species == "mouse") {
-      url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/GCF_000001635.27-RS_2023_04/"
+      url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/"
+      
+      responseTmp <- httr::GET(url)
+      if (httr::status_code(responseTmp) == 200) {
+
+        pageTmp <- httr::content(responseTmp, as = "text") %>% rvest::read_html()
+        linksTmp <- pageTmp %>% rvest::html_nodes("a") %>% rvest::html_attr("href")
+        #
+        version <- linksTmp[grepl("GCF_000001635", linksTmp)]
+      } else {
+        cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
+      }
       #
-      download.file(paste(url, "GCF_000001635.27_GRCm39_rna.fna.gz", sep = ""), destfile = "customFasta.fa.gz")
-      download.file(paste(url, "GCF_000001635.27_GRCm39_rna.gbff.gz", sep = ""), destfile = "customAnnot.gbff.gz")
-      download.file(paste(url, "GCF_000001635.27_GRCm39_genomic.gff.gz", sep = ""), destfile = "GeneRef.gff.gz")
+      download.file(paste(url, version,"_rna.fna.gz", sep = ""), destfile = "customFasta.fa.gz")
+      download.file(paste(url, version,"_rna.gbff.gz", sep = ""), destfile = "customAnnot.gbff.gz")
+      download.file(paste(url, version,"_genomic.gff.gz", sep = ""), destfile = "GeneRef.gff.gz")
     }
     R.utils::gunzip("customAnnot.gbff.gz")
     R.utils::gunzip("customFasta.fa.gz")

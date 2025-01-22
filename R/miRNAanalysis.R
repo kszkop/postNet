@@ -1,23 +1,23 @@
-miRNAanalysis <- function(a2sU,
+miRNAanalysis <- function(ptn,
                           miRNATargetScanFile,
                           genesSlopeFiltOut = NULL,
                           maxSize = 500,
                           minSize = 10) {
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  if (!check_ptn(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
   if(!is_number(maxSize) | !is_number(minSize)){
     stop("please provide numeric value")
   }
   miRNATargetScan <- checkFileColumns(miRNATargetScanFile)
-  if(length(intersect(unique(miRNATargetScan$Gene.Symbol), a2sU_bg(a2sU)))<2){
+  if(length(intersect(unique(miRNATargetScan$Gene.Symbol), ptn_bg(ptn)))<2){
     stop('no overlap between genes the dataset and in the miRNATargetScanFile')
   }
   #
   miRNAOut <- list()
   #
-  effTmp <- a2sU_eff(a2sU)
+  effTmp <- ptn_eff(ptn)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
   }  else {
@@ -39,12 +39,12 @@ miRNAanalysis <- function(a2sU,
                                             rank.test = TRUE, 
                                             use.fold = FALSE)
   #
-  miRNA<- new("anota2seqUtilsmiRNA",
+  miRNA<- new("postNetmiRNA",
                     miRNA_analysis = miRNA_enrichment_targetScan,
                     miRNA_to_gene = miRNAList)
-  a2sU@analysis@miRNA <-  miRNA
+  ptn@analysis@miRNA <-  miRNA
   #
-  return(a2sU)
+  return(ptn)
 }
 
 

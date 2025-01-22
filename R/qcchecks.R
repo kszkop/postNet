@@ -1,4 +1,4 @@
-checkRegion <- function(region, convertToUppercase = TRUE) {
+check_region <- function(region, convertToUppercase = TRUE) {
   valid_regions <- c('UTR3', 'CDS', 'UTR5', 'CCDS')
   
   if (is.null(region) || !is.character(region) || length(region) == 0) {
@@ -33,7 +33,7 @@ check_adjObj <- function(adjObj) {
   }
 }
 
-checkSelection <- function(selection, convertToLowercase = TRUE) {
+check_selection <- function(selection, convertToLowercase = TRUE) {
   valid_selection <- c('random', 'longest', 'shortest')
   
   if (is.null(selection) || !is.character(selection) || length(selection) == 0) {
@@ -48,7 +48,7 @@ checkSelection <- function(selection, convertToLowercase = TRUE) {
   }
 }
 
-checkPlotType <- function(plotType, convertToLowercase = TRUE) {
+check_plotType <- function(plotType, convertToLowercase = TRUE) {
   valid_plottypes <- c('boxplot', 'violin', 'ecdf')
   
   if (is.null(plotType) || !is.character(plotType) || length(plotType) == 0) {
@@ -82,22 +82,19 @@ checkAnnotCod <- function(annot, expectedCols = c("id", "geneID", "CDS_seq")) {
   }
 }
 
-# Check if 'ads' is a valid 'Anota2seqDataSet' object
-checkAds <- function(obj) {
+check_ptn <- function(obj) {
+  if (!inherits(obj, "postNetData")) {
+    stop("ptn is not a valid 'postNetData' object.")
+  }
+}
+
+check_ads <- function(obj) {
   if (!inherits(obj, "Anota2seqDataSet")) {
-    return(FALSE)
+    stop("ads is not a valid 'Anota2seqDataSet' object.")
   }
-  return(TRUE)
 }
 
-checkUtils <- function(obj) {
-  if (!inherits(obj, "anota2seqUtilsData")) {
-    return(FALSE)
-  }
-  return(TRUE)
-}
-
-checkComparisons <- function(obj) {
+check_comparisons <- function(obj) {
   if (!is.list(obj)) {
     return(FALSE)
   }
@@ -133,17 +130,16 @@ is_numeric_vector <- function(obj) {
   return(is.numeric(obj) && is.vector(obj))
 }
 
-
-is_logical <- function(x) {
-  is.logical(x) && length(x) == 1
+check_logical <- function(x) {
+  is.logical(x) && !is.na(x) && length(x) == 1
 }
 
-is_number <- function(x) {
-  is.numeric(x) && !is.na(x)
+check_number <- function(x) {
+  is.numeric(x) && !is.na(x) && length(x) == 1
 }
 
 # Function to validate the source input
-checkSource <- function(source) {
+check_source <- function(source) {
   valid_sources <- c("create", "createFromSourceFiles", "load", "custom", "createFromFiles")
   if (!(source %in% valid_sources)) {
     stop("Invalid source. Please provide a valid source option.")
@@ -166,18 +162,16 @@ is_valid_species <- function(species) {
   return(FALSE)
 }
 
-isDNAsequence <- function(contentIn) {
+check_DNAsequence <- function(contentIn) {
   if (!is.character(contentIn)) {
-    return(FALSE)
+    stop("'contentIn' must be a character vector with DNA sequences")
   }
   # Define a regular expression pattern for valid DNA characters
   pattern <- "^[ACGTacgt]+$"
   
   # Use grepl to check if contentIn matches the pattern
-  if (all(grepl(pattern, contentIn))) {
-    return(TRUE)
-  } else {
-    return(FALSE)
+  if (!all(grepl(pattern, contentIn))) {
+    stop("'contentIn' must be a character vector with DNA sequences")
   }
 }
 
@@ -243,7 +237,8 @@ is_motifs <- function(motifsIn) {
 }
 
 # Function to validate specific input parameters
-checkInput <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile) {
+check_input <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile) {
+  check_source(source)
   if (source == "createFromSourceFiles") {
     if (is.null(rna_gbff_file)) {
       stop("Please provide an rna_gbff_file.")
@@ -419,7 +414,7 @@ checkCollection <- function(collection) {
   }
 }
 
-checkGeneList <- function(obj) {
+check_geneList <- function(obj) {
   if (!is.list(obj)) {
     stop("The input is not a list.")
   }
@@ -433,16 +428,19 @@ checkGeneList <- function(obj) {
   }
 }
 
-checkDirection <- function(direction) {
+check_direction <- function(direction) {
   if (is.null(direction)) {
     stop("The direction cannot be NULL.")
+  }
+  if(length(direction) != 1){
+    stop("Please provide only one: greater or less")
   }
   if (!direction %in% c("greater", "less")) {
     stop('The direction must be either "greater" or "less".')
   }
 }
 
-checkCategory <- function(category) {
+check_category <- function(category) {
   if (is.null(category)) {
     stop("The category cannot be NULL.")
   }
@@ -458,14 +456,13 @@ check_size <- function(size) {
   }
 }
 
-is_valid_analysis_type <- function(analysis_type) {
+check_analysis_type <- function(analysis_type){
   if (is.null(analysis_type)) {
-    return(FALSE)
+    stop("Please provide 'analysis_type' argument. It should be'lm' for linear model or 'rf' for random forest")
   }
-  if (analysis_type %in% c("lm", "rf")) {
-    return(TRUE)
+  if (!analysis_type %in% c("lm", "rf")) {
+    stop("'analysis_type' can be only 'lm' for linear model or 'rf' for random forest")
   }
-  return(FALSE)
 }
 
 is_valid_NetModelSel <- function(NetModelSel) {
@@ -479,18 +476,16 @@ is_valid_NetModelSel <- function(NetModelSel) {
 }
 
 check_model <- function(model, analysis_type) {
+  check_analysis_type(analysis_type)
   if (is.null(model)) {
-    return(FALSE)
+    stop("Please provide correct 'model' for a analysis type")
   }
-  
-  if (analysis_type == "lm" && model %in% c("univariateModel", "stepwiseModel", "finalModel")) {
-    return(TRUE)
+  if (!analysis_type == "lm" && model %in% c("univariateModel", "stepwiseModel", "finalModel")) {
+    stop("Please provide correct 'model'. For 'lm', choose one of these: 'univariateModel', 'stepwiseModel', 'finalModel'")
   }
-  
-  if (analysis_type == "rf" && model %in% c("preModel", "borutaModel", "finalModel")) {
-    return(TRUE)
+  if (!analysis_type == "rf" && model %in% c("preModel", "borutaModel", "finalModel")) {
+    stop("Please provide correct 'model'. For 'rf', choose one of these: 'preModel', 'borutaModel', 'finalModel'")
   }
-  return(FALSE)
 }
 
 checkfeatures <- function(features) {

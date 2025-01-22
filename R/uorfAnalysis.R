@@ -1,4 +1,4 @@
-uorfAnalysis <- function(a2sU,
+uorfAnalysis <- function(ptn,
                           startCodon = "ATG",
                           KozakContext = "strong",
                           onlyUTR5 = FALSE,
@@ -7,18 +7,16 @@ uorfAnalysis <- function(a2sU,
                           plotOut = TRUE,
                           pdfName = NULL) {
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
-  }
-  if(!is_logical(plotOut)){
+  check_ptn(ptn)
+  if(!check_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  }
+  } 
   if(!is.null(comparisons)){
     if(!checkComparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_bg(ptn))){
       stop(" 0 is always a background, but no background provided")
     }
   }
@@ -53,12 +51,12 @@ uorfAnalysis <- function(a2sU,
   #
   uORFFinal <- list()
   
-  seqTmp <- a2sU_sequences(a2sU,region="UTR5")
+  seqTmp <- ptn_sequences(ptn,region="UTR5")
   #
   if (!isTRUE(onlyUTR5)) {
     seq <- list()
-    seq[[1]] <- a2sU_sequences(a2sU, region='CDS')
-    seq[[2]] <- a2sU_sequences(a2sU, region='UTR3')
+    seq[[1]] <- ptn_sequences(ptn, region='CDS')
+    seq[[2]] <- ptn_sequences(ptn, region='UTR3')
     extSeq <- combSeq(seqIn = seq)
     extSeq <- unlist(extSeq)
     #
@@ -67,16 +65,16 @@ uorfAnalysis <- function(a2sU,
     uorfOut <- sapply(seqTmp, function(x) calc_uORF(x, ext=NULL, context = context, unit = tolower(unitOut)), USE.NAMES=FALSE)
   }
   #
-  names(uorfOut) <- a2sU_geneID(a2sU, region="UTR5")
+  names(uorfOut) <- ptn_geneID(ptn, region="UTR5")
   #
   if (tolower(unitOut) == "number" & isTRUE(plotOut)) {
     #
-    resOut <- resQuant(qvec = uorfOut, a2sU = a2sU)
+    resOut <- resQuant(qvec = uorfOut, ptn = ptn)
     
     if(length(resOut)==0){
       stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
     }
-    colOut <- colPlot(a2sU)
+    colOut <- colPlot(ptn)
     #
     resProp <- as.numeric()
     for (i in 1:length(resOut)) {

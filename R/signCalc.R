@@ -1,12 +1,12 @@
-signCalc <- function(a2sU,
+signCalc <- function(ptn,
                      signatures) {
   #
   outSign <- list()
   #
   for (i in 1:length(signatures)) {
     #
-    Outvec <- rep(0, length(a2sU_geneID(a2sU, 'CDS')))
-    names(Outvec) <- a2sU_geneID(a2sU, 'CDS')
+    Outvec <- rep(0, length(ptn_geneID(ptn, 'CDS')))
+    names(Outvec) <- ptn_geneID(ptn, 'CDS')
     #
     tmpSignature <- signatures[[i]]
     #

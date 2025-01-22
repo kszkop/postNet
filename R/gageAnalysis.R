@@ -1,13 +1,11 @@
-gageAnalysis <- function(a2sU,
+gageAnalysis <- function(ptn,
                          category, #To choose from (gene ontologies) 'BP', 'CC', 'MF' or 'KEGG'
                          genesSlopeFiltOut=NULL,
                          maxSize = 500,
                          minSize = 10
 ){
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
-  }
-  species <- a2sU_species(a2sU)
+  check_ptn(ptn)
+  species <- ptn_species(ptn)
   if (!species %in% c("human","mouse")) {
     stop("This option is only  available for species: human and mouse at the moment")
   }
@@ -17,7 +15,7 @@ gageAnalysis <- function(a2sU,
   #
   gageOut <- list()
 
-  effTmp <- a2sU_eff(a2sU)
+  effTmp <- ptn_eff(ptn)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
   }  else {
@@ -35,7 +33,7 @@ gageAnalysis <- function(a2sU,
   rankIn <- effIn[order(effIn,decreasing = T)]
   
   #
-  GAGEout  <- new("anota2seqUtilsGAGE",
+  GAGEout  <- new("postNetGAGE",
                 BP = NULL,
                 CC = NULL,
                 MF = NULL,
@@ -104,8 +102,8 @@ gageAnalysis <- function(a2sU,
     #
     slot(GAGEout, sel) <- resOut
   }
-  a2sU@analysis@GAGE <- GAGEout
+  ptn@analysis@GAGE <- GAGEout
   #
-  return(a2sU)
+  return(ptn)
 }
 

@@ -1,4 +1,4 @@
-foldingEnergyAnalysis <- function(a2sU,
+foldingEnergyAnalysis <- function(ptn,
                                   sourceFE = "load",
                                   fromFasta = FALSE,
                                   customFileFE = NULL,
@@ -9,8 +9,8 @@ foldingEnergyAnalysis <- function(a2sU,
                                   plotType = "ecdf",
                                   pdfName = NULL) {
   #
-  species <- a2sU_species(a2sU)
-  version <- a2sU_version(a2sU)
+  species <- ptn_species(ptn)
+  version <- ptn_version(ptn)
   
   # Validate the source input
   tryCatch({
@@ -20,9 +20,9 @@ foldingEnergyAnalysis <- function(a2sU,
     stop("Source check failed: ", e$message)
   })
 
-  if(!is_logical(plotOut)){
+  if(!check_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  }
+  } 
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
       checkPlotType(plotType)
@@ -36,7 +36,7 @@ foldingEnergyAnalysis <- function(a2sU,
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_bg(ptn))){
       stop(" 0 is always a background, but no background provided")
     }
   }
@@ -83,14 +83,14 @@ foldingEnergyAnalysis <- function(a2sU,
       }
       checkRegion(region)
       #
-      currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "anota2seqUtils"))
+      currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "postNet"))
       if (!species %in% currTmp) {
         stop("This option is only  available for species: human and mouse at the moment. Please use option fromFasta = TRUE")
       }
       #
       for(reg in region){
         #
-        seqTmp <- a2sU_sequences(a2sU,region = reg)
+        seqTmp <- ptn_sequences(ptn,region = reg)
         # Write out sequences
         seqinr::write.fasta(sequences = as.list(as.character(seqTmp)), names = names(seqTmp), file.out = paste(reg, ".fa", sep = ""))
         #
@@ -105,15 +105,15 @@ foldingEnergyAnalysis <- function(a2sU,
     energyIn <- read.delim(customFileFE, stringsAsFactors = FALSE)
     energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
     #
-    feOutTmp <- runFE(energyIn = energyIn, a2sU = a2sU, residFE = residFE)
+    feOutTmp <- runFE(energyIn = energyIn, ptn = ptn, residFE = residFE)
     feOut[['custom']] <- feOutTmp
     #
     if (isTRUE(plotOut)) {
-      resOut <- resQuant(qvec = feOutTmp, a2sU = a2sU)
+      resOut <- resQuant(qvec = feOutTmp, ptn = ptn)
       if(length(resOut)==0){
         stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
       }
-      colOut <- colPlot(a2sU)
+      colOut <- colPlot(ptn)
       # Plot
       pdf(ifelse(is.null(pdfName), paste("custom", plotType, "foldEnergyAnalysis.pdf", sep = "_"), paste(pdfName, "custom", plotType, "foldEnergyAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
       ylabel <- ifelse(isTRUE(residFE), 'residuals (fe ~ length)', 'folding energy')
@@ -129,7 +129,7 @@ foldingEnergyAnalysis <- function(a2sU,
     #
     feOut <- list()
     # list existing species
-    currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "anota2seqUtils"))
+    currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "postNet"))
     
     if (!species %in% currTmp) {
       stop("This option is only  available for species: human and mouse at the moment. Please use option createFromFile")
@@ -137,22 +137,22 @@ foldingEnergyAnalysis <- function(a2sU,
     #
     for(reg in region){
       if (species == "human") {
-        energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), paste("humanDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "anota2seqUtils"), stringsAsFactors = FALSE)
+        energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), paste("humanDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "postNet"), stringsAsFactors = FALSE)
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
       if (species == "mouse") {
-        energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), paste("mouseDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "anota2seqUtils"), stringsAsFactors = FALSE)
+        energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), paste("mouseDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "postNet"), stringsAsFactors = FALSE)
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
-      feOutTmp <- runFE(energyIn = energyIn, a2sU = a2sU, residFE = residFE)
+      feOutTmp <- runFE(energyIn = energyIn, ptn = ptn, residFE = residFE)
       feOut[[paste(reg, "foldingEnergy",sep='_')]] <- feOutTmp
       #
       if (isTRUE(plotOut)) {
-        resOut <- resQuant(qvec = feOutTmp, a2sU = a2sU)
+        resOut <- resQuant(qvec = feOutTmp, ptn = ptn)
         if(length(resOut)==0){
           stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
         }
-        colOut <- colPlot(a2sU)
+        colOut <- colPlot(ptn)
         # Plot
         pdf(ifelse(is.null(pdfName), paste(reg, plotType, "foldEnergyAnalysis.pdf", sep = "_"), paste(pdfName, reg, plotType, "foldEnergyAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
         ylabel <- ifelse(isTRUE(residFE), 'residuals (fe ~ length)', 'folding energy')
@@ -169,10 +169,10 @@ foldingEnergyAnalysis <- function(a2sU,
 #
 runFE <- function(energyIn,
                   residFE = FALSE,
-                  a2sU){
+                  ptn){
   #
   colnames(energyIn) <- c("id", "fold_energy", "length")
-  energyIn$geneID <- a2sU_geneID(a2sU,region='CDS')[match(energyIn$id,a2sU_id(a2sU, region='CDS'))]
+  energyIn$geneID <- ptn_geneID(ptn,region='CDS')[match(energyIn$id,ptn_id(ptn, region='CDS'))]
   energyIn <- na.omit(energyIn)
   #
   if (isTRUE(residFE)) {

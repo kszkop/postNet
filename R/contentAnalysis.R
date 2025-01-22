@@ -1,4 +1,4 @@
-contentAnalysis <- function(a2sU,
+contentAnalysis <- function(ptn,
                             contentIn,
                             region,
                             subregion = NULL, 
@@ -8,33 +8,30 @@ contentAnalysis <- function(a2sU,
                             plotType = "boxplot",
                             pdfName = NULL) {
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
-  }
-  checkRegion(region)
+  check_ptn(ptn)
+  check_region(region)
 
-  if(!is_logical(plotOut)){
+  if(!check_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  }
+  } 
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
-      checkPlotType(plotType)
+      check_plotType(plotType)
     } else {
       stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
     }
   }
   if(!is.null(comparisons)){
-    if(!checkComparisons(comparisons)){
+    if(!check_comparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_background(ptn))){
       stop(" 0 is always a background, but no background provided")
     }
   }
-  if(!isDNAsequence(contentIn)){
-    stop("'contentIn' must be a character vector with DNA sequences")
-  }
+  check_DNAsequence(contentIn)
+
   if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
     stop("'subregion' must be a numeric and just number")
   }
@@ -46,7 +43,7 @@ contentAnalysis <- function(a2sU,
   contentFinal <- list()
   for(reg in toupper(region)){
     #
-    seqTmp <- a2sU_sequences(a2sU, region = reg)
+    seqTmp <- ptn_sequences(ptn, region = reg)
     #
     if (!is.null(subregion)) {
       if(is.null(subregionSel)){
@@ -65,14 +62,14 @@ contentAnalysis <- function(a2sU,
         tmpCont <- sapply(seqinr::s2c(toupper(content)), function(x) calc_content(tmpSeq, x))
         contentOut[i] <- sum(tmpCont)
       }
-      names(contentOut) <- a2sU_geneID(a2sU, region=reg)
+      names(contentOut) <- ptn_geneID(ptn, region=reg)
       #
       if (isTRUE(plotOut)) {
-        resOut <- resQuant(qvec = contentOut, a2sU = a2sU)
+        resOut <- resQuant(qvec = contentOut, ptn = ptn)
         if(length(resOut)==0){
           stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
         }
-        colOut <- colPlot(a2sU)
+        colOut <- colPlot(ptn)
         # Plot
         pdf(ifelse(is.null(pdfName), paste(reg, content, "content.pdf", sep = "_"), paste(pdfName, reg, content, "content.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
         ylabel = paste(reg, '%', paste0(content, "content"), sep = "_")

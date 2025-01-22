@@ -1,4 +1,4 @@
-gseaAnalysis <- function(a2sU,
+gseaAnalysis <- function(ptn,
                          genesSlopeFiltOut = NULL,
                          collection = NULL,
                          subcollection = NULL,
@@ -7,8 +7,8 @@ gseaAnalysis <- function(a2sU,
                          maxSize = 500,
                          minSize = 10,
                          name = NULL){
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  if (!checkPtn(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
   if(is.null(geneSet) && is.null(collection)){
     stop("please provide geneSet or collection")
@@ -37,7 +37,7 @@ gseaAnalysis <- function(a2sU,
   #  stop("No anota2seq object or ranks provided")
   #}
   #
-  effTmp <- a2sU_eff(a2sU)
+  effTmp <- ptn_eff(ptn)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
   }  else {
@@ -46,7 +46,7 @@ gseaAnalysis <- function(a2sU,
   #
   rankIn <- effIn[order(effIn,decreasing = T)]
   if(is.null(geneSet)){
-    species <- a2sU_species(a2sU)
+    species <- ptn_species(ptn)
     if (!species %in% c("human","mouse")) {
       stop("This option is only  available for species: human and mouse at the moment")
     }
@@ -87,15 +87,15 @@ gseaAnalysis <- function(a2sU,
 }
 
 ####
-gseaPlot <- function(a2sU,
+gseaPlot <- function(ptn,
                      termNames,
                      genesSlopeFiltOut = NULL,
                      gseaParam = 1,
                      ticksSize = 0.3,
                      pdfName = NULL ){
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  if (!checkPtn(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
   if(is.null(a2sU_gsea(a2sU))){
     stop("Please run gseaAnalysis first ")

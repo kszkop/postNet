@@ -1,4 +1,4 @@
-goAnalysis <- function(a2sU,
+goAnalysis <- function(ptn,
                        #ads=NULL,
                        #regulation=NULL,
                        #contrast=NULL,
@@ -14,10 +14,8 @@ goAnalysis <- function(a2sU,
                        name = NULL
 ){
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
-  }
-  species <- a2sU_species(a2sU)
+  check_ptn(ptn)
+  species <- ptn_species(ptn)
   if (!species %in% c("human","mouse")) {
     stop("This option is only  available for species: human and mouse at the moment")
   }
@@ -56,8 +54,8 @@ goAnalysis <- function(a2sU,
   #} else {
   #  stop("please provide background genes")
   #}
-  res  <- a2sU_dataIn(a2sU)
-  bg <- unlist(a2sU_bg(a2sU))
+  res  <- ptn_dataIn(ptn)
+  bg <- unlist(ptn_bg(ptn))
   if(length(setdiff(bg,unique(unlist(res))))==0){
     warning('Background seems not right as all genes are regulated')
   }
@@ -146,13 +144,13 @@ goAnalysis <- function(a2sU,
 
     slot(GOout, sel) <- resOut
   }
-  a2sU@analysis@GO <- GOout
+  ptn@analysis@GO <- GOout
   #
-  return(a2sU)
+  return(ptn)
 }
 
 ######
-goDotplot <- function(a2sU,
+goDotplot <- function(ptn,
                       #goIn,
                       category,
                       pool = TRUE,
@@ -162,8 +160,8 @@ goDotplot <- function(a2sU,
                       size = 'Count',
                       pdfName=NULL){
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  if (!checkUtils(ptn)) {
+    stop("ptn is not a valid 'anota2seqUtilsData' object.")
   }
   if(!is_logical(pool)){
     stop("'pool' can only be only be logical: TRUE of FALSE ")
@@ -176,10 +174,10 @@ goDotplot <- function(a2sU,
   checkCategory(category)
   #
   for(sel in category){
-    if(is.null(slot(a2sU@analysis@GO, sel))){
+    if(is.null(slot(ptn@analysis@GO, sel))){
       stop("Please run goAnalysis first for selected category")
     } else {
-      goIn <- slot(a2sU@analysis@GO, sel)
+      goIn <- slot(ptn@analysis@GO, sel)
     }
     #
     if(isTRUE(pool)){
@@ -210,8 +208,8 @@ goDotplot <- function(a2sU,
       }
 
       #
-      colOut <- colPlot(a2sU)[-1]
-      names(colOut) <- names(a2sU@dataIn@geneList)
+      colOut <- colPlot(ptn)[-1]
+      names(colOut) <- names(ptn@dataIn@geneList)
       
       pdf(nameOut, width = 8, height = 8, useDingbats = F)
       par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
@@ -252,8 +250,8 @@ goDotplot <- function(a2sU,
         }
         
         #
-        colOut <- colPlot(a2sU)[-1]
-        names(colOut) <- names(a2sU_dataIn(a2sU))
+        colOut <- colPlot(ptn)[-1]
+        names(colOut) <- names(ptn_dataIn(ptn))
         #
         pdf(nameOut, width = 8, height = 8, useDingbats = F)
         par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)

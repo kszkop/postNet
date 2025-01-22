@@ -3,15 +3,16 @@ anota2seqGetDirectedRegulations <- function(ads) {
   regModeList <- vector("list", length = n_contrasts)
   
   for (i in 1:n_contrasts) {
-    rvm_data <- ads@selectedTranslation@selectedRvmData[[i]]
+    translation_data <- ads@selectedTranslation@selectedRvmData[[i]]
+    translated_data <- ads@selectedTranslatedmRNA@selectedRvmData[[i]]
     buffering_data <- ads@selectedBuffering@selectedRvmData[[i]]
-    abundance_data <- ads@mRNAAbundance@translatedmRNA[[i]]
+    abundance_data <- ads@mRNAAbundance@totalmRNA[[i]]
     total_mrna_data <- ads@selectedTotalmRNA@selectedRvmData[[i]]
     
-    translationUp <- rvm_data[rvm_data$apvEff > 0 & rvm_data$singleRegMode == "translation", ]
-    translationDown <- rvm_data[rvm_data$apvEff < 0 & rvm_data$singleRegMode == "translation", ]
-    translatedmRNAUp <- rvm_data[rvm_data$apvEff > 0, ]
-    translatedmRNADown <- rvm_data[rvm_data$apvEff < 0, ]
+    translationUp <- translation_data[translation_data$apvEff > 0 & translation_data$singleRegMode == "translation", ]
+    translationDown <- translation_data[translation_data$apvEff < 0 & translation_data$singleRegMode == "translation", ]
+    translatedmRNAUp <- translated_data[translated_data$apvEff > 0, ]
+    translatedmRNADown <- translated_data[translated_data$apvEff < 0, ]
     bufferingmRNAUp <- buffering_data[buffering_data$apvEff > 0 & buffering_data$singleRegMode == "buffering", ]
     bufferingmRNADown <- buffering_data[buffering_data$apvEff < 0 & buffering_data$singleRegMode == "buffering", ]
     mRNAAbundanceUp <- abundance_data[abundance_data$apvEff > 0 & abundance_data$singleRegMode == "abundance", ]

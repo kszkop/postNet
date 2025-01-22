@@ -1,4 +1,4 @@
-contentMotifs <- function(a2sU,
+contentMotifs <- function(ptn,
                           motifsIn,
                           seqType = "dna",
                           dist = 1,
@@ -15,14 +15,12 @@ contentMotifs <- function(a2sU,
                           plotOut = TRUE) {
   
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
-  }
-  checkRegion(region)
+  check_ptn(ptn)
+  check_region(region)
 
-  if(!is_logical(plotOut)){
+  if(!check_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  }
+  } 
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
       checkPlotType(plotType)
@@ -36,7 +34,7 @@ contentMotifs <- function(a2sU,
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_bg(ptn))){
       stop(" 0 is always a background, but no background provided")
     }
   }
@@ -75,7 +73,7 @@ contentMotifs <- function(a2sU,
   motifFinalRegion <- list()
   for(reg in region){
     
-    seqTmp <- a2sU_sequences(a2sU,region=reg)
+    seqTmp <- ptn_sequences(ptn,region=reg)
     #
     if (tolower(seqType) == "protein") {
       if(!is_by_3(seqTmp)){
@@ -94,7 +92,7 @@ contentMotifs <- function(a2sU,
     #cl <- parallel::makeCluster(num_threads)
     #doParallel::registerDoParallel(cl)
 
-    #motifsFinal <- foreach::foreach(i = 1:length(motifsIn), .combine = 'c', .packages = c('anota2seqUtils','data.table')) %dopar% {
+    #motifsFinal <- foreach::foreach(i = 1:length(motifsIn), .combine = 'c', .packages = c('postNet','data.table')) %dopar% {
       
     motifsFinal <- list()
     for (i in 1:length(motifsIn)) {
@@ -118,7 +116,7 @@ contentMotifs <- function(a2sU,
 
         #cl2 <- parallel::makeCluster(num_threads)
         #doParallel::registerDoParallel(cl2)
-        #motifOutTmp <- foreach(x = seqTmp, .combine = 'c', .packages = c('anota2seqUtils')) %dopar% {
+        #motifOutTmp <- foreach(x = seqTmp, .combine = 'c', .packages = c('postNet')) %dopar% {
         #  calc_motif(x, motifIn = motifTmp, dist = dist, unit = unitOut)
         #}        
         #parallel::stopCluster(cl2)
@@ -135,15 +133,15 @@ contentMotifs <- function(a2sU,
       } else {
         motifOut <- motifOutTmp
       }
-      names(motifOut) <- a2sU_geneID(a2sU, region=reg)
+      names(motifOut) <- ptn_geneID(ptn, region=reg)
       #
       if (tolower(unitOut) == "number" & isTRUE(plotOut)) {
         nameTmp <- ifelse(is.null(pdfName), paste(region, motif, "content.pdf", sep = "_"), paste(pdfName, reg, motif, "content.pdf", sep = "_"))
         nameOut <- nameTmp
         #
-        resOut <- resQuant(qvec = motifOut, a2sU = a2sU)
+        resOut <- resQuant(qvec = motifOut, ptn = ptn)
         
-        colOut <- colPlot(a2sU)
+        colOut <- colPlot(ptn)
         # Plot
         pdf(nameOut, width = 8, height = 8, useDingbats = F)
         ylabel <- paste(region, motif, sep = "_")

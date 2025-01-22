@@ -1,4 +1,4 @@
-codonCalc <- function(a2sU,
+codonCalc <- function(ptn,
                       featsel,
                       analysis="codon",
                       unit = "count",
@@ -7,17 +7,16 @@ codonCalc <- function(a2sU,
                       plotType = 'ecdf',
                       pdfName = NULL) {
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
-  }
-  if(!is.null(a2sU_codonsAll(a2sU))){
-    codonsAll <- a2sU_codonsAll(a2sU)
+  check_ptn(ptn)
+
+  if(!is.null(ptn_codonsAll(ptn))){
+    codonsAll <- ptn_codonsAll(ptn)
     check_codonIn(codonsAll)
   } else {
-    stop("codons analysis is null, please provide valid 'anota2seqUtilsData' object and run codonUsage analysis")
+    stop("codons analysis is null, please provide valid 'postNetData' object and run codonUsage analysis")
   }
   #
-  if(!is_logical(plotOut)){
+  if(!check_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
   } 
   #
@@ -34,7 +33,7 @@ codonCalc <- function(a2sU,
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_bg(ptn))){
       stop(" 0 is always a background, but no background provided")
     }
   }
@@ -86,11 +85,11 @@ codonCalc <- function(a2sU,
     ## 
     if (isTRUE(plotOut)) {
       #
-      resOut <- resQuant(qvec = codonCalcOutTmp, a2sU = a2sU)
+      resOut <- resQuant(qvec = codonCalcOutTmp, ptn = ptn)
       if(length(resOut)==0){
         stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
       }
-      colOut <- colPlot(a2sU)
+      colOut <- colPlot(ptn)
       pdf(nameOut, width = 8, height = 8, useDingbats = F)
       ylabel <- paste("codon usage(", unit, ")",sep = "")
       plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)

@@ -1,4 +1,4 @@
-codonUsage <- function(a2sU,
+codonUsage <- function(ptn,
                        annotType = NULL,#"ccds", # option: 'refseq' or 'ccds'
                        sourceSeq = "load", # option to 'load' available or create new 'create',
                        analysis,
@@ -20,18 +20,16 @@ codonUsage <- function(a2sU,
                        plotType_index = 'boxplot',
                        pdfName = NULL) {
   #
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
-  }
+  check_ptn(ptn)
   if(!is_annotType(annotType)){
     stop("Please provide 'annotType', i.e source of annotation'")
   }
   if(annotType=="ccds"){
-    species <- a2sU_species(a2sU)
+    species <- ptn_species(ptn)
     if(!is_valid_species(species)){
       stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
     }
-    selectionTmp <- slot(a2sU, 'selection')
+    selectionTmp <- slot(ptn, 'selection')
     checkSelection(selectionTmp)
     if(!is_valid_sourceSeq(sourceSeq)){
       stop("Please provide 'sourceSeq', i.e. 'load' or 'create'")
@@ -64,15 +62,15 @@ codonUsage <- function(a2sU,
         lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
         annotTmp$lenTmp <- lenTmp
         #
-        annotSel <- isoSel(annot = annotTmp, method = a2sU_selection(a2sU))
+        annotSel <- isoSel(annot = annotTmp, method = ptn_selection(ptn))
         colnames(annotSel)[1:3] <- c('id','geneID','CDS_seq')
         #
-        annot <- new("anota2seqUtilsRegion",
+        annot <- new("postNetRegion",
                      id = annotSel$id,
                      geneID = annotSel$geneID,
                      seq = annotSel$CDS_seq)
         
-        a2sU@annot@CCDS <- annot
+        ptn@annot@CCDS <- annot
       } else if (species == "mouse") {
         #
         download.file("ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_mouse/CCDS.current.txt", destfile = "CCDS_mouse.txt")
@@ -100,45 +98,45 @@ codonUsage <- function(a2sU,
         lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
         annotTmp$lenTmp <- lenTmp
         #
-        annotSel <- isoSel(annot = annotTmp, method = a2sU_selection(a2sU))
+        annotSel <- isoSel(annot = annotTmp, method = ptn_selection(ptn))
         colnames(annotSel)[1:3] <- c('id','geneID','CDS_seq')
         #
-        annot <- new("anota2seqUtilsRegion",
+        annot <- new("postNetRegion",
                      id = annotSel$id,
                      geneID = annotSel$geneID,
                      seq = annotSel$CDS_seq)
         
-        a2sU@annot@CCDS <- annot
+        ptn@annot@CCDS <- annot
       }
     } else if (sourceSeq == "load") {
       # list existing species
-      currTmp <- list.files(system.file("extdata/annotation/ccds", package = "anota2seqUtils"))
+      currTmp <- list.files(system.file("extdata/annotation/ccds", package = "postNet"))
       #
       if (!species %in% currTmp) {
         stop("This option is only  available for species: human and mouse at the moment. Please use option createFromFile")
       }
       if (species == "human") {
-        annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/human", sep = "/"), "humanDB_ccds.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE)
+        annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/human", sep = "/"), "humanDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE)
       }
       if (species == "mouse") {
-        annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/mouse", sep = "/"), "mouseDB_ccds.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE) # }
+        annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/mouse", sep = "/"), "mouseDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE) # }
       }
       lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
       annotTmp$lenTmp <- lenTmp
       #
-      annotSel <- isoSel(annot = annotTmp, method = a2sU_selection(a2sU))
+      annotSel <- isoSel(annot = annotTmp, method = ptn_selection(ptn))
       colnames(annotSel)[1:3] <- c('id','geneID','CDS_seq')
       #
-      annot <- new("anota2seqUtilsRegion",
+      annot <- new("postNetRegion",
                    id = annotSel$id,
                    geneID = annotSel$geneID,
                    seq = annotSel$CDS_seq)
       
-      a2sU@annot@CCDS <- annot
+      ptn@annot@CCDS <- annot
     }
   } #else if(annotType=="refseq" | annotType=='riboseq'){
   #  
-  #  annot <- a2sU_sequences(a2sU,region='CDS')
+  #  annot <- ptn_sequences(ptn,region='CDS')
   #  
   #} 
   ####
@@ -166,7 +164,7 @@ codonUsage <- function(a2sU,
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(a2sU_bg(a2sU))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_bg(ptn))){
       stop(" 0 is always a background, but no background provided")
     }
   } else {
@@ -180,11 +178,11 @@ codonUsage <- function(a2sU,
   nameOut <- nameTmp
   #
   if(annotType=="ccds"){
-    seqTmp <- a2sU_sequences(a2sU, region = 'CCDS')
-    names(seqTmp) <- a2sU_geneID(a2sU, region = 'CCDS')
+    seqTmp <- ptn_sequences(ptn, region = 'CCDS')
+    names(seqTmp) <- ptn_geneID(ptn, region = 'CCDS')
   } else {
-    seqTmp <- a2sU_sequences(a2sU, region = 'CDS')
-    names(seqTmp) <- a2sU_geneID(a2sU, region = 'CDS')
+    seqTmp <- ptn_sequences(ptn, region = 'CDS')
+    names(seqTmp) <- ptn_geneID(ptn, region = 'CDS')
   }
   #remove last codon (stop codon)
   seqTmp <- remove_last3(seqTmp)
@@ -210,7 +208,7 @@ codonUsage <- function(a2sU,
     if (codonN == 1) {
       codonAll <- codonAll[!codonAll$AA %in% c("Stop", "W", "M", "O", "U"), ]
     }
-    codonsAllOut <- new("anota2seqUtilsCodonsAll",
+    codonsAllOut <- new("postNetCodonsAll",
                        geneID = codonAll$geneID,
                        codon  = codonAll$codon,
                        AA = codonAll$AA,
@@ -355,9 +353,9 @@ codonUsage <- function(a2sU,
   #indexes
   if(analysis == "codon" & codonN==1){
     if (species == "human") {
-      codind <- read.delim(system.file("extdata/indexes/human/", "IndexesHuman.txt", package = "anota2seqUtils"))
+      codind <- read.delim(system.file("extdata/indexes/human/", "IndexesHuman.txt", package = "postNet"))
     } else if (species == "mouse") {
-      codind <- read.delim(system.file("extdata/indexes/mouse/", "IndexesMouse.txt", package = "anota2seqUtils"))
+      codind <- read.delim(system.file("extdata/indexes/mouse/", "IndexesMouse.txt", package = "postNet"))
     } else {
       message('no available indexes for ', species)
     }
@@ -370,8 +368,8 @@ codonUsage <- function(a2sU,
       index_sel <- codind[,which(colnames(codind)==ind)]
       names(index_sel) <- codind$external_gene_name
       
-      resOutInd  <- resQuant(qvec = index_sel, a2sU = a2sU)
-      colOutInd <- colPlot(a2sU)
+      resOutInd  <- resQuant(qvec = index_sel, ptn = ptn)
+      colOutInd <- colPlot(ptn)
       
       ##
       pdf(paste(nameOut, ind,'_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
@@ -388,9 +386,9 @@ codonUsage <- function(a2sU,
   compOut4 <- list()
   for (i in compTmpAll) {
     if(i == 0){
-      selTmp <- a2sU_bg(a2sU)
+      selTmp <- ptn_bg(ptn)
     } else {
-      resTmp <- a2sU_dataIn(a2sU)
+      resTmp <- ptn_dataIn(ptn)
       selTmp <-  resTmp[[i]]
     }
     tmp <- codonAll[codonAll$geneID %in% selTmp, ]
@@ -694,11 +692,11 @@ codonUsage <- function(a2sU,
     }
     codonsSel[[paste(regComb, collapse = "_vs_")]] <- list(Up = codU, Down = codD)
   }
-  codonsOut <- new("anota2seqUtilsCodons",
+  codonsOut <- new("postNetCodons",
                    codonsAll = codonsAllOut,
                    codonsSel  = codonsSel)
 
   
-  a2sU@analysis@codons <- codonsOut
-  return(a2sU)
+  ptn@analysis@codons <- codonsOut
+  return(ptn)
 }

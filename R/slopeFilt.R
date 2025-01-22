@@ -4,7 +4,7 @@ slopeFilt <- function(ads,
                       minSlope, 
                       maxSlope ){
   #
-  if (!checkAds(ads)) {
+  if (!check_ads(ads)) {
     stop("ads is not a valid 'Anota2seqDataSet' object.")
   }
   if (!regulationGen %in% c("translation","buffering")) {

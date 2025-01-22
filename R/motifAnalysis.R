@@ -1,4 +1,4 @@
-motifAnalysis <- function(a2sU,
+motifAnalysis <- function(ptn,
                           stremeThreshold = 0.05,
                           minwidth = 6,
                           memePath = NULL,
@@ -7,12 +7,10 @@ motifAnalysis <- function(a2sU,
                           subregion = NULL,
                           subregionSel = NULL) {
   ####
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
-  }
-  checkRegion(region)
+  check_ptn(ptn)
+  check_region(region)
 
-  if (is.null(a2sU_bg(a2sU))){
+  if (is.null(ptn_bg(ptn))){
     stop("Background must be provided for motif analysis")
   }
   if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
@@ -39,10 +37,9 @@ motifAnalysis <- function(a2sU,
                   CDS = NULL,
                   UTR3 = NULL)
   #
-  motifsStemeOutRegion <- list()
   for(reg in region){
     #
-    seqTmp <- a2sU_sequences(a2sU, region = reg)
+    seqTmp <- ptn_sequences(ptn, region = reg)
     
     if (tolower(seqType) == "protein") {
       if(!is_by_3(seqTmp)){
@@ -64,9 +61,9 @@ motifAnalysis <- function(a2sU,
     }
     #
     seqForAnalysis <- seqTmp
-    names(seqForAnalysis) <- a2sU_geneID(a2sU, region=reg)
+    names(seqForAnalysis) <- ptn_geneID(ptn, region=reg)
     #
-    resOut <- resQuant(qvec = seqForAnalysis, a2sU = a2sU)
+    resOut <- resQuant(qvec = seqForAnalysis, ptn = ptn)
     
     controlSeq <- resOut[[1]]
     seqinr::write.fasta(sequences = as.list(as.character(controlSeq)), names = names(controlSeq), file.out = paste(paste("Control", reg, sep = "_"), ".fa", sep = ""))
@@ -98,7 +95,7 @@ motifAnalysis <- function(a2sU,
       motifsOut@UTR3 <- motifsStemeOut
     }
   }
-  a2sU@analysis@motifs <- motifsOut
+  ptn@analysis@motifs <- motifsOut
   
-  return(a2sU)
+  return(ptn)
 }
