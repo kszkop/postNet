@@ -93,7 +93,7 @@ setClass("postNetGAGE",
          )
 )
 
-setClass("anopostNetUnivariate",
+setClass("postNetUnivariate",
          slots = c(
            pvalue = "numericOrNULL",
            fdr = "numericOrNULL",
