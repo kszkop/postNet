@@ -286,7 +286,7 @@ postNetStart <- function(ads = NULL,
     RegionTmp <- new("postNetRegion",
                      id = annotBgSelTmp$id,
                      geneID = annotBgSelTmp$geneID,
-                     seq = annotBgSelTmp$seqTmp)
+                     sequences = annotBgSelTmp$seqTmp)
     
     if(reg == 'UTR5'){
       annot@UTR5 <- RegionTmp
