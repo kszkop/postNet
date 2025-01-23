@@ -5,11 +5,11 @@
 \title{Comparisons of lengths}
 
 \usage{
-lengthAnalysis(a2sU, region, comparisons=NULL, plotOut = TRUE, plotType = "boxplot", pdfName = NULL)
+lengthAnalysis(ptn, region, comparisons=NULL, plotOut = TRUE, plotType = "boxplot", pdfName = NULL)
 }
 
 \arguments{
-\item{a2sU}{ anota2seqUtilsData class object created using anota2seqUtilsStart function }
+\item{ptn}{ postNetData class object created using postNetStart function }
 \item{region}{ Select the regions of interest. Choose from combination of "UTR5", "CDS", "UTR3" }
 \item{comparisons}{ Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. }
 \item{plotOut}{ Logical whether plots and optionally comparisons should be performed. The default is TRUE. }
@@ -26,13 +26,13 @@ Lengths of desired regions for each gene is calculated. If plotOut is TRUE, all 
 }
 
 \examples{
-#First prepare anota2seqUtils class object
+#First prepare postNet class object
 # from anota2seq object
-a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, selection ="random", source = 'load', species = 'human')
+ptn <- postNetStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, selection ="random", source = 'load', species = 'human')
 # or from geneList
-a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, selection ="random")
+ptn <- postNetStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, selection ="random")
 
 
-len <- lengthAnalysis(a2sU = a2sU, region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
+len <- lengthAnalysis(ptn = ptn, region = c("UTR5","CDS","UTR3"), comparisons = list(c(0,1),c(0,2),c(1,2)),plotType = "boxplot")
 
 }

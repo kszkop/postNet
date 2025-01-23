@@ -40,7 +40,7 @@ anota2seqGetDirectedRegulations <- function(ads) {
 ###
 checkAvailableVersions <- function(species) {
   # Define the base directory for annotation files
-  base_dir <- system.file("extdata/annotation/refseq", package = "anota2seqUtils")
+  base_dir <- system.file("extdata/annotation/refseq", package = "postNet")
   
   # List existing species
   curr_tmp <- list.files(base_dir)
@@ -318,12 +318,12 @@ effectSel <- function(ads, regulationGen, contrastSel, effectMeasure){
   return(effM)
 }
 
-resQuant <- function(qvec, a2sU){
+resQuant <- function(qvec, ptn){
   resOut <- list()
-  if(!is.null(a2sU_bg(a2sU))){
-    res <- c(list(background=a2sU_bg(a2sU)),a2sU_dataIn(a2sU))
+  if(!is.null(ptn_bg(ptn))){
+    res <- c(list(background=ptn_bg(ptn)),ptn_dataIn(ptn))
   } else {
-    res <- a2sU_dataIn(a2sU)
+    res <- ptn_dataIn(ptn)
   }
   
   for(i in 1:length(res)){
@@ -332,11 +332,11 @@ resQuant <- function(qvec, a2sU){
   return(resOut)
 }
 
-colPlot <- function(a2sU){
-  if(!is.null(a2sU_bg(a2sU))){
-    colOut <- c('grey45',a2sU_colours(a2sU))
+colPlot <- function(ptn){
+  if(!is.null(ptn_bg(ptn))){
+    colOut <- c('grey45',ptn_colours(ptn))
   } else {
-    colOut <- a2sU_colours(a2sU)
+    colOut <- ptn_colours(ptn)
   }
   return(colOut)
 }
@@ -1199,16 +1199,16 @@ runMfold <- function(fastaFile){
   close(pb1)
 }
 
-prepFeatures <- function(a2sU, 
+prepFeatures <- function(ptn, 
                          features){
-  if (!checkUtils(a2sU)) {
-    stop("a2sU is not a valid 'anota2seqUtilsData' object.")
+  if (!checkUtils(ptn)) {
+    stop("ptn is not a valid 'postNetData' object.")
   }
   if (!is_valid_named_list(features)){
     stop("features should be a named list of numeric vectors only")
   }
-  effM <- a2sU_eff(a2sU)
-  if(!is_numeric_vector(a2sU_eff(a2sU))){
+  effM <- ptn_eff(ptn)
+  if(!is_numeric_vector(ptn_eff(ptn))){
     stop("'effectMeasure' should be a numeric vector")
   }
   #
@@ -1222,8 +1222,8 @@ prepFeatures <- function(a2sU,
   datOut <- na.omit(tmpDf)
   message(paste(nrow(tmpDf)-nrow(datOut), 'genes removed because of NAs', sep=' '))
   
-  a2sU@features <- datOut
-  return(a2sU)
+  ptn@features <- datOut
+  return(ptn)
 }
 
 normalizeLayout <- function(layout) {
@@ -1249,7 +1249,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   step1fdr <- p.adjust(step1pval)
   
   #
-  uniOut <- new("anota2seqUtilsUnivariate",
+  uniOut <- new("postNetUnivariate",
                 pvalue = step1pval,
                 fdr = step1fdr,
                 varianceExplained = step1expl
@@ -1385,7 +1385,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))#,colhead=list(fg_params=list(rot=90,hjust=0, y=0)))
   tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
   #
-  stepWiseout <- new("anota2seqUtilsStepWise",
+  stepWiseout <- new("postNetStepWise",
                      models = stepwiseModels,
                      table = tb1Out)
   #
@@ -1436,7 +1436,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   
   rownames(tmpM) <- c(namesDf$originalNames[match(rownames(tmpM)[-length(rownames(tmpM))], namesDf$newNames)],"Residuals")
   
-  finalModelout <- new("anota2seqUtilsFinalModel",
+  finalModelout <- new("postNetFinalModel",
                        totalVarianceExplained = sum(as.numeric(varExpldepend)),
                        finalModel = tmpM,
                        table = tb2out)
@@ -1655,7 +1655,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   selectedFeatures <- nodeOutAll[nodeOutAll$varexpl==1,]$VarianceExplained
   names(selectedFeatures) <- nodeOutAll[nodeOutAll$varexpl==1,]$Features
   
-  lmOut <- new("anota2seqUtilsFeatureIntegration_lm",
+  lmOut <- new("postNetFeatureIntegration_lm",
                univariateModel = uniOut,
                stepwiseModel = stepWiseout,
                finalModel = finalModelout,
