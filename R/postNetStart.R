@@ -202,7 +202,7 @@ postNetStart <- function(ads = NULL,
       stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
     }
     # List existing species
-    currTmp <- list.files(system.file("extdata/annotation/refseq", package = "anota2seqUtils"))
+    currTmp <- list.files(system.file("extdata/annotation/refseq", package = "postNet"))
     
     if (!species %in% currTmp) {
       stop("This option is only available for species: human and mouse at the moment. Please use option createFromFile")
@@ -215,10 +215,10 @@ postNetStart <- function(ads = NULL,
       version <- version[grep(versionInd, version)]
     }
     if (species == "human") {
-      outDB <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), "humanDB.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE)
+      outDB <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), "humanDB.txt.gz", package = "postNet"), stringsAsFactors = FALSE)
     }
     if (species == "mouse") {
-      outDB <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), "mouseDB.txt.gz", package = "anota2seqUtils"), stringsAsFactors = FALSE)
+      outDB <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), "mouseDB.txt.gz", package = "postNet"), stringsAsFactors = FALSE)
     }
   } else if (source == "custom") {
     outDB <- read.delim(customFile, stringsAsFactors = FALSE)
@@ -273,7 +273,7 @@ postNetStart <- function(ads = NULL,
     annotBg <- adjustSeq(annot=annotBg, region_adj = region_adj, adjObj = adjObj, keepAll =  keepAll, excl = excl)
   }
   
-  annot <- new("anota2seqUtilsAnnot",
+  annot <- new("postNetAnnot",
               UTR5 = NULL,
               CDS = NULL,
               UTR3 = NULL,
@@ -283,7 +283,7 @@ postNetStart <- function(ads = NULL,
     annotTmp <- regSel(annot = annotBg, region = reg)
     annotBgSelTmp <- isoSel(annot = annotTmp, method = selection)
     
-    RegionTmp <- new("anota2seqUtilsRegion",
+    RegionTmp <- new("postNetRegion",
                      id = annotBgSelTmp$id,
                      geneID = annotBgSelTmp$geneID,
                      seq = annotBgSelTmp$seqTmp)
@@ -309,13 +309,13 @@ postNetStart <- function(ads = NULL,
   effIn <- effectSel(ads = ads, regulationGen = regulationGen, contrastSel = contrastSel, effectMeasure = effectMeasure)
   bgIn <- getBg(ads = ads, customBg = customBg, geneList = geneList)
   #
-  dataIn <- new("anota2seqUtilsDataIn",
+  dataIn <- new("postNetDataIn",
                 background = bgIn,
                 geneList = genesIn,
                 effect = effIn,
                 colours = coloursIn)
   
-  analysis <- new("anota2seqUtilsAnalysis",
+  analysis <- new("postNetAnalysis",
                   featureIntegration = NULL,
                   motifs= NULL,
                   codons = NULL,
@@ -324,8 +324,8 @@ postNetStart <- function(ads = NULL,
                   GAGE = NULL,
                   miRNA = NULL)
   
-  # initialize the anota2seqUtils
-  anota2seqUtilsData <- new("anota2seqUtilsData",
+  # initialize the postNet
+  postNetData <- new("postNetData",
                              version = version,
                              species = species,
                              selection = selection,
@@ -335,6 +335,6 @@ postNetStart <- function(ads = NULL,
                              analysis = analysis)
   
   
-  return(anota2seqUtilsData)
+  return(postNetData)
 }
 
