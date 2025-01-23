@@ -34,7 +34,7 @@ postNetStart <- function(ads = NULL,
     }
     if (!is.null(regulation)){
       if(!is.null(contrast) && !is.numeric(contrast) && !length(contrast) == length(regulation) && !contrast %in% seq(1,ncol(ads@contrasts),1)){
-        stop("'contrast' should be a numeric vector chosen from each regulation mode")
+        stop("The 'contrast' provided should be a numeric vector corresponding to each anota2seq regulatory mode selected for comparison.")
       }
     }
   }
