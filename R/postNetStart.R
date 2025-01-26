@@ -24,7 +24,7 @@ postNetStart <- function(ads = NULL,
 
   #
   if(!is.null(ads) && !is.null(geneList)){
-    stop("Please provide an anota2seq object or a genelist, not both.")
+    stop("Please provide either an anota2seq object or a genelist, not both.")
   }
   if(!is.null(ads)){
     check_ads(ads)
