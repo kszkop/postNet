@@ -227,6 +227,9 @@ resSel <- function(ads=NULL,
     #
     if (!is.null(regulation)){
       res <- vector("list", length = length(regulation))
+      if(!length(setdiff(contrast, seq(from = 1, to = dim(ads@contrasts)[2])))==0){
+        stop('One or more of the contrasts provided are not included in the anota2seq object.')
+      }
       for(i in unique(contrast)){
         resTmp <- results[[i]][regulation[contrast==i]]
         res[which(contrast==i)] <- resTmp
