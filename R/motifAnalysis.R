@@ -32,7 +32,7 @@ motifAnalysis <- function(ptn,
     stop("'seqType' sequence type must be selected from one of these: 'dna', 'rna' or 'protein' ")
   } 
   
-  motifsOut <- new("anota2seqUtilsMotifs",
+  motifsOut <- new("postNetMotifs",
                   UTR5 = NULL,
                   CDS = NULL,
                   UTR3 = NULL)

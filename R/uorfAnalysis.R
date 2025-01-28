@@ -26,7 +26,7 @@ uorfAnalysis <- function(ptn,
   if(!isKozakContext(KozakContext)){
     stop("'KozakContext' must be one from these: 'strong','adequate1','adequate2','weak','any'")
   }
-  if(!is_logical(onlyUTR5)){
+  if(!check_logical(onlyUTR5)){
     stop("'onlyUTR5' can only be only be logical: TRUE of FALSE ")
   }
   if(!isUnitOut(unitOut)){

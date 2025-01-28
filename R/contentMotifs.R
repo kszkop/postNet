@@ -23,14 +23,14 @@ contentMotifs <- function(ptn,
   } 
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
-      checkPlotType(plotType)
+      check_plotType(plotType)
     } else {
       stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
     }
   }
   
   if(!is.null(comparisons)){
-    if(!checkComparisons(comparisons)){
+    if(!check_comparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
@@ -45,7 +45,7 @@ contentMotifs <- function(ptn,
   if (!is.null(subregionSel) && !subregionSel %in% c("select", "exclude")) {
     stop("'subregionSel' must be a character and only 'select' or 'exclude'")
   } 
-  if(!is_number(dist)){
+  if(!check_number(dist)){
     stop("please provide numeric minimal distance between motifs")
   }
   #if(!is_number(num_threads)){
@@ -60,7 +60,7 @@ contentMotifs <- function(ptn,
   if(!isUnitOut(unitOut)){
     stop("'unitOut' must be one from these: 'numeric' or 'position'")
   }
-  if(!is_logical(resid)){
+  if(!check_logical(resid)){
       stop("'resid', i.e whether the values should be normalised for the length, can only be only be logical: TRUE of FALSE ")
   }
   if(!is_valid_seq_type(seqType)){
