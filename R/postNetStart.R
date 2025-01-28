@@ -196,7 +196,7 @@ postNetStart <- function(ads = NULL,
     }
     # Unzip the source files
     source_files <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
-    source_files <- gsub('.gz', '', source_files)
+    #source_files <- gsub('.gz', '', source_files)
     filenames <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
     for (i in 1:length(source_files)) {
       R.utils::gunzip(source_files[i], remove = FALSE)
@@ -217,7 +217,7 @@ postNetStart <- function(ads = NULL,
                           "mouse" = "AnnotFromgbff_mouse.pl"
     )
     # Run the Perl script
-    command <- paste("perl", file.path(perl.dir, perl_script), sep = " ")
+    command <- paste("perl", paste(system.file('perl', package = 'postNet'), "/", perl_script, sep = ""), sep = " ")
     system(command)
     
     # Read and merge annotation data
