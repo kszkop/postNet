@@ -67,10 +67,10 @@ postNetStart <- function(ads = NULL,
     if (!all(region_adj %in% valid_regions)) {
       stop("'region_adj' must be provided and can only inlcude: 'UTR5', and/or 'UTR3'. It should also match the named entries in the list adjObj.")
     }
-    if(!is_logical(excl)){
+    if(!check_logical(excl)){
       stop("'excl' must be logical: TRUE of FALSE.")
     }
-    if(!is_logical(keepAll)){
+    if(!check_logical(keepAll)){
       stop("'keepAll' must be logical: TRUE of FALSE.")
     }
   }
