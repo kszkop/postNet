@@ -164,7 +164,7 @@ gseaPlot <- function(ptn,
     
     pdf(paste(nameOut,".pdf",sep=''), width = 8, height = 4, useDingbats = F)
     par(mar = c(5, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
-    peOut <- ggplot2::ggplot(toPlot, ggplot2::aes(x = x, y = y)) + ggplot2::geom_line(color = "grey75", linetype=1, size = 0.75)  + ggplot2::geom_line(color = "grey75") + ggplot2::theme_bw() + 
+    peOut <- ggplot2::ggplot(toPlot, ggplot2::aes(x = x, y = y)) + ggplot2::geom_line(color = "grey75", linetype=1, linewidth = 0.75)  + ggplot2::geom_line(color = "grey75") + ggplot2::theme_bw() + 
       ggplot2::theme(panel.border = ggplot2::element_blank(),panel.grid.major = ggplot2::element_blank(),panel.grid.minor = ggplot2::element_blank()) + 
       ggplot2::theme(axis.line.x = ggplot2::element_line(color="black", linewidth = 0.5),axis.line.y = ggplot2::element_line(color="black", linewidth = 0.5)) +
       ggplot2::labs(title=termTmp, x = "rank", y = "enrichment score") +

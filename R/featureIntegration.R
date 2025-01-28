@@ -12,8 +12,7 @@ featureIntegration <- function(ptn,
                                pdfName = NULL) {
   #
   check_ptn(ptn)
-  
-  checkfeatures(features)
+  check_features(features)
   if(!is.null(comparisons)){
     if(!checkComparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")

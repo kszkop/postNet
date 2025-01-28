@@ -488,7 +488,7 @@ check_model <- function(model, analysis_type) {
   }
 }
 
-checkfeatures <- function(features) {
+check_features <- function(features) {
   #
   if (is.null(features)) {
     stop("Error: 'features' cannot be NULL.")

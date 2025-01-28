@@ -1204,23 +1204,25 @@ runMfold <- function(fastaFile){
 
 prepFeatures <- function(ptn, 
                          features){
-  if (!checkUtils(ptn)) {
+  if (!check_ptn(ptn)) {
     stop("ptn is not a valid 'postNetData' object.")
   }
   if (!is_valid_named_list(features)){
     stop("features should be a named list of numeric vectors only")
   }
-  effM <- ptn_eff(ptn)
-  if(!is_numeric_vector(ptn_eff(ptn))){
-    stop("'effectMeasure' should be a numeric vector")
-  }
+  #effM <- ptn_eff(ptn)
+  #if(!is_numeric_vector(ptn_eff(ptn))){
+  #  stop("'effectMeasure' should be a numeric vector")
+  #}
   #
   featureNames <- names(features)
-  featuresTmp <- append(features, list(effM))
+  #featuresTmp <- append(features, list(effM))
   #featuresTmp <- unname(featuresTmp)
   
-  tmpDf <- data.frame(t(plyr::ldply(featuresTmp, rbind,.id = NULL)))
-  colnames(tmpDf) <- c(featureNames,'effM')
+  #tmpDf <- data.frame(t(plyr::ldply(featuresTmp, rbind,.id = NULL)))
+  tmpDf <- data.frame(t(plyr::ldply(features, rbind,.id = NULL)))
+  #colnames(tmpDf) <- c(featureNames,'effM')
+  colnames(tmpDf) <- featureNames
   
   datOut <- na.omit(tmpDf)
   message(paste(nrow(tmpDf)-nrow(datOut), 'genes removed because of NAs', sep=' '))
