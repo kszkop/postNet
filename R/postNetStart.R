@@ -94,12 +94,31 @@ postNetStart <- function(ads = NULL,
       } else {
         cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
       }
-      #
+      # Again for the files
+      url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/", version, sep = "")
       
-      download.file(paste(url, version, "_rna.fna.gz", sep = ""), destfile = "customFasta.fa.gz")
-      download.file(paste(url, version, "_rna.gbff.gz", sep = ""), destfile = "customAnnot.gbff.gz")
-      download.file(paste(url, version, "_genomic.gff.gz", sep = ""), destfile = "GeneRef.gff.gz")
+      responseTmp <- httr::GET(url)
+      if (httr::status_code(responseTmp) == 200) {
+        
+        pageTmp <- httr::content(responseTmp, as = "text") %>% rvest::read_html()
+        linksTmp <- pageTmp %>% rvest::html_nodes("a") %>% rvest::html_attr("href")
+        #
+        fna <- linksTmp[grepl("_rna.fna.gz", linksTmp)]
+        gbff <- linksTmp[grepl("_rna.gbff.gz", linksTmp)]
+        gff <- linksTmp[grepl("_genomic.gff.gz", linksTmp)]
+      } else {
+        cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
+      }
+      
+      # Download may require more than default timeout, so increase this within the function
+      opts <- options(timeout = max(1000, getOption("timeout")))
+      on.exit(options(opts))
+      
+      download.file(paste(url, fna, sep = ""), destfile = "customFasta.fa.gz")
+      download.file(paste(url, gbff, sep = ""), destfile = "customAnnot.gbff.gz")
+      download.file(paste(url, gff, sep = ""), destfile = "GeneRef.gff.gz")
     }
+
     if (species == "mouse") {
       url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/"
       
@@ -114,9 +133,29 @@ postNetStart <- function(ads = NULL,
         cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
       }
       #
-      download.file(paste(url, version,"_rna.fna.gz", sep = ""), destfile = "customFasta.fa.gz")
-      download.file(paste(url, version,"_rna.gbff.gz", sep = ""), destfile = "customAnnot.gbff.gz")
-      download.file(paste(url, version,"_genomic.gff.gz", sep = ""), destfile = "GeneRef.gff.gz")
+      # Again for the files
+      url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/", version, sep = "")
+      
+      responseTmp <- httr::GET(url)
+      if (httr::status_code(responseTmp) == 200) {
+        
+        pageTmp <- httr::content(responseTmp, as = "text") %>% rvest::read_html()
+        linksTmp <- pageTmp %>% rvest::html_nodes("a") %>% rvest::html_attr("href")
+        #
+        fna <- linksTmp[grepl("_rna.fna.gz", linksTmp)]
+        gbff <- linksTmp[grepl("_rna.gbff.gz", linksTmp)]
+        gff <- linksTmp[grepl("_genomic.gff.gz", linksTmp)]
+      } else {
+        cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
+      }
+      
+      # Download may require more than default timeout, so increase this within the function
+      opts <- options(timeout = max(1000, getOption("timeout")))
+      on.exit(options(opts))
+      
+      download.file(paste(url, fna, sep = ""), destfile = "customFasta.fa.gz")
+      download.file(paste(url, gbff, sep = ""), destfile = "customAnnot.gbff.gz")
+      download.file(paste(url, gff, sep = ""), destfile = "GeneRef.gff.gz")
     }
     R.utils::gunzip("customAnnot.gbff.gz")
     R.utils::gunzip("customFasta.fa.gz")
