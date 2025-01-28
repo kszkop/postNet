@@ -59,7 +59,7 @@ postNetStart <- function(ads = NULL,
   }
   check_source(source)
   check_selection(selection)
-  check_input(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile)
+  check_input(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile, fastaFile)
   
   if(!is.null(adjObj)){
     check_adjObj(adjObj)
