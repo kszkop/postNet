@@ -195,11 +195,11 @@ postNetStart <- function(ads = NULL,
       stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
     }
     # Unzip the source files
-    source_files <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
-    #source_files <- gsub('.gz', '', source_files)
+    source_files_tmp <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
+    source_files <- gsub('.gz', '', source_files_tmp)
     filenames <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
-    for (i in 1:length(source_files)) {
-      R.utils::gunzip(source_files[i], remove = FALSE)
+    for (i in 1:length(source_files_tmp)) {
+      R.utils::gunzip(source_files_tmp[i], remove = FALSE)
       file.rename(source_files[i], filenames[i])
     }
     
@@ -235,6 +235,15 @@ postNetStart <- function(ads = NULL,
     outDB <- outDB[grepl("NM_", outDB$id), ]
     
     write.table(outDB, file = "customDB.txt", col.names = TRUE, row.names = FALSE, sep = "\t", quote = FALSE)
+
+    # Remove the copied input files
+    filesToRm <- c("customAnnot.gbff","customFasta.fa","GeneRef.gff")
+    for (i in 1:length(filesToRm)) {
+      if (file.exists(filesToRm[i])) {
+        file.remove(filesToRm[i])
+      }
+    }
+    
   } else if (source == "load") {
     if(!is_valid_species(species)){
       stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
