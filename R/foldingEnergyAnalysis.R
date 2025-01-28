@@ -32,19 +32,19 @@ foldingEnergyAnalysis <- function(ptn,
   }
  
   if(!is.null(comparisons)){
-    if(!checkComparisons(comparisons)){
+    if(!check_comparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_bg(ptn))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_background(ptn))){
       stop(" 0 is always a background, but no background provided")
     }
   }
-  if(!is_logical(residFE)){
+  if(!check_logical(residFE)){
       stop("'residFE', i.e whether the values should be normalised for the length, can only be only be logical: TRUE of FALSE ")
   }
   if(sourceFE=='create'){
-    if(!is_logical(fromFasta)){
+    if(!check_logical(fromFasta)){
       stop("'fromFasta' can only be only be logical: TRUE of FALSE ")
     }
     if (isTRUE(fromFasta)) {
@@ -81,7 +81,7 @@ foldingEnergyAnalysis <- function(ptn,
       if(is.null(region)){
         stop("Please provide region")
       }
-      checkRegion(region)
+      check_region(region)
       #
       currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "postNet"))
       if (!species %in% currTmp) {
@@ -125,7 +125,7 @@ foldingEnergyAnalysis <- function(ptn,
     if(is.null(region)){
       stop("Please provide region")
     }
-    checkRegion(region)
+    check_region(region)
     #
     feOut <- list()
     # list existing species

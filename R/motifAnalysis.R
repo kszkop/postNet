@@ -86,7 +86,7 @@ motifAnalysis <- function(ptn,
       }
       motifsTmpOut[[names(resOut)[j]]] <- streme_out
     }
-    motifsStemeOut <- append(list(motifsOut = as.character(unlist(lapply(motifsTmpOut, function(x) x$consensus)))), motifsTmpOut)
+    motifsStemeOut <- append(list(motifSelection = as.character(unlist(lapply(motifsTmpOut, function(x) x$consensus)))), motifsTmpOut)
     if(reg == 'UTR5'){
       motifsOut@UTR5 <- motifsStemeOut
     } else if (reg == 'CDS'){

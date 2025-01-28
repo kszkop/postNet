@@ -30,7 +30,7 @@ codonUsage <- function(ptn,
       stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
     }
     selectionTmp <- slot(ptn, 'selection')
-    checkSelection(selectionTmp)
+    check_selection(selectionTmp)
     if(!is_valid_sourceSeq(sourceSeq)){
       stop("Please provide 'sourceSeq', i.e. 'load' or 'create'")
     } 
@@ -68,7 +68,7 @@ codonUsage <- function(ptn,
         annot <- new("postNetRegion",
                      id = annotSel$id,
                      geneID = annotSel$geneID,
-                     seq = annotSel$CDS_seq)
+                     sequences = annotSel$CDS_seq)
         
         ptn@annot@CCDS <- annot
       } else if (species == "mouse") {
@@ -104,7 +104,7 @@ codonUsage <- function(ptn,
         annot <- new("postNetRegion",
                      id = annotSel$id,
                      geneID = annotSel$geneID,
-                     seq = annotSel$CDS_seq)
+                     sequences = annotSel$CDS_seq)
         
         ptn@annot@CCDS <- annot
       }
@@ -130,7 +130,7 @@ codonUsage <- function(ptn,
       annot <- new("postNetRegion",
                    id = annotSel$id,
                    geneID = annotSel$geneID,
-                   seq = annotSel$CDS_seq)
+                   sequences = annotSel$CDS_seq)
       
       ptn@annot@CCDS <- annot
     }
@@ -143,10 +143,10 @@ codonUsage <- function(ptn,
   if(!is_valid_analysis(analysis)){
     stop("Please provide an 'analysis'. It can only be 'codon' or 'AA'")
   }
-  if(!is_number(codonN)){
+  if(!check_number(codonN)){
     stop("Please provide numerical value for 'codonN'")
   }
-  if(!is_logical(rem5)){
+  if(!check_logical(rem5)){
     stop("rem5 can be only TRUE or FALSE")
   }
   checkcodSource(codSource)
@@ -160,7 +160,7 @@ codonUsage <- function(ptn,
   }
   
   if(!is.null(comparisons)){
-    if(!checkComparisons(comparisons)){
+    if(!check_comparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
@@ -386,9 +386,9 @@ codonUsage <- function(ptn,
   compOut4 <- list()
   for (i in compTmpAll) {
     if(i == 0){
-      selTmp <- ptn_bg(ptn)
+      selTmp <- ptn_background(ptn)
     } else {
-      resTmp <- ptn_dataIn(ptn)
+      resTmp <- ptn_geneList(ptn)
       selTmp <-  resTmp[[i]]
     }
     tmp <- codonAll[codonAll$geneID %in% selTmp, ]
@@ -471,11 +471,13 @@ codonUsage <- function(ptn,
     resIn <- do.call(rbind, resIn)
     
     #remove with 0 in both
-    remInd <- as.numeric(which(apply(resIn, 2, sum)==0))
-    resIn <- resIn[,-remInd]
+    if(length(as.numeric(which(apply(resIn, 2, sum)==0)))>0){
+      remInd <- as.numeric(which(apply(resIn, 2, sum)==0))
+      resIn <- resIn[,-remInd]
+    }
     
     #
-    if (sum(apply(resIn, 2, min) < 5) > 0) {
+    if (length(which(apply(resIn, 2, min) < 5)) > 0) {
       if(isTRUE(rem5)){
         rem5Ind <- as.numeric(which(apply(resIn, 2, min) < 5))
         resIn <- resIn[,-rem5Ind]
@@ -693,8 +695,8 @@ codonUsage <- function(ptn,
     codonsSel[[paste(regComb, collapse = "_vs_")]] <- list(Up = codU, Down = codD)
   }
   codonsOut <- new("postNetCodons",
-                   codonsAll = codonsAllOut,
-                   codonsSel  = codonsSel)
+                   codonAnalysis = codonsAllOut,
+                   codonSelection  = codonsSel)
 
   
   ptn@analysis@codons <- codonsOut

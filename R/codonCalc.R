@@ -9,8 +9,8 @@ codonCalc <- function(ptn,
   #
   check_ptn(ptn)
 
-  if(!is.null(ptn_codonsAll(ptn))){
-    codonsAll <- ptn_codonsAll(ptn)
+  if(!is.null(ptn_codonAnalysis(ptn))){
+    codonsAll <- ptn_codonAnalysis(ptn)
     check_codonIn(codonsAll)
   } else {
     stop("codons analysis is null, please provide valid 'postNetData' object and run codonUsage analysis")
@@ -22,14 +22,14 @@ codonCalc <- function(ptn,
   #
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
-      checkPlotType(plotType)
+      check_plotType(plotType)
     } else {
       stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
     }
   }
   #
   if(!is.null(comparisons)){
-    if(!checkComparisons(comparisons)){
+    if(!check_comparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
