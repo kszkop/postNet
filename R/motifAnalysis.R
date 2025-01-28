@@ -19,10 +19,10 @@ motifAnalysis <- function(ptn,
   if (!is.null(subregionSel) && !subregionSel %in% c("select", "exclude")) {
     stop("'subregionSel' must be a character and only 'select' or 'exclude'")
   } 
-  if(!is_number(stremeThreshold)){
+  if(!check_number(stremeThreshold)){
     stop("please provide numeric p-value threshold for motif selection")
   }
-  if(!is_number(minwidth)){
+  if(!check_number(minwidth)){
     stop("please provide numeric minimal width for motif selection")
   }
   if(is.null(memePath)){

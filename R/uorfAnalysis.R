@@ -16,7 +16,7 @@ uorfAnalysis <- function(ptn,
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_bg(ptn))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_background(ptn))){
       stop(" 0 is always a background, but no background provided")
     }
   }
