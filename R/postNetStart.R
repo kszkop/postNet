@@ -289,16 +289,85 @@ postNetStart <- function(ads = NULL,
       if(!is_valid_species(species)){
         stop("Please specify a species. Currently, 'human' or 'mouse' are available. For use with other species annotations, please use the 'custom' option and provide an annotation file using the 'customeFile' argument.") 
       }
-      #
-      url <- switch(species,
-                    "human" = "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/",
-                    "mouse" = "https://ftp.ncbi.nlm.gov/refseq/M_musculus/annotation_releases/current/GCF_000001635.27-RS_2024_02/"
-      )
+       ####Get the most recent release
+        if (species == "human"
+        ) {
+          url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/"
+          
+          responseTmp <- httr::GET(url)
+          if (httr::status_code(responseTmp) == 200) {
+            
+            pageTmp <- httr::content(responseTmp, as = "text") %>% rvest::read_html()
+            linksTmp <- pageTmp %>% rvest::html_nodes("a") %>% rvest::html_attr("href")
+            #
+            version <- linksTmp[grepl("GCF_000001405", linksTmp)]
+          } else {
+            cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
+          }
+          # Get the genomic gff file
+          url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/", version, sep = "")
+          
+          responseTmp <- httr::GET(url)
+          if (httr::status_code(responseTmp) == 200) {
+            
+            pageTmp <- httr::content(responseTmp, as = "text") %>% rvest::read_html()
+            linksTmp <- pageTmp %>% rvest::html_nodes("a") %>% rvest::html_attr("href")
+            #
+            gff <- linksTmp[grepl("_genomic.gff.gz", linksTmp)]
+          } else {
+            cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
+          }
+          
+          # Download may require more than default timeout, so increase this within the function
+          opts <- options(timeout = max(1000, getOption("timeout")))
+          on.exit(options(opts))
+          
+          download.file(paste(url, gff, sep = ""), destfile = "GeneRef.gff.gz")
+        }
+        
+        if (species == "mouse") {
+          url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/"
+          
+          responseTmp <- httr::GET(url)
+          if (httr::status_code(responseTmp) == 200) {
+            
+            pageTmp <- httr::content(responseTmp, as = "text") %>% rvest::read_html()
+            linksTmp <- pageTmp %>% rvest::html_nodes("a") %>% rvest::html_attr("href")
+            #
+            version <- linksTmp[grepl("GCF_000001635", linksTmp)]
+          } else {
+            cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
+          }
+          # Again for the files
+          url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/", version, sep = "")
+          
+          responseTmp <- httr::GET(url)
+          if (httr::status_code(responseTmp) == 200) {
+            
+            pageTmp <- httr::content(responseTmp, as = "text") %>% rvest::read_html()
+            linksTmp <- pageTmp %>% rvest::html_nodes("a") %>% rvest::html_attr("href")
+            #
+            gff <- linksTmp[grepl("_genomic.gff.gz", linksTmp)]
+          } else {
+            cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
+          }
+          
+          # Download may require more than default timeout, so increase this within the function
+          opts <- options(timeout = max(1000, getOption("timeout")))
+          on.exit(options(opts))
+          
+          download.file(paste(url, gff, sep = ""), destfile = "GeneRef.gff.gz")
+        }
       
-      download.file(paste(url, switch(species, "human" = "GRCh38_latest_genomic.gff.gz", "mouse" = "GCF_000001635.27_GRCm39_genomic.gff.gz"), sep = ""), destfile = "GeneRef.gff.gz")
       R.utils::gunzip("GeneRef.gff.gz")
-      
       gff <- gffRead("GeneRef.gff")
+      
+      # Remove the gff file
+      filesToRm <- c("GeneRef.gff")
+        if (file.exists(filesToRm)) {
+          file.remove(filesToRm)
+        }
+        
     } else {
       gff <- gffRead(genomic_gff_file)
     }
