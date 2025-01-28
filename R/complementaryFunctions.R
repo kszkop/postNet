@@ -323,8 +323,8 @@ effectSel <- function(ads, regulationGen, contrastSel, effectMeasure){
 
 resQuant <- function(qvec, ptn){
   resOut <- list()
-  if(!is.null(ptn_bg(ptn))){
-    res <- c(list(background=ptn_bg(ptn)),ptn_dataIn(ptn))
+  if(!is.null(ptn_background(ptn))){
+    res <- c(list(background=ptn_background(ptn)),ptn_dataIn(ptn))
   } else {
     res <- ptn_dataIn(ptn)
   }
@@ -336,7 +336,7 @@ resQuant <- function(qvec, ptn){
 }
 
 colPlot <- function(ptn){
-  if(!is.null(ptn_bg(ptn))){
+  if(!is.null(ptn_background(ptn))){
     colOut <- c('grey45',ptn_colours(ptn))
   } else {
     colOut <- ptn_colours(ptn)
