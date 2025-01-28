@@ -140,7 +140,7 @@ check_number <- function(x) {
 
 # Function to validate the source input
 check_source <- function(source) {
-  valid_sources <- c("create", "createFromSourceFiles", "load", "custom", "createFromFiles")
+  valid_sources <- c("create", "createFromSourceFiles", "load", "custom", "createFromFasta")
   if (!(source %in% valid_sources)) {
     stop("Invalid source. Please provide a valid source option.")
   }
@@ -237,7 +237,7 @@ is_motifs <- function(motifsIn) {
 }
 
 # Function to validate specific input parameters
-check_input <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile) {
+check_input <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile, fastaFile) {
   check_source(source)
   if (source == "createFromSourceFiles") {
     if (is.null(rna_gbff_file)) {
@@ -253,9 +253,12 @@ check_input <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_
     if (is.null(customFile)) {
       stop("Please provide a customFile.")
     }
-  } else if (source == "createFromFiles") {
+  } else if (source == "createFromFasta") {
     if (is.null(posFile)) {
       stop("Please provide a posFile in the format: id, UTR5_len, CDS_stop, Total_len.")
+    }
+    if (is.null(fastaFile)) {
+      stop("Please provide a fastaFile.")
     }
   }
 }
