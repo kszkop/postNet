@@ -173,7 +173,7 @@ postNetStart <- function(ads = NULL,
                           "mouse" = "AnnotFromgbff_mouse.pl"
     )
     # Run the Perl script
-    command <- paste("perl", file.path(perl.dir, perl_script), sep = " ")
+    command <- paste("perl", paste(system.file('perl', package = 'postNet'), "/", perl_script, sep = ""), sep = " ")
     system(command)
     
     # Read and merge annotation data
