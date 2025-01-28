@@ -133,7 +133,7 @@ postNetStart <- function(ads = NULL,
         cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
       }
       # Again for the files
-      url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/", version, sep = "")
+      url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/", version, sep = "")
       
       responseTmp <- httr::GET(url)
       if (httr::status_code(responseTmp) == 200) {
