@@ -132,7 +132,6 @@ postNetStart <- function(ads = NULL,
       } else {
         cat("Failed to fetch the URL. Status code:", httr::status_code(responseTmp), "\n")
       }
-      #
       # Again for the files
       url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/", version, sep = "")
       
