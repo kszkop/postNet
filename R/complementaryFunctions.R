@@ -324,9 +324,9 @@ effectSel <- function(ads, regulationGen, contrastSel, effectMeasure){
 resQuant <- function(qvec, ptn){
   resOut <- list()
   if(!is.null(ptn_background(ptn))){
-    res <- c(list(background=ptn_background(ptn)),ptn_dataIn(ptn))
+    res <- c(list(background=ptn_background(ptn)),ptn_geneList(ptn))
   } else {
-    res <- ptn_dataIn(ptn)
+    res <- ptn_geneList(ptn)
   }
   
   for(i in 1:length(res)){
