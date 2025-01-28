@@ -12,7 +12,7 @@ uorfAnalysis <- function(ptn,
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
   } 
   if(!is.null(comparisons)){
-    if(!checkComparisons(comparisons)){
+    if(!check_comparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #

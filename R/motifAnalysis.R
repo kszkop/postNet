@@ -10,7 +10,7 @@ motifAnalysis <- function(ptn,
   check_ptn(ptn)
   check_region(region)
 
-  if (is.null(ptn_bg(ptn))){
+  if (is.null(ptn_background(ptn))){
     stop("Background must be provided for motif analysis")
   }
   if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){

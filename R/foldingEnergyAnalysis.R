@@ -25,7 +25,7 @@ foldingEnergyAnalysis <- function(ptn,
   } 
   if(isTRUE(plotOut)){
     if(!is.null(plotType)){
-      checkPlotType(plotType)
+      check_PlotType(plotType)
     } else {
       stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
     }
