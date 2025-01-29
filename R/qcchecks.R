@@ -162,14 +162,14 @@ is_valid_species <- function(species) {
 
 check_DNAsequence <- function(contentIn) {
   if (!is.character(contentIn)) {
-    stop("'contentIn' must be a character vector with DNA sequences")
+    stop("The adjObj must be a named list of character vectors with DNA sequences.")
   }
   # Define a regular expression pattern for valid DNA characters
   pattern <- "^[ACGTacgt]+$"
   
   # Use grepl to check if contentIn matches the pattern
   if (!all(grepl(pattern, contentIn))) {
-    stop("'contentIn' must be a character vector with DNA sequences")
+    stop("The entries provided in adjObj do not appear to all be DNA sequences. Please check that the sequences are corect.")
   }
 }
 
