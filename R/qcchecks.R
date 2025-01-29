@@ -27,10 +27,8 @@ check_adjObj <- function(adjObj) {
     if (!is.character(entry) || !all(nchar(entry) > 0)) {
       stop("The entries in the adjObj list should be character vectors with DNA nucleotide sequences.")
     }
-    if (!check_DNAsequence(entry)) {
-      stop("It looks like the sequences provided in adjObj are not DNA sequences.")
-    }
   }
+    check_DNAsequence(entry) 
 }
 
 check_selection <- function(selection, convertToLowercase = TRUE) {
