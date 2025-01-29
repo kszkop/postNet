@@ -20,15 +20,15 @@ check_adjObj <- function(adjObj) {
   }
   valid_names <- c('UTR5', 'UTR3')
   if (!all(names(adjObj) %in% valid_names)) {
-    stop("names of the entries in the list should be only 'UTR3' or 'UTR5'")
+    stop("The names of the entries in the adjObj list should be only 'UTR3' or 'UTR5'.")
   }
   for (name in names(adjObj)) {
     entry <- adjObj[[name]]
     if (!is.character(entry) || !all(nchar(entry) > 0)) {
-      stop("the entries in list should be a character vector with nucleotide sequences")
+      stop("The entries in the adjObj list should be character vectors with DNA nucleotide sequences.")
     }
-    if (!isDNAsequence(entry[1])) {
-      stop("It looks like the sequences are not DNA sequences")
+    if (!check_DNAsequence(entry[1])) {
+      stop("It looks like the sequences provided in adjObj are not DNA sequences.")
     }
   }
 }
