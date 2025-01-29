@@ -193,7 +193,7 @@ adjustSeq <- function(annot,
     adjObj_temp <- adjObj[[reg]]
 
      if(is.null(adjObj_temp)){
-      stop("The one or more regions specified in 'region_adj' do not match those provided in the 'adjObj' list. Please ensure the names of 'adjObj' are 'UTR5' and/or 'UTR3', and correspond to 'adj_region'.")
+      stop("The one or more regions specified in 'region_adj' do not match those provided in the 'adjObj' list. Please ensure the names of 'adjObj' are 'UTR5' and/or 'UTR3', and correspond to 'region_adj'.")
     }
  
     if(length(which(names(adjObj_temp) %in% annotTmp$id))==0){
