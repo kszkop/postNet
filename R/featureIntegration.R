@@ -14,7 +14,7 @@ featureIntegration <- function(ptn,
   check_ptn(ptn)
   check_features(features)
   if(!is.null(comparisons)){
-    if(!checkComparisons(comparisons)){
+    if(!check_comparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
@@ -22,20 +22,18 @@ featureIntegration <- function(ptn,
       stop(" 0 is always a background, but no background provided")
     }
   }
-  if(!is_valid_analysis_type(analysis_type)){
-    stop("'analysis_type' can be only 'lm' for linear model or 'rf' for random forest")
-  }
-  if(!is_logical(regOnly)){
+  check_analysis_type(analysis_type)
+  if(!check_logical(regOnly)){
     stop("'regOnly' can only be TRUE or FALSE")
   }
   if(analysis_type=='lm'){
-    if(!is_logical(allFeat)){
+    if(!check_logical(allFeat)){
       stop("'allFeat' can only be TRUE or FALSE")
     }
-    if(!is_logical(useCorel)){
+    if(!check_logical(useCorel)){
       stop("'useCorel' can only be TRUE or FALSE")
     }
-    if(!is_number(covarFilt)){
+    if(!check_number(covarFilt)){
       stop("'covarFilt' can only be a numerical value")
     }
     if(!is_valid_NetModelSel(NetModelSel)){
@@ -51,11 +49,13 @@ featureIntegration <- function(ptn,
   ptn <- prepFeatures(ptn, features)
   
   dataTmp <- ptn_features(ptn)
-  colnames(dataTmp) <- c(paste("a", seq(1, ncol(dataTmp)-1, 1), sep = ""), "effM")
+  effTmp <- ptn_effect(ptn)
+  colnames(dataTmp) <- c(paste("a", seq(1, ncol(dataTmp), 1), sep = ""))
   
+  dataTmp$effM <- effTmp[match(row.names(dataTmp),names(effTmp))]
   namesDf <- data.frame(originalNames = colnames(ptn_features(ptn))[1:ncol(dataTmp)-1], newNames = colnames(dataTmp)[1:ncol(dataTmp)-1], stringsAsFactors = F)
   #
-  resOut <- resQuant(qvec = ptn_eff(ptn), ptn = ptn)
+  resOut <- resQuant(qvec = ptn_effect(ptn), ptn = ptn)
   #
   fiOut <- new("postNetFeatureIntegration",
                lm = NULL,
@@ -240,6 +240,7 @@ featureIntegration <- function(ptn,
         #
         featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
         #
+        set <-ptn_effect(ptn)
         set <- dataTmp[,colnames(dataTmp) %in% c(featTmp,'effM')]
         #
         set1 <- names(resOut[[compTmp[1]]])

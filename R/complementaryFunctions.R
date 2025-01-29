@@ -1204,9 +1204,7 @@ runMfold <- function(fastaFile){
 
 prepFeatures <- function(ptn, 
                          features){
-  if (!check_ptn(ptn)) {
-    stop("ptn is not a valid 'postNetData' object.")
-  }
+  check_ptn(ptn)
   if (!is_valid_named_list(features)){
     stop("features should be a named list of numeric vectors only")
   }
