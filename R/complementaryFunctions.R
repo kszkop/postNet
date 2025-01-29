@@ -191,9 +191,13 @@ adjustSeq <- function(annot,
   #
   for(reg in region_adj){
     adjObj_temp <- adjObj[[reg]]
+
+     if(is.null(adjObj_temp)){
+      stop("The one or more regions specified in 'region_adj' do not match those provided in the 'adjObj' list. Please ensure the names of 'adjObj' are 'UTR5' and/or 'UTR3', and correspond to 'adj_region'.")
+    }
  
     if(length(which(names(adjObj_temp) %in% annotTmp$id))==0){
-      stop("It looks like transcript IDs do not match with transcript ids in annotation ")
+      stop("It looks like transcript IDs provided in 'adjObj' do not match with transcript IDs in the existing annotation.")
     }
     adjObj_temp <- adjObj_temp[names(adjObj_temp) %in% annotTmp$id]
     #
@@ -205,7 +209,7 @@ adjustSeq <- function(annot,
     #adjObj_temp <- adjObj_temp[!names(adjObj_temp) %in% toRemove]
     #
     if(length(adjObj_temp) == 0){
-      stop("none of the entries in the adjustment vector are in annotation ")
+      stop("None of the entries in the adjustment vector are present in the existing annotation.")
     }
     #
     annotTmp[match(names(adjObj_temp), annotTmp$id), ifelse(reg=="UTR5","UTR5_seq","UTR3_seq")] <- adjObj_temp
