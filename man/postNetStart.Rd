@@ -29,7 +29,7 @@ postNetStart(ads = NULL, regulation = NULL, contrast = NULL, regulationGen = NUL
 \item{genomic_gff_file}{Name and file path to the genomic_gff_file. This reference file can can be downloaded from NCBI RefSeq. Note that the file should be compressed with gzip (.gz extension), which is the default format for NCBI RefSeq downloads. This argument is only required if the source is 'createFromSourceFiles'.}
 \item{adjObj}{ It should be a names list for UTR5 and/or UTR3 of named vector of sequences (with transcripts ids as names)}
 \item{region_adj}{ UTR to be adjusted: UTR5 and/or UTR3 }
-\item{excl}{ It keeps all genes/isoforms. If TRUE it will exclude genes/isoforms that are not in adjObj. The default is FALSE }
+\item{excl}{ When providing custom UTR sequences with 'adjObj', sequences may not be available for all genes/isoforms included in the annotation file. This opption determines whether to keep all genes/isoforms, or discard those that are not included in the custom UTR sequences. If TRUE it will exclude genes/isoforms that are not in adjObj. The default is FALSE }
 \item{keepAll}{ For transcripts that have multiple isoforms, remove these for a given gene that does not have information about sequences in adjObj. The idea is to have only adjusted sequences for these genes when there is "better" information and not from the database. Alternatively if TRUE it will also keep not adjusted isoforms for these genes alongside adjusted. The default is FALSE. }
 }
 
