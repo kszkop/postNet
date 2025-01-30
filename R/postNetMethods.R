@@ -172,7 +172,7 @@ ptn_miRNA_analysis <- function(ptn,
                                threshold) {
   #
   check_direction(tolower(direction))
-  check_ptn(x)
+  check_ptn(ptn)
   if(!check_number(threshold)){
     stop(paste("Please provide one numeric value for ", threshold, sep=''))
   }
@@ -231,7 +231,7 @@ ptn_GO <- function(ptn,
     stop(paste("Please provide one numeric value for ", threshold, sep=''))
   }
   #
-  if(!any(geneList %in% names(ptn_dataIn(ptn)))){
+  if(!any(geneList %in% names(ptn_geneList(ptn)))){
     stop('None of the regulatory geneList in ptn')
   }
   #

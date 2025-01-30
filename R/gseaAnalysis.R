@@ -7,12 +7,21 @@ gseaAnalysis <- function(ptn,
                          maxSize = 500,
                          minSize = 10,
                          name = NULL){
-  if (!checkPtn(ptn)) {
-    stop("ptn is not a valid 'postNetData' object.")
-  }
+  check_ptn(ptn)
   if(is.null(geneSet) && is.null(collection)){
     stop("please provide geneSet or collection")
   }
+  #
+  if(!check_number(maxSize) | !check_number(minSize) | !check_number(counts) |!check_number(FDR)){
+    stop("please provide numeric value")
+  }
+  if(minSize <= 0 | maxSize <= 0) {
+    stop("size parameters must be positive")
+  }
+  if(maxSize <= minSize) {
+    stop("maxSize must be greater than minSize")
+  }
+  #
   #
   #if(!is.null(ads)){
   #  tmpAds <- anota2seq::anota2seqGetOutput(ads,
@@ -37,7 +46,7 @@ gseaAnalysis <- function(ptn,
   #  stop("No anota2seq object or ranks provided")
   #}
   #
-  effTmp <- ptn_eff(ptn)
+  effTmp <- ptn_effect(ptn)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
   }  else {
@@ -81,9 +90,9 @@ gseaAnalysis <- function(ptn,
   nameTmp <- ifelse(!is.null(name), paste(name, "gseaAnalysis", sep='_'), "gseaAnalysis")
   data.table::fwrite(gseaOut, file=paste(nameTmp,".txt",sep=''), sep="\t")#, sep2=c("", ":", ""))
   #
-  a2sU@analysis@GSEA <- gseaOut
+  ptn@analysis@GSEA <- gseaOut
   #
-  return(a2sU)
+  return(ptn)
 }
 
 ####
@@ -94,19 +103,17 @@ gseaPlot <- function(ptn,
                      ticksSize = 0.3,
                      pdfName = NULL ){
   #
-  if (!checkPtn(ptn)) {
-    stop("ptn is not a valid 'postNetData' object.")
-  }
-  if(is.null(a2sU_gsea(a2sU))){
+  check_ptn(ptn)
+  if(is.null(ptn_GSEA(ptn))){
     stop("Please run gseaAnalysis first ")
   } else {
-    gseaOut <- a2sU_gsea(a2sU)
+    gseaOut <- ptn_GSEA(ptn)
   }
-  if(!is_number(gseaParam) | !is_number(ticksSize)){
+  if(!check_number(gseaParam) | !check_number(ticksSize)){
     stop("please provide numeric value")
   }
   #
-  effTmp <- a2sU_eff(a2sU)
+  effTmp <- ptn_effect(ptn)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
   }  else {
@@ -168,7 +175,7 @@ gseaPlot <- function(ptn,
       ggplot2::theme(panel.border = ggplot2::element_blank(),panel.grid.major = ggplot2::element_blank(),panel.grid.minor = ggplot2::element_blank()) + 
       ggplot2::theme(axis.line.x = ggplot2::element_line(color="black", linewidth = 0.5),axis.line.y = ggplot2::element_line(color="black", linewidth = 0.5)) +
       ggplot2::labs(title=termTmp, x = "rank", y = "enrichment score") +
-      ggplot2::geom_segment(data = data.frame(x = pathGenes), mapping = ggplot2::aes(x = x, y = -diff/4, xend = x, yend = diff/4), size = ticksSize, color="firebrick1")
+      ggplot2::geom_segment(data = data.frame(x = pathGenes), mapping = ggplot2::aes(x = x, y = -diff/4, xend = x, yend = diff/4), linewidth = ticksSize, color="firebrick1")
     print(peOut)
     dev.off()
   }

@@ -20,10 +20,16 @@ goAnalysis <- function(ptn,
     stop("This option is only  available for species: human and mouse at the moment")
   }
   #
-  checkCategory(category)
+  check_category(category)
   #
-  if(!is_number(maxSize) | !is_number(minSize) | !is_number(counts) |!is_number(FDR)){
+  if(!check_number(maxSize) | !check_number(minSize) | !check_number(counts) |!check_number(FDR)){
     stop("please provide numeric value")
+  }
+  if(minSize <= 0 | maxSize <= 0 | counts <= 0 | FDR < 0) {
+    stop("size, counts and FDR parameters must be positive")
+  }
+  if(maxSize <= minSize) {
+    stop("maxSize must be greater than minSize")
   }
   #
   GOout <- list()
@@ -54,8 +60,8 @@ goAnalysis <- function(ptn,
   #} else {
   #  stop("please provide background genes")
   #}
-  res  <- ptn_dataIn(ptn)
-  bg <- unlist(ptn_bg(ptn))
+  res  <- ptn_geneList(ptn)
+  bg <- unlist(ptn_background(ptn))
   if(length(setdiff(bg,unique(unlist(res))))==0){
     warning('Background seems not right as all genes are regulated')
   }
@@ -73,7 +79,7 @@ goAnalysis <- function(ptn,
   GoLists <- res_entrezID[!sapply(res_entrezID, is.null)]
 
   #
-  GOout  <- new("anota2seqUtilsGO",
+  GOout  <- new("postNetGO",
               BP = NULL,
               CC = NULL,
               MF = NULL,
@@ -160,18 +166,16 @@ goDotplot <- function(ptn,
                       size = 'Count',
                       pdfName=NULL){
   #
-  if (!checkUtils(ptn)) {
-    stop("ptn is not a valid 'anota2seqUtilsData' object.")
-  }
-  if(!is_logical(pool)){
+  check_ptn(ptn)
+  if(!check_logical(pool)){
     stop("'pool' can only be only be logical: TRUE of FALSE ")
   }
-  if(!is_number(nCategories)) {
+  if(!check_number(nCategories)) {
     stop("please provide numeric value")
   }
   check_size(size)
   #
-  checkCategory(category)
+  check_category(category)
   #
   for(sel in category){
     if(is.null(slot(ptn@analysis@GO, sel))){
@@ -251,7 +255,7 @@ goDotplot <- function(ptn,
         
         #
         colOut <- colPlot(ptn)[-1]
-        names(colOut) <- names(ptn_dataIn(ptn))
+        names(colOut) <- names(ptn_geneList(ptn))
         #
         pdf(nameOut, width = 8, height = 8, useDingbats = F)
         par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)

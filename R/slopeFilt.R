@@ -4,9 +4,7 @@ slopeFilt <- function(ads,
                       minSlope, 
                       maxSlope ){
   #
-  if (!check_ads(ads)) {
-    stop("ads is not a valid 'Anota2seqDataSet' object.")
-  }
+  check_ads(ads)
   if (!regulationGen %in% c("translation","buffering")) {
     stop("For filtering slopes, 'regulationGen' should be a character vector chosen from 'translation' or 'buffering' ")
   }

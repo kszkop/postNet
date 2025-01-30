@@ -9,13 +9,19 @@ gageAnalysis <- function(ptn,
   if (!species %in% c("human","mouse")) {
     stop("This option is only  available for species: human and mouse at the moment")
   }
-  if(!is_number(maxSize) | !is_number(minSize)){
+  if(!check_number(maxSize) | !check_number(minSize)){
     stop("please provide numeric value")
+  }
+  if(minSize <= 0 | maxSize <= 0) {
+    stop("size parameters must be positive")
+  }
+  if(maxSize <= minSize) {
+    stop("maxSize must be greater than minSize")
   }
   #
   gageOut <- list()
 
-  effTmp <- ptn_eff(ptn)
+  effTmp <- ptn_effect(ptn)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
   }  else {

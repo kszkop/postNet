@@ -4,20 +4,24 @@ miRNAanalysis <- function(ptn,
                           maxSize = 500,
                           minSize = 10) {
   #
-  if (!check_ptn(ptn)) {
-    stop("ptn is not a valid 'postNetData' object.")
-  }
-  if(!is_number(maxSize) | !is_number(minSize)){
+  check_ptn(ptn)
+  if(!check_number(maxSize) | !check_number(minSize)){
     stop("please provide numeric value")
   }
+  if(minSize <= 0 | maxSize <= 0) {
+    stop("size parameters must be positive")
+  }
+  if(maxSize <= minSize) {
+    stop("maxSize must be greater than minSize")
+  }
   miRNATargetScan <- checkFileColumns(miRNATargetScanFile)
-  if(length(intersect(unique(miRNATargetScan$Gene.Symbol), ptn_bg(ptn)))<2){
+  if(length(intersect(unique(miRNATargetScan$Gene.Symbol), ptn_background(ptn)))<2){
     stop('no overlap between genes the dataset and in the miRNATargetScanFile')
   }
   #
   miRNAOut <- list()
   #
-  effTmp <- ptn_eff(ptn)
+  effTmp <- ptn_effect(ptn)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut ]
   }  else {
