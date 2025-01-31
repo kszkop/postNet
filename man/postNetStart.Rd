@@ -8,9 +8,9 @@ postNetStart(ads = NULL, regulation = NULL, contrast = NULL, regulationGen = NUL
 }
 
 \arguments{
-\item{ads}{ An anota2seq object (an S4 object that is the output of the anota2seqRun function from the anota2seq package. See vignette for details). }
-\item{regulation}{ If an anota2seq object is provided, provide the names of the regulatory modes that are to be compared as a vector. The possible choices are: "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNADown", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". }
-\item{contrast}{ If the anota2seq object is provided and regulation modes selected, an indication of respective contrasts in the anota2seq object for each selected regulation mode (for example c(1,1,2) would indicate that the first two modes of regulation provided above are from contrast 1 and the third one from contrast 2). }
+\item{ads}{ An anota2seq object (an S4 object that is the output of the anota2seqRun function from the anota2seq package. See the anota2seq vignette for details). }
+\item{regulation}{ If an anota2seq object is provided, provide the names of the regulatory modes that are to be compared as a vector. The possible choices are: "translationUp", "translationDown", "translatedmRNAUp", "translatedmRNADown", "bufferingmRNAUp", "bufferingmRNADown", "mRNAAbundanceUp", "mRNAAbundanceDown", "totalmRNAUp", "totalmRNADown". See the anota2seq vignette for additional details on regulatory modes. }
+\item{contrast}{ If an anota2seq object is provided, select the respective contrasts in the anota2seq object for each selected regulation mode provided for 'regulation'. This must be a numeric vector of the same length as the input for 'regulation'. For example, c(1,1,2) would select the first two modes of regulation provided from contrast 1 and the third from contrast 2). See the anota2seq vignette for additional details on contasts. }
 \item{regulationGen}{ Desired name of regulation from the anota2seq. Choose from "translation", "buffering", "mRNAAbundance", "translatedmRNA", "totalmRNA" to extract effectMeasure from the anota2seq object.}
 \item{contrastSel}{ contrast for mode of regulation in the anota2seq object to be analysed }
 \item{geneList}{ Instead of the anota2seq object, selected genes of interest can be provided in form of a named list of vectors. }
