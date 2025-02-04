@@ -1,4 +1,9 @@
-riboUtils <- function(annot, adjustStart = 0, fastaFile, path=NULL, name=NULL, runRUST=TRUE){
+riboUtils <- function(annot, 
+                      adjustStart = 0, 
+                      fastaFile, 
+                      path=NULL, 
+                      name=NULL, 
+                      runRUST=TRUE){
   #
   if(!is.null(path)){
     if(unlist(strsplit(path,''))[length(unlist(strsplit(path,'')))]!='/'){

@@ -3,7 +3,7 @@ codonUsage <- function(ptn,
                        sourceSeq = "load", # option to 'load' available or create new 'create',
                        analysis,
                        codonN = 1,
-                       codSource = "sequence", # option: 'sequence' or if ribosomal profiling 'riboseq'
+                       #codSource = "sequence", # option: 'sequence' or if ribosomal profiling 'riboseq'
                        dpn_path = NULL, # path to dpn files if riboseq
                        cds_filt = TRUE,
                        pAdj = 0.01,
@@ -149,8 +149,8 @@ codonUsage <- function(ptn,
   if(!check_logical(rem5)){
     stop("rem5 can be only TRUE or FALSE")
   }
-  checkcodSource(codSource)
-  codSourse <- tolower(codSource)
+  #checkcodSource(codSource)
+  #codSourse <- tolower(codSource)
   #
   if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
     stop("'subregion' must be a numeric and just number")
@@ -164,7 +164,7 @@ codonUsage <- function(ptn,
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_bg(ptn))){
+    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_background(ptn))){
       stop(" 0 is always a background, but no background provided")
     }
   } else {
@@ -194,21 +194,21 @@ codonUsage <- function(ptn,
     seqTmp <- subSeq
   }
   #
-  if (codSource == "sequence") {
-    geneIDs <- names(seqTmp)
-    #ptm <- proc.time()
-    codonTmp <- list()
-    for (i in 1:length(geneIDs)) {
-      codonTmp[[i]] <- codonCount(gene = geneIDs[i], seq = seqTmp[i], codonN = codonN)
-    }
-    #proc.time() - ptm
-    codonAll <- data.table::rbindlist(codonTmp, use.names = TRUE, fill = TRUE)
-    #proc.time() - ptm
+  #if (codSource == "sequence") {
+  geneIDs <- names(seqTmp)
+  #ptm <- proc.time()
+  codonTmp <- list()
+  for (i in 1:length(geneIDs)) {
+    codonTmp[[i]] <- codonCount(gene = geneIDs[i], seq = seqTmp[i], codonN = codonN)
+  }
+  #proc.time() - ptm
+  codonAll <- data.table::rbindlist(codonTmp, use.names = TRUE, fill = TRUE)
+  #proc.time() - ptm
   
-    if (codonN == 1) {
-      codonAll <- codonAll[!codonAll$AA %in% c("Stop", "W", "M", "O", "U"), ]
-    }
-    codonsAllOut <- new("postNetCodonsAll",
+  if (codonN == 1) {
+    codonAll <- codonAll[!codonAll$AA %in% c("Stop", "W", "M", "O", "U"), ]
+  }
+  codonsAllOut <- new("postNetCodonsAll",
                        geneID = codonAll$geneID,
                        codon  = codonAll$codon,
                        AA = codonAll$AA,
@@ -216,140 +216,7 @@ codonUsage <- function(ptn,
                        frequency = codonAll$frequency,
                        AACountPerGene = codonAll$AACountPerGene,
                        relative_frequency = codonAll$relative_frequency)
-  } else if (codSource == "riboSeq") {
-    #
-    stop('few things to correct')
-    
-    # Load dpn
-    if (!is.null(dpn_path)) {
-      checkDirectory(dpn_path)
-      if (unlist(strsplit(dpn_path, ""))[length(unlist(strsplit(dpn_path, "")))] != "/") {
-        dpn_path <- paste(dpn_path, "/", sep = "")
-      }
-    }
-    dpn_files <- list.files(ifelse(is.null(dpn_path), ".", dpn_path), pattern = ".dpn$")
-    #
-    annotTmp <- annotBg
-    annotTmp <- annotTmp[annotTmp$id %in% annotBgSel$id,]
-    annotTmp$lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
-    dataList <- lapply(dpn_files, readRiboDpn, dpn_path = dpn_path, annot = annotTmp, cds_filt = TRUE)
-    names(dataList) <- dpn_files
-    #
-    dataListMerged <- list()
-    for(i in unique(inputTable$condition)){
-      dataListTmp <- dataList[inputTable$dpnFiles[which(inputTable$condition == i)]]
-      #
-      geneTmp <- as.character()
-      for(s in 1:length(dataListTmp)){
-        geneTmp <- append(geneTmp,names(dataListTmp[[s]])) 
-      }
-      #
-      geneTmp<- unique(geneTmp)
-      #
-      cond_merged <- list()
-      for(g in 1:length(geneTmp)){
-        #Progress
-        pb1 <- txtProgressBar(min=1, max=length(geneTmp), style=3)
-        #Extract current transcirpt
-        geneID <- geneTmp[g]
-        #Extract all entries for that transcirpt in all samples in given condition
-        conv <- lapply(dataListTmp, function(x) x[[geneID]])
-        #Remove empty ones
-        conv <- conv[lapply(conv,length)>0]
-        #convert
-        tmpConv <- t(plyr::ldply(conv, rbind,.id=NULL))
-        #Select only reproducible peaks i.e. occur in selected number of samples in each condition
-        vec <- apply(tmpConv,1,function(x) sum(x, na.rm=TRUE))
-        #Add to output
-        cond_merged[[geneID]] <- vec
-        #Progress
-        setTxtProgressBar(pb1, g)
-      }
-      dataListMerged[[i]] <- cond_merged
-    }
-    #calculate codons 
-    #
-    #
-    seqs <- list()
-    seqs[[1]] <- annotTmp$UTR5_seq
-    seqs[[2]] <- annotTmp$CDS_seq
-    #
-    seqComb <- combSeq(seqIn = seqs)
-    names(seqComb) <- annotTmp$geneID
-    #
-    dataCodon <- list()
-    for(d in 1:length(dataListMerged)){
-      dataMergedTmp <- dataListMerged[[d]]
-      #
-      outTmp <- list()
-      for(j in 1:length(dataTmp)){
-        #
-        geneID <- names(dataTmp[j])
-        print(geneID)
-        
-      
-        #
-        #cdsLengths_start <- as.numeric(sapply(annotTmp$UTR5_seq, function(x) length(seqinr::s2c(x))))+1
-        #names(cdsLengths_start) <- annotTmp$geneID
-        #
-        #cdsLengths_end <- cdsLengths_start + annotTmp$lenTmp
-        #names(cdsLengths_end) <- annotTmp$geneID
-          
-        #
-        seqG <- seqComb[[geneID]]
-        #seqCDS <- seqs[cdsLengths_start[geneID]:cdsLengths_end[geneID]]
-        #
-        codFreq <- seqinr::uco(seqG,index = "eff")
-        names(codFreq) <- toupper(names(codFreq))
-        if(!is.null(seqG)){
-          #
-          geneTmp <- dataTmp[[j]]
-          codTmp <- sapply(as.numeric(names(geneTmp)), extract_seq, seqs=seqG)
-          names(codTmp) <- as.numeric(geneTmp)
-        }
-        codObs <- as.numeric()
-        for(cod in 1:length(codFreq)){
-          codSum <- sum(as.numeric(names(codTmp[codTmp==names(codFreq[cod])])))
-          codObs[cod] <- codSum
-        }
-        names(codObs) <- names(codFreq) 
-        #rOut <- resid(lm(codObs ~ codFreq))
-        #outTmp[[transID]] <- rOut
-        outTmp[[geneID]] <- codObs
-      }
-      dataCodon[[d]] <- outTmp
-    }
-  }
-  #
-  #res <- list()
-  #if (!is.null(ads) | !is.null(customBg)) {
-  #  res[["background"]] <- annotBgSel$geneID
-  #}
 
-  #if (!is.null(ads)) {
-  #  results <- anota2seqGetDirectedRegulations(ads)
-  #  #
-  #  resTmp <- vector("list", length = length(regulation))
-  #  for (i in unique(contrast)) {
-  #    resTmp[which(contrast == i)] <- results[[i]][regulation[contrast == i]]
-  #  }
-  #  names(resTmp) <- paste(regulation, paste("c", contrast, sep = ""), sep = "_")
-  #  if (!is.null(geneList)) {
-  #    resTmp <- append(resTmp, geneList)
-  #  }
-  #} else {
-  #  resTmp <- geneList
-  #}
-  #res <- append(res, resTmp)
-  #
-  #if (length(res) < 2) {
-  #  stop(
-  #    "For comparison of codon composition between regulations, at least two regulations should be provided.",
-  #    call. = FALSE
-  #  )
-  #}
-  #
-  #
   #indexes
   if(analysis == "codon" & codonN==1){
     if (species == "human") {

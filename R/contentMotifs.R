@@ -99,7 +99,7 @@ contentMotifs <- function(ptn,
       motif <- motifsIn[i]
       #
       if (motif == "G4" & !tolower(seqType)=='protein') {
-        if(!is_number(min_score)){
+        if(!check_number(min_score)){
           stop("please provide numeric minimal score for g-quadruplexes selection")
         }
         motifOutTmp <- sapply(seqTmp, calc_g4, min_score = min_score)

@@ -297,19 +297,19 @@ checkDirectory <- function(path) {
   }
 }
 
-checkcodSource <- function(codSource) {
-  valid_codSource <- c("sequence", "riboseq")
-  if (is.null(codSource)) {
-    stop("'codSource' cannot be null.")
-  } else {
-    # Convert to lowercase
-    codSource <- tolower(codSource)
-    
-    if (!(codSource %in% valid_codSource)) {
-      stop("Invalid codSource. Allowed 'codSource' are 'sequence' or 'riboseq'.")
-    } 
-  }
-}
+#checkcodSource <- function(codSource) {
+#  valid_codSource <- c("sequence", "riboseq")
+#  if (is.null(codSource)) {
+#    stop("'codSource' cannot be null.")
+#  } else {
+#    # Convert to lowercase
+#    codSource <- tolower(codSource)
+#    
+#    if (!(codSource %in% valid_codSource)) {
+#      stop("Invalid codSource. Allowed 'codSource' are 'sequence' or 'riboseq'.")
+#    } 
+#  }
+#}
 
 check_codonIn<- function(codonIn) {
   #
