@@ -337,14 +337,16 @@ codonUsage <- function(ptn,
     resIn <- compOut1[compTmp]
     resIn <- do.call(rbind, resIn)
     
-    #remove with 0 in both
-    if(length(as.numeric(which(apply(resIn, 2, sum)==0)))>0){
-      remInd <- as.numeric(which(apply(resIn, 2, sum)==0))
-      resIn <- resIn[,-remInd]
+    # Remove columns with all zeros
+    resIn <- resIn[, colSums(resIn) > 0]
+    
+    # Check if resIn has at least one positive entry
+    if (all(resIn <= 0)) {
+      stop("The contingency table (counts of codons by geneset) must have at least one positive entry for the chi-squared test.")
     }
     
     #
-    if (length(which(apply(resIn, 2, min) < 5)) > 0) {
+    if (sum(apply(resIn, 2, min) < 5) > 0) {
       if(isTRUE(rem5)){
         rem5Ind <- as.numeric(which(apply(resIn, 2, min) < 5))
         resIn <- resIn[,-rem5Ind]
@@ -369,12 +371,15 @@ codonUsage <- function(ptn,
       #
       residOut <- t(as.matrix(StResiduals))
       
+      max_abs <- ceiling(max(abs(residOut[, 1])))
+      breaks <- sort(c(seq(-max_abs, max_abs, length = 51)))
+      
       pdf(paste(nameOut, paste(colnames(residOut), collapse = "_"), "heatmap.pdf", sep = "_"), width = 20, height = 28, useDingbats = F)
       par(mar = c(10, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
       col <- grDevices::colorRampPalette(c("blue", "white", "red"))(50)
       gplots::heatmap.2(residOut,
         col = col,
-        breaks = c(seq(-ceiling(max(abs(residOut[, 1]))), ceiling(max(abs(residOut[, 1]))), length = 51)),
+        breaks = breaks,
         margins = c(30, 50),
         key = TRUE,
         keysize = 0.5,
@@ -421,7 +426,7 @@ codonUsage <- function(ptn,
           ggplot2::coord_fixed() +
           ggplot2::geom_line(ggplot2::aes(group = AA), col = "gray", linetype = 1, size = 0.2) +
           ggplot2::theme(legend.position = "none") +
-          ggrepel::geom_text_repel(ggplot2::aes(label = AAcodon), size = 3, segment.size = 0.2) +
+          ggrepel::geom_text_repel(ggplot2::aes(label = AAcodon), size = 3, segment.size = 0.2,max.overlaps = 100) +
           ggplot2::labs(
             x = paste(colnames(resIn2)[1], "\n(average codon frequency - per thousand)", "\n is it really per thousand ??", sep = ""),
             y = paste(colnames(resIn2)[2], "\n(average codon frequency - per thousand)", "\n is it really per thousand ??", sep = "")
@@ -450,7 +455,7 @@ codonUsage <- function(ptn,
           ggplot2::coord_fixed() +
           ggplot2::geom_line(ggplot2::aes(group = AA), col = "gray", linetype = 1, size = 0.2) +
           ggplot2::theme(legend.position = "none") +
-          ggrepel::geom_text_repel(ggplot2::aes(label = AAcodon), size = 3, segment.size = 0.2) +
+          ggrepel::geom_text_repel(ggplot2::aes(label = AAcodon), size = 3, segment.size = 0.2,max.overlaps = 100) +
           ggplot2::labs(
             x = paste(colnames(resIn3)[1], "\n(Amino acid normalised codon usage)", sep = ""),
             y = paste(colnames(resIn3)[2], "\n(Amino acid normalised codon usage)", sep = "")
