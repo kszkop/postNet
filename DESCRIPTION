@@ -44,4 +44,3 @@ Imports:
   org.Hs.eg.db (>= 3.16.0),
   org.Mm.eg.db (>= 3.16.0),
   RColorBrewer (>= 1.1-3)
-RoxygenNote: 7.2.3
