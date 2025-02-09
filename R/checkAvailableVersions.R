@@ -1,20 +1,3 @@
-#' Check the available RefSeq release versions for pre-prepared reference sequence annotations
-#'
-#' The \code{checkAvailableVersions} function retrieves and lists the available release versions for the pre-prepared reference sequence
-#' annotations based on the NCBI RefSeq database.
-#'
-#' @usage
-#' checkAvailableVersions(
-#'   species = NULL,
-#' )
-#'
-#' @param species Select the species of interest. Currently, \code{'human'} and \code{'mouse'} are supported.
-#'
-#' @seealso
-#' \code{\link[postNet]{postNetStart}} for details on creating reference sequence annotations.
-#'
-#' @export
-
 checkAvailableVersions <- function(species) {
   # Define the base directory for annotation files
   base_dir <- system.file("extdata/annotation/refseq", package = "postNet")
