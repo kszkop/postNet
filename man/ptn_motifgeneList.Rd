@@ -1,8 +1,7 @@
 \name{ptn_motifgeneList}
 \alias{ptn_motifgeneList}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  ~~function to do ... ~~
+\title{ptn_motifgeneList
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
