@@ -1,8 +1,6 @@
 \name{ptn_sequences}
 \alias{ptn_sequences}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-%%  Retreive the reference sequences from the postNetData obejct
+\title{ptn_sequences
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
