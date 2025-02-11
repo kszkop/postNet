@@ -184,29 +184,29 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 
 \note{The helper functions available to retrieve inputs and results from the \code{postNetData} object are:
   \describe{
-     \item{\link[postNet]{ptn_backround}}
-     \item{\link[postNet]{ptn_codonAnalysis}}
-     \item{\link[postNet]{ptn_codonSelection}}
-     \item{\link[postNet]{ptn_colours}}
-     \item{\link[postNet]{ptn_dataIn}}
-     \item{\link[postNet]{ptn_effect}}
-     \item{\link[postNet]{ptn_features}}
-     \item{\link[postNet]{ptn_GAGE}}
-     \item{\link[postNet]{ptn_geneID}}
-     \item{\link[postNet]{ptn_geneList}}
-     \item{\link[postNet]{ptn_GO}}
-     \item{\link[postNet]{ptn_GSEA}}
-     \item{\link[postNet]{ptn_id}}
-     \item{\link[postNet]{ptn_miRNA_analysis}}
-     \item{\link[postNet]{ptn_miRNA_to_gene}}
-     \item{\link[postNet]{ptn_model}}
-     \item{\link[postNet]{ptn_motifgeneList}}
-     \item{\link[postNet]{ptn_motifSelection}}
-     \item{\link[postNet]{ptn_selectedFeatures}}
-     \item{\link[postNet]{ptn_selection}}
-     \item{\link[postNet]{ptn_sequences}}
-     \item{\link[postNet]{ptn_species}}
-     \item{\link[postNet]{ptn_version}}
+     \item{\link[postNet]{ptn_backround}}{}
+     \item{\link[postNet]{ptn_codonAnalysis}}{}
+     \item{\link[postNet]{ptn_codonSelection}}{}
+     \item{\link[postNet]{ptn_colours}}{}
+     \item{\link[postNet]{ptn_dataIn}}{}
+     \item{\link[postNet]{ptn_effect}}{}
+     \item{\link[postNet]{ptn_features}}{}
+     \item{\link[postNet]{ptn_GAGE}}{}
+     \item{\link[postNet]{ptn_geneID}}{}
+     \item{\link[postNet]{ptn_geneList}}{}
+     \item{\link[postNet]{ptn_GO}}{}
+     \item{\link[postNet]{ptn_GSEA}}{}
+     \item{\link[postNet]{ptn_id}}{}
+     \item{\link[postNet]{ptn_miRNA_analysis}}{}
+     \item{\link[postNet]{ptn_miRNA_to_gene}}{}
+     \item{\link[postNet]{ptn_model}}{}
+     \item{\link[postNet]{ptn_motifgeneList}}{}
+     \item{\link[postNet]{ptn_motifSelection}}{}
+     \item{\link[postNet]{ptn_selectedFeatures}}{}
+     \item{\link[postNet]{ptn_selection}}{}
+     \item{\link[postNet]{ptn_sequences}}{}
+     \item{\link[postNet]{ptn_species}}{}
+     \item{\link[postNet]{ptn_version}}{}
      }
 }
 
