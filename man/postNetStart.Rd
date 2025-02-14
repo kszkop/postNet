@@ -211,7 +211,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 }
 
 \examples{
-\dontrun{
+
 # -----------------------------------------------------------------------
 # Example 1: Using an anota2seq object with built-in RefSeq annotations
 # -----------------------------------------------------------------------
@@ -312,7 +312,7 @@ data("postNetData")
  myBgGenes <- ptn_background(
     x = ptn)
 
-  }
+
 }
 
 
