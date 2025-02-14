@@ -234,11 +234,11 @@ data("postNetData")
       regulationGen = "translation",
       contrastSel = 1,
       selection = "random",
-      setSeed = 123,   # ensures reproducibility of random isoform selection
+      #setSeed = 123,   # ensures reproducibility of random isoform selection
       source = "load",
       species = "human"
     )
-
+\dontrun{
 # -----------------------------------------------------------------------
 # Example 2: Using custom gene lists and background
 # -----------------------------------------------------------------------
@@ -294,7 +294,8 @@ data("postNetData")
    rna_fa_file = "myMouse_rna.fa.gz",
    genomic_gff_file = "myMouse_genomic.gff.gz"
  )
- 
+}
+
 # -----------------------------------------------------------------------
 # Example 4: Retrieving data from the postNetData object
 # -----------------------------------------------------------------------
