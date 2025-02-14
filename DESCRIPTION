@@ -1,6 +1,6 @@
 Package: postNet
 Type: Package
-Title: 
+Title: Post-transcriptional network modeling (postNet)
 Version: 0.0.1
 Author: Krzysztof Szkop <krzysztof.szkop@ki.se>, Ola Larsson <ola.larsson@ki.se>
 Maintainer: Krzysztof Szkop <krzysztof.szkop@ki.se>
