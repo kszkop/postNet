@@ -1,5 +1,6 @@
 \name{postNetStart}
 \alias{postNetStart}
+\alias{postNetData-class}
 \title{Retrieve and format reference sequences and inputs for postNet analysis
 }
 \description{
@@ -57,11 +58,6 @@
     excl = FALSE,
     keepAll = FALSE
   )
-  \details{
-  Typical usages are
-\preformatted{postNetStart(a, b, ...)
-......
-}
 }
 
 \arguments{
