@@ -1,46 +1,27 @@
 \name{ptn_sequences}
 \alias{ptn_sequences}
-\title{ptn_sequences
+\title{Retreive the reference annotation sequences from a postNetData obejct
 }
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+\description{S4 method to retrieve the reference annotation sequences from a \code{postNetData} object.
 }
 \usage{
 ptn_sequences(x, region)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
+  \item{x}{S4 object of class \code{postNetData}.
 }
-  \item{region}{
-%%     ~~Describe \code{region} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+  \item{region}{The sequence region to be accessed. Can be either: \code{"UTR5"}, \code{"CDS"}, or
+  \code{"UTR3"}.
+  }
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\value{
+A character vector containing the reference annotation sequences corresponding to the specified region.
+}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+
 }
 \examples{
 ##---- Should be DIRECTLY executable !! ----

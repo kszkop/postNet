@@ -57,6 +57,11 @@
     excl = FALSE,
     keepAll = FALSE
   )
+  \details{
+  Typical usages are
+\preformatted{postNetStart(a, b, ...)
+......
+}
 }
 
 \arguments{
@@ -309,13 +314,15 @@ data("postNetData")
     region = 'UTR5'
  )
  
+ print(myUTR5seqs[1:2])
+ 
 # To extract the set of genes used as background from a postNetData object ptn:
  myBgGenes <- ptn_background(
     x = ptn)
 
+ print(myBgGenes[1:10])
 
 }
-
 
 \seealso{
 \code{\link[anota2seq]{anota2seqRun}} for obtaining the anota2seq \code{ads} object. \cr
