@@ -1,6 +1,7 @@
-\name{ptn_sequences,postNetData-method}
+\docType{methods}
+\name{ptn_sequences}
 \alias{ptn_sequences,postNetData-method}
-\title{Accessor for the reference annotation sequences in the 'postNetAnnot' slot of a \code{postNetData} object
+\title{Accessor for the reference annotation sequences in the sequence annotation slots of a \code{postNetData} object
 }
 
 \description{The 'postNetAnnot' slot holds the reference sequence annotations as \code{postNetRegion} lists. Each annotation for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ('id', 'geneID', and 'sequence').
