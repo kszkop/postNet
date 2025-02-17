@@ -239,7 +239,7 @@ data("postNetData")
       source = "load",
       species = "human"
     )
-\dontrun{
+
 # -----------------------------------------------------------------------
 # Example 2: Using custom gene lists and background
 # -----------------------------------------------------------------------
@@ -248,23 +248,22 @@ data("postNetData")
 # and custom background can also be provided, along with a regulation effect measurement. 
 
 # Genes of interest should be provided in a named list.
- myGenes <- list(
-   set1 = c("GeneA","GeneB"),
-   set2 = c("GeneC","GeneD")
- )
+ myGenes <- ptn_getExampleGeneList(ads)
+ str(myGenes)
  
 # All gene IDs in the list should be present in the background.
- myBg <- c("GeneA","GeneB","GeneC","GeneD","GeneE", "GeneF")
+ myBg <- ptn_getExampleBg(ads)
+ str(myBg)
  
 # The regulation effect measurement must be named with the same gene IDs
 # present in the background (or the gene list if no custom background is provided).
- myEffect <- c(1.2, -0.8, 0.5, 2.0, 0.3,-2.4)  # Example measure
- names(myEffect) <- mykg
+ myEffect <- ptn_getExampleEffect(ads)
+ str(myEffect)
 
 # Initialize the postNetData object with custom gene lists:
  ptn <- postNetStart(
    geneList = myGenes,
-   geneListcolours = c("#F2A104","#00743F"),
+   geneListcolours = c("#7FB7BE","#DB7F67"),
    customBg = myBg,
    effectMeasure = myEffect,
    selection = "random",
@@ -272,6 +271,7 @@ data("postNetData")
    species = "mouse"
  )
 
+\dontrun{
 # -----------------------------------------------------------------------
 # Example 3: Creating annotation from local RefSeq files
 # -----------------------------------------------------------------------
@@ -309,14 +309,14 @@ data("postNetData")
     x = ptn,
     region = 'UTR5'
  )
+
+ head(myUTR5seqs)
  
- print(myUTR5seqs[1:2])
- 
-# To extract the set of genes used as background from a postNetData object ptn:
- myBgGenes <- ptn_background(
+# To extract the RefSeq annotation release version from postNetData object ptn (if using source = 'load'):
+ myVersion <- ptn_version(
     x = ptn)
 
- print(myBgGenes[1:10])
+ myVersion
 
 }
 
