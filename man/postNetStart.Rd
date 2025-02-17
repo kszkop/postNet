@@ -267,6 +267,7 @@ data("postNetData")
    customBg = myBg,
    effectMeasure = myEffect,
    selection = "random",
+   #setSeed = 123
    source = "load", 
    species = "mouse"
  )

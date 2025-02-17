@@ -12,6 +12,14 @@ checkAvailableVersions(
 \description{
 The \code{checkAvailableVersions} function retrieves and lists the available release versions for the pre-prepared reference sequence annotations based on the NCBI RefSeq database.
 }
+
+\examples{
+
+# See RefSeq release versions of available annotations in the package
+checkAvailableVersions(species = 'human')
+  
+}
+
 \seealso{
 \code{\link[postNet]{postNetStart}} for details on creating reference sequence annotations.
 }

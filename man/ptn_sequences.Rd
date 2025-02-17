@@ -39,6 +39,7 @@ A character vector containing the reference annotation sequences corresponding t
    customBg = myBg,
    effectMeasure = myEffect,
    selection = "random",
+   #setSeed = 123
    source = "load", 
    species = "human"
  )
