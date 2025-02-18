@@ -1,67 +1,56 @@
+\docType{methods}
 \name{ptn_sequences}
-\alias{ptn_sequences}
-\title{ptn_sequences
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
-\usage{
-ptn_sequences(x, region)
-}
-%- maybe also 'usage' for other objects documented here.
-\arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
-}
-  \item{region}{
-%%     ~~Describe \code{region} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+\alias{ptn_sequences,postNetData-method}
+\title{Accessor for the reference annotation sequences in the sequence annotation slots of a \code{postNetData} object
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\description{The 'postNetAnnot' slot holds the reference sequence annotations as \code{postNetRegion} lists. Each annotation for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ('id', 'geneID', and 'sequence').
+}
+
+\usage{
+\S4method{ptn_sequences}{postNetData}(x, region)
+}
+
+\arguments{
+  \item{x}{a \code{postNetData} object.
+  }
+
+  \item{region}{The sequence region to be accessed. Can be either: \code{"UTR5"}, \code{"CDS"}, or
+  \code{"UTR3"}.
+  }
+}
+
+\value{
+A character vector containing the reference annotation sequences corresponding to the specified region.
+}
+
+\examples{
+
+# load and create example data:
+ data("postNetData")
+
+ myGenes <- ptn_getExampleGeneList(ads)
+ myBg <- ptn_getExampleBg(ads)
+ myEffect <- ptn_getExampleEffect(ads)
+
+# Initialize the postNetData object with custom gene lists:
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   #setSeed = 123
+   source = "load", 
+   species = "human"
+ )
+
+# Access the 5'UTR sequences from the postNetData object
+  UTR5seqs <- ptn_sequences(ptn, 'UTR5')
+  head(UTR5seqs)
+  
+}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link[postNet]{postNetStart}} for obtaining the reference sequence annotations from different sources.
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-new("standardGeneric", .Data = function (x, region) 
-standardGeneric("ptn_sequences"), generic = structure("ptn_sequences", package = "postNet"), 
-    package = "postNet", group = list(), valueClass = character(0), 
-    signature = c("x", "region"), default = NULL, skeleton = (function (x, 
-        region) 
-    stop(gettextf("invalid call in method dispatch to '\%s' (no default method)", 
-        "ptn_sequences"), domain = NA))(x, region))
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

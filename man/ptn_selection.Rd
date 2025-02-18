@@ -1,63 +1,53 @@
+\docType{methods}
 \name{ptn_selection}
-\alias{ptn_selection}
-\title{Retrieve the isoform selection parameter from the postNetData object
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
-\usage{
-ptn_selection(x)
-}
-%- maybe also 'usage' for other objects documented here.
-\arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+\alias{ptn_selection,postNetData-method}
+\title{Accessor for the isoform selection parameter from the 'selection' slot of a \code{postNetData} object
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\description{The 'selection' slot holds the method chosen to select which mRNA isoforms are used in analyses. These can be one
+  of: \code{'longest'}, \code{'shortest'}, or \code{'random'}.
+}
+
+\usage{
+\S4method{ptn_selection}{postNetData}(x)
+}
+
+\arguments{
+  \item{x}{a \code{postNetData} object.
+  }
+}
+
+\value{A character specifying the method of selecting mRNA isoforms. Can be either \code{'longest'}, \code{'shortest'}, 
+or \code{'random'})
+}
+
+\examples{
+
+# load and create example data:
+ data("postNetData")
+
+ myGenes <- ptn_getExampleGeneList(ads)
+ myBg <- ptn_getExampleBg(ads)
+ myEffect <- ptn_getExampleEffect(ads)
+
+# Initialize the postNetData object with custom gene lists:
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   #setSeed = 123
+   source = "load", 
+   species = "human"
+ )
+
+# Access mRNA isoform selection method
+  ptn_selection(ptn)
+
+}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link[postNet]{postNetStart}} for details on the different mRNA isoform selection options.
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-new("standardGeneric", .Data = function (x) 
-standardGeneric("ptn_selection"), generic = structure("ptn_selection", package = "postNet"), 
-    package = "postNet", group = list(), valueClass = character(0), 
-    signature = "x", default = NULL, skeleton = (function (x) 
-    stop(gettextf("invalid call in method dispatch to '\%s' (no default method)", 
-        "ptn_selection"), domain = NA))(x))
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

@@ -1705,3 +1705,56 @@ getOrgNames <- function(newN, namesDf){
     outN <- namesDf$originalNames[match(newN, namesDf$newNames)]
     return(outN)
 }
+
+
+# Extra functions to get customBg, geneList, and effectMeasure from an anota2seq object for demonstrating
+# how to run postNet in geneList mode.
+
+ptn_getExampleBg <-  function(ads = NULL){
+  if(!is.null(ads)){
+    bg <- row.names(ads@dataP)
+  }
+  return(bg)
+}
+
+
+ptn_getExampleGeneList <- function(ads=NULL, 
+                                   regulation=c('translationUp','translationDown'),
+                                   contrast = c(1,1)){
+  resOut <- list()
+  #Extract all results
+  if(!is.null(ads)){
+    results <- anota2seqGetDirectedRegulations(ads)
+    #
+    if (!is.null(regulation)){
+      res <- vector("list", length = length(regulation))
+      
+      for(i in unique(contrast)){
+        resTmp <- results[[i]][regulation[contrast==i]]
+        res[which(contrast==i)] <- resTmp
+      }
+      names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
+    } else {
+      res <- list()
+      for(i in 1:length(results)){
+        resTmp <- results[[i]]
+        names(resTmp) <- paste(names(resTmp), paste('c', i,sep=''), sep="_")
+        res <- append(res, resTmp)
+      }
+    } 
+  } 
+  resOut <- res[lapply(res,length)>3]
+  return(resOut)
+}
+
+
+ptn_getExampleEffect <- function(ads = NULL,
+                                 regulationGen = 'translation',
+                                 contrastSel = 1){
+  effM <- as.numeric()
+  regTmp <- regulationGen
+  scOut <- anota2seq::anota2seqGetOutput(ads, output = "singleDf", selContrast = contrastSel, getRVM = TRUE)
+  effM <- scOut[, grepl(paste(regTmp, "apvEff", sep = "."), colnames(scOut))]
+  names(effM) <- scOut$identifier
+  return(effM)
+}

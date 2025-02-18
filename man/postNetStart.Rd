@@ -1,5 +1,6 @@
 \name{postNetStart}
 \alias{postNetStart}
+\alias{postNetData-class}
 \title{Retrieve and format reference sequences and inputs for postNet analysis
 }
 \description{
@@ -211,7 +212,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 }
 
 \examples{
-\dontrun{
+
 # -----------------------------------------------------------------------
 # Example 1: Using an anota2seq object with built-in RefSeq annotations
 # -----------------------------------------------------------------------
@@ -234,7 +235,7 @@ data("postNetData")
       regulationGen = "translation",
       contrastSel = 1,
       selection = "random",
-      setSeed = 123,   # ensures reproducibility of random isoform selection
+      #setSeed = 123,   # ensures reproducibility of random isoform selection
       source = "load",
       species = "human"
     )
@@ -247,30 +248,31 @@ data("postNetData")
 # and custom background can also be provided, along with a regulation effect measurement. 
 
 # Genes of interest should be provided in a named list.
- myGenes <- list(
-   set1 = c("GeneA","GeneB"),
-   set2 = c("GeneC","GeneD")
- )
+ myGenes <- ptn_getExampleGeneList(ads)
+ str(myGenes)
  
 # All gene IDs in the list should be present in the background.
- myBg <- c("GeneA","GeneB","GeneC","GeneD","GeneE", "GeneF")
+ myBg <- ptn_getExampleBg(ads)
+ str(myBg)
  
 # The regulation effect measurement must be named with the same gene IDs
 # present in the background (or the gene list if no custom background is provided).
- myEffect <- c(1.2, -0.8, 0.5, 2.0, 0.3,-2.4)  # Example measure
- names(myEffect) <- mykg
+ myEffect <- ptn_getExampleEffect(ads)
+ str(myEffect)
 
 # Initialize the postNetData object with custom gene lists:
  ptn <- postNetStart(
    geneList = myGenes,
-   geneListcolours = c("#F2A104","#00743F"),
+   geneListcolours = c("#7FB7BE","#DB7F67"),
    customBg = myBg,
    effectMeasure = myEffect,
    selection = "random",
+   #setSeed = 123
    source = "load", 
    species = "mouse"
  )
 
+\dontrun{
 # -----------------------------------------------------------------------
 # Example 3: Creating annotation from local RefSeq files
 # -----------------------------------------------------------------------
@@ -294,7 +296,8 @@ data("postNetData")
    rna_fa_file = "myMouse_rna.fa.gz",
    genomic_gff_file = "myMouse_genomic.gff.gz"
  )
- 
+}
+
 # -----------------------------------------------------------------------
 # Example 4: Retrieving data from the postNetData object
 # -----------------------------------------------------------------------
@@ -307,14 +310,16 @@ data("postNetData")
     x = ptn,
     region = 'UTR5'
  )
+
+ head(myUTR5seqs)
  
-# To extract the set of genes used as background from a postNetData object ptn:
- myBgGenes <- ptn_background(
+# To extract the RefSeq annotation release version from postNetData object ptn (if using source = 'load'):
+ myVersion <- ptn_version(
     x = ptn)
 
-  }
-}
+ myVersion
 
+}
 
 \seealso{
 \code{\link[anota2seq]{anota2seqRun}} for obtaining the anota2seq \code{ads} object. \cr
