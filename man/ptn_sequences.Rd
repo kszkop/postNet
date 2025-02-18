@@ -4,7 +4,7 @@
 \title{Accessor for the reference annotation sequences in the sequence annotation slots of a \code{postNetData} object
 }
 
-\description{The 'postNetAnnot' slot holds the reference sequence annotations as \code{postNetRegion} lists. Each annotation for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ('id', 'geneID', and 'sequence').
+\description{The "postNetAnnot" slot holds the reference sequence annotations as \code{postNetRegion} lists. Each annotation for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ("id", "geneID", and "sequence"). The \code{ptn_sequences} function retrieves sequences from the specified mRNA region. 
 }
 
 \usage{
@@ -46,11 +46,11 @@ A character vector containing the reference annotation sequences corresponding t
  )
 
 # Access the 5'UTR sequences from the postNetData object
-  UTR5seqs <- ptn_sequences(ptn, 'UTR5')
-  head(UTR5seqs)
+  UTR5seqs <- ptn_sequences(ptn, "UTR5")
+  str(UTR5seqs)
   
 }
 
 \seealso{
-\code{\link[postNet]{postNetStart}} for obtaining the reference sequence annotations from different sources.
+\code{\link[postNet]{postNetStart}} for more information on obtaining reference sequence annotations from different sources.
 }

@@ -7,7 +7,7 @@ checkAvailableVersions(
 )
 }
 \arguments{
-\item{species}{Select the species of interest. Currently, \code{'human'} and \code{'mouse'} are supported.}
+\item{species}{Select the species of interest. Currently, \code{"human"} and \code{"mouse"} are supported.}
 }
 \description{
 The \code{checkAvailableVersions} function retrieves and lists the available release versions for the pre-prepared reference sequence annotations based on the NCBI RefSeq database.

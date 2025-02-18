@@ -1,9 +1,11 @@
 \docType{methods}
 \name{ptn_version}
 \alias{ptn_version,postNetData-method}
-\title{Accessor for the RefSeq annotation release version from the 'version' slot of a \code{postNetData} object
+\title{Accessor for the RefSeq annotation release version from the "version" slot of a \code{postNetData} object
 }
-\description{The 'version' slot holds the reslease version number of the RefSeq annotations used to generate the reference sequences. Currently, this only applies when \code{source = 'load'} in the \link[postNet]{postNetStart} function. 
+
+\description{The "version" slot holds the reslease version number of the RefSeq annotations used to generate the reference
+sequences. Currently, this only applies when \code{source = 'load'} in the \link[postNet]{postNetStart} function. 
 }
 
 \usage{

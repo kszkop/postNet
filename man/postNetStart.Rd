@@ -226,7 +226,7 @@ data("postNetData")
 # Feature integration analysis will model changes in translation
 # efficiency.
 
-# Initialize the postNetData object, where 'ads' is an Anota2seqDataSet object
+# Initialize the postNetData object, where "ads" is an Anota2seqDataSet object
 # resulting from an anota2seqRun call:
     ptn <- postNetStart(
       ads = ads,
@@ -269,7 +269,7 @@ data("postNetData")
    selection = "random",
    #setSeed = 123
    source = "load", 
-   species = "mouse"
+   species = "human"
  )
 
 \dontrun{
@@ -308,12 +308,12 @@ data("postNetData")
 # To extract reference annotation sequences for 5'UTRs from a postNetData object ptn:
  myUTR5seqs <- ptn_sequences(
     x = ptn,
-    region = 'UTR5'
+    region = "UTR5"
  )
 
- head(myUTR5seqs)
+ str(myUTR5seqs)
  
-# To extract the RefSeq annotation release version from postNetData object ptn (if using source = 'load'):
+# To extract the RefSeq annotation release version from postNetData object ptn (if using source = "load"):
  myVersion <- ptn_version(
     x = ptn)
 

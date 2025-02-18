@@ -1,63 +1,49 @@
+\docType{methods}
 \name{ptn_background}
-\alias{ptn_background}
-\title{Retrieve the background gene list from the postNetData object
+\alias{ptn_background,postNetData-method}
+\title{Accessor for the gene set used as background from the "background" slot of a \code{postNetData} object
 }
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+\description{The "background" slot holds a character vector of gene IDs used as the background in statistical comparisons performed in \pkg{postNet} analyses.
 }
 \usage{
-ptn_background(x)
-}
-%- maybe also 'usage' for other objects documented here.
-\arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+\S4method{ptn_background}{postNetData}(x)
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\arguments{
+  \item{x}{a \code{postNetData} object.
+  }
+}
+
+\value{A character vector containing the gene IDs for the set of genes used a background.
+}
+
+\examples{
+
+# load and create example data:
+ data("postNetData")
+
+ myGenes <- ptn_getExampleGeneList(ads)
+ myBg <- ptn_getExampleBg(ads)
+ myEffect <- ptn_getExampleEffect(ads)
+
+# Initialize the postNetData object with custom gene lists:
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   #setSeed = 123
+   source = "load", 
+   species = "human"
+ )
+
+# Access the set of background genes used in postNet analyses
+  myBg <- ptn_background(ptn)
+  str(myBg)
+
+}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link[postNet]{postNetStart}} for details on background gene sets.
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-new("standardGeneric", .Data = function (x) 
-standardGeneric("ptn_background"), generic = structure("ptn_background", package = "postNet"), 
-    package = "postNet", group = list(), valueClass = character(0), 
-    signature = "x", default = NULL, skeleton = (function (x) 
-    stop(gettextf("invalid call in method dispatch to '\%s' (no default method)", 
-        "ptn_background"), domain = NA))(x))
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

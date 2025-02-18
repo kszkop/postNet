@@ -1,11 +1,11 @@
 \docType{methods}
 \name{ptn_selection}
 \alias{ptn_selection,postNetData-method}
-\title{Accessor for the isoform selection parameter from the 'selection' slot of a \code{postNetData} object
+\title{Accessor for the isoform selection parameter from the "selection" slot of a \code{postNetData} object
 }
 
-\description{The 'selection' slot holds the method chosen to select which mRNA isoforms are used in analyses. These can be one
-  of: \code{'longest'}, \code{'shortest'}, or \code{'random'}.
+\description{The "selection" slot holds the method chosen to select which mRNA isoforms are used in analyses. These can be one
+  of: \code{"longest"}, \code{"shortest"}, or \code{"random"}.
 }
 
 \usage{
@@ -17,8 +17,8 @@
   }
 }
 
-\value{A character specifying the method of selecting mRNA isoforms. Can be either \code{'longest'}, \code{'shortest'}, 
-or \code{'random'})
+\value{A character specifying the method of selecting mRNA isoforms. Can be either \code{"longest"}, \code{"shortest"}, 
+or \code{"random"}.
 }
 
 \examples{

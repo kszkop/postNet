@@ -1,63 +1,52 @@
+\docType{methods}
 \name{ptn_species}
-\alias{ptn_species}
-\title{Retrieve the species from the postNetData object
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
-\usage{
-ptn_species(x)
-}
-%- maybe also 'usage' for other objects documented here.
-\arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+\alias{ptn_species,postNetData-method}
+\title{Accessor for the "species" slot of a \code{postNetData} object
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\description{The "species" slot holds the source species of the RefSeq sequence annotations. Currently \code{"human"} and 
+\code{"mouse"} are available if \code{source} is \code{"load"}, \code{"create"}, \code{"createFromSourceFiles"}, or 
+\code{"createFromFasta"}. 
+}
+
+\usage{
+\S4method{ptn_species}{postNetData}(x)
+}
+
+\arguments{
+  \item{x}{a \code{postNetData} object.
+  }
+}
+
+\value{A character specifying the species of origin for the RefSeq annotations used to generate the reference sequences.
+}
+
+\examples{
+
+# load and create example data:
+ data("postNetData")
+
+ myGenes <- ptn_getExampleGeneList(ads)
+ myBg <- ptn_getExampleBg(ads)
+ myEffect <- ptn_getExampleEffect(ads)
+
+# Initialize the postNetData object with custom gene lists:
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   #setSeed = 123
+   source = "load", 
+   species = "human"
+ )
+
+# Access species of origin for the RefSeq annotation used to create the reference sequences
+  ptn_species(ptn)
+
+}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link[postNet]{postNetStart}} for details on available species, and providing custom annotations.
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-new("standardGeneric", .Data = function (x) 
-standardGeneric("ptn_species"), generic = structure("ptn_species", package = "postNet"), 
-    package = "postNet", group = list(), valueClass = character(0), 
-    signature = "x", default = NULL, skeleton = (function (x) 
-    stop(gettextf("invalid call in method dispatch to '\%s' (no default method)", 
-        "ptn_species"), domain = NA))(x))
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
