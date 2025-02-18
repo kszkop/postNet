@@ -20,7 +20,8 @@ postNetStart <- function(ads = NULL,
                                 adjObj = NULL,
                                 region_adj = NULL,
                                 excl = FALSE,
-                                keepAll = FALSE) {
+                                keepAll = FALSE,
+                                setSeed = NULL) {
 
   #
   if(!is.null(ads) && !is.null(geneList)){
@@ -383,10 +384,14 @@ postNetStart <- function(ads = NULL,
   }
   
   ####
-  #intersect(outDB$
-  
-  
   annotBg <- gSel(annot = outDB, ads = ads, customBg = customBg, geneList = geneList)
+  if(nrow(annotBg)==0){
+    stop('Annotation geneIDs are not compatibile with gene IDs in the background')
+  }
+  if(length(setdiff(customBg, outDB$geneID))>0){
+    warning(paste('There are' length(setdiff(customBg, outDB$geneID)), ' genes in the backgorund that are not in the annotation. Consider to use more compatibile annotation with your analysis')
+  }
+  
   #
   if(!is.null(adjObj)){
     annotBg <- adjustSeq(annot=annotBg, region_adj = region_adj, adjObj = adjObj, keepAll =  keepAll, excl = excl)
@@ -400,7 +405,7 @@ postNetStart <- function(ads = NULL,
   
   for(reg in c('UTR5','CDS','UTR3')){
     annotTmp <- regSel(annot = annotBg, region = reg)
-    annotBgSelTmp <- isoSel(annot = annotTmp, method = selection)
+    annotBgSelTmp <- isoSel(annot = annotTmp, method = selection, setSeed = setSeed)
     
     RegionTmp <- new("postNetRegion",
                      id = annotBgSelTmp$id,
@@ -418,6 +423,13 @@ postNetStart <- function(ads = NULL,
   
   ##
   genesIn <- resSel(ads = ads, regulation = regulation, contrast = contrast, geneList = geneList)
+
+  if(length(intersect(outDB$geneID, as.character(unlist(genesIn))))==0){
+    stop('Annotation geneIDs are not compatibile with gene IDs in the provided gene list/anota2seq object')
+  }
+  if(length(setdiff(as.character(unlist(genesIn)), outDB$geneID))>0){
+    warning(paste('There are' length(setdiff(as.character(unlist(genesIn)))), outDB$geneID)), ' genes in the gene list/anota2seq object that are not in the annotation. Consider to use more compatibile annotation with your analysis')
+  }
   
   #add here to check numbers of genes
   #if(length(resOut)==0){
