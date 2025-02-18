@@ -516,10 +516,22 @@ calc_motif <- function(x, motifIn, dist, unit){
 }
 
 #Combine 
-calc_g4 <- function(x,min_score){
-  seqTmp <- DNAString(x)
-  predTmp <- pqsfinder::pqsfinder(seqTmp, min_score = min_score, strand = '+', verbose=F)
-  nMot <- nrow(predTmp@elementMetadata)
+calc_g4 <- function(x, min_score, unit){
+    seqTmp <- DNAString(x)
+    predTmp <- pqsfinder::pqsfinder(seqTmp, min_score = min_score, strand = '+')
+    if(nrow(predTmp@elementMetadata)>0){
+      if(unit == 'number'){
+        nMot <- nrow(predTmp@elementMetadata)
+      } else if (unit == 'position') {
+        nMot <- list()
+        #nMot[["start"]] <- as.numeric(start(gROut@ranges))
+        #nMot[["end"]] <- as.numeric(end(gROut@ranges)) + lenTmp - 1
+        nMot[["start"]] <- as.numeric(predTmp@ranges@start)
+        nMot[["end"]] <- as.numeric(predTmp@ranges@start) + as.numeric(predTmp@ranges@width) -1
+      }
+    } else {
+      nMot <- ifelse(unit == "number", 0, NA)
+    }
   return(nMot)
 }
 
