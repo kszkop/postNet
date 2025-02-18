@@ -384,12 +384,11 @@ postNetStart <- function(ads = NULL,
   }
   
   ####
-  if(setdiff(customBg, outDB$geneID)>0)
   annotBg <- gSel(annot = outDB, ads = ads, customBg = customBg, geneList = geneList)
   if(nrow(annotBg)==0){
     stop('Annotation geneIDs are not compatibile with gene IDs in the background')
   }
-  if(setdiff(customBg, outDB$geneID)>0){
+  if(length(setdiff(customBg, outDB$geneID))>0){
     warning(paste('There are' length(setdiff(customBg, outDB$geneID)), ' genes in the backgorund that are not in the annotation. Consider to use more compatibile annotation with your analysis')
   }
   
@@ -428,7 +427,7 @@ postNetStart <- function(ads = NULL,
   if(length(intersect(outDB$geneID, as.character(unlist(genesIn))))==0){
     stop('Annotation geneIDs are not compatibile with gene IDs in the provided gene list/anota2seq object')
   }
-  if(setdiff(as.character(unlist(genesIn)))), outDB$geneID)>0){
+  if(length(setdiff(as.character(unlist(genesIn)), outDB$geneID))>0){
     warning(paste('There are' length(setdiff(as.character(unlist(genesIn)))), outDB$geneID)), ' genes in the gene list/anota2seq object that are not in the annotation. Consider to use more compatibile annotation with your analysis')
   }
   
