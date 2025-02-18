@@ -74,6 +74,8 @@ contentMotifs <- function(ptn,
   for(reg in region){
     
     seqTmp <- ptn_sequences(ptn,region=reg)
+    names(seqTmp) <- ptn_geneID(ptn, region=reg)
+
     #
     if (tolower(seqType) == "protein") {
       if(!is_by_3(seqTmp)){
@@ -102,7 +104,7 @@ contentMotifs <- function(ptn,
         if(!check_number(min_score)){
           stop("please provide numeric minimal score for g-quadruplexes selection")
         }
-        motifOutTmp <- sapply(seqTmp, calc_g4, min_score = min_score)
+        motifOutTmp <- sapply(seqTmp, calc_g4, min_score = min_score, unit = unitOut)
       } else {
         motif <- toupper(motif)
         #

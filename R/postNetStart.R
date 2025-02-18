@@ -383,6 +383,9 @@ postNetStart <- function(ads = NULL,
   }
   
   ####
+  #intersect(outDB$
+  
+  
   annotBg <- gSel(annot = outDB, ads = ads, customBg = customBg, geneList = geneList)
   #
   if(!is.null(adjObj)){

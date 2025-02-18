@@ -1,4 +1,4 @@
-## anota2seqUtils S4 class implementation
+## postNet S4 class implementation
 setClassUnion("characterOrNULL",members=c("character", "NULL"))
 setClassUnion("numericOrNULL",members=c("numeric", "NULL"))
 setClassUnion("listOrNULL",members=c("list", "NULL"))
