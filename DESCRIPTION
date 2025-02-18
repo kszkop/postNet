@@ -1,8 +1,8 @@
 Package: postNet
 Type: Package
-Title: 
+Title: Post-transcriptional network modeling
 Version: 0.0.1
-Author: Krzysztof Szkop <krzysztof.szkop@ki.se>, Ola Larsson <ola.larsson@ki.se>
+Author: Krzysztof Szkop <krzysztof.szkop@ki.se>, Kathleen Watt <kathleen.watt@ki.se>, Ola Larsson <ola.larsson@ki.se>
 Maintainer: Krzysztof Szkop <krzysztof.szkop@ki.se>
 Description: What the package does (one paragraph).
 License: GPL-3
@@ -43,7 +43,8 @@ Imports:
   fgsea (>= 1.24.0),
   org.Hs.eg.db (>= 3.16.0),
   org.Mm.eg.db (>= 3.16.0),
-  RColorBrewer (>= 1.1-3),
+  RColorBrewer (>= 1.1-3)
   httr (>= 1.4.7),
   rvest (>= 1.0.3)
+biocViews: GeneExpression, GeneRegulation, Network, Regression, RNASeq, Sequencing
 
