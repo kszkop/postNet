@@ -1,9 +1,9 @@
 \docType{methods}
 \name{ptn_geneID}
-\alias{ptn_geneID}
+\alias{ptn_geneID,postNetData-method}
 \title{Accessor for the gene IDs in the "geneID" slot of a \code{postNetData} object
 }
-\description{The "postNetAnnot" slot holds the reference sequence annotations as \code{postNetRegion} lists. Each annotation for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ("id", "geneID", and "sequence"). The \code{ptn_geneID} function retrieves the gene IDs for sequences from the specified mRNA region. 
+\description{Retrieve the gene IDs for the reference annotation sequences from a \code{postNetData} object. Each annotation for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ("id", "geneID", and "sequence"). The \code{ptn_geneID} function retrieves the gene IDs for sequences from the specified mRNA region. 
 }
 \usage{
 \S4method{ptn_geneID}{postNetData}(x, region)
@@ -50,5 +50,6 @@ mRNA region.
 }
 
 \seealso{
-\code{\link[postNet]{postNetStart}} for more information on reference sequence annotations.
+\code{\link[postNet]{postNetStart}} for more information on reference sequence annotations. \cr
+\code{\link[postNet]{postNetData-class}}
 }

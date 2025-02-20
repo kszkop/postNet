@@ -4,12 +4,7 @@
 \alias{postNetData-class}
 \alias{ptn_codonAnalysis,postNetData-method}
 \alias{ptn_codonSelection,postNetData-method}
-\alias{ptn_colours,postNetData-method}
-\alias{ptn_dataIn,postNetData-method}
-\alias{ptn_effect,postNetData-method}
 \alias{ptn_features,postNetData-method}
-\alias{ptn_geneID,postNetData-method}
-\alias{ptn_geneList,postNetData-method}
 \alias{ptn_motifgeneList,postNetData-method}
 \alias{ptn_motifSelection,postNetData-method}
 \alias{ptn_networkGraph,postNetData-method}

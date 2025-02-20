@@ -3,7 +3,7 @@
 \alias{ptn_id,postNetData-method}
 \title{Accessor for the transcript IDs in the "id" slot of a \code{postNetData} object
 }
-\description{The "postNetAnnot" slot holds the reference sequence annotations as \code{postNetRegion} lists. Each annotation for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ("id", "geneID", and "sequence"). The \code{ptn_id} function retrieves the transcript IDs for sequences from the specified mRNA region. 
+\description{Retrieve the transcript IDs for the reference annotation sequences from a \code{postNetData} object. Each annotation for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ("id", "geneID", and "sequence"). The \code{ptn_id} function retrieves the transcript IDs for sequences from the specified mRNA region. 
 }
 
 \usage{
@@ -51,5 +51,6 @@ mRNA region.
 }
 
 \seealso{
-\code{\link[postNet]{postNetStart}} for more information on reference sequence annotations.
+\code{\link[postNet]{postNetStart}} for more information on reference sequence annotations. \cr
+\code{\link[postNet]{postNetData-class}}
 }

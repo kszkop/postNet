@@ -4,9 +4,7 @@
 \title{Accessor for the "species" slot of a \code{postNetData} object
 }
 
-\description{The "species" slot holds the source species of the RefSeq sequence annotations. Currently \code{"human"} and 
-\code{"mouse"} are available if \code{source} is \code{"load"}, \code{"create"}, \code{"createFromSourceFiles"}, or 
-\code{"createFromFasta"}. 
+\description{Retrieve the "species" slot from a \code{postNetData} object, which holds the source species of the RefSeq sequence annotations. Currently \code{"human"} and \code{"mouse"} are available if \code{source} is \code{"load"}, \code{"create"}, \code{"createFromSourceFiles"}, or \code{"createFromFasta"}. 
 }
 
 \usage{
@@ -47,5 +45,6 @@
 }
 
 \seealso{
-\code{\link[postNet]{postNetStart}} for details on available species, and providing custom annotations.
+\code{\link[postNet]{postNetStart}} for details on available species, and providing custom annotations. \cr
+\code{\link[postNet]{postNetData-class}}
 }

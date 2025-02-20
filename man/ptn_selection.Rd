@@ -4,8 +4,7 @@
 \title{Accessor for the isoform selection parameter from the "selection" slot of a \code{postNetData} object
 }
 
-\description{The "selection" slot holds the method chosen to select which mRNA isoforms are used in analyses. These can be one
-  of: \code{"longest"}, \code{"shortest"}, or \code{"random"}.
+\description{Retrieve the "selection" slot a \code{postNetData} object, which holds the method chosen to select which mRNA isoforms are used in analyses. These can be one of: \code{"longest"}, \code{"shortest"}, or \code{"random"}.
 }
 
 \usage{
@@ -47,6 +46,7 @@ or \code{"random"}.
 }
 
 \seealso{
-\code{\link[postNet]{postNetStart}} for details on the different mRNA isoform selection options.
+\code{\link[postNet]{postNetStart}} for details on the different mRNA isoform selection options. \cr
+\code{\link[postNet]{postNetData-class}}
 }
 

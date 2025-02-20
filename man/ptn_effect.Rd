@@ -1,63 +1,50 @@
+\docType{methods}
 \name{ptn_effect}
-\alias{ptn_effect}
-\title{Retrieve the regulatory effect measurement from the postNetData object
-}
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
-}
-\usage{
-ptn_effect(x)
-}
-%- maybe also 'usage' for other objects documented here.
-\arguments{
-  \item{x}{
-%%     ~~Describe \code{x} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
+\alias{ptn_effect,postNetData-method}
+\title{Accessor for the regulatory effect measurement from the "effect" slot of a \code{postNetData} object
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\description{Retrieve the regulatory effect measurement from a \code{postNetData} object. If using \code{geneList}, the "effect" slot hold a user-provided named numeric vector corresponding to a custom regulation effect measurement. If using \code{ads}, the values in the "effect" slot will correspond to the selected \code{regulationGen} from \code{ads}. 
+}
+
+\usage{
+\S4method{ptn_effect}{postNetData}(x)
+}
+
+\arguments{
+  \item{x}{a \code{postNetData} object.
+  }
+}
+
+\value{A numeric vector with names corresponding to the gene/transcript IDs in \code{geneList} or \code{ads}.
+}
+
+\examples{
+
+# load and create example data:
+ data(postNetExample)
+
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+# Initialize the postNetData object with custom gene lists:
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   source = "load", 
+   species = "human"
+ )
+
+# Access version of the RefSeq annotation used to create the reference sequences
+  myEffect_out <- ptn_effect(ptn)
+  str(myEffect_out)
+}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link[postNet]{postNetStart}} for details on selecting or providing the regulatory effect measurement. \cr
+\code{\link[postNet]{postNetData-class}}
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-new("standardGeneric", .Data = function (x) 
-standardGeneric("ptn_effect"), generic = structure("ptn_effect", package = "postNet"), 
-    package = "postNet", group = list(), valueClass = character(0), 
-    signature = "x", default = NULL, skeleton = (function (x) 
-    stop(gettextf("invalid call in method dispatch to '\%s' (no default method)", 
-        "ptn_effect"), domain = NA))(x))
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

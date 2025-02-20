@@ -51,5 +51,6 @@ A character vector containing the reference annotation sequences corresponding t
 }
 
 \seealso{
-\code{\link[postNet]{postNetStart}} for more information on obtaining reference sequence annotations from different sources.
+\code{\link[postNet]{postNetStart}} for more information on obtaining reference sequence annotations from different sources. \cr
+\code{\link[postNet]{postNetData-class}}
 }

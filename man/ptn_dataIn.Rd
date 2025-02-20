@@ -1,9 +1,8 @@
 \name{ptn_dataIn}
 \alias{ptn_dataIn}
-\title{Retrieve input data from the postNetData object
+\title{Accessor for the "background", "geneList", "effect", and "colours" slots of a \code{postNetData} object
 }
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+\description{Retrieve the "background", "geneList", "effect", and "colours" slots from a \code{postNetData} object. 
 }
 \usage{
 ptn_dataIn(x)

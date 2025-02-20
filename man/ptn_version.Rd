@@ -4,8 +4,7 @@
 \title{Accessor for the RefSeq annotation release version from the "version" slot of a \code{postNetData} object
 }
 
-\description{The "version" slot holds the reslease version number of the RefSeq annotations used to generate the reference
-sequences. Currently, this only applies when \code{source = 'load'} in the \link[postNet]{postNetStart} function. 
+\description{Retrieve the "version" slot from a \code{postNetData} object, which holds the reslease version number of the RefSeq annotations used to generate the reference sequences. Currently, this only applies when \code{source = 'load'} in the \link[postNet]{postNetStart} function. 
 }
 
 \usage{
@@ -46,6 +45,7 @@ sequences. Currently, this only applies when \code{source = 'load'} in the \link
 }
 
 \seealso{
-\code{\link[postNet]{postNetStart}} for details on selecting the appropriate reference sequence annotation versions.
+\code{\link[postNet]{postNetStart}} for details on selecting the appropriate reference sequence annotation versions. \cr
+\code{\link[postNet]{postNetData-class}}
 }
 
