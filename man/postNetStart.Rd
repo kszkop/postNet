@@ -222,8 +222,22 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 # Example 1: Using an anota2seq object with built-in RefSeq annotations
 # -----------------------------------------------------------------------
 
-# load example data with an Anota2seqDataSet object:
-data("postNetExample")
+# load example data to create an Anota2seqDataSet object:
+data(anota2seq_data, package = 'anota2seq')
+
+# Initialize Anota2seqDataSet (see anota2seq vignette for details)
+ads <- anota2seq::anota2seqDataSetFromMatrix(
+    dataP = anota2seq_data_P[1:100,],
+    dataT = anota2seq_data_T[1:100,],
+    phenoVec = anota2seq_pheno_vec,
+    batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
+    dataType = "RNAseq",
+    normalize = TRUE)
+    
+# Run analysis of differential translation
+ads <- anota2seq::anota2seqAnalyze(ads, 
+                                     analysis = "translation")
+
 
 # This postNet analysis will allow identification of mRNA features, 
 # and comparison between translationally activated and suppressed genes.
@@ -252,17 +266,20 @@ data("postNetExample")
 # Instead of using the results of an anota2seq analysis, gene sets of interest
 # and custom background can also be provided, along with a regulation effect measurement. 
 
+# Load example data:
+data(postNetExample)
+
 # Genes of interest should be provided in a named list.
- myGenes <- ptn_getExampleGeneList(ads)
+ myGenes <- postNetExample$geneList
  str(myGenes)
  
 # All gene IDs in the list should be present in the background.
- myBg <- ptn_getExampleBg(ads)
+ myBg <- postNetExample$background
  str(myBg)
  
 # The regulation effect measurement must be named with the same gene IDs
 # present in the background (or the gene list if no custom background is provided).
- myEffect <- ptn_getExampleEffect(ads)
+ myEffect <- postNetExample$effect
  str(myEffect)
 
 # Initialize the postNetData object with custom gene lists:

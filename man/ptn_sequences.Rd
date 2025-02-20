@@ -27,11 +27,11 @@ A character vector containing the reference annotation sequences corresponding t
 \examples{
 
 # load and create example data:
- data("postNetData")
+ data(postNetExample)
 
- myGenes <- ptn_getExampleGeneList(ads)
- myBg <- ptn_getExampleBg(ads)
- myEffect <- ptn_getExampleEffect(ads)
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
 
 # Initialize the postNetData object with custom gene lists:
  ptn <- postNetStart(
@@ -40,7 +40,6 @@ A character vector containing the reference annotation sequences corresponding t
    customBg = myBg,
    effectMeasure = myEffect,
    selection = "random",
-   #setSeed = 123
    source = "load", 
    species = "human"
  )

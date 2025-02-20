@@ -1,7 +1,7 @@
 \docType{methods}
 \name{ptn_id}
 \alias{ptn_id,postNetData-method}
-\title{Accessor for the transcript ids in the "id" slot of a \code{postNetData} object
+\title{Accessor for the transcript IDs in the "id" slot of a \code{postNetData} object
 }
 \description{The "postNetAnnot" slot holds the reference sequence annotations as \code{postNetRegion} lists. Each annotation for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ("id", "geneID", and "sequence"). The \code{ptn_id} function retrieves the transcript IDs for sequences from the specified mRNA region. 
 }
@@ -27,11 +27,11 @@ mRNA region.
 \examples{
 
 # load and create example data:
- data("postNetData")
+ data(postNetExample)
 
- myGenes <- ptn_getExampleGeneList(ads)
- myBg <- ptn_getExampleBg(ads)
- myEffect <- ptn_getExampleEffect(ads)
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
 
 # Initialize the postNetData object with custom gene lists:
  ptn <- postNetStart(
@@ -40,7 +40,6 @@ mRNA region.
    customBg = myBg,
    effectMeasure = myEffect,
    selection = "random",
-   #setSeed = 123
    source = "load", 
    species = "human"
  )

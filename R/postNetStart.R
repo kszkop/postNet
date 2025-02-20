@@ -428,7 +428,7 @@ postNetStart <- function(ads = NULL,
     stop('Annotation geneIDs are not compatibile with gene IDs in the provided gene list/anota2seq object')
   }
   if(length(setdiff(as.character(unlist(genesIn)), outDB$geneID))>0){
-    warning(paste('There are', length(setdiff(as.character(unlist(genesIn)), outDB$geneID)), ' genes in the gene list/anota2seq object that are not in the annotation. Consider to use more compatibile annotation with your analysis',sep=''))
+    warning(paste('There are ', length(setdiff(as.character(unlist(genesIn)), outDB$geneID)), ' genes in the geneList/anota2seq object that are not in the selected annotation. Consider using a more compatibile annotation with your analysis. See vignette for details on sourcing annotations and RefSeq release versions.',sep=''))
   }
   
   #add here to check numbers of genes
