@@ -89,6 +89,10 @@
      parameter can be used to ensure that random isoform selection is stable each time \code{postNetStart} is run.}
      }
 }
+  \item{setSeed}{If \code{selection = "random"}, repeated calls of the \code{postNetStart} function can produce different 
+  isoform selections. To ensure reproducible results between different analyses of the same dataset, set \code{setSeed} 
+  to a fixed integer (e.g. 123). 
+}
   \item{source}{Select the source of the reference sequence annotations. Note that the the gene/transcript annotations used in the \code{ads} or \code{geneList} should be the same as those used in the reference sequence annotations. This parameter can be set to:
    \describe{
      \item{\code{"load"}}{(Default) Load a pre-made RefSeq reference sequence annotation of the selected 
@@ -235,7 +239,7 @@ data("postNetData")
       regulationGen = "translation",
       contrastSel = 1,
       selection = "random",
-      #setSeed = 123,   # ensures reproducibility of random isoform selection
+      setSeed = 123,   # ensures reproducibility of random isoform selection
       source = "load",
       species = "human"
     )
@@ -267,7 +271,7 @@ data("postNetData")
    customBg = myBg,
    effectMeasure = myEffect,
    selection = "random",
-   #setSeed = 123
+   setSeed = 123,
    source = "load", 
    species = "human"
  )
