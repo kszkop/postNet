@@ -223,7 +223,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 # -----------------------------------------------------------------------
 
 # load example data with an Anota2seqDataSet object:
-data("postNetData")
+data("postNetExample")
 
 # This postNet analysis will allow identification of mRNA features, 
 # and comparison between translationally activated and suppressed genes.
