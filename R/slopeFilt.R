@@ -1,8 +1,8 @@
 slopeFilt <- function(ads,
                       regulationGen,
                       contrastSel,
-                      minSlope, 
-                      maxSlope ){
+                      minSlope = NULL, 
+                      maxSlope = NULL){
   #
   check_ads(ads)
   if (!regulationGen %in% c("translation","buffering")) {
@@ -11,6 +11,18 @@ slopeFilt <- function(ads,
   if(!is.numeric(contrastSel) | !contrastSel %in% seq(1,ncol(ads@contrasts),1)){
     stop("'contrastSel' should be a numeric for the desired contrast in anota2seq object")
   }
+  
+  # Set default values for minSlope and maxSlope based on regulationGen if they are NULL
+  if (is.null(minSlope) || is.null(maxSlope)) {
+    if (regulationGen == "translation") {
+      minSlope <- ifelse(is.null(minSlope), -1, minSlope)
+      maxSlope <- ifelse(is.null(maxSlope), 2, maxSlope)
+    } else if (regulationGen == "buffering") {
+      minSlope <- ifelse(is.null(minSlope), -2, minSlope)
+      maxSlope <- ifelse(is.null(maxSlope), 1, maxSlope)
+    }
+  }
+  
   checkSlopes(minSlope, maxSlope)
   #
   tmpAds <- anota2seq::anota2seqGetOutput(ads, 
