@@ -223,13 +223,13 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 # -----------------------------------------------------------------------
 
 # load example data:
-data(postNetExample)
+ data(postNetExample)
 
 # Initialize Anota2seqDataSet (see anota2seq vignette for details)
-ads <- anota2seq::anota2seqDataSetFromMatrix(
-    dataP = ads_for_example$dataP,
-    dataT = ads_for_example$dataT,
-    phenoVec = ads_for_example$phenoVec,
+ ads <- anota2seq::anota2seqDataSetFromMatrix(
+    dataP = postNetExample$ads_data$dataP,
+    dataT = postNetExample$ads_data$dataT,
+    phenoVec = postNetExample$ads_data$phenoVec,
     batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
     dataType = "RNAseq",
     normalize = FALSE)
@@ -238,7 +238,7 @@ ads <- anota2seq::anota2seqDataSetFromMatrix(
 # Note that the quality control and residual outlier testing are not 
 # performed to limit the running time of this example. For full details 
 # on running an analysis please see the anota2seq vignette and help manual.
-ads <- anota2seqRun(ads,
+ ads <- anota2seqRun(ads,
     performQC = FALSE, 
     performROT = FALSE, 
     useProgBar = FALSE)
@@ -251,7 +251,7 @@ ads <- anota2seqRun(ads,
 
 # Initialize the postNetData object, where "ads" is an Anota2seqDataSet object
 # resulting from an anota2seqRun call:
-    ptn <- postNetStart(
+  ptn <- postNetStart(
       ads = ads,
       regulation = c("translationUp","translationDown"),
       contrast = c(1,1),

@@ -38,7 +38,7 @@ slopeFilt(ads,
 }
 }
 
-\details{When performing GSEA, GAGE, or GO term analysis using the output of an \pkg{anota2seq} analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is due to that the slopes fitted by the anota2seq APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering. Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended unless comparing gene sets across multiple datasets.   
+\details{When performing GSEA, GAGE, or GO term analysis using the output of an \pkg{anota2seq} analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is due to that the slopes fitted by the anota2seq APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering. Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended. Note that in high-quality data sets, usually few genes will require slope filtering.   
 }
 
 \value{A character vector of the gene identifiers that will be excluded from downstream enrichment analyses based on the selected slope filtering thresholds.
@@ -60,13 +60,13 @@ slopeFilt(ads,
 \examples{
 
 # load example data:
-data(postNetExample)
+ data(postNetExample)
 
 # Initialize Anota2seqDataSet (see anota2seq vignette for details)
  ads <- anota2seq::anota2seqDataSetFromMatrix(
-    dataP = ads_for_example$dataP,
-    dataT = ads_for_example$dataT,
-    phenoVec = ads_for_example$phenoVec,
+    dataP = postNetExample$ads_data$dataP,
+    dataT = postNetExample$ads_data$dataT,
+    phenoVec = postNetExample$ads_data$phenoVec,
     batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
     dataType = "RNAseq",
     normalize = FALSE)
@@ -80,9 +80,10 @@ data(postNetExample)
     performROT = FALSE, 
     useProgBar = FALSE)
 
-# Get the genes to be filtered out of downstream enrichment analyses
+# Get the genes to be filtered out of downstream enrichment analyses 
+# using the buffering regulatory mode:
  filtOutGenes <- slopeFilt(ads,
-                  regulationGen = "translation",
+                  regulationGen = "buffering",
                   contrastSel = 1,
                   minSlope = NULL,
                   maxSlope = NULL)

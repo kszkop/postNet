@@ -15,7 +15,7 @@ function. If not using \code{ads}, these inputs are compiled from the \code{gene
 }
 
 \arguments{
-  \item{x}{a \code{postNetData} object.
+  \item{x}{A \code{postNetData} object.
   }
 }
 

@@ -75,7 +75,7 @@ gseaAnalysis <- function(ptn,
     }
     geneSet_ids <- GSEABase::geneIds(collectionTmp)
   } else {
-    checkGeneList(geneSet)
+    check_geneList(geneSet)
     geneSet_ids <- geneSet
   }
   resOut <- fgsea::fgsea(pathways = geneSet_ids, stat = rankIn, minSize  = minSize, maxSize  = maxSize)
