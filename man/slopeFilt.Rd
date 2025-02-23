@@ -3,16 +3,15 @@
 \title{Filtering \pkg{anota2seq} analysis results according to slopes for use in GSEA, GAGE, and GO term analyses
 }
 
-\description{When performing GSEA, GAGE, or GO term analysis using the output of an \pkg{anota2seq} analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. The \code{slopeFilt} function identifies the genes with unrealistic models of changes in translation efficiency according to the slopes fitted in the per-gene \pkg{anota2seq} analysis of partial variance (APV) models. These genes are then filtered out of the analysis by providing the output of \code{slopeFilt} to the \code{genesSlopeFiltOut} argument of the \code{\link[postNet]{gseaAnalysis}}, \code{\link[postNet]{gseaPlot}}, 
-\code{\link[postNet]{gageAnalysis}}, and \code{\link[postNet]{goAnalysis}} functions. See the \pkg{anota2seq} vignette for additional details on slope filtering.      
+\description{The \code{slopeFilt} function identifies the genes with unrealistic models of changes in translation efficiency according to the slopes fitted in the per-gene \pkg{anota2seq} analysis of partial variance (APV) models. These genes are then filtered out of the analysis by providing the output of \code{slopeFilt} to the \code{genesSlopeFiltOut} argument of the \code{\link[postNet]{gseaAnalysis}}, \code{\link[postNet]{gseaPlot}}, \code{\link[postNet]{gageAnalysis}}, and \code{\link[postNet]{goAnalysis}} functions. See the \pkg{anota2seq} vignette for additional details on slope filtering.      
 }
 
 \usage{
 slopeFilt(ads,
           regulationGen,
           contrastSel,
-          minSlope,
-          maxSlope)
+          minSlope = NULL,
+          maxSlope = NULL)
 }
 
 \arguments{
@@ -28,67 +27,66 @@ slopeFilt(ads,
   \item{minSlope}{The minimum threshold to filter gene identifiers whose calculated slopes in anota2seq APV models are
   too small to be realistic. If \code{regulationGen = "translation"}, the recommended threshold is -1 (i.e., excludes
   gene identifiers with a slope < (-1)). If \code{regulationGen = "buffering"}, the recommended threshold is -2 (i.e.,
-  excludes gene identifiers with a slope < (-2)). 
+  excludes gene identifiers with a slope < (-2)). Default is \code{NULL}, which will automatically apply the recommended
+  filtering threshold for the selected \code{regulationGen}.
 }
   \item{maxSlope}{The maximum threshold to filter gene identifiers whose calculated slopes in anota2seq APV models are
   too large to be realistic. If \code{regulationGen = "translation"}, the recommended threshold is 2 (i.e., excludes
   gene identifiers with a slope > 2). If \code{regulationGen = "buffering"}, the recommended threshold is 1 (i.e.,
-  excludes gene identifiers with a slope > 1). 
+  excludes gene identifiers with a slope > 1). Default is \code{NULL}, which will automatically apply the recommended
+  filtering threshold for the selected \code{regulationGen}. 
 }
 }
 
-\details{
-%%  ~~ If necessary, more details than the description above ~~
+\details{When performing GSEA, GAGE, or GO term analysis using the output of an \pkg{anota2seq} analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is due to that the slopes fitted by the anota2seq APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering. Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended unless comparing gene sets across multiple datasets.   
 }
 
 \value{A character vector of the gene identifiers that will be excluded from downstream enrichment analyses based on the selected slope filtering thresholds.
 }
+
 \references{
 %% ~put references to the literature/web site here ~
 }
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\code{\link[anota2seq]{anota2seqSelSigGenes}} \cr
+\code{\link[anota2seq]{anota2seqRun}} \cr
+\code{\link[postNet]{gseaAnalysis}} \cr
+\code{\link[postNet]{gseaPlot}} \cr
+\code{\link[postNet]{gageAnalysis}} \cr
+\code{\link[postNet]{goAnalysis}}
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function (ads, regulationGen, contrastSel, minSlope, maxSlope) 
-{
-    check_ads(ads)
-    if (!regulationGen \%in\% c("translation", "buffering")) {
-        stop("For filtering slopes, 'regulationGen' should be a character vector chosen from 'translation' or 'buffering' ")
-    }
-    if (!is.numeric(contrastSel) | !contrastSel \%in\% seq(1, ncol(ads@contrasts), 
-        1)) {
-        stop("'contrastSel' should be a numeric for the desired contrast in anota2seq object")
-    }
-    checkSlopes(minSlope, maxSlope)
-    tmpAds <- anota2seq::anota2seqGetOutput(ads, analysis = regulationGen, 
-        output = "full", selContrast = contrastSel, getRVM = TRUE)
-    tmpAds_slopeFilt <- tmpAds[which(tmpAds[, 1] < minSlope | 
-        tmpAds[, 1] > maxSlope), ]
-    genesOut <- as.character(row.names(tmpAds_slopeFilt))
-    return(genesOut)
-  }
+\examples{
+
+# load example data:
+data(postNetExample)
+
+# Initialize Anota2seqDataSet (see anota2seq vignette for details)
+ ads <- anota2seq::anota2seqDataSetFromMatrix(
+    dataP = ads_for_example$dataP,
+    dataT = ads_for_example$dataT,
+    phenoVec = ads_for_example$phenoVec,
+    batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
+    dataType = "RNAseq",
+    normalize = FALSE)
+    
+# Run an anota2seq analysis:
+# Note that the quality control and residual outlier testing are not 
+# performed to limit the running time of this example. For full details 
+# on running an analysis please see the anota2seq vignette and help manual.
+ ads <- anota2seqRun(ads,
+    performQC = FALSE, 
+    performROT = FALSE, 
+    useProgBar = FALSE)
+
+# Get the genes to be filtered out of downstream enrichment analyses
+ filtOutGenes <- slopeFilt(ads,
+                  regulationGen = "translation",
+                  contrastSel = 1,
+                  minSlope = NULL,
+                  maxSlope = NULL)
+                  
+  str(filtOutGenes)
+    
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

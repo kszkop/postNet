@@ -122,7 +122,7 @@
    }
 }
   \item{version}{If \code{source} is \code{"load"}, specify the RefSeq release version that should be used for the reference sequence annotations. Available versions can be checked using the \code{\link[postNet]{checkAvailableVersions}}
-function. If \code{NULL}, the most recent version is used.
+function. If \code{NULL}, the most recent version is used for the specified \code{species}.
 }
   \item{species}{Select the species of interest. Currently, \code{"human"} and \code{"mouse"} are supported. This parameter is required unless \code{source} is \code{"custom"}.
 }
@@ -222,22 +222,26 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 # Example 1: Using an anota2seq object with built-in RefSeq annotations
 # -----------------------------------------------------------------------
 
-# load example data to create an Anota2seqDataSet object:
-data(anota2seq_data, package = 'anota2seq')
+# load example data:
+data(postNetExample)
 
 # Initialize Anota2seqDataSet (see anota2seq vignette for details)
 ads <- anota2seq::anota2seqDataSetFromMatrix(
-    dataP = anota2seq_data_P[1:100,],
-    dataT = anota2seq_data_T[1:100,],
-    phenoVec = anota2seq_pheno_vec,
+    dataP = ads_for_example$dataP,
+    dataT = ads_for_example$dataT,
+    phenoVec = ads_for_example$phenoVec,
     batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
     dataType = "RNAseq",
-    normalize = TRUE)
+    normalize = FALSE)
     
-# Run analysis of differential translation
-ads <- anota2seq::anota2seqAnalyze(ads, 
-                                     analysis = "translation")
-
+# Run an anota2seq analysis:
+# Note that the quality control and residual outlier testing are not 
+# performed to limit the running time of this example. For full details 
+# on running an analysis please see the anota2seq vignette and help manual.
+ads <- anota2seqRun(ads,
+    performQC = FALSE, 
+    performROT = FALSE, 
+    useProgBar = FALSE)
 
 # This postNet analysis will allow identification of mRNA features, 
 # and comparison between translationally activated and suppressed genes.
@@ -265,9 +269,6 @@ ads <- anota2seq::anota2seqAnalyze(ads,
 
 # Instead of using the results of an anota2seq analysis, gene sets of interest
 # and custom background can also be provided, along with a regulation effect measurement. 
-
-# Load example data:
-data(postNetExample)
 
 # Genes of interest should be provided in a named list.
  myGenes <- postNetExample$geneList
