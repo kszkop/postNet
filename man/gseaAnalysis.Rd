@@ -145,7 +145,7 @@ inSet <- list(Set1 = set1, Set2 = set2)
                     geneSet = inSet,
                     name = 'example')
 
-# Extract the results from the postNetData object:
+# Extract the signficant enrichment results from the postNetData object:
  gseaOut <- ptn_GSEA(ptn, threshold=0.05)
 
 # Plot GSEA results:

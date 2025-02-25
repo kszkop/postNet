@@ -1,4 +1,3 @@
-
 gseaPlot <- function(ptn,
                      termNames,
                      genesSlopeFiltOut = NULL,
