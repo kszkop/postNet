@@ -5,7 +5,7 @@
 
 \description{The \code{gseaAnalysis} function performs Gene Set Enrichment Analysis using the regulatory effect
 measurement contained in a \code{postNetData} object. These values are specified by the \code{regulationGen}, or 
-\code{effectMeasure} parameters in the \code{\link[postNet]{postNetStart}} function. 
+\code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
 }
 
 \usage{
@@ -60,12 +60,12 @@ gseaAnalysis(ptn,
 }
 
 \details{After running GSEA, the results of the analysis can be retrieved from the \code{postNetData} object
-using the S4 method \code{\link[postNet]{ptn_GSEA}} function. These results can then be provided as input to the
-\code{\link[postNet]{gseaPlot}} function, which can be used to generate GSEA plots for all results, or for specific 
+using the S4 method \link[postNet]{ptn_GSEA} function. These results can then be provided as input to the
+\link[postNet]{gseaPlot} function, which can be used to generate GSEA plots for all results, or for specific 
 terms of interest. 
 }
 
-\value{A data.frame of GSEA results that is stored in the GSEA slot of the \code{postNetData} object, and written to a tab delimited text file. Each row of the data.frame corresponds to a term, with the following columns (also see \code{\link[fgsea]{fgseaMultilevel}} from the \pkg{fgsea} package):
+\value{A data.frame of GSEA results that is stored in the GSEA slot of the \code{postNetData} object, and written to a tab delimited text file. Each row of the data.frame corresponds to a term, with the following columns (also see \link[fgsea]{fgseaMultilevel} from the \pkg{fgsea} package):
 
  \itemize{ 
   \item \strong{Term}: The name of the term or pathway tested.
@@ -91,7 +91,7 @@ terms of interest.
 
 \references{
 
-See \code{\link[fgsea]{fgsea}} for full details of GSEA implentation in R. \cr
+See \link[fgsea]{fgsea} for full details of GSEA implentation in R. \cr
 
 See \url{https://www.gsea-msigdb.org/gsea/index.jsp} for GSEA documentation. \cr
 
@@ -101,13 +101,13 @@ Mootha, V., Lindgren, C., Eriksson, KF. et al. PGC-1α-responsive genes involved
 }
 
 \seealso{
-\code{\link[GSEABase]{GSEABase}} \cr
-\code{\link[msigdb]{msigdb}} \cr
-\code{\link[fgsea]{fgsea}} \cr
-\code{\link[postNet]{postNetStart}} \cr
-\code{\link[postNet]{slopeFilt}} \cr
-\code{\link[postNet]{ptn_GSEA}} \cr
-\code{\link[postNet]{gseaPlot}} \cr
+\link[GSEABase]{GSEABase} \cr
+\link[msigdb]{msigdb} \cr
+\link[fgsea]{fgsea} \cr
+\link[postNet]{postNetStart} \cr
+\link[postNet]{slopeFilt} \cr
+\link[postNet]{ptn_GSEA} \cr
+\link[postNet]{gseaPlot} \cr
 }
 
 \examples{
@@ -147,7 +147,8 @@ inSet <- list(Set1 = set1, Set2 = set2)
 
 # Extract the signficant enrichment results from the postNetData object:
  gseaOut <- ptn_GSEA(ptn, threshold=0.05)
-
+ str(gseaOut)
+ 
 # Plot GSEA results:
  gseaPlot(ptn = ptn,
           termNames = gseaOut$Term[1])

@@ -4,7 +4,7 @@
 \title{Accessor for the "GSEA" slot of a \code{postNetData} object
 }
 
-\description{Retrieve the "GSEA" slot from a \code{postNetData} object, which holds the results of GSEA analysis created by the \link[postNet]{gseaAnalysis} function.
+\description{Retrieve the "GSEA" slot from a \code{postNetData} object, which holds the results of GSEA created by the \link[postNet]{gseaAnalysis} function.
 }
 
 \usage{

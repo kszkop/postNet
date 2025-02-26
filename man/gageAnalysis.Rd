@@ -1,166 +1,159 @@
 \name{gageAnalysis}
 \alias{gageAnalysis}
-\title{Perform GAGE analysis
+\title{Perform GAGE analysis with a \code{postNetData} object 
 }
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+\description{The \code{gageAnalysis} function performs Gene Set Enrichment Analysis using the regulatory effect
+measurement contained in a \code{postNetData} object. These values are specified by the \code{regulationGen}, or 
+\code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. The results of the GAGE analysis can retrieved from the \code{postNetData} object using the \link[postNet]{ptn_GAGE,postNetData-method} S4 method. 
 }
+
 \usage{
-gageAnalysis(ptn, category, genesSlopeFiltOut = NULL, maxSize = 500, minSize = 10)
+gageAnalysis(ptn,
+            category, 
+            genesSlopeFiltOut = NULL, 
+            maxSize = 500, 
+            minSize = 10)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{ptn}{
-%%     ~~Describe \code{ptn} here~~
-}
-  \item{category}{
-%%     ~~Describe \code{category} here~~
-}
-  \item{genesSlopeFiltOut}{
-%%     ~~Describe \code{genesSlopeFiltOut} here~~
-}
-  \item{maxSize}{
-%%     ~~Describe \code{maxSize} here~~
-}
-  \item{minSize}{
-%%     ~~Describe \code{minSize} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (ptn, category, genesSlopeFiltOut = NULL, maxSize = 500, 
-    minSize = 10) 
-{
-    check_ptn(ptn)
-    species <- ptn_species(ptn)
-    if (!species \%in\% c("human", "mouse")) {
-        stop("This option is only  available for species: human and mouse at the moment")
-    }
-    if (!check_number(maxSize) | !check_number(minSize)) {
-        stop("please provide numeric value")
-    }
-    if (minSize <= 0 | maxSize <= 0) {
-        stop("size parameters must be positive")
-    }
-    if (maxSize <= minSize) {
-        stop("maxSize must be greater than minSize")
-    }
-    gageOut <- list()
-    effTmp <- ptn_effect(ptn)
-    if (!is.null(genesSlopeFiltOut)) {
-        effIn <- effTmp[!names(effTmp) \%in\% genesSlopeFiltOut]
-    }
-    else {
-        effIn <- effTmp
-    }
-    convTab <- convertSymbolToEntrezID(names(effIn), species = species)
-    names(convTab) <- convertEntrezIDToSymbol(convTab, species = species)
-    names(effIn) <- as.character(convTab)[match(names(effIn), 
-        names(convTab))]
-    effIn <- effIn[!is.na(names(effIn))]
-    rankIn <- effIn[order(effIn, decreasing = T)]
-    GAGEout <- new("postNetGAGE", BP = NULL, CC = NULL, MF = NULL, 
-        KEGG = NULL)
-    for (sel in category) {
-        resOut <- list()
-        if (sel == "KEGG") {
-            pathwayKegg <- gage::kegg.gsets(species = species, 
-                id.type = "entrez")
-            pathwaysIn <- pathwayKegg$kg.sets
-        }
-        else {
-            if (!exists("pathwayGO")) {
-                pathwayGO <- gage::go.gsets(species = species, 
-                  id.type = "EG")
-            }
-            if (sel == "BP") {
-                pathwaysIn <- pathwayGO$go.sets[pathwayGO$go.subs$BP]
-            }
-            else if (sel == "MF") {
-                pathwaysIn <- pathwayGO$go.sets[pathwayGO$go.subs$MF]
-            }
-            else if (sel == "CC") {
-                pathwaysIn <- pathwayGO$go.sets[pathwayGO$go.subs$CC]
-            }
-        }
-        resOut <- gage::gage(exprs = rankIn, gsets = pathwaysIn, 
-            set.size = c(minSize, maxSize), rank.test = TRUE, 
-            use.fold = FALSE)
-        pathwaysGenes <- list()
-        for (pw in 1:length(pathwaysIn)) {
-            glist <- unlist(pathwaysIn[pw])
-            tmpGenes <- glist[glist \%in\% names(rankIn)]
-            if (length(tmpGenes) > 0) {
-                tmpGenes_conv <- names(convTab)[match(as.character(tmpGenes), 
-                  convTab)]
-            }
-            else {
-                tmpGenes_conv <- NA
-            }
-            pathwaysGenes[[pw]] <- paste(tmpGenes_conv, collapse = ":")
-        }
-        names(pathwaysGenes) <- names(pathwaysIn)
-        pathwaysGenes <- pathwaysGenes[as.numeric(which(unlist(lapply(pathwaysGenes, 
-            function(x) x != "NA"))))]
-        if (nrow(resOut$greater) > 0) {
-            grTmpG <- resOut$greater
-            grTmpG <- grTmpG[, c(1, 2, 5, 3, 4)]
-            grTmpG <- data.frame(id = row.names(grTmpG), grTmpG, 
-                row.names = NULL)
-            grTmpG$Genes <- as.character(pathwaysGenes)[match(grTmpG$id, 
-                names(pathwaysGenes))]
-            resOut$greater <- grTmpG
-        }
-        if (nrow(resOut$less) > 0) {
-            grTmpL <- resOut$less
-            grTmpL <- grTmpL[, c(1, 2, 5, 3, 4)]
-            grTmpL <- data.frame(id = row.names(grTmpL), grTmpL, 
-                row.names = NULL)
-            grTmpL$Genes <- as.character(pathwaysGenes)[match(grTmpL$id, 
-                names(pathwaysGenes))]
-            resOut$less <- grTmpL
-        }
-        slot(GAGEout, sel) <- resOut
-    }
-    ptn@analysis@GAGE <- GAGEout
-    return(ptn)
+  \item{ptn}{a \code{postNetData} object.
+  }
+  \item{category}{A character vector specifying one or more gene ontology categories to be included in the analysis. 
+  The options are \code{'BP'}, \code{'CC'}, \code{'MF'}, and \code{'KEGG'}. For example, \code{category = c('BP','MF')}.
+  }
+  \item{genesSlopeFiltOut}{If using an \code{Anota2seqDataSet} with analysis results for the "translation" or
+  "buffering" regulatory modes, optionally provide a character vector with gene IDs to be excluded from GSEA that 
+  is the output of the \link[postNet]{slopeFilt} function. Although optional, this step is strongly 
+  recommended. This filtering is not necessary if using "mRNAAbundance", "totalmRNA", or "translatedmRNA". 
+  Default is \code{NULL}.
+  }
+  \item{maxSize}{Integer specifying the maximal size of a gene set to test. Terms/pathways with more genes will 
+  be exluded. Default is \code{500}.
+  }
+  \item{minSize}{Integer specifying the minimal size of a gene set to test. Terms/pathways with fewer genes will 
+  be exluded. Default is \code{10}.
   }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
+
+\details{
+}
+
+\value{The results returned by the \code{gageAnalysis} function are compiled into an S4 object of class \code{postNetGAGE} and stored in the "GAGE" slot of the \code{postNetData} object. As described in the \link[gage]{gage} package, each gene ontology category has a slot in the results object that stores a named list with three elements ("greater", "less" and "stats"). The "stats" element contains the test statistics. The "greater" and "less" elements are data.frames with the results of a two-directional test, each having the following columns:
+
+ \itemize{ 
+  \item \strong{p.geomean}: The geometric mean of the individual p-values from multiple single array-based gene set 
+  tests.
+  
+  \item \strong{stat.mean}: The mean of the individual statistics from multple single array-based gene set tests. The
+  value denotes the magnitude of the gene-set level changes, and the sign denotes the direction of the changes.
+  
+  \item \strong{p.val}: The global p-value or summary of the individual p-values from multiple single array-based gene
+  set tests.
+  
+  \item \strong{q.val}: The BH adjusted p-value, as implemented by the \pkg{multtest} package.
+  
+  \item \strong{set.size}: The number of genes included in the gene set.  
+  
+  \item \strong{Genes}: The gene IDs in the input data belonging to the gene ontology gene set.
+  }
+}
+
+\references{
+See the \link[gage]{gage} package for details. \cr
+
+Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Applicable Gene Set Enrichment for Pathways Analysis. BMC Bioinformatics 2009, 10:161.
+
+}
+
+\seealso{
+\link[gage]{gage} \cr
+\link[postNet]{ptn_GAGE}
+}
+
+\examples{
+# ------------------------------------------------------------------
+# Example 1: Running GAGE with gene lists 
+# ------------------------------------------------------------------
+
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ set1 <- postNetExample$geneList[[1]][1:100]
+ set2 <- postNetExample$geneList[[2]][1:100]
+ myGenes <- list('Set1' = set1, 'Set2' = set2)
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+
+# Run GAGE:
+ ptn <- gageAnalysis(ptn,
+                    category = 'CC')
+
+# Extract the signficant enrichment results from the postNetData object:
+ gageOut <- ptn_GAGE(ptn = ptn,
+                    category = 'CC',
+                    direction = "greater", 
+                    threshold = 1)
+ str(gageOut)
+          
+\dontrun{
+
+# ------------------------------------------------------------------
+# Example 2: Running GAGE requiring anota2seq analysis slope filtering
+# ------------------------------------------------------------------
+
+# Initialize Anota2seqDataSet (see anota2seq vignette for details)
+ ads <- anota2seq::anota2seqDataSetFromMatrix(
+    dataP = postNetExample$ads_data$dataP,
+    dataT = postNetExample$ads_data$dataT,
+    phenoVec = postNetExample$ads_data$phenoVec,
+    batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
+    dataType = "RNAseq",
+    normalize = FALSE)
+    
+# Run an anota2seq analysis:
+# Note that the quality control and residual outlier testing are not 
+# performed to limit the running time of this example. For full details 
+# on running an analysis please see the anota2seq vignette and help manual.
+ ads <- anota2seqRun(ads,
+    performQC = FALSE, 
+    performROT = FALSE, 
+    useProgBar = FALSE)
+    
+# Initialize the postNetData object, where "ads" is an Anota2seqDataSet object
+# resulting from an anota2seqRun call:
+  ptn <- postNetStart(
+      ads = ads,
+      regulation = c("translationUp","translationDown"),
+      contrast = c(1,1),
+      regulationGen = "translation",
+      contrastSel = 1,
+      selection = "random",
+      setSeed = 123,
+      source = "load",
+      species = "human"
+    )
+    
+# Run slope filtering to remove the genes with unrealistic slopes:
+ filtOutGenes <- slopeFilt(ads = ads, 
+                          regulationGen="translation", 
+                          contrastSel=1)
+                          
+# Run GAGE:
+ ptn <- gageAnalysis(ptn,
+                    genesSlopeFiltOut = filtOutGenes,
+                    category = 'CC')   
+  }
+
+}
