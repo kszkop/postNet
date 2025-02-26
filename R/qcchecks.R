@@ -396,7 +396,7 @@ checkFileColumns <- function(filePath) {
   
   noS <- length(unique(fileData$Gene.Tax.ID))
   if(noS>1){
-    stop('Please subset the file for only desired specie')
+    stop('Please subset the file the include only the desired species')
   }
   return(fileData)
 }
