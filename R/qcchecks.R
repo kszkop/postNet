@@ -136,6 +136,29 @@ check_number <- function(x) {
   is.numeric(x) && !is.na(x) && length(x) == 1
 }
 
+
+is_named_list_of_named_numeric_vectors <- function(x) {
+  # Check if the input is a list
+  if (!is.list(x)) {
+    return(FALSE)
+  }
+  
+  # Check if the list is named (all elements have names)
+  if (is.null(names(x)) || any(names(x) == "")) {
+    return(FALSE)
+  }
+  
+  # Check if each element is a named numeric vector
+  for (element in x) {
+    if (!is.numeric(element) || is.null(names(element)) || any(names(element) == "")) {
+      return(FALSE)
+    }
+  }
+  
+  # If all checks pass, return TRUE
+  return(TRUE)
+}
+
 # Function to validate the source input
 check_source <- function(source) {
   valid_sources <- c("create", "createFromSourceFiles", "load", "custom", "createFromFasta")
@@ -540,4 +563,17 @@ checklmfeatGroupColour <- function(lmfeatGroupColour, lmfeatGroup) {
       stop("Error: Length of 'lmfeatGroupColour' must match the number of unique values in 'lmfeatGroup'.")
     }
   }
+}
+
+check_shiftUnit <- function(unit) {
+  if (is.null(unit)) {
+    return(FALSE)
+  }
+  if (unit == "FDR") {
+    return(TRUE)
+  }
+  if (grepl("^p[1-9][0-9]?$", unit)) {
+    return(TRUE)
+  }
+  return(FALSE)
 }
