@@ -64,7 +64,7 @@ plotFeatureMap <- function(ptn,
   if(isTRUE(scaled)){
     featuresOut <- scale(na.omit(features), center=F)
   } else {
-    featuresOut <- na.omit(features), center=F
+    featuresOut <- na.omit(features)
   }
   fmapRes <- umap::umap(featuresOut, n_components = 2)
   fmapRes <- fmapResOut <- as.data.frame(fmapRes$layout)
