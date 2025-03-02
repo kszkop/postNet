@@ -25,7 +25,7 @@ plotFeatureMap <- function(ptn,
   if(!check_logical(scaled)){
     stop("'scaled' can only be TRUE or FALSE")
   }
-  if(isTRUE(regOnly)){}
+  if(isTRUE(regOnly)){
     if(!check_comparisons(comparisons)){
       stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
     }
@@ -35,13 +35,13 @@ plotFeatureMap <- function(ptn,
     if(length(comparisons) != 1){
       stop('Although potentially posssible, please run each comparison separetely to fit well to your feature selection')
     }
-    if(!is.null(remExtreme)){
-      if(!check_number(remExtreme)){
-        stop('remExtreme should be a number indicating percentile of extreme values to be removed for colouring purposes ')
-      } else {
-        if(remExtreme <= 0 | remExtreme >= 1){
-          stop('remExtreme can be only 1 number between (0,1). It represents percentile in decimal of extreme values from both sides of distribution to be removed only for colouring scale')
-        }
+  }
+  if(!is.null(remExtreme)){
+    if(!check_number(remExtreme)){
+      stop('remExtreme should be a number indicating percentile of extreme values to be removed for colouring purposes ')
+    } else {
+      if(remExtreme <= 0 | remExtreme >= 1){
+        stop('remExtreme can be only 1 number between (0,1). It represents percentile in decimal of extreme values from both sides of distribution to be removed only for colouring scale')
       }
     }
   }
