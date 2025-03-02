@@ -62,7 +62,7 @@ codonUsage <- function(ptn,
         lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
         annotTmp$lenTmp <- lenTmp
         #
-        annotSel <- isoSel(annot = annotTmp, method = ptn_selection(ptn))
+        annotSel <- isoSel(annot = annotTmp, method = ptn_selection(ptn),setSeed=1234)
         colnames(annotSel)[1:3] <- c('id','geneID','CDS_seq')
         #
         annot <- new("postNetRegion",
@@ -98,7 +98,7 @@ codonUsage <- function(ptn,
         lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
         annotTmp$lenTmp <- lenTmp
         #
-        annotSel <- isoSel(annot = annotTmp, method = ptn_selection(ptn))
+        annotSel <- isoSel(annot = annotTmp, method = ptn_selection(ptn), setSeed=1234)
         colnames(annotSel)[1:3] <- c('id','geneID','CDS_seq')
         #
         annot <- new("postNetRegion",

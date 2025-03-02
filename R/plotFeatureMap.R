@@ -94,4 +94,5 @@ plotFeatureMap <- function(ptn,
     
     dev.off()
   }
+  ptn@analysis@featureIntegration@fmapResOut
 }
