@@ -1054,90 +1054,6 @@ s4_to_dataframe <- function(obj) {
   return(out)
 }
 
-#
-modList <- function(x){
-  data <- as.numeric(unlist(strsplit(x[2], "\t")))
-  pos <-  unlist(strsplit(x[3], "\t"))
-  names(data) <- as.numeric(pos)
-  return(data)
-}
-
-extractInCDS <- function(x, tmpList, cds_start, cds_end){
-  #
-  stTmp <- as.numeric(cds_start[x])
-  endTmp <- as.numeric(cds_start[x] + cds_end[x])
-  #
-  dataTmp <- tmpList[[x]]
-  #
-  dataTmp <- dataTmp[as.numeric(names(dataTmp)) > stTmp & as.numeric(names(dataTmp)) <= endTmp]
-  #Calculate relative to start of CDS
-  names(dataTmp) <- as.numeric(names(dataTmp)) - stTmp
-  #
-  return(dataTmp)
-}
-
-countRiboCodon <- function(dataList, annot){
-  #
-  codonList <- list()
-  #
-  for(i in 1:length(dataList)){
-    dataTmp <- dataList[[i]]
-    #
-    codonsOut <- list()
-    for(j in 1:length(dataTmp)){
-      #
-      id <- names(dataTmp[j])
-      datT <- dataTmp[[j]]
-      #extract only in frame
-      datT <- datT[as.numeric(names(datT)) %% 3 == 0]
-      #
-      if(length(datT) > 0){
-        seqT <- annotSel$CDS_seq[annotSel$geneID == id]
-        #
-        codonTmp <- as.numeric(datT)
-        names(codonTmp) <- sapply(as.numeric(names(datT)), extract_seq, seqs=seqT)
-        #
-        tmpFreq <- as.numeric(codonTmp)/sum(as.numeric(codonTmp))
-        
-        tmpCodon <- data.frame(geneID=id,codon=toupper(names(codonTmp)),AA=seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(toupper(names(codonTmp)))))), codonCount=as.numeric(codonTmp),codonFreq=as.numeric(tmpFreq))
-        tmpCodon <- tmpCodon %>% group_by(AA) %>% mutate(AACountPerGene=sum(codonCount))
-        
-        codonsOut[[id]] <- tmpCodon
-      } 
-      #else {
-      #  codonTmp <- NA
-      #  names(codonTmp) <- NA
-      #}
-      #codonsOut[[id]] <- codonTmp
-    }
-    codonList[[i]] <- codonsOut
-  }
-}
-#      cdsS <- cdsLengths_start[transID]
-#      cdsE <- cdsLengths_end[transID]
-#      #
-#      if(!is.null(seqT)){
-#        #
-#        transTmp <- dataTmp[[t]]
-#        #Filter only these in 0 frame
-#        #
-#        transTmp <- transTmp[(as.numeric(names(transTmp))-as.numeric(cdsS)) %% 3 == 0]
-#        codTmp <- sapply(names(transTmp), extract_seq)
-#        names(codTmp) <- as.numeric(transTmp)
-#      }
-#      codObs <- as.numeric()
-#      for(cod in 1:length(codFreq)){
-#        codSum <- sum(as.numeric(names(codTmp[codTmp==names(codFreq[cod])])))
-#        codObs[cod] <- codSum
-#      }
-#      names(codObs) <- names(codFreq) 
-#      #rOut <- resid(lm(codObs ~ codFreq))
-#      #outTmp[[transID]] <- rOut
-#      outTmp[[transID]] <- codObs
-#    }
-#    dataCodon_0f[[d]] <- outTmp
-#  }
-#}
 
 #
 extract_seq <- function(pos, seqs){
@@ -1709,3 +1625,35 @@ getOrgNames <- function(newN, namesDf){
     return(outN)
 }
 
+
+plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
+  if(!is.null(remExtreme)){
+    minV <- quantile(colVec, remExtreme)
+    maxV <- quantile(colVec, 1 - remExtreme)
+    
+    fmapRes$colVecColour <- pmin(pmax(colVec, minV), maxV)
+  } else {
+    fmapRes$colVecColour <- colVec
+  }
+  colVecPlot <- ggplot2::ggplot(fmapRes, ggplot2::aes(x = fMAP1, y = fMAP2, color = colVecColour)) +
+    ggplot2::geom_point(size = 2) +
+    ggplot2::scale_color_gradient2(low = "blue",mid = 'white', high = "red") +
+    ggplot2::labs(title = paste('Feature: ', name, sep=''),  x = "fMAP 1", y = "fMAP 2", color = name) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme_bw() +
+    ggplot2::theme(legend.position = "none") 
+  
+  #keep original legend
+  tmpLeg <- data.frame(x = 1, y = 1,colVec = seq(min(colVec), max(colVec), length.out = 100))
+  
+  colVecLeg<- ggplot2::ggplot(tmpLeg, ggplot2::aes(x = x, y = y, color = colVec)) +
+    ggplot2::geom_point(size = 0) +  # Invisible points
+    ggplot2::scale_color_gradient2(low = "blue", mid = "white", high = "red") +
+    ggplot2::labs(color = name) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(legend.key.height = ggplot2::unit(1.5, "cm"),legend.key.width = ggplot2::unit(0.75, "cm"))
+  
+  legend_grob <- ggplot2::ggplotGrob(colVecLeg)
+  legendOut <- legend_grob$grobs[[which(legend_grob$layout$name == "guide-box")]]
+  return(list(mainPlot = colVecPlot, legend = legendOut))  
+}

@@ -577,3 +577,15 @@ check_shiftUnit <- function(unit) {
   }
   return(FALSE)
 }
+
+check_featSel <- function(featSel, features) {
+  if (!is.null(featSel) && is.character(featSel) && length(featSel) >= 2) {
+    if (all(featSel %in% colnames(features))) {
+      return(TRUE)
+    } else {
+      return(FALSE)
+    }
+  } else {
+    return(FALSE)
+  }
+}

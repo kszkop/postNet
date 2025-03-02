@@ -59,7 +59,8 @@ featureIntegration <- function(ptn,
   #
   fiOut <- new("postNetFeatureIntegration",
                lm = NULL,
-               rf = NULL)
+               rf = NULL,
+               featureMap = NULL)
   ######
   if (analysis_type == 'lm'){
     #

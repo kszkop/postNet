@@ -22,12 +22,15 @@ plotSignatures <- function(ptn,
   }
 
   ##apvEff of effect
-  regData <- data.frame(geneSymb = rownames(ads@dataP))
+  effIn <- ptn_effect(ptn)
+  regData <- data.frame(geneSymb = names(effIn))
+  regData$effIn <- as.numeric(effIn)
+  #regData <- data.frame(geneSymb = rownames(ads@dataP))
   
-  regData$totalApvEff <- ads@totalmRNA@apvStatsRvm[[contrast]][,"apvEff"]
-  regData$polyApvEff <- ads@translatedmRNA@apvStatsRvm[[contrast]][,"apvEff"]
-  regData$buffApvEff <- ads@buffering@apvStatsRvm[[contrast]][,"apvEff"]
-  regData$translationApvEff <- ads@translation@apvStatsRvm[[contrast]][,"apvEff"]
+  #regData$totalApvEff <- ads@totalmRNA@apvStatsRvm[[contrast]][,"apvEff"]
+  #regData$polyApvEff <- ads@translatedmRNA@apvStatsRvm[[contrast]][,"apvEff"]
+  #regData$buffApvEff <- ads@buffering@apvStatsRvm[[contrast]][,"apvEff"]
+  #regData$translationApvEff <- ads@translation@apvStatsRvm[[contrast]][,"apvEff"]
   
   #Select for scatter
   if(is.null(scatterXY)){

@@ -331,11 +331,18 @@ ptn_model <- function(ptn, analysis_type, model, comparison){
 }
 
 
-ptn_selectedFeatures <- function(ptn, analysis_type){
+ptn_selectedFeatures <- function(ptn, analysis_type, comparison){
   check_ptn(ptn)
   check_analysis_type(analysis_type)
+  if(!check_number(comparison)){
+    stop(paste("Please provide one numeric value for ", comparison, sep=''))
+  }
   #
-  tmpIn <- slot(ptn@analysis@featureIntegration,analysis_type)
+  tmpIn <- slot(ptn@analysis@featureIntegration, analysis_type)
+  if(comparison > length(tmpIn)){
+    stop(paste("There are only ",length(tmpIn), " comparisons", sep=''))
+  }
+  tmpIn <- tmpIn[[comparison]]
   tmpOut <- slot(tmpIn, "selectedFeatures")
   #
   return(tmpOut)

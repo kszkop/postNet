@@ -146,7 +146,8 @@ setClassUnion("rfOrNULL",members=c("postNetFeatureIntegration_rf", "NULL"))
 setClass("postNetFeatureIntegration",
          slots = c(
            lm = "listOrNULL",
-           rf  = "listOrNULL"
+           rf  = "listOrNULL",
+           featureMap = "ANY"
          )
 )
 
