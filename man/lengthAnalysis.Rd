@@ -1,123 +1,79 @@
 \name{lengthAnalysis}
 \alias{lengthAnalysis}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{Comparisons of lengths
+\title{Caculate and compare the length of mRNA sequence regions
 }
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+
+\description{The \code{lengthAnalysis} function calculates the log2-transformed length of different regions of mRNA sequences (5'UTR, 3'UTR, and CDS) for each gene. In addition, the length of different sequence regions for gene sets of interest can be compared against background, or other genes sets. Several options are available for plotting. 
 }
+
 \usage{
-lengthAnalysis(ptn, region, comparisons = NULL, plotOut = TRUE, plotType = "boxplot", pdfName = NULL)
+lengthAnalysis(ptn, 
+              region, 
+              comparisons = NULL,
+              plotOut = TRUE, 
+              plotType = "boxplot", 
+              pdfName = NULL)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{ptn}{
-%%     ~~Describe \code{ptn} here~~
-}
-  \item{region}{
-%%     ~~Describe \code{region} here~~
-}
-  \item{comparisons}{
-%%     ~~Describe \code{comparisons} here~~
-}
-  \item{plotOut}{
-%%     ~~Describe \code{plotOut} here~~
-}
-  \item{plotType}{
-%%     ~~Describe \code{plotType} here~~
-}
-  \item{pdfName}{
-%%     ~~Describe \code{pdfName} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (ptn, region, comparisons = NULL, plotOut = TRUE, plotType = "boxplot", 
-    pdfName = NULL) 
-{
-    check_ptn(ptn)
-    check_region(region)
-    if (!check_logical(plotOut)) {
-        stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-    }
-    if (isTRUE(plotOut)) {
-        if (!is.null(plotType)) {
-            check_plotType(plotType)
-        }
-        else {
-            stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
-        }
-    }
-    if (!is.null(comparisons)) {
-        if (!check_comparisons(comparisons)) {
-            stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
-        }
-        if (length(which(unique(unlist(comparisons)) == 0)) > 
-            0 && is.null(ptn_background(ptn))) {
-            stop(" 0 is always a background, but no background provided")
-        }
-    }
-    lengthFinal <- list()
-    for (reg in region) {
-        seqTmp <- ptn_sequences(ptn, region = reg)
-        lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
-        lenForAnalysis <- log2(as.numeric(lenTmp))
-        names(lenForAnalysis) <- ptn_geneID(ptn, region = reg)
-        if (isTRUE(plotOut)) {
-            resOut <- resQuant(qvec = lenForAnalysis, ptn = ptn)
-            if (length(resOut) == 0) {
-                stop("There are no regulated genes. Check the input or run without indicating regulation and comparisons")
-            }
-            colOut <- colPlot(ptn)
-            pdf(ifelse(is.null(pdfName), paste(reg, plotType, 
-                "lengthAnalysis.pdf", sep = "_"), paste(pdfName, 
-                reg, plotType, "lengthAnalysis.pdf", sep = "_")), 
-                width = 8, height = 8, useDingbats = F)
-            ylabel = "Length (Log2 scale)"
-            plotUtils(resOut, colOut, comparisons, ylabel = ylabel, 
-                plotType = plotType)
-            dev.off()
-        }
-        lengthFinal[[paste(reg, "length", sep = "_")]] <- lenForAnalysis
-    }
-    return(lengthFinal)
+  \item{ptn}{a \code{postNetData} object.
+  }
+  \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"}, \code{"UTR3"},
+  \code{"CDS"}, or any combination of the regions.    
+  }
+  \item{comparisons}{A list of numeric vectors indicating which gene sets in \code{regulation} or \code{geneList}
+  should be used in pair-wise comparisons. The numeric vectors should correspond to the indexes of the gene sets, where 0
+  denotes the background. For example, \code{list(c(0,2),c(1,2))} indicates that the second gene set in \code{regulation} or
+  \code{geneList} will be compared to the background (0), and the first and second gene sets will be compared to each other.
+  The default is \code{NULL}.
+  }
+  \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the log2-transformed
+  lengths for the sequence regions of interest will be returned, and comparisons between gene sets will not be performed.
+  The default is \code{TRUE}. 
+  }
+  \item{plotType}{If \code{plotOut} is \code{TRUE}, indicate the type of output plot to generate. Options are, \code{"boxplot"},
+  \code{"violin"}, or \code{"ecdf"}. The default is \code{"boxplot"}. 
+  }
+  \item{pdfName}{Name to be appended to output PDF files.
   }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
+
+\details{A two-sided Wilcoxon Rank Sum test is performed to identify significant differences in mRNA sequence region length between gene sets of interest, or against the background gene set.
+}
+
+\value{A named list of vectors for selected mRNA sequence regions with the calculated log2-transformed lengths for each gene. The elements in each vector are named with the gene ID. The \code{lengthAnalysis} function can also return PDF files of output plots with statistical comparisons between gene sets of interest.
+}
+
+\examples{
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+ 
+
+# Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between
+# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes
+ len <- lengthAnalysis(ptn = ptn, 
+                      region = c("UTR5","CDS","UTR3"), 
+                      comparisons = list(c(0,1),c(0,2),c(1,2)),
+                      plotOut = TRUE,
+                      plotType = 'boxplot',
+                      pdfName = "example")
+                      
+ str(len)
+
+}
