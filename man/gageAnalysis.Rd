@@ -61,6 +61,8 @@ gageAnalysis(ptn,
 \references{
 See the \link[gage]{gage} package for details. \cr
 
+If you use the \code{gageAnalysis} function in your analysis, please cite: \cr
+
 Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Applicable Gene Set Enrichment for Pathways Analysis. BMC Bioinformatics 2009, 10:161.
 
 }

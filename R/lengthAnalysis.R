@@ -47,7 +47,7 @@ lengthAnalysis <- function(ptn,
       colOut <- colPlot(ptn)
       # Plot
       pdf(ifelse(is.null(pdfName), paste(reg, plotType, "lengthAnalysis.pdf", sep = "_"), paste(pdfName, reg, plotType, "lengthAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
-      ylabel = 'Log2 length'
+      ylabel = 'Length (Log2 scale)'
       plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
       dev.off()
     }

@@ -95,6 +95,8 @@ See \link[fgsea]{fgsea} for full details of GSEA implentation in R. \cr
 
 See \url{https://www.gsea-msigdb.org/gsea/index.jsp} for GSEA documentation. \cr
 
+If you use the \code{gseaAnalysis} function in your analysis, please cite: \cr
+
 A. Subramanian, P. Tamayo, V.K. Mootha, S. Mukherjee, B.L. Ebert, M.A. Gillette, A. Paulovich, S.L. Pomeroy, T.R. Golub, E.S. Lander, & J.P. Mesirov. Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles, Proc. Natl. Acad. Sci. U.S.A. 102 (43) 15545-15550, (2005). \cr
 
 Mootha, V., Lindgren, C., Eriksson, KF. et al. PGC-1α-responsive genes involved in oxidative phosphorylation are coordinately downregulated in human diabetes. Nat Genet 34, 267–273 (2003). 

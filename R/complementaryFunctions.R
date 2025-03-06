@@ -399,7 +399,7 @@ plotUtils <- function(resOut, colOut, comparisons, ylabel, plotType) {
     par(mar = c(8, 8, 0, 0), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
     plot(1,ylimTmp2, xlim=xlimTmp, ylim=c(0,ylimTmp2), xaxt = "n",type="n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
     #
-    if(ylabel == 'Log2 length'){
+    if(ylabel == 'Length (Log2 scale)'){
       axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
       mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = median(dataTmp))
     } else {
@@ -418,7 +418,7 @@ plotUtils <- function(resOut, colOut, comparisons, ylabel, plotType) {
       } else if (plotType=='violin'){
         vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = colOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
       } 
-      if(ylabel == 'Log2 length'){
+      if(ylabel == 'Length (Log2 scale)'){
         text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
       } else {
         text(i, 0, round(mean(resOut[[i]]),0), font = 2)
