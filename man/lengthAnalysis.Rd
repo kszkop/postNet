@@ -1,9 +1,9 @@
 \name{lengthAnalysis}
 \alias{lengthAnalysis}
-\title{Caculate and compare the length of mRNA sequence regions
+\title{Caculate the length of mRNA sequence regions and compare between gene sets
 }
 
-\description{The \code{lengthAnalysis} function calculates the log2-transformed length of different regions of mRNA sequences (5'UTR, 3'UTR, and CDS) for each gene. In addition, the length of different sequence regions for gene sets of interest can be compared against background, or other genes sets. Several options are available for plotting. 
+\description{The \code{lengthAnalysis} function calculates the log2-transformed length of different regions of mRNA sequences (5'UTR, 3'UTR, and CDS) for each gene. In addition, the length of different sequence regions for gene sets of interest can be compared against background, or other genes sets. Several options are available for plotting the comparisons. 
 }
 
 \usage{

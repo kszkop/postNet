@@ -1,9 +1,9 @@
 \name{contentAnalysis}
 \alias{contentAnalysis}
-\title{Caculate and compare the nucleotide content of mRNA sequence regions between gene sets 
+\title{Caculate the nucleotide content of mRNA sequence regions and compare between gene sets 
 }
 
-\description{Nucleotide content of desired region for each gene is calculated. If plotOut is TRUE, all indicated comparisons between different sets of genes are performed and plotted. 
+\description{The \code{contentAnalysis} function calculates the percentage of nucleotide content of mRNA sequences (5'UTR, 3'UTR, and CDS) for each gene. In addition, the nucleotide content of different sequence regions for gene sets of interest can be compared against background, or other genes sets. Several options are available for plotting the comparisons.
 }
 
 \usage{
@@ -26,8 +26,8 @@ contentAnalysis(ptn,
   \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"},
   \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
   }
-  \item{subregion}{Optionally it is possible to select a subregion by indicating a number of nucleotides 
-  from the start if positive or end if negative. 
+  \item{subregion}{Optionally, it is possible to specify a subregion of the sequences to either select or
+  exclude from the analysis by indicating a number of nucleotides from either the start if positive or end if negative. 
   }
   \item{subregionSel}{It is required if the subregion is provided. Choose whether the indicated subregion
   should be "select" or "exclude".
@@ -77,14 +77,17 @@ contentAnalysis(ptn,
  )
  
 
-# Calculate the GC of the 5'UTR, 3'UTR and coding sequence for each gene, and compare between
+# Calculate the GC of the first 50 nucleotidfes of the 5'UTR for each gene, and compare between
 # translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes
- content <- lengthAnalysis(ptn = ptn, 
-                      region = c("UTR5","CDS","UTR3"), 
-                      comparisons = list(c(0,1),c(0,2),c(1,2)),
-                      plotOut = TRUE,
-                      plotType = 'boxplot',
-                      pdfName = "example")
+ content_UTR5_first50 <- contentAnalysis(ptn = ptn, 
+                           region = c("UTR5"),
+                           subregion = 50,
+                           subregionSel = "select",
+                           comparisons = list(c(0,1),c(0,2),c(1,2)), 
+                           contentIn = c('GC'),
+                           plotOut = TRUE,
+                           plotType = 'ecdf',
+                           pdfName = 'first50')
                       
- str(content)
+ str(content_UTR5_first50)
 }
