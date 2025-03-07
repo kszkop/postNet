@@ -40,6 +40,7 @@ motifAnalysis <- function(ptn,
   for(reg in region){
     #
     seqTmp <- ptn_sequences(ptn, region = reg)
+    names(seqTmp) <- ptn_geneID(ptn, region=reg)
     
     if (tolower(seqType) == "protein") {
       if(!is_by_3(seqTmp)){
@@ -48,20 +49,19 @@ motifAnalysis <- function(ptn,
       proseqtmp <- sapply(seqTmp, function(x) seqinr::c2s(seqinr::translate(seqinr::s2c(x))))
       seqTmp <- proseqtmp
     }
-    
-    is_by_3 <- function(seqs) {
-      all(sapply(seqs, function(x) length(seqinr::c2s(x)) %% 3 == 0))
-    }
-    
     #
     if (!is.null(subregion)) {
       #
       subSeq <- sapply(seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel))
+      if(length(which(is.na(subSeq)))>0){
+        message('For some of the sequences the selected subregion is longer than the sequence region and these sequences will be removed')
+      }
       seqTmp <- subSeq
     }
     #
-    seqForAnalysis <- seqTmp
-    names(seqForAnalysis) <- ptn_geneID(ptn, region=reg)
+    #seqForAnalysis <- seqTmp
+    seqForAnalysis <- seqTmp[!is.na(seqTmp)]
+    #names(seqForAnalysis) <- ptn_geneID(ptn, region=reg)
     #
     resOut <- resQuant(qvec = seqForAnalysis, ptn = ptn)
     

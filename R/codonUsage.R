@@ -190,9 +190,12 @@ codonUsage <- function(ptn,
   if (!is.null(subregion)) {
     #
     subSeq <- sapply(seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel))
-    #
+    if(length(which(is.na(subSeq)))>0){
+      message('For some of the sequences the selected subregion is longer than the sequence region and these sequences will be removed')
+    }
     seqTmp <- subSeq
   }
+  seqTmp <- seqTmp[!is.na(seqTmp)]
   #
   #if (codSource == "sequence") {
   geneIDs <- names(seqTmp)

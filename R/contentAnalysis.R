@@ -44,6 +44,7 @@ contentAnalysis <- function(ptn,
   for(reg in toupper(region)){
     #
     seqTmp <- ptn_sequences(ptn, region = reg)
+    names(seqTmp) <- ptn_geneID(ptn, region=reg)
     #
     if (!is.null(subregion)) {
       if(is.null(subregionSel)){
@@ -51,7 +52,12 @@ contentAnalysis <- function(ptn,
       }
       #
       subSeq <- sapply(seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel))
-    }
+      
+      if(length(which(is.na(subSeq)))>0){
+        message('For some of the sequences the selected subregion is longer than the sequence region and these sequences will be removed')
+      }
+      seqTmp <- subSeq
+    } 
     #
     for (i in 1:length(contentIn)) {
       content <- contentIn[i]
@@ -62,7 +68,9 @@ contentAnalysis <- function(ptn,
         tmpCont <- sapply(seqinr::s2c(toupper(content)), function(x) calc_content(tmpSeq, x))
         contentOut[i] <- sum(tmpCont)
       }
-      names(contentOut) <- ptn_geneID(ptn, region=reg)
+      names(contentOut) <- names(seqTmp)
+      
+      contentOut <- contentOut[!is.na(contentOut)]
       #
       if (isTRUE(plotOut)) {
         resOut <- resQuant(qvec = contentOut, ptn = ptn)

@@ -120,7 +120,7 @@ goAnalysis <- function(ptn,
     for(i in 1:length(resOut)){
       tabTmp <- resOut[[i]]@result
       #
-      tabTmp <- tabTmp[tabTmp$Count > counts,]
+      tabTmp <- tabTmp[tabTmp$Count >= counts,]
       if(nrow(tabTmp)>0){
         tabTmp$p.adjust <- stats::p.adjust(tabTmp$pvalue, method = 'BH')
       }

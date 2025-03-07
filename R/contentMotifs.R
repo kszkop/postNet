@@ -88,8 +88,12 @@ contentMotifs <- function(ptn,
     if (!is.null(subregion)) {
       #
       subSeq <- sapply(seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel))
+      if(length(which(is.na(subSeq)))>0){
+        message('For some of the sequences the selected subregion is longer than the sequence region and these sequences will be removed')
+      }
       seqTmp <- subSeq
     }
+    seqTmp <- seqTmp[!is.na(seqTmp)]
     
     #cl <- parallel::makeCluster(num_threads)
     #doParallel::registerDoParallel(cl)
@@ -135,10 +139,10 @@ contentMotifs <- function(ptn,
       } else {
         motifOut <- motifOutTmp
       }
-      names(motifOut) <- ptn_geneID(ptn, region=reg)
-      #
+      names(motifOut) <- names(seqTmp)
+      
       if (tolower(unitOut) == "number" & isTRUE(plotOut)) {
-        nameTmp <- ifelse(is.null(pdfName), paste(region, motif, "content.pdf", sep = "_"), paste(pdfName, reg, motif, "content.pdf", sep = "_"))
+        nameTmp <- ifelse(is.null(pdfName), paste(reg, motif, "content.pdf", sep = "_"), paste(pdfName, reg, motif, "content.pdf", sep = "_"))
         nameOut <- nameTmp
         #
         resOut <- resQuant(qvec = motifOut, ptn = ptn)
@@ -146,7 +150,7 @@ contentMotifs <- function(ptn,
         colOut <- colPlot(ptn)
         # Plot
         pdf(nameOut, width = 8, height = 8, useDingbats = F)
-        ylabel <- paste(region, motif, sep = "_")
+        ylabel <- paste(reg, motif, sep = "_")
         plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
         dev.off()
       }

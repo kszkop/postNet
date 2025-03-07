@@ -1,10 +1,10 @@
-plotFeatureMap <- function(ptn,
+plotFeaturesMap <- function(ptn,
                            regOnly = TRUE,
                            comparisons = NULL,
                            featSel,
                            scaled = TRUE,
                            remExtreme = NULL,
-                           pdfName
+                           pdfName = NULL
                            ){
   
   check_ptn(ptn)
@@ -49,26 +49,26 @@ plotFeatureMap <- function(ptn,
   if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_bg(ptn))){
     stop(" 0 is always a background, but no background provided")
   }
-  resOut <- resQuant(qvec = ptn_effect(ptn), ptn = ptn)
   #
   if(isTRUE(regOnly)){
+    resOut <- resQuant(qvec = ptn_effect(ptn), ptn = ptn)
     #for (i in 1:length(comparisons)) {
     if (names(resOut)[1] == 'background') {
-      compTmp <- comparisons[[i]] + 1
+      compTmp <- comparisons[[1]] + 1
     } else {
-      compTmp <- comparisons[[i]]
+      compTmp <- comparisons[[1]]
     }
     listSel <- c(names(resOut[[compTmp[1]]]), names(resOut[[compTmp[2]]]))
     features <- featuresTmp[row.names(featuresTmp) %in% listSel,]
   } 
   if(isTRUE(scaled)){
-    featuresOut <- scale(na.omit(features), center=F)
+    featuresOut <- scale(na.omit(features), center=T)
   } else {
     featuresOut <- na.omit(features)
   }
   fmapRes <- umap::umap(featuresOut, n_components = 2)
   fmapRes <- fmapResOut <- as.data.frame(fmapRes$layout)
-  colnames(fmapRes) <- colnames(fmapResOut) <- c("fMAP1", "fMAP2")
+  colnames(fmapRes) <- colnames(fmapResOut) <- c("fUMAP1", "fUMAP2")
   fmapRes$Gene <- rownames(featuresOut)
   
   #Plot every feature together with eff. Prepare effect plot first
@@ -79,9 +79,11 @@ plotFeatureMap <- function(ptn,
   
   for(feat in featSel){
     featTmp <- features[,feat]
+    #is_binary(featTmp)
+    
     feature_fmap <- plot_fmap(fmapRes, colVec = featTmp, remExtreme = remExtreme, name=feat)
     
-    pdf(ifelse(is.null(pdfName),paste(feat, '_fmap.pdf', sep=''), paste(pdfName,feat, 'fmap.pdf',sep='_')),width= 16,height=8, useDingbats = F)
+    pdf(ifelse(is.null(pdfName),paste(feat, '_fumap.pdf', sep=''), paste(pdfName,feat, 'fumap.pdf',sep='_')),width= 16,height=8, useDingbats = F)
     par(mar=c(5,5,5,5),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=0.9, cex.main=0.7,cex.lab=0.9)
     
     gridExtra::grid.arrange(
@@ -94,5 +96,6 @@ plotFeatureMap <- function(ptn,
     
     dev.off()
   }
-  ptn@analysis@featureIntegration@fmapResOut
+  ptn@analysis@featureIntegration@featureMap <- fmapResOut
+  return(ptn)
 }

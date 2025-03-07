@@ -424,9 +424,9 @@ postNetStart <- function(ads = NULL,
   ##
   genesIn <- resSel(ads = ads, regulation = regulation, contrast = contrast, geneList = geneList)
 
-  if(length(intersect(outDB$geneID, as.character(unlist(genesIn))))==0){
-    stop('Annotation geneIDs are not compatibile with gene IDs in the provided gene list/anota2seq object')
-  }
+  #if(length(intersect(outDB$geneID, as.character(unlist(genesIn))))==0){
+  #  stop('Annotation geneIDs are not compatibile with gene IDs in the provided gene list/anota2seq object')
+  #}
   if(length(setdiff(as.character(unlist(genesIn)), outDB$geneID))>0){
     warning(paste('There are ', length(setdiff(as.character(unlist(genesIn)), outDB$geneID)), ' genes in the geneList/anota2seq object that are not in the selected annotation. Consider using a more compatible annotation with your analysis. See vignette for details on sourcing annotations and RefSeq release versions.',sep=''))
   }
