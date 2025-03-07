@@ -1642,7 +1642,7 @@ is_binary <- function(x) {
 
 plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
   
-  if(!is.null(remExtreme)){
+  if(!is.null(remExtreme) & !is_binary(colVec)){
     minV <- quantile(colVec, remExtreme)
     maxV <- quantile(colVec, 1 - remExtreme)
     
@@ -1654,7 +1654,7 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
     colVecPlot <- ggplot2::ggplot(fmapRes, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = colVecColour)) +
       ggplot2::geom_point(size = 2) +
       ggplot2::scale_color_gradient2(low = "blue",mid = 'white', high = "red") +
-      ggplot2::labs(title = paste('Feature: ', name, sep=''),  x = "fUMAP 1", y = "fUMAP 2", color = name) +
+      ggplot2::labs(title = name,  x = "fUMAP 1", y = "fUMAP 2", color = name) +
       ggplot2::theme_minimal() +
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "none") 
@@ -1663,35 +1663,31 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
     tmpLeg <- data.frame(x = 1, y = 1,colVec = seq(min(colVec), max(colVec), length.out = 100))
   
     colVecLeg<- ggplot2::ggplot(tmpLeg, ggplot2::aes(x = x, y = y, color = colVec)) +
-      ggplot2::geom_point(size = 0) +  # Invisible points
+      ggplot2::geom_point(size = 0) +
       ggplot2::scale_color_gradient2(low = "blue", mid = "white", high = "red") +
       ggplot2::labs(color = name) +
       ggplot2::theme_minimal() +
       ggplot2::theme(legend.key.height = ggplot2::unit(1.5, "cm"),legend.key.width = ggplot2::unit(0.75, "cm"))
   
-    legend_grob <- ggplot2::ggplotGrob(colVecLeg)
-    legendOut <- legend_grob$grobs[[which(legend_grob$layout$name == "guide-box")]]
   } else {
     colVecPlot <- ggplot2::ggplot(fmapRes, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = factor(colVecColour))) +
       ggplot2::geom_point(size = 2) +
-      ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "firebrick1")) +  # Custom color for binary values
-      ggplot2::labs(title = paste('Feature: ', name, sep=''),  x = "fUMAP 1", y = "fUMAP 2", color = name) +
+      ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "firebrick1")) +
+      ggplot2::labs(title =  name,  x = "fUMAP 1", y = "fUMAP 2", color = name) +
       ggplot2::theme_minimal() +
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "none")
     
-    
-    legDataTmp<- data.frame(category = name)
-    colVecLeg <- ggplot2::ggplot(legDataTmp, ggplot2::aes(x = 1, y = 1)) +
-      ggplot2::geom_point(size = 4, color = "firebrick1") +
-      ggplot2::labs(color = name) +
-      ggplot2::theme_void() +
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, size = 12, face = "bold"))
-    
-    legend_grob <-  ggplot2::ggplotGrob(colVecLeg)
-    legendOut <- legend_grob
-    
+    legDataTmp<- data.frame(category = factor(c("0", "1")))
+    colVecLeg <- ggplot2::ggplot(legDataTmp, ggplot2::aes(x = 1, y = category, color = category)) +
+      ggplot2::geom_point(size = 4) +  
+      ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "firebrick1")) +
+      ggplot2::labs(color = 'Feature') +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(legend.key.height = ggplot2::unit(1, "cm"), legend.key.width = ggplot2::unit(0.5, "cm"))
   }
+  legend_grob <- ggplot2::ggplotGrob(colVecLeg)
+  legendOut <- legend_grob$grobs[[which(legend_grob$layout$name == "guide-box")]]
   
   return(list(mainPlot = colVecPlot, legend = legendOut))  
 }
