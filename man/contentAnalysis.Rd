@@ -26,11 +26,15 @@ contentAnalysis(ptn,
   \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"},
   \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
   }
-  \item{subregion}{Optionally, it is possible to specify a subregion of the sequences to either select or
-  exclude from the analysis by indicating a number of nucleotides from either the start if positive or end if negative. 
+  \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either
+  select or exclude from the analysis. This is done by providing a numeric value indicating the number of
+  nucleotides from either the start of the sequence region if positive, or the end if negative. For example,
+  \code{subregion = 50}, would limite the analysis to the first 50 nucleotides of the sequence region(s)
+  specified by \code{region}, while \code{subregion = -50}, would remove the last 50 nucleotides of the
+  sequence region(s). The default is \code{NULL}.  
   }
-  \item{subregionSel}{It is required if the subregion is provided. Choose whether the indicated subregion
-  should be "select" or "exclude".
+  \item{subregionSel}{If a value is provided for \code{subregion}, indicate whether the subregion should be
+  considered or excluded by specifying either \code{"select"} or \code{"exclude"}. The default is \code{NULL}.
   }
   \item{comparisons}{A list of numeric vectors indicating which gene sets in \code{regulation} or 
   \code{geneList} should be used in pair-wise comparisons. The numeric vectors should correspond to the
@@ -40,8 +44,8 @@ contentAnalysis(ptn,
   \code{NULL}.
   }
   \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the 
-  log2-transformed lengths for the sequence regions of interest will be returned, and comparisons between
-  gene sets will not be performed. The default is \code{TRUE}. 
+  nucleotide content for the sequence regions of interest will be returned, and statistical 
+  comparisons between gene sets will not be performed. The default is \code{TRUE}. 
   }
   \item{plotType}{If \code{plotOut} is \code{TRUE}, indicate the type of output plot to generate. Options 
   are, \code{"boxplot"}, \code{"violin"}, or \code{"ecdf"}. The default is \code{"boxplot"}. 
@@ -50,10 +54,10 @@ contentAnalysis(ptn,
   }
 }
 
-\details{A two-sided Wilcoxon Rank Sum test is performed to identify significant differences in mRNA sequence region length between gene sets of interest, or against the background gene set.
+\details{A two-sided Wilcoxon Rank Sum test is performed to identify significant differences in mRNA sequence region nucleotide content between gene sets of interest, or against the background gene set.
 }
 
-\value{List of vectors for selected regions with calculated desired nucleotide content for each gene. The function will also output plots with desired comparisons.
+\value{A named list of vectors for selected mRNA sequence regions with the calculated nucleotide content for each gene. The elements in each vector are named with the gene ID. The \code{contentAnalysis} function can also return PDF files of output plots with statistical comparisons between gene sets of interest.
 }
 
 \examples{

@@ -27,12 +27,12 @@ lengthAnalysis(ptn,
   \code{geneList} will be compared to the background (0), and the first and second gene sets will be compared to each other.
   The default is \code{NULL}.
   }
-  \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the log2-transformed
-  lengths for the sequence regions of interest will be returned, and comparisons between gene sets will not be performed.
-  The default is \code{TRUE}. 
+  \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the 
+  log2-transformed lengths for the sequence regions of interest will be returned, and statistical 
+  comparisons between gene sets will not be performed. The default is \code{TRUE}.
   }
-  \item{plotType}{If \code{plotOut} is \code{TRUE}, indicate the type of output plot to generate. Options are, \code{"boxplot"},
-  \code{"violin"}, or \code{"ecdf"}. The default is \code{"boxplot"}. 
+  \item{plotType}{If \code{plotOut} is \code{TRUE}, indicate the type of output plot to generate. Options are,
+  \code{"boxplot"}, \code{"violin"}, or \code{"ecdf"}. The default is \code{"boxplot"}. 
   }
   \item{pdfName}{Name to be appended to output PDF files.
   }
