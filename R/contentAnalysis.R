@@ -81,7 +81,7 @@ contentAnalysis <- function(ptn,
         # Plot
         pdf(ifelse(is.null(pdfName), paste(reg, content, "content.pdf", sep = "_"), paste(pdfName, reg, content, "content.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
         ylabel = paste(reg, '%', paste0(content, "content"), sep = "_")
-        plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
+        plotPostNet(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
         dev.off()
       }
       contentFinal[[paste(reg, content, sep = "_")]] <- contentOut

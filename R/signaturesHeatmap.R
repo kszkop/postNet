@@ -29,21 +29,8 @@ signaturesHeatmap <- function(ptn,
     } else {
       effIn <- addEff[[i]]
     }
-  #  ##apvEff of effect
     regData <- data.frame(geneSymb = names(effIn))
     regData$effIn <- as.numeric(effIn)
-  #  if(RegMode=='translation'){
-  #    regData$ApvEff<- ads@translation@apvStatsRvm[[cont]][,"apvEff"]
-  #  }
-  #  if(RegMode=='buffering'){
-  #    regData$ApvEff<- ads@buffering@apvStatsRvm[[cont]][,"apvEff"]
-  #  }
-  #  if(RegMode=='poly'){
-  #    regData$ApvEff <- ads@translatedmRNA@apvStatsRvm[[cont]][,"apvEff"]
-  #  }
-  #  if(RegMode=='total'){
-  #    regData$ApvEff <- ads@totalmRNA@apvStatsRvm[[cont]][,"apvEff"]
-  #  }
     
     ##colculate metric for each signature
     percOut <- as.numeric()

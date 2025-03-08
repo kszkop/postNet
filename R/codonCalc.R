@@ -92,7 +92,7 @@ codonCalc <- function(ptn,
       colOut <- colPlot(ptn)
       pdf(nameOut, width = 8, height = 8, useDingbats = F)
       ylabel <- paste("codon usage(", unit, ")",sep = "")
-      plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
+      plotPostNet(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
       #paste("codon usage(", unit, ")","\n", featNameTmp, ":" ,paste(featTmp,collapse=','),sep='')
       dev.off()
     }

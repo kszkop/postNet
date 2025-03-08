@@ -49,6 +49,8 @@ featureIntegration <- function(ptn,
   ptn <- prepFeatures(ptn, features)
   
   dataTmp <- ptn_features(ptn)
+  
+  
   effTmp <- ptn_effect(ptn)
   colnames(dataTmp) <- c(paste("a", seq(1, ncol(dataTmp), 1), sep = ""))
   
@@ -60,7 +62,9 @@ featureIntegration <- function(ptn,
   fiOut <- new("postNetFeatureIntegration",
                lm = NULL,
                rf = NULL,
+               comparisons = NULL,
                featureMap = NULL)
+  
   ######
   if (analysis_type == 'lm'){
     #
@@ -74,6 +78,7 @@ featureIntegration <- function(ptn,
     #
     if (isTRUE(regOnly)){
       #
+      compOut <- character()
       for (i in 1:length(comparisons)) {
         coloursTmp <- ptn_colours(ptn)
         if (names(resOut)[1] == 'background') {
@@ -104,8 +109,11 @@ featureIntegration <- function(ptn,
           #
           plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
         }
+        compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
       }
+      fiOut@comparisons <- compOut
     } else {
+      fiOut@comparisons <- 'allData'
       #
       coloursTmp <- c('salmon','skyblue')
       lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel,  covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColour)
@@ -118,7 +126,7 @@ featureIntegration <- function(ptn,
         #
         featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
         #
-        set <- dataTmpSel[,colnames(dataTmpSel) %in% c(featTmp,'effM')]
+        set <- dataTmp[,colnames(dataTmp) %in% c(featTmp,'effM')]
         #
         set1 <- names(resOut[[compTmp[1]]])
         setSel1 <- set[row.names(set) %in% set1,]
@@ -143,9 +151,9 @@ featureIntegration <- function(ptn,
       #regTmp <- names(resOut)[compTmp]
       dataTmpSel <- dataTmpReg
       dataTmpSel$reg <- NA
-      for(i in compTmp) {
-        regTmp <- names(resOut[[i]])
-        dataTmpSel$reg[row.names(dataTmpSel) %in% regTmp] <- i
+      for(j in compTmp) {
+        regTmp <- names(resOut[[j]])
+        dataTmpSel$reg[row.names(dataTmpSel) %in% regTmp] <- j
       }
       dataTmpSel <- dataTmpSel[!is.na(dataTmpSel$reg),]
       #

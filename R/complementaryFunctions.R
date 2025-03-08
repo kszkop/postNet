@@ -381,7 +381,7 @@ addStats <- function(comparisons, plotType, resOut, coloursOut){
 
 # 
 
-plotUtils <- function(resOut, colOut, comparisons, ylabel, plotType) {
+plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
   
   if(plotType == "boxplot" | plotType == "violin"){
     m <- layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1), heights = c(1, 5))
@@ -1070,6 +1070,12 @@ extract_seq <- function(pos, seqs){
   } else {
     return(NA)
   }
+}
+
+generate_pairs <- function(num) {
+  numpairs <- expand.grid(num, num)  
+  numpairs <- numpairs[numpairs$Var1 < numpairs$Var2,]
+  split(as.matrix(numpairs), seq(nrow(numpairs)))  
 }
 
 runMfold <- function(fastaFile){

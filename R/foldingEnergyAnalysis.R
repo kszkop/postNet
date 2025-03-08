@@ -117,7 +117,7 @@ foldingEnergyAnalysis <- function(ptn,
       # Plot
       pdf(ifelse(is.null(pdfName), paste("custom", plotType, "foldEnergyAnalysis.pdf", sep = "_"), paste(pdfName, "custom", plotType, "foldEnergyAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
       ylabel <- ifelse(isTRUE(residFE), 'residuals (fe ~ length)', 'folding energy')
-      plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
+      plotPostNet(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
       dev.off()
     }
   } else if (sourceFE == "load") {
@@ -156,7 +156,7 @@ foldingEnergyAnalysis <- function(ptn,
         # Plot
         pdf(ifelse(is.null(pdfName), paste(reg, plotType, "foldEnergyAnalysis.pdf", sep = "_"), paste(pdfName, reg, plotType, "foldEnergyAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
         ylabel <- ifelse(isTRUE(residFE), 'residuals (fe ~ length)', 'folding energy')
-        plotUtils(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
+        plotPostNet(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
         dev.off()
       }
     }

@@ -147,6 +147,7 @@ setClass("postNetFeatureIntegration",
          slots = c(
            lm = "listOrNULL",
            rf  = "listOrNULL",
+           comparisons = "characterOrNULL",
            featureMap = "ANY"
          )
 )

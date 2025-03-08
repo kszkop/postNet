@@ -244,7 +244,7 @@ codonUsage <- function(ptn,
       ##
       pdf(paste(nameOut, ind,'_index.pdf', sep = ""),width= 8,height=8, useDingbats = F)
       ylabel = paste(ind, 'index', sep = " ")
-      plotUtils(resOutInd, colOutInd, comparisons, ylabel = ylabel, plotType = plotType_index)
+      plotPostNet(resOutInd, colOutInd, comparisons, ylabel = ylabel, plotType = plotType_index)
       dev.off()
     }
   }
