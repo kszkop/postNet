@@ -1,7 +1,7 @@
 uorfAnalysis <- function(ptn,
                           startCodon = "ATG",
                           KozakContext = "strong",
-                          onlyUTR5 = FALSE,
+                          onlyUTR5 = TRUE,
                           unitOut = "number",
                           comparisons = NULL,
                           plotOut = TRUE,
