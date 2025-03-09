@@ -63,7 +63,9 @@ uorfAnalysis(ptn,
  data(postNetExample)
     
 # Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
+ translationUp <- postNetExample$geneList[[1]][1:100]
+ translationDown <- postNetExample$geneList[[2]][1:100]
+ myGenes <- list('translationUp' = translationUp, 'translationDown' = translationDown)
  myBg <- postNetExample$background
  myEffect <- postNetExample$effect
 
@@ -80,11 +82,10 @@ uorfAnalysis(ptn,
  
 
 # Identify uORFs with the cannonical start code in a strong Kozak context, fully contained within 5'UTRs, 
-# and compare between translationUp genes vs. background, translationDown genes vs. background, and 
-# translationUp vs. translationDown genes
+# and compare between translationUp vs. translationDown genes
 
  uORFs <- uorfAnalysis(ptn = ptn,
-                      comparisons = list(c(0,1),c(0,2),c(1,2)),
+                      comparisons = list(c(1,2)),
                       startCodon = "ATG",
                       KozakContext = c("strong"),
                       onlyUTR5 = FALSE,
