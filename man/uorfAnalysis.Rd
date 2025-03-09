@@ -88,7 +88,7 @@ uorfAnalysis(ptn,
                       comparisons = list(c(1,2)),
                       startCodon = "ATG",
                       KozakContext = c("strong"),
-                      onlyUTR5 = FALSE,
+                      onlyUTR5 = TRUE,
                       unitOut = "number",
                       plotOut = TRUE,
                       pdfName = 'example')
