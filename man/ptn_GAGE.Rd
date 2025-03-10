@@ -1,6 +1,6 @@
 \docType{methods}
 \name{ptn_GAGE}
-\alias{ptn_GAGE}
+\alias{ptn_GAGE,postNetData-method}
 \title{Accessor for the "GAGE" slot of a \code{postNetData} object
 }
 
@@ -8,7 +8,7 @@
 }
 
 \usage{
-ptn_GAGE(ptn,
+\S4method{ptn_GAGE}{postNetData}(ptn,
         category, 
         direction, 
         threshold)

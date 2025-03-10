@@ -29,12 +29,13 @@ contentAnalysis(ptn,
   \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either
   select or exclude from the analysis. This is done by providing a numeric value indicating the number of
   nucleotides from either the start of the sequence region if positive, or the end if negative. For example,
-  \code{subregion = 50}, would limite the analysis to the first 50 nucleotides of the sequence region(s)
-  specified by \code{region}, while \code{subregion = -50}, would remove the last 50 nucleotides of the
-  sequence region(s). The default is \code{NULL}.  
+  \code{subregion = 50}, would denote the first 50 nucleotides of the sequence region(s) specified by \code{region},
+  while \code{subregion = -50}, would denote the last 50 nucleotides of the sequence region(s). The
+  default is \code{NULL}.  
   }
   \item{subregionSel}{If a value is provided for \code{subregion}, indicate whether the subregion should be
-  considered or excluded by specifying either \code{"select"} or \code{"exclude"}. The default is \code{NULL}.
+  selected (limiting the analysis to this region) or excluded by specifying either \code{"select"} or 
+  \code{"exclude"}. The default is \code{NULL}.
   }
   \item{comparisons}{A list of numeric vectors indicating which gene sets in \code{regulation} or 
   \code{geneList} should be used in pair-wise comparisons. The numeric vectors should correspond to the
