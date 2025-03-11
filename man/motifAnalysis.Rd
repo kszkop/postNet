@@ -27,7 +27,7 @@ motifAnalysis(ptn,
   }
   \item{memePath}{The path to the STREME executables in "meme/bin". Note that the MEME-Suite must be installed. 
   }
-  \item{seqType}{A string speicfying the type of sequence being provided to search for motifs. The options are,
+  \item{seqType}{A string specifying the type of sequence being provided to search for motifs. The options are,
   \code{"dna"}, \code{"rna"}, or \code{"protein"}. The default is \code{"dna"}.
   }
   \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"},

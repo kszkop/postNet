@@ -46,7 +46,7 @@ uorfAnalysis(ptn,
   }
   \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the 
   values specified with \code{unitOut} will be returned, and statistical comparisons between gene sets will not be
-  performed. Note that plots will only be generated if \code{unitOut = "position"}. The default is \code{TRUE}. 
+  performed. Note that plots will only be generated if \code{unitOut = "number"}. The default is \code{TRUE}. 
   }
   \item{pdfName}{Name to be appended to output PDF files.
   }
