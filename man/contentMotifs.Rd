@@ -1,6 +1,6 @@
 \name{contentMotifs}
 \alias{contentMotifs}
-\title{
+\title{contentMotifs
 }
 
 \description{The number of motifs in the selected region for each gene is calculated. There is also an option to predict the presence of g-quadruplexes using the pqsfinder package https://bioconductor.org/packages/release/bioc/html/pqsfinder.html . If plotOut is TRUE, all indicated comparisons between different sets of genes are performed and plotted. 
