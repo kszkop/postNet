@@ -135,10 +135,13 @@ doi: 10.1093/bioinformatics/btx413. PMID: 29077807.
    species = "human"
  )
  
+# ------------------------------------------------------------------
+# Example 1: Detect and quantify a given motif within 5'UTRs
+# ------------------------------------------------------------------
 
 # Detect and quantify a given motif within 5'UTRs, and compare between translationUp vs. translationDown genes
 
- UTR5_SGCSGCS <- contentMotifs(ptn = ptn, 
+ UTR5_SGCSGCS_num <- contentMotifs(ptn = ptn, 
                         motifsIn = 'SGCSGCS',
                         region = c('UTR5'), 
                         comparisons = list(c(1,2)),
@@ -148,6 +151,67 @@ doi: 10.1093/bioinformatics/btx413. PMID: 29077807.
                         pdfName = 'example',
                         plotOut = TRUE)
                       
- str(UTR5_SGCSGCS)
+ str(UTR5_SGCSGCS_num)
+ 
+ # Now find the positions of the motif in the 5'UTR
+ 
+ UTR5_SGCSGCS_pos <- contentMotifs(ptn = ptn, 
+                        motifsIn = 'SGCSGCS',
+                        region = c('UTR5'), 
+                        comparisons = list(c(1,2)),
+                        plotType = 'ecdf',
+                        dist = 1,
+                        unitOut = "position")
+                      
+ str(UTR5_SGCSGCS_pos)
+ 
+ \dontrun{
+# ------------------------------------------------------------------
+# Example 2: Detect and quantify motifs identified using motifAnalysis
+# ------------------------------------------------------------------
+
+# First run motifAnalysis to identify significantly enriched motifs in the 3'UTR
+ ptn <- motifAnalysis(ptn = ptn, 
+                     stremeThreshold = 0.05,
+                     minwidth = 6,
+                     memePath = "/meme/bin", 
+                     region = c('UTR3'))
+
+# Quantify the presence of these motifs in transcripts, and compare between translationUp vs. translationDown 
+# genes, adjusting for the length of the sequence.
+ 
+ UTR3_denovo_motifs <- contentMotifs(ptn = ptn, 
+                        motifsIn = ptn_motifSelection(ptn, region = 'UTR3'),
+                        region = c('UTR3'), 
+                        comparisons = list(c(1,2)),
+                        plotType = 'ecdf',
+                        dist = 1,
+                        resid = TRUE,
+                        unitOut = "number",
+                        pdfName = 'example',
+                        plotOut = TRUE)
+                      
+ str(UTR3_denovo_motifs)
+ 
+# ------------------------------------------------------------------
+# Example 3: Detect and quantify potential G-quadruplex-forming sequences
+# ------------------------------------------------------------------
+
+# Quantify the presence of G4 motifs in 5'UTR and CDS, and compare between translationUp vs. translationDown 
+# genes.
+ 
+ G4_UT5_CDS <- contentMotifs(ptn = ptn, 
+                        motifsIn = 'G4',
+                        region = c('CDS','UTR3'), 
+                        comparisons = list(c(1,2)),
+                        plotType = 'ecdf',
+                        dist = 1,
+                        resid = FALSE,
+                        unitOut = "number",
+                        pdfName = 'example',
+                        plotOut = TRUE)
+                      
+ str(G4_UT5_CDS)
+ }
 
 }
