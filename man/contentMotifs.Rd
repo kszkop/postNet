@@ -145,7 +145,6 @@ doi: 10.1093/bioinformatics/btx413. PMID: 29077807.
                         motifsIn = 'SGCSGCS',
                         region = c('UTR5'), 
                         comparisons = list(c(1,2)),
-                        plotType = 'ecdf',
                         dist = 1,
                         unitOut = "number",
                         pdfName = 'example',
@@ -159,7 +158,6 @@ doi: 10.1093/bioinformatics/btx413. PMID: 29077807.
                         motifsIn = 'SGCSGCS',
                         region = c('UTR5'), 
                         comparisons = list(c(1,2)),
-                        plotType = 'ecdf',
                         dist = 1,
                         unitOut = "position")
                       
@@ -184,7 +182,6 @@ doi: 10.1093/bioinformatics/btx413. PMID: 29077807.
                         motifsIn = ptn_motifSelection(ptn, region = 'UTR3'),
                         region = c('UTR3'), 
                         comparisons = list(c(1,2)),
-                        plotType = 'ecdf',
                         dist = 1,
                         resid = TRUE,
                         unitOut = "number",
@@ -204,7 +201,6 @@ doi: 10.1093/bioinformatics/btx413. PMID: 29077807.
                         motifsIn = 'G4',
                         region = c('CDS','UTR3'), 
                         comparisons = list(c(1,2)),
-                        plotType = 'ecdf',
                         dist = 1,
                         resid = FALSE,
                         unitOut = "number",
