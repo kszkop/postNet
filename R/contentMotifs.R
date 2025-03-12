@@ -10,7 +10,6 @@ contentMotifs <- function(ptn,
                           subregionSel=NULL,
                           comparisons = NULL,
                           pdfName = NULL,
-                          plotType = "ecdf",
                           #num_threads = 1,
                           plotOut = TRUE) {
   
@@ -151,7 +150,7 @@ contentMotifs <- function(ptn,
         # Plot
         pdf(nameOut, width = 8, height = 8, useDingbats = F)
         ylabel <- paste(reg, motif, sep = "_")
-        plotPostNet(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
+        plotPostNet(resOut, colOut, comparisons, ylabel = ylabel ,plotType = 'ecdf')
         dev.off()
       }
       motifsFinal[[paste(reg, motif, sep = "_")]] <- motifOut

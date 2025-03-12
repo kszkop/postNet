@@ -989,66 +989,6 @@ generateOut <- function(x, tmpList){
   return(tmpString)
 }
 
-codPlot <- function(rust, name){
-  rustOut <- matrix(NA, nrow=nrow(rust)-1, ncol=60)
-  for(i in 1:nrow(rust[-62,])){
-    obs <- as.numeric(rust[i,3:62])
-    exp <- as.numeric(rust[i,2])
-    ratio <- log2(obs/exp)
-    rustOut[i,] <- ratio 
-  }
-  pdf(paste(name,'codons.pdf',sep='_'),height=6,width=6)
-  par(mar=c(5,5,5,4),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=0.8,cex.main=0.8,cex.lab=1)
-  plot(seq(-40,19,1),rustOut[1,],type='l',xlim=c(-40,20),ylim=c(-3,3),xaxt='n',xlab='',ylab='Codon RUST ratio',col='black',lwd=2)
-  axis(seq(-40,20,5),side=1,at=seq(-40,20,5),tick=F)
-  for(i in 2:nrow(rustOut)){
-    lines(seq(-40,19,1),as.numeric(rustOut[i,]),col='black',lwd=2)
-  }
-  lines(seq(-40,19,1),as.numeric(rust[62,3:62]),col='dodgerblue',lwd=2)
-  abline(v=0,col='red')
-  dev.off()
-}
-
-
-readRiboDpn <- function(dpnFile, dpn_path=NULL, annot, cds_filt=TRUE){
-  cat("Reading and processing", dpnFile, "\n")
-  
-  ##initate output object which is a list for refseqs.
-  dataList <- list()
-  #
-  tmpList <- scan(paste(dpn_path,dpnFile,sep='/'), what="", sep="\n", quiet=TRUE)
-  tmpList <- strsplit(tmpList, "\tZZZ\t")
-  names(tmpList) <- sapply(tmpList, function(x) x[1])
-  refList <- lapply(tmpList, modList)
-  #subset to per gene
-  refList <- refList[names(refList) %in% annot$id]
-  #
-  if(isTRUE(cds_filt)){
-    #
-    tmpAllRefs <- names(refList)
-    #
-    cds_start <- as.numeric(sapply(annot$UTR5_seq, function(x) length(seqinr::s2c(x))))+1
-    cds_end <- cds_start + annot$lenTmp #as.numeric(sapply(annot$CDS_seq, function(x) length(seqinr::s2c(x))))
-    names(cds_start) <- names(cds_end) <- annot$id
-    #
-    refListMod <- sapply(tmpAllRefs, extractInCDS, tmpList=refList, cds_start=cds_start, cds_end=cds_end)
-  } else {
-    refListMod <- refList
-  }
-  ##some refseqs may then loose all the data. These are removed
-  tmpSel <- unlist(lapply(refListMod, length))
-  refListMod <- refListMod[tmpSel>0]
-  
-  ##Replace transIDs with geneIDs
-  names(refListMod) <- annot$geneID[match(names(refListMod), annot$id)]
-  
-  cat("done\n")
-  
-  ##add summary to output and return
-  dataList <- refListMod
-  return(dataList)
-}
-
 s4_to_dataframe <- function(obj) {
   tmpNames <- slotNames(obj)
   
@@ -1183,6 +1123,9 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   }
 
   if (!isTRUE(allFeat) & length(presel) > 0) {
+    if(ncol(dataIn)+1 == length(presel)){
+      stop('None of the features passed univariate threshold')
+    }
     dataIn <- dataIn[, -presel]
     models <- models[-presel]
   }

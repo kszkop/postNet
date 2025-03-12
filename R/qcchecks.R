@@ -504,11 +504,15 @@ check_model <- function(model, analysis_type) {
   if (is.null(model)) {
     stop("Please provide correct 'model' for a analysis type")
   }
-  if (!analysis_type == "lm" && model %in% c("univariateModel", "stepwiseModel", "finalModel")) {
-    stop("Please provide correct 'model'. For 'lm', choose one of these: 'univariateModel', 'stepwiseModel', 'finalModel'")
+  if(analysis_type == "lm"){
+    if (!model %in% c("univariateModel", "stepwiseModel", "finalModel")) {
+      stop("Please provide correct 'model'. For 'lm', choose one of these: 'univariateModel', 'stepwiseModel', 'finalModel'")
+    }
   }
-  if (!analysis_type == "rf" && model %in% c("preModel", "borutaModel", "finalModel")) {
-    stop("Please provide correct 'model'. For 'rf', choose one of these: 'preModel', 'borutaModel', 'finalModel'")
+  if(analysis_type == "rf"){
+    if(!model %in% c("preModel", "borutaModel", "finalModel")) {
+      stop("Please provide correct 'model'. For 'rf', choose one of these: 'preModel', 'borutaModel', 'finalModel'")
+    }
   }
 }
 
@@ -531,6 +535,9 @@ check_features <- function(features) {
   # 
   if (!all(sapply(features, is.vector))) {
     stop("Error: Each element in 'features' must be a vector.")
+  }
+  if(length(features) < 2){
+    stop(" Please provide at least two features")
   }
 }
 
@@ -588,4 +595,13 @@ check_featSel <- function(featSel, features) {
   } else {
     return(FALSE)
   }
+}
+
+check_predFeat <- function(predFeat) {
+  is_list<- is.list(predFeat)
+  has_rownames <- !is.null(rownames(predFeat)) && all(rownames(predFeat) != "")
+  is_numeric <- all(sapply(predFeat, is.numeric))
+  has_no_nas <- all(complete.cases(predFeat))
+  
+  return(is_dataframe && has_rownames && is_numeric && has_no_nas)
 }

@@ -66,16 +66,18 @@ motifAnalysis <- function(ptn,
     resOut <- resQuant(qvec = seqForAnalysis, ptn = ptn)
     
     controlSeq <- resOut[[1]]
-    seqinr::write.fasta(sequences = as.list(as.character(controlSeq)), names = names(controlSeq), file.out = paste(paste("Control", reg, sep = "_"), ".fa", sep = ""))
-    
+    #seqinr::write.fasta(sequences = as.list(as.character(controlSeq)), names = names(controlSeq), file.out = paste(paste("Control", reg, sep = "_"), ".fa", sep = ""))
+    controlSeq <- Biostrings::DNAStringSet(controlSeq)
+  
     motifsTmpOut <- list()
     for (j in 2:length(resOut)) {
       #
       regSeq <- resOut[[j]]
-      seqinr::write.fasta(sequences = as.list(as.character(regSeq)), names = names(regSeq), file.out = paste(paste("Regulated", reg, names(resOut)[j], sep = "_"), ".fa", sep = ""))
-      #
-      outdirTmp <- paste("stremeOut", reg, names(resOut)[j], sep = "_")
-      streme_out <- memes::runStreme(input = paste(paste("Regulated", reg, names(resOut)[j], sep = "_"), ".fa", sep = ""), control = paste(paste("Control", reg, sep = "_"), ".fa", sep = ""), meme_path = memePath, alph = tolower(seqType), outdir = outdirTmp, minw = minwidth)
+      #seqinr::write.fasta(sequences = as.list(as.character(regSeq)), names = names(regSeq), file.out = paste(paste("Regulated", reg, names(resOut)[j], sep = "_"), ".fa", sep = ""))
+      regSeq <- Biostrings::DNAStringSet(regSeq)
+      #outdirTmp <- paste("stremeOut", reg, names(resOut)[j], sep = "_")
+      streme_out <- memes::runStreme(input = regSeq, control = controlSeq, meme_path = memePath, alph = tolower(seqType), minw = minwidth)
+      #streme_out <- memes::runStreme(input = paste(paste("Regulated", reg, names(resOut)[j], sep = "_"), ".fa", sep = ""), control = paste(paste("Control", reg, sep = "_"), ".fa", sep = ""), meme_path = memePath, alph = tolower(seqType), outdir = 'TmpStremeOut', minw = minwidth)
       if(nrow(streme_out)==0){
         message(paste('No motifs found in: ',paste(reg, names(resOut)[j], sep = "_"),sep=''))
       }

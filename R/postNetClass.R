@@ -135,7 +135,8 @@ setClass("postNetFeatureIntegration_rf",
             preModel = "ANY",
             borutaModel = "ANY",
             finalModel = "ANY",
-            selectedFeatures = "characterOrnumericOrNULL"
+            selectedFeatures = "characterOrnumericOrNULL",
+            prediction = "ANY"
          )
 )
 
@@ -147,7 +148,6 @@ setClass("postNetFeatureIntegration",
          slots = c(
            lm = "listOrNULL",
            rf  = "listOrNULL",
-           comparisons = "characterOrNULL",
            featureMap = "ANY"
          )
 )

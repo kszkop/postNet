@@ -122,23 +122,25 @@ featureIntegration <- function(ptn,
       bestSel <- names(lmOut@selectedFeatures)
       
       for (feat in bestSel) {
-        print(feat)
         #
         featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
         #
         set <- dataTmp[,colnames(dataTmp) %in% c(featTmp,'effM')]
         #
-        set1 <- names(resOut[[compTmp[1]]])
-        setSel1 <- set[row.names(set) %in% set1,]
-        set2 <- names(resOut[[compTmp[2]]])
-        setSel2 <- set[row.names(set) %in% set2,]
+        #set1 <- names(resOut[[compTmp[1]]])
+        #setSel1 <- set[row.names(set) %in% set1,]
+        #set2 <- names(resOut[[compTmp[2]]])
+        #setSel2 <- set[row.names(set) %in% set2,]
         
-        plotScatterInd(set1=setSel1, set2=NULL, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
+        plotScatterInd(set1=set, set2=NULL, orgName=feat, coloursIn='grey75', nameOut=pdfName)
       }
     }
   } else if (analysis_type == "rf") {
     dataTmpReg <- dataTmp[, colnames(dataTmp) != "effM"]
+    colnames(dataTmpReg) <- namesDf$originalNames[match(colnames(dataTmpReg), namesDf$newNames)]
+    
     #
+    compOut <- character()
     for (i in 1:length(comparisons)) {
       coloursTmp <- ptn_colours(ptn)
       if (names(resOut)[1] == 'background') {
@@ -151,11 +153,16 @@ featureIntegration <- function(ptn,
       #regTmp <- names(resOut)[compTmp]
       dataTmpSel <- dataTmpReg
       dataTmpSel$reg <- NA
-      for(j in compTmp) {
-        regTmp <- names(resOut[[j]])
-        dataTmpSel$reg[row.names(dataTmpSel) %in% regTmp] <- j
+      for(j in 1:2) {
+        if(length(compTmp) != 2){
+          stop('There is something wrong with comparisons')
+        }
+        cTmp <- names(resOut[[compTmp[j]]])
+        regTmp <- c('A','B')
+        dataTmpSel$reg[row.names(dataTmpSel) %in% cTmp] <- regTmp[j]
       }
       dataTmpSel <- dataTmpSel[!is.na(dataTmpSel$reg),]
+      dataTmpSel$reg <- as.factor(dataTmpSel$reg)
       #
       # Split to Train and Valid ( 70:30)
       train <- sample(nrow(dataTmpSel), 0.7 * nrow(dataTmpSel), replace = FALSE)
@@ -165,7 +172,8 @@ featureIntegration <- function(ptn,
       ValidSet$reg <- as.factor(ValidSet$reg)
       # run model on training set
       model1 <- randomForest::randomForest(reg ~ ., data = TrainSet, importance = TRUE, ntree = 500)
-      row.names(model1$importance) <- namesDf$originalNames[match(row.names(model1$importance), namesDf$newNames)]
+      #row.names(model1$importance) <- namesDf$originalNames[match(row.names(model1$importance), namesDf$newNames)]
+      #row.names(model1$importanceSD) <- namesDf$originalNames[match(row.names(model1$importanceSD), namesDf$newNames)]
       
       #
       model1Imp <- Boruta::Boruta(reg ~ ., data = TrainSet, doTrace = 0, maxRuns = 500, pValue = 0.001)
@@ -184,7 +192,7 @@ featureIntegration <- function(ptn,
       tmpNames <- names(sort(sapply(tmp, median)))
       addNames <- c("shadowMin", "shadowMax", "shadowMean")
       
-      tmpNames <- c(namesDf$originalNames, addNames)[match(tmpNames, c(namesDf$newNames, addNames))]
+      #tmpNames <- c(namesDf$originalNames, addNames)[match(tmpNames, c(namesDf$newNames, addNames))]
       coloursN <- rep("black", length(tmpNames))
       coloursN[tmpNames %in% addNames] <- "firebrick1"
       axis(side = 1, at = 1:length(tmpNames), labels = F, font = 2, lwd = 2, las = 2, cex.axis = 0.5,tck=-0.005)
@@ -199,7 +207,7 @@ featureIntegration <- function(ptn,
       model2 <- randomForest::randomForest(reg ~ ., data = TrainSet, importance = TRUE, ntree = 500)
       #
       varImpIn <- sort(randomForest::importance(model2)[, 3], decreasing = T)
-      names(varImpIn) <- namesDf$originalNames[match(names(varImpIn), namesDf$newNames)]
+      #names(varImpIn) <- namesDf$originalNames[match(names(varImpIn), namesDf$newNames)]
       #
       pdf(paste("FinalModel.pdf", sep = "_"), width = 16, height = 8, useDingbats = F)
       par(mfrow = c(1, 2), mar = c(9, 5, 10, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
@@ -249,7 +257,7 @@ featureIntegration <- function(ptn,
         #
         featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
         #
-        set <-ptn_effect(ptn)
+        set <- ptn_effect(ptn)
         set <- dataTmp[,colnames(dataTmp) %in% c(featTmp,'effM')]
         #
         set1 <- names(resOut[[compTmp[1]]])
@@ -259,7 +267,9 @@ featureIntegration <- function(ptn,
         #
         plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
       }
+      compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
     }
+    fiOut@comparisons <- compOut
   } else {
     stop("Please provide correct type: lm for linear regression or rf for random forest")
   }
