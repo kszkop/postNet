@@ -55,7 +55,12 @@ uorfAnalysis(ptn,
 \details{A two-sided Wilcoxon Rank Sum test is performed to identify significant differences in uORFs detected between gene sets of interest, or against the background gene set.
 }
 
-\value{If the \code{unitOut = "number"}, the output will be a named list of vectors with the number of uORFs detected in a particular Kozak context for each gene. This list can be used with the downstream \link[postNet]{featureIntegration} function. If the \code{unitOut = "position"}, the output will be a named list of lists with the start and end positions of each uORF for each gene. These positions cannot be used in \link[postNet]{featureIntegration}. The \code{uorfAnalysis} function can also return PDF files of output plots with statistical comparisons between gene sets of interest when \code{unitOut = "number"}.
+\value{If the \code{unitOut = "number"}, the output will be a named list of vectors with the number of uORFs 
+detected in a particular Kozak context for each gene. This list can be used with the downstream 
+\link[postNet]{featureIntegration} function. If the \code{unitOut = "position"}, the output will be a named
+list of lists with the start and end positions of each uORF for each gene. These positions cannot be used
+in \link[postNet]{featureIntegration}. The \code{uorfAnalysis} function can also return PDF files of output
+plots with statistical comparisons between gene sets of interest when \code{unitOut = "number"}.
 }
 
 \examples{

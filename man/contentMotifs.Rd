@@ -3,7 +3,11 @@
 \title{Detect and quantify the presence of sequence motifs
 }
 
-\description{The \code{contentMotifs} function detects and quantifies the presence of motifs in sequence regions of interest. Known motifs can be provided directly, or the output of the \link[postNet]{motifAnalysis} function, which detects de-novo motifs using STREME (part of the MEME-Suite), can be supplied. Finally, the function can also apply \link[pqsfinder]{pqsfinder} to indeitify G-quadruplexes. In addition, the motifs can be plotted and statistical comparisons can be made between gene sets of interest against background, and/or other genes sets.
+\description{The \code{contentMotifs} function detects and quantifies the presence of motifs in sequence regions
+of interest. Known motifs can be provided directly, or the output of the \link[postNet]{motifAnalysis} function,
+which detects de-novo motifs using STREME (part of the MEME-Suite), can be supplied. Finally, the function can 
+also apply \link[pqsfinder]{pqsfinder} to indeitify G-quadruplexes. In addition, the motifs can be plotted and 
+statistical comparisons can be made between gene sets of interest against background, and/or other genes sets.
 }
 
 \usage{
@@ -75,22 +79,75 @@ contentMotifs(ptn,
   }
 }
 
-\details{The number of motifs in the selected region for each gene is calculated. There is also an option to predict the presence of g-quadruplexes using the pqsfinder package https://bioconductor.org/packages/release/bioc/html/pqsfinder.html . If plotOut is TRUE, all indicated comparisons between different sets of genes are performed and plotted.
+\details{A two-sided Wilcoxon Rank Sum test is performed to identify significant differences in motif
+content between gene sets of interest, or against the background gene set. 
+
+Note that the \code{contentMotif} function uses a more strict method of sequence matching to count motifs 
+than the MEME-Suite, and for this reason some motifs identified with \link[postNet]{motifAnalysis}, which 
+implements STREME, may not be detected. Using a more stringent threshold with the \code{stremeThreshold} 
+parameter may remedy this. Alternatively, motifs identified with STREME can be counted using the 
+\link[memes]{runFimo} tool provided with the MEME-Suite.
 }
 
-\value{List of vectors for selected regions with calculated number of motifs present for each gene. The function will also output plots with desired comparisons.
+\value{If the \code{unitOut = "number"}, the output will be a named list of vectors with the number of motifs 
+detected for each gene in each sequence region specified. This list can be used with the downstream 
+\link[postNet]{featureIntegration} function. If the \code{unitOut = "position"}, the output will be a named
+list of lists with the start and end positions of each motif for each gene in each sequence region specified.
+These positions cannot be used in \link[postNet]{featureIntegration}. The \code{contentMotif} function can 
+also return PDF files of output plots with statistical comparisons between gene sets of interest when 
+\code{unitOut = "number"}.
 }
 
 \references{
 If you use the in-built "G4" option in your analysis, please cite pqsfinder: 
 
-Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfection-tolerant search tool for potential quadruplex-forming sequences in R. Bioinformatics. 2017 Nov 1;33(21):3373-3379. doi: 10.1093/bioinformatics/btx413. PMID: 29077807.
+Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfection-tolerant search tool for 
+potential quadruplex-forming sequences in R. Bioinformatics. 2017 Nov 1;33(21):3373-3379. 
+doi: 10.1093/bioinformatics/btx413. PMID: 29077807.
 }
 
 \seealso{
 \link[pqsfinder]{pqsfinder}
+\link[memes]{runFimo}
+\link[postNet]{motifAnalysis}
 }
 
 \examples{
+
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ translationUp <- postNetExample$geneList[[1]][1:100]
+ translationDown <- postNetExample$geneList[[2]][1:100]
+ myGenes <- list('translationUp' = translationUp, 'translationDown' = translationDown)
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+ 
+
+# Detect and quantify a given motif within 5'UTRs, and compare between translationUp vs. translationDown genes
+
+ UTR5_SGCSGCS <- contentMotifs(ptn = ptn, 
+                        motifsIn = 'SGCSGCS',
+                        region = c('UTR5'), 
+                        comparisons = list(c(1,2)),
+                        plotType = 'ecdf',
+                        dist = 1,
+                        unitOut = "number",
+                        pdfName = 'example',
+                        plotOut = TRUE)
+                      
+ str(UTR5_SGCSGCS)
 
 }
