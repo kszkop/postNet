@@ -105,15 +105,6 @@ codonUsage(ptn,
 }
 
 \details{
-A table containing for each gene: the gene list it belongs to, as well as several codon indexes such as T3s (frequency of T at 3rd codon position), C3s (frequency of C at 3rd codon position), A3s, G3s, CAI (codon adaptation index), CBI (Codon Bias Index), Fop (Frequency of optimal codons), Nc (effective number of codons), GC3s (frequency of G or C at 3rd codon position), GC (GC content), L_sym (Frequency of synonymous codons), L_aa (Number of amino acids in protein), Gravy (general average hydropathicity score), Aromo (frequency of aromatic amino acids (Phe, Tyr, Trp) in the hypothetical translated gene product), tai (tRNA adaptation index)}}
- Sharp, P. M., and W. H. Li, (1987). The codon adaptation index a measure of directional synonymous codon usage bias, and its potential applications. Nucleic Acids Research 15: 1281-1295.
- Bennetzen, J. L., and B. D. Hall, (1982). Codon selection in yeast. Journal of Biological Chemistry 257: 3026-3031.
- Ikemura, T., (1981). Correlation between the abundance of Escherichia coli transfer RNAs and the occurrence of the respective codons in its protein genes: a proposal for a synonymous codon choice that is optimal for the E. coli system. Journal of Molecular Biology 151: 389-409.
- Wright, F., (1990). The effective number of codons used in a gene. Gene  87: 23-29.
- Kyte, J., and R. Doolittle, (1982). A simple method for displaying the hydropathic character of a protein. Journal of Molecular Biology 157: 105-132.
- Lobry, J. R., and C. Gautier, (1994). Hydrophobicity, expressivity and aromaticity are the major trends of amino acid usage in 999 Escherichia coli chromosome encoded genes. Nucleic Acids Research 22:3174-3180.
- dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: a test for translational selection. Nucleic Acids Res. 2004 Sep 24;32(17):5036-44.
- dos Reis M, Wernisch L, Savva R. Unexpected correlations between gene expression and codon usage bias from microarray data for the whole Escherichia coli K-12 genome. Nucleic Acids Res. 2003 Dec 1;31(23):6976-85.
 }
 
 \value{List with selected codons in up and down sets for each desired comparison. In addition, summary codons calculation (list entry: codonAll) is also provided. The function will also output plots for desired comparisons.
