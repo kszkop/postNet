@@ -1,11 +1,8 @@
 codonUsage <- function(ptn,
-                       annotType = NULL,#"ccds", # option: 'refseq' or 'ccds'
-                       sourceSeq = "load", # option to 'load' available or create new 'create',
+                       annotType = NULL,
+                       sourceSeq = "load", 
                        analysis,
                        codonN = 1,
-                       #codSource = "sequence", # option: 'sequence' or if ribosomal profiling 'riboseq'
-                       dpn_path = NULL, # path to dpn files if riboseq
-                       cds_filt = TRUE,
                        pAdj = 0.01,
                        rem5=TRUE,
                        plotHeatmap = TRUE,
@@ -13,9 +10,8 @@ codonUsage <- function(ptn,
                        thresY1 = 0.3,
                        thresX2 = 0.3,
                        thresY2 = 0.3,
-                       subregion = NULL, # number of nucleotides from start if positive or end if negative.
-                       subregionSel= NULL, # select or exclude , required if subregion is not null.
-                       inputTable=NULL,
+                       subregion = NULL,
+                       subregionSel= NULL,
                        comparisons,
                        plotType_index = 'boxplot',
                        pdfName = NULL) {
@@ -109,7 +105,7 @@ codonUsage <- function(ptn,
         ptn@annot@CCDS <- annot
       }
     } else if (sourceSeq == "load") {
-      # list existing species
+      # 
       currTmp <- list.files(system.file("extdata/annotation/ccds", package = "postNet"))
       #
       if (!species %in% currTmp) {
@@ -134,11 +130,7 @@ codonUsage <- function(ptn,
       
       ptn@annot@CCDS <- annot
     }
-  } #else if(annotType=="refseq" | annotType=='riboseq'){
-  #  
-  #  annot <- ptn_sequences(ptn,region='CDS')
-  #  
-  #} 
+  } 
   ####
   if(!is_valid_analysis(analysis)){
     stop("Please provide an 'analysis'. It can only be 'codon' or 'AA'")
@@ -149,8 +141,6 @@ codonUsage <- function(ptn,
   if(!check_logical(rem5)){
     stop("rem5 can be only TRUE or FALSE")
   }
-  #checkcodSource(codSource)
-  #codSourse <- tolower(codSource)
   #
   if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
     stop("'subregion' must be a numeric and just number")
@@ -196,17 +186,15 @@ codonUsage <- function(ptn,
     seqTmp <- subSeq
   }
   seqTmp <- seqTmp[!is.na(seqTmp)]
-  #
-  #if (codSource == "sequence") {
+  
   geneIDs <- names(seqTmp)
-  #ptm <- proc.time()
+
   codonTmp <- list()
   for (i in 1:length(geneIDs)) {
     codonTmp[[i]] <- codonCount(gene = geneIDs[i], seq = seqTmp[i], codonN = codonN)
   }
-  #proc.time() - ptm
   codonAll <- data.table::rbindlist(codonTmp, use.names = TRUE, fill = TRUE)
-  #proc.time() - ptm
+
   
   if (codonN == 1) {
     codonAll <- codonAll[!codonAll$AA %in% c("Stop", "W", "M", "O", "U"), ]
@@ -360,26 +348,31 @@ codonUsage <- function(ptn,
       }
     }
     
+    # Check if resIn has at least one positive entry
+    if (all(resIn <= 0)) {
+      stop("The contingency table (counts of codons by geneset) must have at least one positive entry for the chi-squared test.")
+    }
+    
     chisqTest <- chisq.test(resIn)
 
     if (is.na(chisqTest$p.value)) {
       stop("The Chi-squared test could not be performed. Please check that all codons have at least one count for at least one geneset.")
     }
 
-
     StResiduals <- chisqTest$stdres
     signifLimit <- sqrt(qchisq(pAdj / (dim(resIn)[1] * dim(resIn)[2]), lower.tail = FALSE, df = 1))
 
-    if (isTRUE(plotHeatmap)) {
+    if (isTRUE(plotHeatmap) & codonN==1) {
       #
       residOut <- t(as.matrix(StResiduals))
-      
-      max_abs <- ceiling(max(abs(residOut[, 1])))
-      breaks <- sort(c(seq(-max_abs, max_abs, length = 51)))
       
       pdf(paste(nameOut, paste(colnames(residOut), collapse = "_"), "heatmap.pdf", sep = "_"), width = 20, height = 28, useDingbats = F)
       par(mar = c(10, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
       col <- grDevices::colorRampPalette(c("blue", "white", "red"))(50)
+      
+      max_abs <- ceiling(max(abs(residOut[, 1])))
+      breaks <- sort(c(seq(-max_abs, max_abs, length = 51)))
+      
       gplots::heatmap.2(residOut,
         col = col,
         breaks = breaks,
@@ -417,24 +410,25 @@ codonUsage <- function(ptn,
         resIn2$AAcodon <- paste(seqinr::translate(seqinr::s2c(seqinr::c2s(rownames(resIn2)))), rownames(resIn2), sep = "_")
 
         #
-        xylim <- roundNice(max(resIn2[, c(1, 2)]),direction = 'up')
+        xylim1 <- roundNice(max(resIn2[, c(1, 2)]),direction = 'up')
         #
         pdf(paste(nameOut, paste(colnames(resIn2)[1:2], collapse = "_"), "averageFreq.pdf", sep = "_"), width = 8, height = 8, useDingbats = F)
         par(mar = c(10, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
-        pOut <- ggplot2::ggplot(resIn2, ggplot2::aes(!!sym(colnames(resIn2)[1]), !!sym(colnames(resIn2)[2]), col = AA)) +
+        pOut1 <- ggplot2::ggplot(resIn2, ggplot2::aes(!!sym(colnames(resIn2)[1]), !!sym(colnames(resIn2)[2]), col = AA)) +
           ggplot2::theme_bw() +
-          ggplot2::xlim(0, xylim) +
-          ggplot2::ylim(0, xylim) +
-          ggplot2::geom_point(size = 0.5) +
+          ggplot2::xlim(0, xylim1) +
+          ggplot2::ylim(0, xylim1) +
+          ggplot2::geom_abline(slope = 1, intercept = 0, col = "grey", linetype = "dashed", size = 0.5) +
+          ggplot2::geom_point() +
           ggplot2::coord_fixed() +
           ggplot2::geom_line(ggplot2::aes(group = AA), col = "gray", linetype = 1, size = 0.2) +
           ggplot2::theme(legend.position = "none") +
           ggrepel::geom_text_repel(ggplot2::aes(label = AAcodon), size = 3, segment.size = 0.2,max.overlaps = 100) +
           ggplot2::labs(
-            x = paste(colnames(resIn2)[1], "\n(average codon frequency - per thousand)", "\n is it really per thousand ??", sep = ""),
-            y = paste(colnames(resIn2)[2], "\n(average codon frequency - per thousand)", "\n is it really per thousand ??", sep = "")
+            x = paste(colnames(resIn2)[1], "\n(average codon frequency", sep = ""),
+            y = paste(colnames(resIn2)[2], "\n(average codon frequency", sep = "")
           )
-        print(pOut)
+        print(pOut1)
         dev.off()
 
         #
@@ -446,15 +440,16 @@ codonUsage <- function(ptn,
         resIn3$AAcodon <- paste(seqinr::translate(seqinr::s2c(seqinr::c2s(rownames(resIn3)))), rownames(resIn3), sep = "_")
 
         #
-        xylim <- roundNice(max(resIn3[, c(1, 2)]), direction='up')
+        xylim2 <- roundNice(max(resIn3[, c(1, 2)]), direction='up')
         #
         pdf(paste(nameOut, paste(colnames(resIn3)[1:2], collapse = "_"), "codonUsage.pdf", sep = "_"), width = 8, height = 8, useDingbats = F)
         par(mar = c(10, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
-        pOut <- ggplot2::ggplot(resIn3, ggplot2::aes(!!sym(colnames(resIn3)[1]), !!sym(colnames(resIn3)[2]), col = AA)) +
+        pOut2 <- ggplot2::ggplot(resIn3, ggplot2::aes(!!sym(colnames(resIn3)[1]), !!sym(colnames(resIn3)[2]), col = AA)) +
           ggplot2::theme_bw() +
-          ggplot2::xlim(0, xylim) +
-          ggplot2::ylim(0, xylim) +
-          ggplot2::geom_point(size = 0.5) +
+          ggplot2::xlim(0, xylim2) +
+          ggplot2::ylim(0, xylim2) +
+          ggplot2::geom_point() +
+          ggplot2::geom_abline(slope = 1, intercept = 0, col = "grey", linetype = "dashed", size = 0.5) +
           ggplot2::coord_fixed() +
           ggplot2::geom_line(ggplot2::aes(group = AA), col = "gray", linetype = 1, size = 0.2) +
           ggplot2::theme(legend.position = "none") +
@@ -463,10 +458,11 @@ codonUsage <- function(ptn,
             x = paste(colnames(resIn3)[1], "\n(Amino acid normalised codon usage)", sep = ""),
             y = paste(colnames(resIn3)[2], "\n(Amino acid normalised codon usage)", sep = "")
           )
-          print(pOut)
+          print(pOut2)
           dev.off()
         #
-     
+          
+        
         resIn4 <- data.frame(codon = colnames(resIn), t(resIn), row.names = NULL)
         resIn4$AA <- seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(resIn4$codon))))
 
@@ -515,7 +511,9 @@ codonUsage <- function(ptn,
           message('Non of the codons is labelled, please select more relaxed thresholds for thresX2 and thresY2')
         }
         dev.off()
-      
+        
+        codonsSel[[paste(regComb, collapse = "_vs_")]] <- list(Up = codU, Down = codD)
+        
       } else if (analysis == "AA") {
 
         resIn4 <- data.frame(AA = colnames(resIn), t(resIn), row.names = NULL)
@@ -565,9 +563,12 @@ codonUsage <- function(ptn,
           message('Non of the AA is labelled, please select more relaxed thresholds for thresX2 and thresY2')
         }
         dev.off()
+        
+        codonsSel[[paste(regComb, collapse = "_vs_")]] <- list(Up = codU, Down = codD)
+      } else {
+        codonsSel[[paste(row.names(resIn), collapse = "_vs_")]] <- signSel
       }
     }
-    codonsSel[[paste(regComb, collapse = "_vs_")]] <- list(Up = codU, Down = codD)
   }
   codonsOut <- new("postNetCodons",
                    codonAnalysis = codonsAllOut,

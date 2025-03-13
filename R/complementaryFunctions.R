@@ -401,10 +401,10 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
     #
     if(ylabel == 'Length (Log2 scale)'){
       axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
-      mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = median(dataTmp))
+      mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(c(0, ylimTmp2)))
     } else {
       axis(side = 2, font = 2, las = 2, lwd = 2)
-      mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = roundNice(median(dataTmp), direction='up'))
+      mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(c(0, ylimTmp2)))
     }
     text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
     #
@@ -420,8 +420,17 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
       } 
       if(ylabel == 'Length (Log2 scale)'){
         text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
+        text(i, 0, 
+             ifelse(mean(antilog(resOut[[i]])) > 0 & mean(antilog(resOut[[i]])) < 1, 
+                    round(mean(antilog(resOut[[i]])), 2), 
+                    round(mean(antilog(resOut[[i]])), 0)), 
+             font = 2)
       } else {
-        text(i, 0, round(mean(resOut[[i]]),0), font = 2)
+        text(i, 0, 
+             ifelse(mean(resOut[[i]]) > 0 & mean(resOut[[i]]) < 1, 
+                    round(mean(resOut[[i]]), 2), 
+                    round(mean(resOut[[i]]), 0)), 
+             font = 2)
       }
     } 
   } else if(plotType == "ecdf"){
