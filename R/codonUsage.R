@@ -210,6 +210,10 @@ codonUsage <- function(ptn,
 
   #indexes
   if(analysis == "codon" & codonN==1){
+    species <- ptn_species(ptn)
+    if(!is_valid_species(species)){
+      stop(" species, at the moment only 'human' or 'mouse' are available).") 
+    }
     if (species == "human") {
       codind <- read.delim(system.file("extdata/indexes/human/", "IndexesHuman.txt", package = "postNet"))
     } else if (species == "mouse") {
@@ -574,7 +578,6 @@ codonUsage <- function(ptn,
                    codonAnalysis = codonsAllOut,
                    codonSelection  = codonsSel)
 
-  
   ptn@analysis@codons <- codonsOut
   return(ptn)
 }
