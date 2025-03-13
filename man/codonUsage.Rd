@@ -4,11 +4,11 @@
 }
 
 \description{The \code{codonUsage} function performs codon (or alternatively amino acid [AA]) usage analysis.
-The analysis identifies single (or multiple, e.g. dicodons) codons enriched or depleted between different gene sets.
-In the first step, for each gene set comparison, a chi-square test is applied to assess significant differences in
-codon usage. Then, for significant codons, the odds ratio for each desired comparison pair is calculated and plotted 
-against the codon frequency. The codons (or AA) of interest are identified as those with a high/low oddsratio and 
-high frequency.
+The analysis identifies single (or multiple, e.g. dicodons) codons enriched or depleted between different gene 
+sets of interest. In the first step, for each gene set comparison, a chi-square test is applied to assess 
+significant differences in usage. Then, for significant codons, the odds ratio for each desired comparison 
+pair is calculated and plotted against the codon frequency. The codons (or AA) of interest are identified as 
+those with a high/low oddsratio and high frequency.
 }
 
 \usage{
@@ -17,8 +17,6 @@ codonUsage(ptn,
           sourceSeq = "load", 
           analysis, 
           codonN = 1, 
-          dpn_path = NULL, 
-          cds_filt = TRUE, 
           pAdj = 0.01, 
           rem5 = TRUE, 
           plotHeatmap = TRUE, 
@@ -28,19 +26,19 @@ codonUsage(ptn,
           thresY2 = 0.3, 
           subregion = NULL, 
           subregionSel = NULL, 
-          inputTable = NULL, 
           comparisons, 
           plotType_index = "boxplot", 
           pdfName = NULL)
 }
 
 \arguments{
-  \item{ptn}{
+  \item{ptn}{a \code{postNetData} object.
   }
-  \item{annotType}{select source of reference coding region sequences. Choose from "ccds", "custom", 
-  "refseq". The default is "ccds". 
+  \item{annotType}{A string specifying the reference coding region sequences to be used for
+  the analysis. The options are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"refseq"}.
+  The default is \code{"ccds"}. 
   }
-  \item{sourceSeq}{if annotType is "ccds", choose "create" to automatically prepare reference sequences 
+  \item{sourceSeq}{A string specifying if annotType is "ccds", choose "create" to automatically prepare reference sequences 
   from ccds database,  "load" to load preprepared sequences for selected species, or "custom" to use 
   customFile. The default is "load". 
   }
@@ -49,11 +47,6 @@ codonUsage(ptn,
   }
   \item{codonN}{n number of codon combinations. The default is 1. For di-codon choose 2 and so on. 
   The option is available only for type=="sequence". 
-  }
-  \item{dpn_path}{path to the dpn files obtained using the riboUtils function. It is required only 
-  if type = "riboseq". 
-  }
-  \item{cds_filt}{
   }
   \item{pAdj}{adjusted p-value threshold for chi-square test. The default is 0.01
   }
@@ -88,9 +81,6 @@ codonUsage(ptn,
   selected (limiting the analysis to this region) or excluded by specifying either \code{"select"} or 
   \code{"exclude"}. The default is \code{NULL}.
   }
-  \item{inputTable}{Dataframe containing names of dpn files in the first column, condition in numeric format 
-  in the second column.
-  }
   \item{comparisons}{A list of numeric vectors indicating which gene sets in \code{regulation} or 
   \code{geneList} should be used in pair-wise comparisons. The numeric vectors should correspond to the
   indexes of the gene sets, where 0 denotes the background. For example, \code{list(c(0,2),c(1,2))} 
@@ -111,6 +101,8 @@ codonUsage(ptn,
 }
 
 \references{
+The NCBI Consensus CDS database:
+\url{https://www-ncbi-nlm-nih-gov.proxy.kib.ki.se/projects/CCDS/CcdsBrowse.cgi}
 }
 
 \seealso{
