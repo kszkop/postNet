@@ -38,7 +38,7 @@ codonUsage(ptn,
   the analysis. The options are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"refseq"}.
   The default is \code{"ccds"}. 
   }
-  \item{sourceSeq}{A string specifying if annotType is "ccds", choose "create" to automatically prepare reference sequences 
+  \item{sourceSeq}{A string specifying the source of \code{annotType}. If \code{annotType = "ccds"} choose "create" to automatically prepare reference sequences 
   from ccds database,  "load" to load preprepared sequences for selected species, or "custom" to use 
   customFile. The default is "load". 
   }
