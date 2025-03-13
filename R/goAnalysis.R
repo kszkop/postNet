@@ -1,18 +1,11 @@
 goAnalysis <- function(ptn,
-                       #ads=NULL,
-                       #regulation=NULL,
-                       #contrast=NULL,
                        genesSlopeFiltOut = NULL,
-                       #geneList = NULL,
-                       #customBg = NULL,
-                       #species,
-                       category, #To choose from (gene ontologies) 'BP', 'CC', 'MF' or 'KEGG'
+                       category,
                        maxSize = 500,
                        minSize = 10,
                        counts = 10,
                        FDR = 0.15,
-                       name = NULL
-){
+                       name = NULL){
   #
   check_ptn(ptn)
   species <- ptn_species(ptn)
@@ -33,33 +26,7 @@ goAnalysis <- function(ptn,
   }
   #
   GOout <- list()
-  #Extract all results
-  #if(!is.null(ads)){
-  #  results <- anota2seqGetDirectedRegulations(ads)
-  #  #
-  #  res <- vector("list", length = length(regulation))
-  #  for(i in unique(contrast)){
-  #    resTmp <- results[[i]][regulation[contrast==i]]
-  #    res[which(contrast==i)] <- resTmp
-  #  }
-  #  names(res) <- paste(regulation, paste('c', contrast,sep=''), sep='_')
-  #  if(!is.null(geneList)){
-  #    res <- append(res, geneList)
-  #  }
-  #} else {
-  #  res <- geneList
-  #}
-  #
-  #if(!is.null(ads)){
-  #  bg <- row.names(ads@dataP)
-  #  if(!is.null(geneList)){
-  #    bg <- unique(c(bg, as.character(unlist(geneList))))
-  #  }
-  #} else if(!is.null(customBg)){
-  #  bg <- customBg
-  #} else {
-  #  stop("please provide background genes")
-  #}
+  
   res  <- ptn_geneList(ptn)
   bg <- unlist(ptn_background(ptn))
   if(length(setdiff(bg,unique(unlist(res))))==0){
@@ -136,11 +103,15 @@ goAnalysis <- function(ptn,
           tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
         }
       } else {
-        message('No significant results')
+        message(paste('No significant results for',sel, 'in', resOut[[i]], sep=' '))
       }
       tabTmp$Size <- as.numeric(sub("\\/.*", "", tabTmp$BgRatio))
-      tabTmp <- tabTmp[,c(1,2,9,10,5,6,8)]
-        
+      
+      if(sel == 'KEGG'){
+        tabTmp <- tabTmp[,c("ID", "Description", "category", "subcategory", "Count", "Size", "pvalue", "p.adjust", "geneID")]
+      } else {
+        tabTmp <- tabTmp[,c("ID", "Description", "Count", "Size", "pvalue", "p.adjust", "geneID")]
+      }
       resOut[[i]]@result <- tabTmp
     }
     resWrite <- lapply(resOut, function(x) x@result)

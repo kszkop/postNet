@@ -241,7 +241,7 @@ ptn_GO <- function(ptn,
     GOres <- slot(ptn@analysis@GO,category)
   }
   GOresOut <- GOres[[which(geneList == names(GOres))]]@result
-  GOresOut <- GOresOut[which(GOresOut[,6]< threshold),]
+  GOresOut <- GOresOut[which(GOresOut$p.adjust < threshold),]
 
   if(nrow(GOresOut)>0){
     GOresOut <-  data.frame(GOresOut,row.names = NULL)
