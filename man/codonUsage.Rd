@@ -114,8 +114,6 @@ A table containing for each gene: the gene list it belongs to, as well as severa
  Lobry, J. R., and C. Gautier, (1994). Hydrophobicity, expressivity and aromaticity are the major trends of amino acid usage in 999 Escherichia coli chromosome encoded genes. Nucleic Acids Research 22:3174-3180.
  dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: a test for translational selection. Nucleic Acids Res. 2004 Sep 24;32(17):5036-44.
  dos Reis M, Wernisch L, Savva R. Unexpected correlations between gene expression and codon usage bias from microarray data for the whole Escherichia coli K-12 genome. Nucleic Acids Res. 2003 Dec 1;31(23):6976-85.
-
-
 }
 
 \value{List with selected codons in up and down sets for each desired comparison. In addition, summary codons calculation (list entry: codonAll) is also provided. The function will also output plots for desired comparisons.
