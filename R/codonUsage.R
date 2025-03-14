@@ -176,7 +176,7 @@ codonUsage <- function(ptn,
   }
   #remove last codon (stop codon)
   seqTmp <- remove_last3(seqTmp)
-  #
+  # 
   if (!is.null(subregion)) {
     #
     subSeq <- sapply(seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel))
@@ -490,7 +490,7 @@ codonUsage <- function(ptn,
         text(statOut, sumFreq, names(sumFreq), col = "black", font = 2)
 
         mtext(side = 2, line = 3, "frequency ", col = "black", font = 2, cex = 1.7)
-        mtext(side = 1, line = 3, "log2 odd ratio", col = "black", font = 2, cex = 1.7, at = 0)
+        mtext(side = 1, line = 3, "log2(Odds Ratio)", col = "black", font = 2, cex = 1.7, at = 0)
 
         #axis(side = 2, seq(0, roundNice(range(sumFreq)[2], direction='up'), ifelse(roundNice(range(sumFreq)[2],direction='up') > 10, 10, 1)), font = 2, las = 2, lwd = 2)
         #axis(side = 1, seq(-xlimT, xlimT, 1), font = 2, lwd = 2)
@@ -502,7 +502,7 @@ codonUsage <- function(ptn,
         if(length(codU) > 0){
           text(statOut_up[codU], sumFreq_up[codU], codU, col = "firebrick1", font = 2)
         } else {
-          message('Non of the codons is labelled, please select more relaxed thresholds for thresX1 and thresY1')
+          message('None of the codons are labelled, please select more relaxed thresholds for thresX1 and thresY1')
         }
         #
         indDown <- as.numeric(which(statOut < 0))
@@ -512,7 +512,7 @@ codonUsage <- function(ptn,
         if(length(codD) > 0){
           text(statOut_down[codD], sumFreq[codD], codD, col = "dodgerblue1", font = 2)
         } else {
-          message('Non of the codons is labelled, please select more relaxed thresholds for thresX2 and thresY2')
+          message('None of the codons are labelled, please select more relaxed thresholds for thresX2 and thresY2')
         }
         dev.off()
         
@@ -542,7 +542,7 @@ codonUsage <- function(ptn,
         text(statOut, sumFreq, names(sumFreq), col = "black", font = 2)
         
         mtext(side = 2, line = 3, "frequency ", col = "black", font = 2, cex = 1.7)
-        mtext(side = 1, line = 3, "log2 odd ratio", col = "black", font = 2, cex = 1.7, at = 0)
+        mtext(side = 1, line = 3, "log2(Odds Ratio)", col = "black", font = 2, cex = 1.7, at = 0)
         
         #axis(side = 2, seq(0, roundNice(range(sumFreq)[2], direction='up'), ifelse(roundNice(range(sumFreq)[2],direction='up') > 10, 10, 1)), font = 2, las = 2, lwd = 2)
         #axis(side = 1, seq(-xlimT, xlimT, 1), font = 2, lwd = 2)
@@ -554,7 +554,7 @@ codonUsage <- function(ptn,
         if(length(codU) > 0){
           text(statOut_up[codU], sumFreq_up[codU], codU, col = "firebrick1", font = 2)
         } else {
-          message('Non of the AA is labelled, please select more relaxed thresholds for thresX1 and thresY1')
+          message('None of the AAs are labelled, please select more relaxed thresholds for thresX1 and thresY1')
         }
         #
         indDown <- as.numeric(which(statOut < 0))
@@ -564,7 +564,7 @@ codonUsage <- function(ptn,
         if(length(codD) > 0){
           text(statOut_down[codD], sumFreq[codD], codD, col = "dodgerblue1", font = 2)
         } else {
-          message('Non of the AA is labelled, please select more relaxed thresholds for thresX2 and thresY2')
+          message('None of the AAs are labelled, please select more relaxed thresholds for thresX2 and thresY2')
         }
         dev.off()
         
