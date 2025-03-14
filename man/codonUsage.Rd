@@ -35,8 +35,8 @@ codonUsage(ptn,
   \item{ptn}{a \code{postNetData} object.
   }
   \item{annotType}{A string specifying the reference coding region sequences to be used for
-  the analysis. The options are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"refseq"}.
-  The default is \code{"ccds"}. 
+  the analysis. The options are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"ptnCDS"} (the
+  CDS sequences already stored in the \code{postNetData} object. The default is \code{"ccds"}. 
   }
   \item{sourceSeq}{A string specifying the source of \code{annotType}. If \code{annotType = "ccds"} choose "create" to automatically prepare reference sequences 
   from ccds database,  "load" to load preprepared sequences for selected species, or "custom" to use 
