@@ -62,7 +62,6 @@ featureIntegration <- function(ptn,
   fiOut <- new("postNetFeatureIntegration",
                lm = NULL,
                rf = NULL,
-               comparisons = NULL,
                featureMap = NULL)
   
   ######
@@ -111,7 +110,7 @@ featureIntegration <- function(ptn,
         }
         compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
       }
-      fiOut@comparisons <- compOut
+      #fiOut@comparisons <- compOut
     } else {
       fiOut@comparisons <- 'allData'
       #
@@ -269,7 +268,7 @@ featureIntegration <- function(ptn,
       }
       compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
     }
-    fiOut@comparisons <- compOut
+    #fiOut@comparisons <- compOut
   } else {
     stop("Please provide correct type: lm for linear regression or rf for random forest")
   }

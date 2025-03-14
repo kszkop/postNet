@@ -1,6 +1,5 @@
 foldingEnergyAnalysis <- function(ptn,
                                   sourceFE = "load",
-                                  fromFasta = FALSE,
                                   customFileFE = NULL,
                                   residFE = FALSE,
                                   region = NULL,
@@ -115,3 +114,20 @@ foldingEnergyAnalysis <- function(ptn,
   }
 }
 
+runFE <- function(energyIn,
+                  residFE = FALSE,
+                  ptn){
+  #
+  colnames(energyIn) <- c("id", "fold_energy", "length")
+  energyIn$geneID <- ptn_geneID(ptn,region='CDS')[match(energyIn$id,ptn_id(ptn, region='CDS'))]
+  energyIn <- na.omit(energyIn)
+  #
+  if (isTRUE(residFE)) {
+    feForAnalysis <- lm(as.numeric(energyIn$fold_energy) ~ as.numeric(energyIn$length))$residuals
+    names(feForAnalysis) <- energyIn$geneID
+  } else {
+    feForAnalysis <- as.numeric(energyIn$fold_energy)
+    names(feForAnalysis) <- energyIn$geneID
+  }
+  return(feForAnalysis)
+}

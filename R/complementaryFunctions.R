@@ -419,18 +419,13 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
         vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = colOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
       } 
       if(ylabel == 'Length (Log2 scale)'){
-        text(i, 0, round(mean(antilog(resOut[[i]], 2), 0)), font = 2)
-        text(i, 0, 
-             ifelse(mean(antilog(resOut[[i]])) > 0 & mean(antilog(resOut[[i]])) < 1, 
+        text(i, 0, ifelse(mean(antilog(resOut[[i]])) > 0 & mean(antilog(resOut[[i]])) < 1, 
                     round(mean(antilog(resOut[[i]])), 2), 
-                    round(mean(antilog(resOut[[i]])), 0)), 
-             font = 2)
+                    round(mean(antilog(resOut[[i]])), 0)), font = 2)
       } else {
-        text(i, 0, 
-             ifelse(mean(resOut[[i]]) > 0 & mean(resOut[[i]]) < 1, 
+        text(i, 0, ifelse(mean(resOut[[i]]) > 0 & mean(resOut[[i]]) < 1, 
                     round(mean(resOut[[i]]), 2), 
-                    round(mean(resOut[[i]]), 0)), 
-             font = 2)
+                    round(mean(resOut[[i]]), 0)), font = 2)
       }
     } 
   } else if(plotType == "ecdf"){
@@ -1025,46 +1020,6 @@ generate_pairs <- function(num) {
   numpairs <- expand.grid(num, num)  
   numpairs <- numpairs[numpairs$Var1 < numpairs$Var2,]
   split(as.matrix(numpairs), seq(nrow(numpairs)))  
-}
-
-runMfold <- function(fastaFile){
-  #
-  nameTmp <- gsub('.fa','',fastaFile) 
-  #
-  seqsToFold <- seqinr::read.fasta(fastaFile)
-  #
-  logFile = paste(nameTmp,"logFile.txt",sep='_')
-  cat("", file=logFile, append=FALSE, sep = "\n")
-  
-  resFile = paste(nameTmp,'foldEnergy.txt',sep='_')
-  cat("id\tfold_energy\tlength", file=resFile, append=FALSE, sep = "\n")
-  
-  pb1 <- txtProgressBar(min=1, max=length(seqsToFold), style=3)
-  for(seqs in 1:length(seqsToFold)){    
-    if(seqinr::c2s(seqsToFold[[seqs]]) != "na"){
-      seqinr::write.fasta(seqsToFold[[seqs]], as.string = FALSE, names = attributes(seqsToFold[[seqs]])$name, 
-                          file.out = "currentSeq.fa", open = "w")
-      
-      tryCatch({
-        system("mfold SEQ=currentSeq.fa > currentSeq.out")
-        cat(paste(c(attributes(seqsToFold[[seqs]])$name, read.table("currentSeq.fa_1.ct", nrows = 1, 
-                                                                    stringsAsFactors = FALSE, 
-                                                                    fileEncoding="UTF-8", 
-                                                                    header = F)[, c("V4","V1")]), ## the identifier is also in currentSeq.fa_1.ct but often with encoding/formatting issues
-                  collapse = "\t"), file = resFile, append = TRUE, sep = "\n")
-      }, error = function(e){
-        cat(paste("error", attributes(seqsToFold[[seqs]])$name), file=logFile, append=TRUE, sep = "\n")
-      })
-      
-    } else { ##seq is NA
-      cat(paste(c(rep(NA, 2), attributes(seqsToFold[[seqs]])$name), collapse = "\t"), 
-          file = resFile, append = TRUE, sep = "\n")
-    }
-    
-    unlink(list.files(pattern = "currentSeq"))
-    setTxtProgressBar(pb1, seqs)
-  }
-  close(pb1)
 }
 
 prepFeatures <- function(ptn, 
