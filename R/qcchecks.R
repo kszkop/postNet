@@ -169,7 +169,7 @@ check_source <- function(source) {
 
 # Function to validate the source input
 checkSourceFE <- function(sourceFE) {
-  valid_sourcesFE <- c("create", "load", "custom")
+  valid_sourcesFE <- c("load", "custom")
   if (!(sourceFE %in% valid_sourcesFE)) {
     stop("Invalid sourceFE. Please provide a valid sourceFE option.")
   }

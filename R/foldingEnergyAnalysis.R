@@ -11,15 +11,8 @@ foldingEnergyAnalysis <- function(ptn,
   #
   species <- ptn_species(ptn)
   version <- ptn_version(ptn)
+  checkSourceFE(sourceFE)
   
-  # Validate the source input
-  tryCatch({
-    # Code that may throw an error
-    checkSourceFE(sourceFE)
-  }, error = function(e) {
-    stop("Source check failed: ", e$message)
-  })
-
   if(!check_logical(plotOut)){
     stop("'plotOut' can only be only be logical: TRUE of FALSE ")
   } 
@@ -43,20 +36,6 @@ foldingEnergyAnalysis <- function(ptn,
   if(!check_logical(residFE)){
       stop("'residFE', i.e whether the values should be normalised for the length, can only be only be logical: TRUE of FALSE ")
   }
-  if(sourceFE=='create'){
-    if(!check_logical(fromFasta)){
-      stop("'fromFasta' can only be only be logical: TRUE of FALSE ")
-    }
-    if (isTRUE(fromFasta)) {
-      if(is.null(customFileFE)){
-        stop("Please provide a fasta file.")
-      }
-    } else {
-      if(!is_valid_species(species)){
-        stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
-      }
-    }
-  }
   #
   if(sourceFE=='custom'){
     if(is.null(customFileFE)){
@@ -68,37 +47,7 @@ foldingEnergyAnalysis <- function(ptn,
       stop("Please specify a species, at the moment only 'human' or 'mouse' are available).") 
     }
   }
-  #
-  if (sourceFE == "create") {
-    ##
-    message('The calculations can take a very long time, particulariy if there are many long sequences. Using pre-calculation is recommended (option: "load")')
-    message('Furthermore, this option will only calculate folding energies and output txt file. Susequently, please use it with option "load" to use them for analysis')
-    if (isTRUE(fromFasta)) {
-      #
-      runMfold(customFileFE)
-      #
-    } else {
-      if(is.null(region)){
-        stop("Please provide region")
-      }
-      check_region(region)
-      #
-      currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "postNet"))
-      if (!species %in% currTmp) {
-        stop("This option is only  available for species: human and mouse at the moment. Please use option fromFasta = TRUE")
-      }
-      #
-      for(reg in region){
-        #
-        seqTmp <- ptn_sequences(ptn,region = reg)
-        # Write out sequences
-        seqinr::write.fasta(sequences = as.list(as.character(seqTmp)), names = names(seqTmp), file.out = paste(reg, ".fa", sep = ""))
-        #
-        runMfold(paste(reg, ".fa", sep = ""))
-      }
-    }
-    message('Folding energy calculations finished. ')
-  } else if (sourceFE == "custom") {
+  if (sourceFE == "custom") {
     #
     feOut <- list()
     #
@@ -164,24 +113,5 @@ foldingEnergyAnalysis <- function(ptn,
   } else {
     stop("No correct option for source file provided")
   }
-}
-
-#
-runFE <- function(energyIn,
-                  residFE = FALSE,
-                  ptn){
-  #
-  colnames(energyIn) <- c("id", "fold_energy", "length")
-  energyIn$geneID <- ptn_geneID(ptn,region='CDS')[match(energyIn$id,ptn_id(ptn, region='CDS'))]
-  energyIn <- na.omit(energyIn)
-  #
-  if (isTRUE(residFE)) {
-    feForAnalysis <- lm(as.numeric(energyIn$fold_energy) ~ as.numeric(energyIn$length))$residuals
-    names(feForAnalysis) <- energyIn$geneID
-  } else {
-    feForAnalysis <- as.numeric(energyIn$fold_energy)
-    names(feForAnalysis) <- energyIn$geneID
-  }
-  return(feForAnalysis)
 }
 
