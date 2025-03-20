@@ -3,12 +3,11 @@
 \title{Compare mRNA folding energy between gene sets  
 }
 
-\description{Calculation of folding energy is performed. mfold algorithm is used for calculations (if the function is 
-used for calulcuating folding energies (sourceFE = "create"), it requires installed mfold with executables in the path). 
-Mfold can be run from provided a fasta file or from prepared by anota2seqUtilsStart function. As the process of calculating 
-folding energy is very long (even weeks for a large number of long sequences), it is also possible just to use already 
-precalculated values for available reference sequences (available for mouse and human). Furthermore, differences in 
-folding energy between selected modes of regulation can be also assessed and plotted.
+\description{The \code{foldingEnergyAnalysis} function compares folding energies for each mRNA sequence region. 
+Pre-calculated folding energies for reference sequences are available for certain RefSeq releases (for human and mouse).
+These values were calculated using the mfold algorithm. Alternatively, user-supplied values can be used in analyses. 
+In addition, folding energies for gene sets of interest can be compared against background, or other genes sets. 
+Several options are available for plotting the comparisons. 
 }
 
 \usage{
@@ -26,18 +25,19 @@ foldingEnergyAnalysis(ptn,
 \arguments{
   \item{ptn}{a \code{postNetData} object.
   }
-  \item{sourceFE}{selecting the source of the folding energy calculations. If "load", it will use precalculated folding 
-  energies for selected species ("human" and "mouse" available at the moment). However, there is an option to automatically
-  calculate new ("create") based on the selection of regions or fromFasta ( fasta file with sequences and transcript ids as
-  names) or load custom 'custom' file with precalculated folding energies calculations in the format: transcript ID, 
-  folding energy, length of the sequence. The default is "load". 
+  \item{sourceFE}{A string specifying the source of the folding energy values. The options are, \code{"load"}, or 
+  \code{"custom"}. If \code{"load"}, pre-calculated folding energies for the selected species ("human" or "mouse") will
+  be used. If \code{"custom"}, a custom file with pre-calculated folding energies must be provided using the
+  \code{customFileFE} argument. The default is \code{"load"}. 
   }
-  \item{customFileFE}{Name of a file including a path to the customFile. It is required for sourceFE=='custom' or if 
-  sourceFE=='create' and fromFasta==TRUE. In the former case, it must be the file with calculated folding energies in 
-  the format: transcript ID, folding energy, length of the sequence, or in the latter fasta files with sequences and 
-  transcript ids as names. 
+  \item{customFileFE}{If \code{sourceFE = "custom"}, provide a string specifying the name and file path to the custom 
+  folding energy file. The custom file with calculated folding energies in must be provided in a TAB delimited format
+  with three columns: transcript ID, folding energy, and length of the sequence. Note that folding energies for different
+  sequence regions (e.g. 5'UTR and 3'UTR) must be provided separately.
   }
-  \item{residFE}{Residuals after correction for the length of the sequences should be used instead. The default is TRUE.
+  \item{residFE}{Logical indicating if the folding energies should be corrected for the length of the
+  sequences. If \code{TRUE}, the values returned are the residuals from the linear model: FE ~ log2(length).
+  The default is \code{FALSE}.
   }
   \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"},
   \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
@@ -50,7 +50,7 @@ foldingEnergyAnalysis(ptn,
   \code{NULL}.
   }
   \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the 
-  fold energies for the sepcified sequence region(s) will be returned, and statistical comparisons between gene 
+  folding energies for the specified sequence region(s) will be returned, and statistical comparisons between gene 
   sets will not be performed. The default is \code{TRUE}. 
   }
   \item{plotType}{If \code{plotOut} is \code{TRUE}, indicate the type of output plot to generate. Options 
@@ -60,31 +60,59 @@ foldingEnergyAnalysis(ptn,
   }
 }
 
-\details{The function uses mfold algorithm for folding energy calculations (https://www.unafold.org/mfold/software/download-mfold.php).
+\details{Pre-calculated folding energies supplied with the package are currently available for human and mouse RefSeq
+releases "rel_109.20201120", and "rel_109.20200923". These values were calculated for all sequence regions using the
+mfold algorithm, available here: \url{https://www.unafold.org/}.
 }
 
-\value{Vector with calculated folding energy values for each gene. The function will also output plots with 
-desired comparisons.
+\value{The output will be a named list of vectors corresponding to each sequence region, with the folding energy for each 
+gene. This list can be used with the downstream \link[postNet]{featureIntegration} function. The \code{foldingEnergyAnalysis}
+function can also return PDF files of output plots with statistical comparisons between gene sets of interest.
 }
 
 \references{
-# Citation
+If you use the \code{foldingEnergyAnalyis} function in your analysis, with the \code{sourceFE = "load"}, please cite: \cr
+
 M. Zuker. Mfold web server for nucleic acid folding and hybridization prediction. 
 Nucleic Acids Res. 31 (13), 3406-3415, 2003. https://doi.org/10.1093/nar/gkg595
 }
 
 \seealso{
+\url{https://www.unafold.org/}
 }
 
 \examples{
-#First prepare anota2seqUtils class object
-# from anota2seq object
-a2sU <- anota2seqUtilsStart(ads = anota2seqOutput, regulation =  c("translationUp","translationDown"), contrast = c(1,1), regulationGen = "translation", contrastSel = 1, selection ="random", source = 'load', species = 'human')
-# or from geneList
-a2sU <- anota2seqUtilsStart(geneList = inList, geneListcolours=c("#F2A104","#00743F"), effectMeasure = quantIn, selection ="random")
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
 
-feOut <- foldingEnergyAnalysis(a2sU = a2sU, sourceFE = "load", residFE = TRUE, region = c("UTR5","CDS","UTR3"),comparisons = list(c(1,2)),plotOut = TRUE, pdfName = NULL )
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+ 
 
-#If only calculating folding energies
-foldingEnergyAnalysis(a2sU = a2sU, sourceFE = "create", region = c("UTR5"))
+# Compare the folding energy of the 5'UTR for each gene between translationUp genes vs. background, 
+# translationDown genes vs. background, and translationUp vs. translationDown genes. Correct the folding
+# energies for the length of the sequence (residFE = TRUE)
+ FE <- foldingEnergyAnalysis(ptn = ptn,
+                               region=c("UTR5"),
+                               comparisons = list(c(0,1),c(0,2),c(1,2)),
+                               residFE = TRUE, 
+                               plotType = 'ecdf',
+                               sourceFE = "load",
+                               plotOut = TRUE,
+                               pdfName = 'example')
+                      
+ str(FE)
 }
