@@ -48,7 +48,8 @@ contentMotifs(ptn,
   }
   \item{resid}{Logical indicating if the quantification of motifs should be corrected for the length of the
   sequences. If \code{TRUE}, the values returned are the residuals from the linear model: # of motifs ~ log2(length).
-  Note that this option can only be \code{TRUE} when \code{unitOut = "number"}. The default is \code{FALSE}.
+  Note that this option can only be \code{TRUE} when \code{unitOut = "number"}. See details below for usage 
+  recommendations. The default is \code{FALSE}.
   }
   \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"},
   \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
@@ -87,6 +88,11 @@ than the MEME-Suite, and for this reason some motifs identified with \link[postN
 implements STREME, may not be detected. Using a more stringent threshold with the \code{stremeThreshold} 
 parameter may remedy this. Alternatively, motifs identified with STREME can be counted using the 
 \link[memes]{runFimo} tool provided with the MEME-Suite.
+
+If the output motifs will be used in downstream analysis with \link[postNet{featureIntegration}, consideration
+should be given to the \code{resid} argument. If the length of the sequence regions will be included in 
+the \code{featureIntegration} model, it is not recommended to correct the motif content for the sequence length. 
+However, if length will not be included in \code{featureIntegration}, the correction can be performed.
 }
 
 \value{If the \code{unitOut = "number"}, the output will be a named list of vectors with the number of motifs 

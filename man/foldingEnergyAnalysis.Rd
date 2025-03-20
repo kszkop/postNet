@@ -37,7 +37,7 @@ foldingEnergyAnalysis(ptn,
   }
   \item{residFE}{Logical indicating if the folding energies should be corrected for the length of the
   sequences. If \code{TRUE}, the values returned are the residuals from the linear model: FE ~ log2(length).
-  The default is \code{FALSE}.
+  See details below for usage recommendations. The default is \code{FALSE}.
   }
   \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"},
   \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
@@ -63,6 +63,11 @@ foldingEnergyAnalysis(ptn,
 \details{Pre-calculated folding energies supplied with the package are currently available for human and mouse RefSeq
 releases "rel_109.20201120", and "rel_109.20200923". These values were calculated for all sequence regions using the
 mfold algorithm, available here: \url{https://www.unafold.org/}.
+
+If the output folding energies will be used in downstream analysis with \link[postNet]{featureIntegration}, consideration
+should be given to the \code{residFE} argument. If the length of the sequence regions will be included in the
+\code{featureIntegration} model, it is not recommended to correct the folding energies to the sequence length. 
+However, if length will not be included in \code{featureIntegration}, the correction can be performed.   
 }
 
 \value{The output will be a named list of vectors corresponding to each sequence region, with the folding energy for each 
@@ -103,12 +108,11 @@ Nucleic Acids Res. 31 (13), 3406-3415, 2003. https://doi.org/10.1093/nar/gkg595
  
 
 # Compare the folding energy of the 5'UTR for each gene between translationUp genes vs. background, 
-# translationDown genes vs. background, and translationUp vs. translationDown genes. Correct the folding
-# energies for the length of the sequence (residFE = TRUE)
+# translationDown genes vs. background, and translationUp vs. translationDown genes. 
  FE <- foldingEnergyAnalysis(ptn = ptn,
                                region=c("UTR5"),
                                comparisons = list(c(0,1),c(0,2),c(1,2)),
-                               residFE = TRUE, 
+                               residFE = FALSE, 
                                plotType = 'ecdf',
                                sourceFE = "load",
                                plotOut = TRUE,
