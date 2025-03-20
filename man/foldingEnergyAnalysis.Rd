@@ -14,7 +14,6 @@ folding energy between selected modes of regulation can be also assessed and plo
 \usage{
 foldingEnergyAnalysis(ptn, 
                       sourceFE = "load", 
-                      fromFasta = FALSE, 
                       customFileFE = NULL, 
                       residFE = FALSE, 
                       region = NULL, 
@@ -32,9 +31,6 @@ foldingEnergyAnalysis(ptn,
   calculate new ("create") based on the selection of regions or fromFasta ( fasta file with sequences and transcript ids as
   names) or load custom 'custom' file with precalculated folding energies calculations in the format: transcript ID, 
   folding energy, length of the sequence. The default is "load". 
-  }
-  \item{fromFasta}{If TRUE, it will calculate folding energy values with mfold using a custom fasta file. The default 
-  is FALSE.
   }
   \item{customFileFE}{Name of a file including a path to the customFile. It is required for sourceFE=='custom' or if 
   sourceFE=='create' and fromFasta==TRUE. In the former case, it must be the file with calculated folding energies in 
@@ -54,11 +50,11 @@ foldingEnergyAnalysis(ptn,
   \code{NULL}.
   }
   \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the 
-  values specified with \code{unitOut} will be returned, and statistical comparisons between gene sets will not be
-  performed. Note that plots will only be generated if \code{unitOut = "number"}. The default is \code{TRUE}. 
+  fold energies for the sepcified sequence region(s) will be returned, and statistical comparisons between gene 
+  sets will not be performed. The default is \code{TRUE}. 
   }
   \item{plotType}{If \code{plotOut} is \code{TRUE}, indicate the type of output plot to generate. Options 
-  are, \code{"boxplot"}, \code{"violin"}, or \code{"ecdf"}. The default is \code{"boxplot"}.
+  are, \code{"boxplot"}, \code{"violin"}, or \code{"ecdf"}. The default is \code{"ecdf"}.
   }
   \item{pdfName}{Name to be appended to output PDF files.
   }
