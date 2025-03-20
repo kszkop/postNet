@@ -89,7 +89,7 @@ implements STREME, may not be detected. Using a more stringent threshold with th
 parameter may remedy this. Alternatively, motifs identified with STREME can be counted using the 
 \link[memes]{runFimo} tool provided with the MEME-Suite.
 
-If the output motifs will be used in downstream analysis with \link[postNet{featureIntegration}, consideration
+If the output motifs will be used in downstream analysis with \link[postNet]{featureIntegration}, consideration
 should be given to the \code{resid} argument. If the length of the sequence regions will be included in 
 the \code{featureIntegration} model, it is not recommended to correct the motif content for the sequence length. 
 However, if length will not be included in \code{featureIntegration}, the correction can be performed.
