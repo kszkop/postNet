@@ -77,7 +77,7 @@ featureIntegration <- function(ptn,
     #
     if (isTRUE(regOnly)){
       #
-      compOut <- character()
+      #compOut <- character()
       for (i in 1:length(comparisons)) {
         coloursTmp <- ptn_colours(ptn)
         if (names(resOut)[1] == 'background') {
@@ -108,11 +108,11 @@ featureIntegration <- function(ptn,
           #
           plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
         }
-        compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
+        #compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
       }
       #fiOut@comparisons <- compOut
     } else {
-      fiOut@comparisons <- 'allData'
+      #fiOut@comparisons <- 'allData'
       #
       coloursTmp <- c('salmon','skyblue')
       lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel,  covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColour)
@@ -139,7 +139,7 @@ featureIntegration <- function(ptn,
     colnames(dataTmpReg) <- namesDf$originalNames[match(colnames(dataTmpReg), namesDf$newNames)]
     
     #
-    compOut <- character()
+    #compOut <- character()
     for (i in 1:length(comparisons)) {
       coloursTmp <- ptn_colours(ptn)
       if (names(resOut)[1] == 'background') {
@@ -266,7 +266,7 @@ featureIntegration <- function(ptn,
         #
         plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
       }
-      compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
+      #compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
     }
     #fiOut@comparisons <- compOut
   } else {
