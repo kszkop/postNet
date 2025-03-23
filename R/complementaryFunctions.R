@@ -1599,8 +1599,9 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
       ggplot2::theme_minimal() +
       ggplot2::theme(legend.key.height = ggplot2::unit(1, "cm"), legend.key.width = ggplot2::unit(0.5, "cm"))
   }
+  
   legend_grob <- ggplot2::ggplotGrob(colVecLeg)
-  legendOut <- legend_grob$grobs[[which(legend_grob$layout$name == "guide-box")]]
+  legendOut <- legend_grob$grobs[grep("guide-box",legend_grob$layout$name)]
   
   return(list(mainPlot = colVecPlot, legend = legendOut))  
 }
