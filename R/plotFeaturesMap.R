@@ -87,10 +87,10 @@ plotFeaturesMap <- function(ptn,
     par(mar=c(5,5,5,5),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=0.9, cex.main=0.7,cex.lab=0.9)
     
     gridExtra::grid.arrange(
-      effect_fmap$legend,
+      effect_fmap$legend[[1]],
       effect_fmap$mainPlot,
       feature_fmap$mainPlot,
-      feature_fmap$legend,
+      feature_fmap$legend[[1]],
       ncol = 4,
       widths = c(1, 4, 4, 1))
     
