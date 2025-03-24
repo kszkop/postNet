@@ -566,7 +566,7 @@ checklmfeatGroupColour <- function(lmfeatGroupColour, lmfeatGroup) {
     unique_lmfeatGroup <- length(unique(lmfeatGroup))
     
     #
-    if (length(lmfeatGroupColour) != unique_lmfeatGroup) {
+    if (length(unique(lmfeatGroupColour)) != unique_lmfeatGroup) {
       stop("Error: Length of 'lmfeatGroupColour' must match the number of unique values in 'lmfeatGroup'.")
     }
   }

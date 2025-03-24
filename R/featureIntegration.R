@@ -72,7 +72,7 @@ featureIntegration <- function(ptn,
       names(lmfeatGroup) <- colnames(dataTmp)[1:ncol(dataTmp)-1]
       
       checklmfeatGroupColour(lmfeatGroupColour, lmfeatGroup)
-      names(lmfeatGroupColour) <- unique(lmfeatGroup)
+      names(lmfeatGroupColour) <- lmfeatGroup
     }
     #
     if (isTRUE(regOnly)){

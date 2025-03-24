@@ -4,9 +4,6 @@ rfPred <- function(ptn,
                    predFeatures,
                    pdfName = NULL){
   check_ptn(ptn)
-  if(analysis_type!='rf'){
-    stop("'analysis_type' can be only 'rf' for random forest")
-  }
   if(is.null(slot(ptn@analysis@featureIntegration,'rf'))){
     stop(paste('Please run ', analysis_type, 'analysis first', sep=''))
   }
@@ -69,6 +66,6 @@ rfPred <- function(ptn,
   text(0.8,0.1, font=2,cex=1.7,paste('Specificity: ',round(caret::confusionMatrix(predValidc , featInSel$reg)[[4]][2],2),sep=''))
   dev.off()
   
-  ptn@analysis@featureIntegration@rf@prediction <- perf
+  #ptn@analysis@featureIntegration@rf@prediction <- perf
   return(ptn)
 }
