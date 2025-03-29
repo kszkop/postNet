@@ -97,7 +97,8 @@ codonUsage(ptn,
 \details{
 }
 
-\value{List with selected codons in up and down sets for each desired comparison. In addition, summary codons calculation (list entry: codonAll) is also provided. The function will also output plots for desired comparisons.
+\value{List with selected codons in up and down sets for each desired comparison. In addition, summary codons 
+calculation (list entry: codonAll) is also provided. The function will also output plots for desired comparisons.
 }
 
 \references{
