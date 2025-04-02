@@ -1,177 +1,75 @@
 \name{goDotplot}
 \alias{goDotplot}
-\title{Produce dot plots with results of GO term analysis
+\title{Produce dot plots with results of GO term enrichment analysis
 }
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+
+\description{The \code{goDotplot} function can be used to produce dot plots visualizing the results of GO term enrichment analyses
+performed using \link[postNet]{goAnalysis}. The input is a \code{postNetData} object, with several options for plotting.
 }
+
 \usage{
-goDotplot(ptn, category, pool = TRUE, termSel = NULL, nCategories = 10, size = "Count", pdfName = NULL)
+goDotplot(ptn, 
+          category, 
+          pool = TRUE, 
+          termSel = NULL, 
+          nCategories = 10, 
+          size = "Count", 
+          pdfName = NULL)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{ptn}{
-%%     ~~Describe \code{ptn} here~~
 }
   \item{category}{
-%%     ~~Describe \code{category} here~~
 }
   \item{pool}{
-%%     ~~Describe \code{pool} here~~
 }
   \item{termSel}{
-%%     ~~Describe \code{termSel} here~~
 }
   \item{nCategories}{
-%%     ~~Describe \code{nCategories} here~~
 }
   \item{size}{
-%%     ~~Describe \code{size} here~~
 }
   \item{pdfName}{
-%%     ~~Describe \code{pdfName} here~~
 }
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\details{
+}
+
+\value{
+}
+
+\references{
+}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
 
-## The function is currently defined as
-function (ptn, category, pool = TRUE, termSel = NULL, nCategories = 10, 
-    size = "Count", pdfName = NULL) 
-{
-    check_ptn(ptn)
-    if (!check_logical(pool)) {
-        stop("'pool' can only be only be logical: TRUE of FALSE ")
-    }
-    if (!check_number(nCategories)) {
-        stop("please provide numeric value")
-    }
-    check_size(size)
-    check_category(category)
-    for (sel in category) {
-        if (is.null(slot(ptn@analysis@GO, sel))) {
-            stop("Please run goAnalysis first for selected category")
-        }
-        else {
-            goIn <- slot(ptn@analysis@GO, sel)
-        }
-        if (isTRUE(pool)) {
-            nameOut <- ifelse(is.null(pdfName), "pooled_GOdotplot.pdf", 
-                paste(pdfName, "pooled_GOdotplot.pdf", sep = "_"))
-            goDf <- data.table::rbindlist(lapply(goIn, function(x) x@result), 
-                use.names = TRUE, idcol = TRUE)
-            colnames(goDf)[1] <- "regulation"
-            if (!is.null(termSel)) {
-                goDf <- goDf[goDf$ID \%in\% termSel, ]
-            }
-            idx <- order(goDf$p.adjust, decreasing = FALSE)
-            goDf <- goDf[idx, ]
-            if (nCategories < nrow(goDf)) {
-                goDf <- goDf[1:nCategories, ]
-            }
-            goDf$log10fdr <- -log10(goDf$p.adjust)
-            if (size == "geneRatio") {
-                goDf$scale <- goDf$Count/goDf$Size
-            }
-            else {
-                goDf$scale <- goDf$Count
-            }
-            colOut <- colPlot(ptn)[-1]
-            names(colOut) <- names(ptn@dataIn@geneList)
-            pdf(nameOut, width = 8, height = 8, useDingbats = F)
-            par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, 
-                font.lab = 2, cex.axis = 1.3, cex.main = 1.7, 
-                cex.lab = 1)
-            pOut <- ggplot2::ggplot(goDf, ggplot2::aes(x = log10fdr, 
-                y = reorder(Description, log10fdr), size = scale, 
-                colour = regulation)) + ggplot2::geom_point() + 
-                ggplot2::scale_color_manual(values = colOut) + 
-                ggplot2::theme_bw() + ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = "dashed", 
-                linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(), 
-                panel.background = ggplot2::element_blank(), 
-                legend.key.size = ggplot2::unit(0.5, "cm")) + 
-                ggplot2::xlab("-log10 FDR") + ggplot2::ylab(" ")
-            plot(pOut)
-            dev.off()
-        }
-        else {
-            for (i in 1:length(goIn)) {
-                nameOut <- ifelse(is.null(pdfName), paste(names(goIn)[i], 
-                  "GOdotplot.pdf", sep = "_"), paste(pdfName, 
-                  names(goIn)[i], "GOdotplot.pdf", sep = "_"))
-                goDf <- goIn[[i]]@result
-                if (!is.null(termSel)) {
-                  goDf <- goDf[goDf$ID \%in\% termSel, ]
-                }
-                idx <- order(goDf$p.adjust, decreasing = FALSE)
-                goDf <- goDf[idx, ]
-                if (nCategories < nrow(goDf)) {
-                  goDf <- goDf[1:nCategories, ]
-                }
-                goDf$log10fdr <- -log10(goDf$p.adjust)
-                if (size == "geneRatio") {
-                  goDf$scale <- goDf$Count/goDf$Size
-                }
-                else {
-                  goDf$scale <- goDf$Count
-                }
-                colOut <- colPlot(ptn)[-1]
-                names(colOut) <- names(ptn_geneList(ptn))
-                pdf(nameOut, width = 8, height = 8, useDingbats = F)
-                par(mar = c(5, 5, 3, 3), bty = "l", font = 2, 
-                  font.axis = 2, font.lab = 2, cex.axis = 1.3, 
-                  cex.main = 1.7, cex.lab = 1)
-                pOut <- ggplot2::ggplot(goDf, ggplot2::aes(x = log10fdr, 
-                  y = reorder(Description, log10fdr), size = scale)) + 
-                  ggplot2::geom_point(color = colOut[names(goIn)[i]]) + 
-                  ggplot2::scale_color_manual(values = colOut[names(goIn)[i]]) + 
-                  ggplot2::theme_bw() + ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = "dashed", 
-                  linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(), 
-                  panel.background = ggplot2::element_blank(), 
-                  legend.key.size = ggplot2::unit(0.5, "cm")) + 
-                  ggplot2::xlab("-log10 FDR") + ggplot2::ylab(" ") + 
-                  ggplot2::ggtitle(paste(names(goIn)[i], sel, 
-                    sep = "_"))
-                print(pOut)
-                dev.off()
-            }
-        }
-    }
-  }
-}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
+\examples{
+GO:0008380
+GO:0008380
+RNA splicing
+115
+371
+2.800315e-15
+3.293171e-12
+AHNAK:AHNAK2:ARGLU1:ARMC7:BCAS2:BUD31:CCNL1:CDC5L:CIR1:CLK1:CLK4:CLP1:COIL:CRIPT:CWC22:CWF19L1:CWF19L2:DBR1:DDX41:DDX47:DDX5:DHX15:DHX35:DHX9:DNAJC17:EIF4A3:ENY2:FAM98B:FUS:GEMIN2:GEMIN7:GPATCH1:GPKOW:HNRNPA1L2:HNRNPA2B1:HNRNPC:HNRNPH1:HNRNPM:HNRNPR:IWS1:LARP7:LSM3:LSM6:LSM7:LSM8:LUC7L3:MAGOHB:METTL3:MFAP1:MPHOSPH10:NCBP2:NRDE2:NSRP1:PHF5A:PLRG1:PNN:POLR2A:PPIE:PPIH:PPIL1:PPIL2:PPWD1:PRPF3:RBM12:RBM12B:RBM14:RBM22:RBM25:RBM39:RBM41:RBM5:RBM7:RBM8A:RBMXL1:RNPC3:RPS26:RSRC1:RSRP1:SF3B1:SF3B6:SLC38A2:SMNDC1:SMU1:SNIP1:SNRNP27:SNRNP35:SNRPB2:SNRPC:SNRPD1:SNRPD3:SNW1:SON:SREK1:SRPK1:SRSF11:SRSF2:SRSF3:SRSF5:SRSF7:SYF2:SYNCRIP:TFIP11:THOC1:THOC2:THRAP3:TIA1:TTF2:TXNL4B:UBL5:XAB2:ZC3H10:ZC3H13:ZCCHC8:ZMAT2:ZNF638
+GO:0006397
+GO:0006397
+mRNA processing
+120
+402
+1.465877e-14
+8.619359e-12
+ARGLU1:ARMC7:BCAS2:BUD31:CBLL1:CDC5L:CIR1:CLP1:COIL:CRIPT:CSTF1:CSTF2:CSTF2T:CSTF3:CWC22:CWF19L1:CWF19L2:DBR1:DDX41:DDX47:DDX5:DHX15:DHX35:DHX9:DNAJC17:EIF4A3:FASTKD5:FIP1L1:GEMIN2:GEMIN7:GPATCH1:GPKOW:HNRNPA1L2:HNRNPA2B1:HNRNPC:HNRNPH1:HNRNPM:HNRNPR:IWS1:KIN:LARP7:LSM3:LSM6:LSM7:LSM8:LUC7L3:MAGOHB:METTL3:MFAP1:MTPAP:NCBP2:NRDE2:NSRP1:PAPOLG:PCF11:PHF5A:PLRG1:PNN:PPIE:PPIH:PPIL1:PPIL2:PPWD1:PRMT9:PRPF3:PTCD2:PUS7L:RBM14:RBM22:RBM25:RBM39:RBM41:RBM5:RBM7:RBM8A:RBMXL1:RNASEL:RNGTT:RNMT:RNPC3:RPUSD2:RSRC1:RSRP1:SF3B1:SF3B6:SMNDC1:SMU1:SNIP1:SNRNP27:SNRNP35:SNRPB2:SNRPC:SNRPD1:SNRPD3:SNW1:SON:SREK1:SRPK1:SRSF11:SRSF2:SRSF3:SRSF5:SRSF7:SYF2:SYNCRIP:TFIP11:THOC1:THOC2:THRAP3:TIA1:TRMT10C:TRUB1:TRUB2:TTF2:TXNL4B:UBL5:XAB2:ZC3H13:ZCCHC8:ZMAT2
+GO:0000375
+GO:0000375
+RNA splicing, via transesterification reactions
+86
+255
+5.537108e-14
+2.170546e-11
+ARGLU1:BCAS2:BUD31:CDC5L:COIL:CWC22:CWF19L1:CWF19L2:DBR1:DDX41:DDX5:DHX15:DHX35:DHX9:DNAJC17:EIF4A3:GEMIN2:GEMIN7:GPATCH1:GPKOW:HNRNPA1L2:HNRNPA2B1:HNRNPC:HNRNPH1:HNRNPM:HNRNPR:LARP7:LSM3:LSM6:LSM7:LSM8:LUC7L3:MAGOHB:METTL3:MFAP1:MPHOSPH10:NCBP2:NSRP1:PHF5A:PLRG1:PNN:PPIE:PPIH:PPIL1:PPWD1:PRPF3:RBM14:RBM22:RBM25:RBM39:RBM41:RBM5:RBM7:RBM8A:RBMXL1:RNPC3:RSRC1:RSRP1:SF3B1:SF3B6:SMNDC1:SMU1:SNIP1:SNRNP27:SNRNP35:SNRPB2:SNRPC:SNRPD1:SNRPD3:SNW1:SON:SRPK1:SRSF2:SRSF3:SRSF5:SRSF7:SYF2:SYNCRIP:TFIP11:THRAP3:TIA1:TXNL4B:UBL5:XAB2:ZCCHC8:ZMAT2
+GO:0000377
+GO:0000377

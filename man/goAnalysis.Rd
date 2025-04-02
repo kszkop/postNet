@@ -79,7 +79,7 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 \link[postNet]{postNetStart} \cr
 \link[postNet]{slopeFilt} \cr
 \link[postNet]{ptn_GO} \cr
-\link[postNet]{goDotPlot} \cr
+\link[postNet]{goDotplot} \cr
 
 }
 \examples{

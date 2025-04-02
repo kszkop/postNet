@@ -28,7 +28,8 @@ goDotplot <- function(ptn,
     }
     #
     if(isTRUE(pool)){
-      nameOut<- ifelse(is.null(pdfName), "pooled_GOdotplot.pdf", paste(pdfName, "pooled_GOdotplot.pdf", sep = "_"))
+      nameOut<- ifelse(is.null(pdfName), paste0("pooled_GOdotplot", "_", sel,".pdf"), 
+                       paste(pdfName, paste0("pooled_GOdotplot", "_", sel,".pdf"), sep = "_"))
       #
       goDf <- data.table::rbindlist(lapply(goIn, function(x) x@result),use.names=TRUE, idcol=TRUE)
       colnames(goDf)[1] <- 'regulation'
@@ -74,7 +75,9 @@ goDotplot <- function(ptn,
       dev.off()
     } else{
       for(i in 1:length(goIn)){
-        nameOut <- ifelse(is.null(pdfName), paste(names(goIn)[i], "GOdotplot.pdf",sep='_'), paste(pdfName,names(goIn)[i],"GOdotplot.pdf", sep = "_"))
+        nameOut <- ifelse(is.null(pdfName), paste(names(goIn)[i], paste0("GOdotplot", "_", sel,".pdf"),sep='_'),
+                          paste(pdfName, names(goIn)[i], paste0("GOdotplot", "_", sel,".pdf"), sep = "_"))
+        
         goDf <- goIn[[i]]@result
         if(nrow(goDf) == 0){
           message(paste('For the geneListL: ', names(goIn)[i], ' there are no categories to plot', sep=''))
@@ -107,7 +110,7 @@ goDotplot <- function(ptn,
           par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
           pOut <- ggplot2::ggplot(goDf, ggplot2::aes(x=log10fdr, y=reorder(Description,log10fdr), size=scale)) +
             ggplot2::geom_point(color= colOut[names(goIn)[i]]) +
-            ggplot2::scale_color_manual(values = colOut[names(goIn)[i]]) +   
+          #  ggplot2::scale_color_manual(values = colOut[names(goIn)[i]]) +   
             ggplot2::theme_bw() +
             ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = 'dashed', linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(),panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, 'cm')) +   
             ggplot2::xlab('-log10 FDR') +
