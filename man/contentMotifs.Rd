@@ -72,7 +72,7 @@ contentMotifs(ptn,
   background (0), and the first and second gene sets will be compared to each other. The default is
   \code{NULL}.
   }
-  \item{pdfName}{Name to be appended to output PDF files.
+  \item{pdfName}{Name to be appended to output PDF files. Default is \code{NULL}.
   }
   \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the 
   values specified with \code{unitOut} will be returned, and statistical comparisons between gene sets will not be
