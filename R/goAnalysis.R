@@ -103,7 +103,7 @@ goAnalysis <- function(ptn,
           tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x,'/'))),collapse=':'),USE.NAMES = F)
         }
       } else {
-        message(paste('No significant results for',sel, 'in', resOut[[i]], sep=' '))
+        message(paste('No significant results for', sel, 'in', names(resOut)[i], sep=' '))
       }
       tabTmp$Size <- as.numeric(sub("\\/.*", "", tabTmp$BgRatio))
       

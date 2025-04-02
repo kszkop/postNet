@@ -7,6 +7,7 @@ plotFeaturesMap <- function(ptn,
                            pdfName = NULL
                            ){
   
+
   check_ptn(ptn)
   
   if(!is.null(ptn_features(ptn))){
