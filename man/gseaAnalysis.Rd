@@ -3,9 +3,10 @@
 \title{Perform Gene Set Enrichment Analysis (GSEA) with a \code{postNetData} object 
 }
 
-\description{The \code{gseaAnalysis} function performs Gene Set Enrichment Analysis using the regulatory effect
-measurement contained in a \code{postNetData} object. These values are specified by the \code{regulationGen}, or 
-\code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
+\description{The \code{gseaAnalysis} function implements the \link[fgsea]{fgsea} package to perform Gene Set 
+Enrichment Analysis using the regulatory effect measurement contained in a \code{postNetData} object. These 
+gene sets are specified by the \code{regulationGen}, or \code{effectMeasure} parameters in the 
+\link[postNet]{postNetStart} function. 
 }
 
 \usage{
@@ -52,7 +53,7 @@ gseaAnalysis(ptn,
   \item{minSize}{Integer specifying the minimal size of a gene set to test. Terms/pathways with fewer genes will 
   be exluded. Default is \code{10}.
   }
-  \item{name}{Optionally, provide a name for the tab-delimited out file storing the results of the GSEA. Note 
+  \item{name}{Optionally, provide a name for the tab-delimited output file storing the results of the GSEA. Note 
   that the "GSEA" slot of the \code{postNetData} object will reflect the results of the most recent
   analysis. However, multiple analyses can be run and saved by providing unique names to the output file. Default is
   \code{NULL}.
