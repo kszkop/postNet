@@ -4,9 +4,9 @@
 }
 
 \description{The \code{gseaAnalysis} function implements the \link[fgsea]{fgsea} package to perform Gene Set 
-Enrichment Analysis using the regulatory effect measurement contained in a \code{postNetData} object. These 
-gene sets are specified by the \code{regulationGen}, or \code{effectMeasure} parameters in the 
-\link[postNet]{postNetStart} function. 
+Enrichment Analysis using the gene sets associated with the regulatory effect measurement contained in 
+a \code{postNetData} object. These gene sets are specified by the \code{regulationGen}, or 
+\code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
 }
 
 \usage{
@@ -64,6 +64,9 @@ gseaAnalysis(ptn,
 using the S4 method \link[postNet]{ptn_GSEA} function. These results can then be provided as input to the
 \link[postNet]{gseaPlot} function, which can be used to generate GSEA plots for all results, or for specific 
 terms of interest. 
+
+Note that if the results of an \pkg{anota2seq} analysis are being used for GSEA, it is strongly
+recommended to first perform filtering using the \link[postNet]{slopeFilt} function.
 }
 
 \value{A data.frame of GSEA results that is stored in the GSEA slot of the \code{postNetData} object, and written to a tab delimited text file. Each row of the data.frame corresponds to a term, with the following columns (also see \link[fgsea]{fgseaMultilevel} from the \pkg{fgsea} package):
