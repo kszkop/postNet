@@ -11,10 +11,10 @@ goDotplot <- function(ptn,
   #
   check_ptn(ptn)
   if(!check_logical(pool)){
-    stop("'pool' can only be only be logical: TRUE of FALSE ")
+    stop("'pool' must be logical: TRUE of FALSE ")
   }
   if(!check_number(nCategories)) {
-    stop("please provide numeric value")
+    stop("Please provide a postive integer for 'nCategories'")
   }
   check_size(size)
   #
@@ -22,7 +22,8 @@ goDotplot <- function(ptn,
   #
   for(sel in category){
     if(is.null(slot(ptn@analysis@GO, sel))){
-      stop("Please run goAnalysis first for selected category")
+      stop("No results found for the selected category. Please run the goAnalysis function 
+           first for all of the selected categories.")
     } else {
       goIn <- slot(ptn@analysis@GO, sel)
     }
@@ -80,7 +81,7 @@ goDotplot <- function(ptn,
         
         goDf <- goIn[[i]]@result
         if(nrow(goDf) == 0){
-          message(paste('For the geneListL: ', names(goIn)[i], ' there are no categories to plot', sep=''))
+          message(paste('For the geneListL: ', names(goIn)[i], ' there are no categories to plot.', sep=''))
         } else {
           if(!is.null(termSel)){
             goDf <- goDf[goDf$ID %in% termSel,]

@@ -90,7 +90,7 @@ codonUsage(ptn,
   }
   \item{plotType_index}{
   }
-  \item{pdfName}{Name to be appended to output PDF files.Default is \code{NULL}.
+  \item{pdfName}{Name to be appended to output PDF files. Default is \code{NULL}.
   }
 }
 
