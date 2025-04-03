@@ -166,14 +166,11 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
                           regulationGen="translation", 
                           contrastSel=1)
                     
-# Create example custom gene sets for GSEA:
- set1 <- sample(row.names(postNetExample$ads_data$dataP), 15)
- inSet <- list(Set1 = set1)                   
                           
-# Run GSEA on the C5 collection:
+# Run GO term analysis:
  ptn <- gseaAnalysis(ptn = ptn,
                     genesSlopeFiltOut = filtOutGenes,
-                    geneSet = inSet,
-                    name = 'ads_example')   
+                    category=c('BP', 'KEGG'),
+                    name = 'example')   
   }
 }

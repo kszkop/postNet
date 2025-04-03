@@ -29,7 +29,7 @@ goDotplot(ptn,
   Default is \code{TRUE}.
 }
   \item{termSel}{A character vector can be supplied to specify specific terms to be plotted. For example, \code{c('GO:0008380','GO:0008380')},
-  or \code{c('hsa03013')} is using KEGG terms. Default is \code{NULL}.  
+  or \code{c('hsa03013')} if using KEGG terms. Default is \code{NULL}.  
 }
   \item{nCategories}{An integer specifying the maximum number of terms to include on each plot. Default is \code{10}. 
 }
@@ -41,17 +41,49 @@ goDotplot(ptn,
 }
 }
 
-\details{
+\details{To produce dot plots, the \link[postNet]{goAnalysis} function must first be run on the
+\code{postNetData} object.
 }
 
-\value{
-}
-
-\references{
+\value{No value is returned. Graphical outs are generated as PDF files. 
 }
 
 \seealso{
+\link[postNet]{goAnalysis} \cr
+\link[postNet]{ptn_GO} \cr
 }
 
 \examples{
+
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+
+# Run GO term analysis:
+ ptn <- goAnalysis(ptn = ptn, 
+                  category=c('BP'),
+                  name = 'example')
+ 
+# Plot GO term analysis results for both gene sets of interest on one plot:
+ goDotplot(ptn=ptn, 
+          category = 'BP', 
+          nCategories=20, 
+          pool=T, 
+          size = 'Count', 
+          pdfName='example')
 }
