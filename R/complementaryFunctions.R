@@ -420,11 +420,11 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
       } 
       if(ylabel == 'Length (Log2 scale)'){
         text(i, 0, ifelse(mean(antilog(resOut[[i]])) > 0 & mean(antilog(resOut[[i]])) < 1, 
-                    round(mean(antilog(resOut[[i]])), 2), 
-                    round(mean(antilog(resOut[[i]])), 0)), font = 2)
+                    round(mean(antilog(resOut[[i]], 2)), 0), 
+                    round(mean(antilog(resOut[[i]],2)), 0)), font = 2)
       } else {
         text(i, 0, ifelse(mean(resOut[[i]]) > 0 & mean(resOut[[i]]) < 1, 
-                    round(mean(resOut[[i]]), 2), 
+                    round(mean(resOut[[i]]), 0), 
                     round(mean(resOut[[i]]), 0)), font = 2)
       }
     } 
