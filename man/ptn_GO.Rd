@@ -1,6 +1,6 @@
 \docType{methods}
 \name{ptn_GO}
-\alias{ptn_GO, postNetData-method}
+\alias{ptn_GO,postNetData-method}
 \title{Accessor for the "GO" slot of a \code{postNetData} object
 }
 
