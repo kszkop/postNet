@@ -35,7 +35,11 @@ gageAnalysis(ptn,
   }
 }
 
-\details{
+\details{After running GAGE analysis, the results can be retrieved from the \code{postNetData} object
+using the S4 method \link[postNet]{ptn_GAGE} function.
+
+Note that if the results of an \pkg{anota2seq} analysis are being used for GAGE analysis, it is strongly
+recommended to first perform filtering using the \link[postNet]{slopeFilt} function.
 }
 
 \value{The results returned by the \code{gageAnalysis} function are compiled into an S4 object of class \code{postNetGAGE} and stored in the "GAGE" slot of the \code{postNetData} object. As described in the \link[gage]{gage} package, each gene ontology category has a slot in the results object that stores a named list with three elements ("greater", "less" and "stats"). The "stats" element contains the test statistics. The "greater" and "less" elements are data.frames with the results of a two-directional test, each having the following columns:
@@ -70,6 +74,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 \seealso{
 \link[gage]{gage} \cr
 \link[postNet]{ptn_GAGE}
+\link[postNet]{slopeFilt} \cr
 }
 
 \examples{

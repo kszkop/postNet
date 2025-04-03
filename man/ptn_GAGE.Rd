@@ -56,7 +56,9 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 
 \seealso{
 \link[gage]{gage} \cr
-\link[postNet]{ptn_GAGE}
+\link[postNet]{gageAnalysis} \cr
+\link[postNet]{postNetStart} \cr
+\link[postNet]{slopeFilt} \cr
 }
 
 \examples{
