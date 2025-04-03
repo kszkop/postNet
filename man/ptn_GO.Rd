@@ -1,96 +1,101 @@
+\docType{methods}
 \name{ptn_GO}
-\alias{ptn_GO}
-\title{Retrieve results of GO term analysis from the postNetData object
+\alias{ptn_GO, postNetData-method}
+\title{Accessor for the "GO" slot of a \code{postNetData} object
 }
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+
+\description{Retrieve the "GO" slot from a \code{postNetData} object, which holds the results of GO term enrichment analysis created by 
+the \link[postNet]{goAnalysis} function.
 }
+
 \usage{
-ptn_GO(ptn, category, geneList, threshold)
+\S4method{ptn_GO}{postNetData}(ptn, 
+      category, 
+      geneList, 
+      threshold)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{ptn}{
-%%     ~~Describe \code{ptn} here~~
+  \item{ptn}{a \code{postNetData} object.
 }
-  \item{category}{
-%%     ~~Describe \code{category} here~~
+  \item{category}{A character vector specifying one or more Gene Ontology categories to extract results for. 
+  The options are \code{'BP'}, \code{'CC'}, \code{'MF'}, and \code{'KEGG'}. For example, \code{category = c('BP','MF')}.
 }
-  \item{geneList}{
-%%     ~~Describe \code{geneList} here~~
+  \item{geneList}{A string specifying the name of the gene set of interest to extract results for. This must match one of the names 
+  of the elements of \code{geneList} in the \code{postNetData} object. 
 }
-  \item{threshold}{
-%%     ~~Describe \code{threshold} here~~
+  \item{threshold}{A numeric value providing the FDR threshold to be used to select results from the GO term analysis.
 }
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\value{A data.frame of GO term enrichment analysis results that is stored in the GO slot of the \code{postNetData} object, and written to an excel file. 
+Each row of the data.frame corresponds to a term, with the following columns:
 
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (ptn, category, geneList, threshold) 
-{
-    check_ptn(ptn)
-    check_category(category)
-    if (length(category) != 1) {
-        stop("Please provide only one category")
-    }
-    if (!check_number(threshold)) {
-        stop(paste("Please provide one numeric value for ", threshold, 
-            sep = ""))
-    }
-    if (!any(geneList \%in\% names(ptn_geneList(ptn)))) {
-        stop("None of the regulatory geneList in ptn")
-    }
-    if (is.null(slot(ptn@analysis, "GO"))) {
-        stop("Please run GO analysis first")
-    }
-    else {
-        GOres <- slot(ptn@analysis@GO, category)
-    }
-    GOresOut <- GOres[[which(geneList == names(GOres))]]@result
-    GOresOut <- GOresOut[which(GOresOut[, 6] < threshold), ]
-    if (nrow(GOresOut) > 0) {
-        GOresOut <- data.frame(GOresOut, row.names = NULL)
-    }
-    else {
-        message("there are no GO categories to output")
-    }
-    return(GOresOut)
+ \itemize{ 
+  \item \strong{ID}: The ID of the term or pathway tested.
+  
+  \item \strong{Description}: The name of the term. Note that if the \code{category} used in the analysis was "KEGG", there are two additional
+  columns with descriptive information called "category" and "subcategory".
+  
+  \item \strong{Count}: The number of genes in the set belonging to the term or pathway
+  
+  \item \strong{Size}: The size of the pathway after removing genes not present in the input.  
+  
+  \item \strong{pvalue}: The enrichment p-value.  
+  
+  \item \strong{adjusted_pvalue}: The BH-adjusted p-value.
+  
+  \item \strong{geneID}: The gene IDs in the input data belonging to the term/pathway.
   }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
+
+\references{
+See \link[clusterProfiler]{clusterProfiler} for full details of enrichment analysis implentation in R. \cr
+
+If you use the \code{goAnalysis} function in your analysis, please cite: \cr
+
+S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T Wu, L Xie, G Yu.
+  Using clusterProfiler to characterize multiomics data. Nature Protocols. 2024, 19(11):3292-3320
+}
+
+\seealso{
+\link[clusterProfiler]{clusterProfiler} \cr
+\link[postNet]{goAnalysis} \cr
+\link[postNet]{postNetStart} \cr
+\link[postNet]{slopeFilt} \cr
+\link[postNet]{ptn_GO} \cr
+\link[postNet]{goDotplot} \cr
+}
+
+\examples{
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+
+# Run GO term analysis:
+ ptn <- goAnalysis(ptn = ptn, 
+                  category=c('BP'),
+                  name = 'example')
+
+# Extract the signficant enrichment results from the postNetData object:
+ goOut <- ptn_GO(ptn, 
+                category = 'BP', 
+                geneList = 'translationUp', 
+                threshold = 0.05)
+ str(goOut)
+}
