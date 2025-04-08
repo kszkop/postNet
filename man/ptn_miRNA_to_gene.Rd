@@ -36,7 +36,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 \seealso{
 \link[gage]{gage} \cr
 \link[postNet]{miRNAanalysis} \cr
-\link[postNet]{ptn_miRNA_anaysis} \cr
+\link[postNet]{ptn_miRNA_analysis} \cr
 \link[postNet]{postNetStart} \cr
 }
 
