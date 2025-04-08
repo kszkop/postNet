@@ -411,13 +411,13 @@ checkFileColumns <- function(filePath) {
 
   fileData <- read.delim(filePath)
   
-  requiredColumns <- c('Gene.Tax.ID','weighted.context...score','Site.Type','Gene.Symbol','miRNA')
+  requiredColumns <- c('Cumulative.weighted.context...score','Aggregate.PCT','Gene.Symbol','Representative.miRNA')
   missingColumns <- setdiff(requiredColumns, colnames(fileData))
   if (length(missingColumns) > 0) {
     stop(paste("The following required columns are missing:", paste(missingColumns, collapse = ", ")))
   }
   
-  noS <- length(unique(fileData$Gene.Tax.ID))
+  noS <- length(unique(fileData$Species.ID))
   if(noS>1){
     stop('Please subset the file the include only the desired species')
   }

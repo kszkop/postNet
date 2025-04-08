@@ -1,72 +1,75 @@
+\docType{methods}
 \name{ptn_miRNA_to_gene}
-\alias{ptn_miRNA_to_gene}
-\title{Retrieve other gene targets of miRNA from the postNetData object
+\alias{ptn_miRNA_to_gene,postNetData-method}
+\title{Accessor for the "miRNA_to_gene" slot of a \code{postNetData} object
 }
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+
+\description{Retrieve the "miRNA_to_gene" slot from a \code{postNetData} object, which stores a list of genes that are predicted to be targeted by the miRNA that passed 
+the filtering thresholds for \code{contextScore} and/or \code{Pct}. 
 }
+
 \usage{
-ptn_miRNA_to_gene(ptn, miRNAs)
+\S4method{ptn_miRNA_to_gene}{postNetData}(ptn, miRNAs)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{ptn}{
-%%     ~~Describe \code{ptn} here~~
-}
-  \item{miRNAs}{
-%%     ~~Describe \code{miRNAs} here~~
-}
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or do  help(data=index)  for the standard data sets.
-
-## The function is currently defined as
-function (ptn, miRNAs) 
-{
-    check_ptn(ptn)
-    if (is.null(slot(ptn@analysis, "miRNA_analysis"))) {
-        stop("Please run miRNAanalysis first")
-    }
-    else {
-        miRNATmp <- ptn@analysis@miRNA@miRNA_to_gene
-    }
-    miRNAsOut <- miRNATmp[which(names(miRNATmp) \%in\% miRNAs)]
-    return(miRNAsOut)
+  \item{ptn}{A \code{postNetData} object.
+  }
+  \item{miRNAs}{A character vector specifying one or more miRNAs for which to extract the list of target genes. 
   }
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
+
+\value{A list where each element is a vector of genes that are predicted to be targeted by the miRNA that passed 
+the filtering thresholds for \code{contextScore} and/or \code{Pct}. 
+}
+
+\references{
+If you use the \code{miRNAanalysis} function in your analysis, please cite:
+
+McGeary SE, Lin KS, Shi CY, Pham T, Bisaria N, Kelley GM, Bartel DP. The biochemical basis of microRNA targeting efficacy. Science Dec 5, (2019). 
+
+Agarwal V, Bell GW, Nam J, Bartel DP. Predicting effective microRNA target sites in mammalian mRNAs. eLife, 4:e05005, (2015). eLife Lens view.
+
+Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Applicable Gene Set Enrichment for Pathways Analysis. BMC Bioinformatics 2009, 10:161.
+}
+
+\seealso{
+\link[gage]{gage} \cr
+\link[postNet]{miRNAAnalysis} \cr
+\link[postNet]{ptn_miRNA_anaysis} \cr
+\link[postNet]{postNetStart} \cr
+}
+
+\examples{
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ set1 <- postNetExample$geneList[[1]][1:100]
+ set2 <- postNetExample$geneList[[2]][1:100]
+ myGenes <- list('Set1' = set1, 'Set2' = set2)
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+
+# Run GAGE miRNA target enrichment analysis:
+ ptn <- miRNAanalysis(ptn,
+                     miRNATargetScanFile = 'miRNA_predictions_hsa.txt',
+                     contextScore = -0.2)
+
+# Extract the signficant enrichment results from the postNetData object:
+ miRNAtargets <- ptn_miRNA_to_gene(ptn = ptn,
+                    miRNAs = c('hsa-miR-138-5p','hsa-miR-182-5p'))
+ str(miRNAtargets)
+}
+

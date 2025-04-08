@@ -60,7 +60,8 @@ few genes will require slope filtering.
 \code{\link[postNet]{gseaAnalysis}} \cr
 \code{\link[postNet]{gseaPlot}} \cr
 \code{\link[postNet]{gageAnalysis}} \cr
-\code{\link[postNet]{goAnalysis}}
+\code{\link[postNet]{goAnalysis}} \cr
+\code{\link[postNet]{miRNAAnalysis}}
 }
 
 \examples{

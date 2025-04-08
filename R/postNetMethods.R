@@ -206,7 +206,7 @@ ptn_miRNA_to_gene <- function(ptn,
   #
   check_ptn(ptn)
 
-  if(is.null(slot(ptn@analysis, 'miRNA_analysis'))){
+  if(is.null(slot(ptn@analysis, 'miRNA'))){
     stop("Please run miRNAanalysis first")
   } else {
     miRNATmp <- ptn@analysis@miRNA@miRNA_to_gene
