@@ -422,10 +422,10 @@ codonUsage <- function(ptn,
           ggplot2::theme_bw() +
           ggplot2::xlim(0, xylim1) +
           ggplot2::ylim(0, xylim1) +
-          ggplot2::geom_abline(slope = 1, intercept = 0, col = "grey", linetype = "dashed", size = 0.5) +
+          ggplot2::geom_abline(slope = 1, intercept = 0, col = "grey", linetype = "dashed", linewidth = 0.5) +
           ggplot2::geom_point() +
           ggplot2::coord_fixed() +
-          ggplot2::geom_line(ggplot2::aes(group = AA), col = "gray", linetype = 1, size = 0.2) +
+          ggplot2::geom_line(ggplot2::aes(group = AA), col = "gray", linetype = 1, linewidth = 0.2) +
           ggplot2::theme(legend.position = "none") +
           ggrepel::geom_text_repel(ggplot2::aes(label = AAcodon), size = 3, segment.size = 0.2,max.overlaps = 100) +
           ggplot2::labs(
@@ -453,9 +453,9 @@ codonUsage <- function(ptn,
           ggplot2::xlim(0, xylim2) +
           ggplot2::ylim(0, xylim2) +
           ggplot2::geom_point() +
-          ggplot2::geom_abline(slope = 1, intercept = 0, col = "grey", linetype = "dashed", size = 0.5) +
+          ggplot2::geom_abline(slope = 1, intercept = 0, col = "grey", linetype = "dashed", linewidth = 0.5) +
           ggplot2::coord_fixed() +
-          ggplot2::geom_line(ggplot2::aes(group = AA), col = "gray", linetype = 1, size = 0.2) +
+          ggplot2::geom_line(ggplot2::aes(group = AA), col = "gray", linetype = 1, linewidth = 0.2) +
           ggplot2::theme(legend.position = "none") +
           ggrepel::geom_text_repel(ggplot2::aes(label = AAcodon), size = 3, segment.size = 0.2,max.overlaps = 100) +
           ggplot2::labs(

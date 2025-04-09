@@ -38,9 +38,9 @@ codonUsage(ptn,
   are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"ptnCDS"} (the CDS sequences already stored in 
   the \code{postNetData} object. The default is \code{"ccds"}. 
   }
-  \item{sourceSeq}{A string specifying the source of \code{annotType}. If \code{annotType = "ccds"} choose "create" to automatically prepare reference sequences 
-  from ccds database,  "load" to load preprepared sequences for selected species, or "custom" to use 
-  customFile. The default is "load". 
+  \item{sourceSeq}{A string specifying the source of \code{annotType}. If \code{annotType = "ccds"} choose "create" 
+  to automatically prepare reference sequences from ccds database,  "load" to load preprepared sequences for selected 
+  species, or "custom" to use customFile. The default is "load". 
   }
   \item{analysis}{select type of the analysis. Choose from "codon" or alternatively amino acid level 
   "AA". The default is "codon". 
