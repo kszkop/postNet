@@ -6,9 +6,9 @@
 \description{The \code{codonUsage} function performs codon (or alternatively amino acid [AA]) usage analysis.
 The analysis identifies single (or multiple, e.g. dicodons) codons enriched or depleted between different gene 
 sets of interest. In the first step, for each gene set comparison, a chi-square test is applied to assess 
-significant differences in usage. Then, for significant codons, the odds ratio for each desired comparison 
-pair is calculated and plotted against the codon frequency. The codons (or AA) of interest are identified as 
-those with a high/low oddsratio and high frequency.
+significant differences in usage. Then, for significant codons (or AA), the odds ratio for each desired 
+comparison pair is calculated and plotted against the frequency. The codons (or AA) of interest are identified as 
+those with a high/low odds ratio and high frequency.
 }
 
 \usage{
@@ -32,7 +32,7 @@ codonUsage(ptn,
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{A \code{postNetData} object.
   }
   \item{annotType}{A string specifying the reference coding sequences to be used for the analysis. The options 
   are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"ptnCDS"} (the CDS sequences already stored in 
