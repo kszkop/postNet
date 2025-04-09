@@ -20,10 +20,10 @@ codonUsage(ptn,
           pAdj = 0.01, 
           rem5 = TRUE, 
           plotHeatmap = TRUE, 
-          thresX1 = 0.3, 
-          thresY1 = 0.3, 
-          thresX2 = 0.3, 
-          thresY2 = 0.3, 
+          thresOddsUp = 0.3, 
+          thresFreqUp = 0.3, 
+          thresOddsDown = 0.3, 
+          thresFreqDown = 0.3, 
           subregion = NULL, 
           subregionSel = NULL, 
           comparisons, 
@@ -42,33 +42,37 @@ codonUsage(ptn,
   to automatically prepare reference sequences from ccds database,  "load" to load preprepared sequences for selected 
   species, or "custom" to use customFile. The default is "load". 
   }
-  \item{analysis}{select type of the analysis. Choose from "codon" or alternatively amino acid level 
-  "AA". The default is "codon". 
+  \item{analysis}{A string specifying thes type of the analysis to perform. The options are \code{"codon"}, or \code{"AA"} 
+  to assess amino acid usage. The default is \code{"codon"}. 
   }
-  \item{codonN}{n number of codon combinations. The default is 1. For di-codon choose 2 and so on. 
-  The option is available only for type=="sequence". 
+  \item{codonN}{An integer specifying the number of codon combinations to count. For example, \code{codonN = 1} will count each
+  individual codon, while \code{codonN = 2}  will count di-codons, and so on. Note that this option is only available only 
+  for \code{analysis = "codon"}. Note that when \code{codonN} > 1 additional indexes and plots will not be generated.
+  The default is \code{1}. 
   }
-  \item{pAdj}{adjusted p-value threshold for chi-square test. The default is 0.01
+  \item{pAdj}{A numeric value providing the adjusted p-value threshold for chi-square test results. The default is \code{0.01}. 
   }
-  \item{rem5}{
+  \item{rem5}{Logical specifying whether codons with fewer than five counts should be filtered out from the contingency table 
+  (counts of codons by geneset) before performing the chi-square test. The default is \code{TRUE}. 
   }
-  \item{plotHeatmap}{option to plot heatmap. The default is TRUE. 
+  \item{plotHeatmap}{Logical specifying whether to plot a heatmap of the standardized residuals for each codon from the
+  Chi-square test. The default is \code{TRUE}. 
   }
-  \item{thresX1}{select the top percentage threshold for odds ratio for selecting codons in up set. 
+  \item{thresOddsUp}{select the top percentage threshold for odds ratio for selecting codons in up set. 
   The default 0.3 indicates that 30\% of codons with highest odds ratio is selected. It is combined 
-  the thresY1 to select the most frequent codons with the highest odds ratio.
+  the thresFreqUp to select the most frequent codons with the highest odds ratio.
   }
-  \item{thresY1}{select the top percentage threshold for frequency for selecting codons in the up set. 
+  \item{thresFreqUp}{select the top percentage threshold for frequency for selecting codons in the up set. 
   The default 0.3 indicates that 30\% of the most frequent codons are selected. It is combined the 
-  thresX1 to select the most frequent codons with the highest odds ratio. 
+  thresOddsUp to select the most frequent codons with the highest odds ratio. 
   }
-  \item{thresX2}{select the top percentage threshold for odds ratio for selecting codons in down set. 
+  \item{thresOddsDown}{select the top percentage threshold for odds ratio for selecting codons in down set. 
   The default 0.3 indicates that 30\% of codons with lowest odds ratio is selected. It is combined 
-  the thresY2 to select the most frequent codons with the lowest odds ratio.
+  the thresFreqDown to select the most frequent codons with the lowest odds ratio.
   }
-  \item{thresY2}{select the top percentage threshold for frequency for selecting codons in the down set.
+  \item{thresFreqDown}{select the top percentage threshold for frequency for selecting codons in the down set.
   The default 0.3 indicates that 30\% of the most frequent codons are selected. It is combined the 
-  thresX2 to select the most frequent codons with the lowest odds ratio.
+  thresOddsDown to select the most frequent codons with the lowest odds ratio.
   }
   \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either
   select or exclude from the analysis. This is done by providing a numeric value indicating the number of

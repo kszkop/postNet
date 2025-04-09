@@ -6,10 +6,10 @@ codonUsage <- function(ptn,
                        pAdj = 0.01,
                        rem5=TRUE,
                        plotHeatmap = TRUE,
-                       thresX1 = 0.3,
-                       thresY1 = 0.3,
-                       thresX2 = 0.3,
-                       thresY2 = 0.3,
+                       thresOddsUp = 0.3,
+                       thresFreqUp = 0.3,
+                       thresOddsDown = 0.3,
+                       thresFreqDown = 0.3,
                        subregion = NULL,
                        subregionSel= NULL,
                        comparisons,
@@ -498,21 +498,21 @@ codonUsage <- function(ptn,
         indUp <- as.numeric(which(statOut >= 0))
         statOut_up <- statOut[indUp]
         sumFreq_up <- sumFreq[indUp]
-        codU <-  names(sumFreq_up)[sumFreq_up >= quantile(sumFreq_up, 1 - thresY1) & statOut_up >= quantile(statOut_up, 1 - thresX1)]
+        codU <-  names(sumFreq_up)[sumFreq_up >= quantile(sumFreq_up, 1 - thresFreqUp) & statOut_up >= quantile(statOut_up, 1 - thresOddsUp)]
         if(length(codU) > 0){
           text(statOut_up[codU], sumFreq_up[codU], codU, col = "firebrick1", font = 2)
         } else {
-          message('None of the codons are labelled, please select more relaxed thresholds for thresX1 and thresY1')
+          message('None of the codons are labelled, please select more relaxed thresholds for thresOddsUp and thresFreqUp')
         }
         #
         indDown <- as.numeric(which(statOut < 0))
         statOut_down <- statOut[indDown]
         sumFreq_down <- sumFreq[indDown]
-        codD <- names(sumFreq_down)[sumFreq_down >= quantile(sumFreq_down, 1 - thresY2) & statOut_down <= quantile(statOut_down, thresX2)]
+        codD <- names(sumFreq_down)[sumFreq_down >= quantile(sumFreq_down, 1 - thresFreqDown) & statOut_down <= quantile(statOut_down, thresOddsDown)]
         if(length(codD) > 0){
           text(statOut_down[codD], sumFreq[codD], codD, col = "dodgerblue1", font = 2)
         } else {
-          message('None of the codons are labelled, please select more relaxed thresholds for thresX2 and thresY2')
+          message('None of the codons are labelled, please select more relaxed thresholds for thresOddsDown and thresFreqDown')
         }
         dev.off()
         
@@ -550,21 +550,21 @@ codonUsage <- function(ptn,
         indUp <- as.numeric(which(statOut >= 0))
         statOut_up <- statOut[indUp]
         sumFreq_up <- sumFreq[indUp]
-        codU <-  names(sumFreq_up)[sumFreq_up >= quantile(sumFreq_up, 1 - thresY1) & statOut_up >= quantile(statOut_up, 1 - thresX1)]
+        codU <-  names(sumFreq_up)[sumFreq_up >= quantile(sumFreq_up, 1 - thresFreqUp) & statOut_up >= quantile(statOut_up, 1 - thresOddsUp)]
         if(length(codU) > 0){
           text(statOut_up[codU], sumFreq_up[codU], codU, col = "firebrick1", font = 2)
         } else {
-          message('None of the AAs are labelled, please select more relaxed thresholds for thresX1 and thresY1')
+          message('None of the AAs are labelled, please select more relaxed thresholds for thresOddsUp and thresFreqUp')
         }
         #
         indDown <- as.numeric(which(statOut < 0))
         statOut_down <- statOut[indDown]
         sumFreq_down <- sumFreq[indDown]
-        codD <- names(sumFreq_down)[sumFreq_down >= quantile(sumFreq_down, 1 - thresY2) & statOut_down <= quantile(statOut_down, thresX2)]
+        codD <- names(sumFreq_down)[sumFreq_down >= quantile(sumFreq_down, 1 - thresFreqDown) & statOut_down <= quantile(statOut_down, thresOddsDown)]
         if(length(codD) > 0){
           text(statOut_down[codD], sumFreq[codD], codD, col = "dodgerblue1", font = 2)
         } else {
-          message('None of the AAs are labelled, please select more relaxed thresholds for thresX2 and thresY2')
+          message('None of the AAs are labelled, please select more relaxed thresholds for thresOddsDown and thresFreqDown')
         }
         dev.off()
         
