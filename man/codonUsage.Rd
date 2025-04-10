@@ -58,17 +58,17 @@ codonUsage(ptn,
   \item{plotHeatmap}{Logical specifying whether to plot a heatmap of the standardized residuals for each codon from the
   Chi-square test. The default is \code{TRUE}. 
   }
-  \item{thresOddsUp}{select the top percentage threshold for odds ratio for selecting codons in up set. 
-  The default 0.3 indicates that 30\% of codons with highest odds ratio is selected. It is combined 
-  the thresFreqUp to select the most frequent codons with the highest odds ratio.
+  \item{thresOddsUp}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting
+  codons (or amino acids) in enriched set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of enriched
+  codons with the highest odds ratios will be selected. The default is \code{0.3}.
   }
   \item{thresFreqUp}{select the top percentage threshold for frequency for selecting codons in the up set. 
   The default 0.3 indicates that 30\% of the most frequent codons are selected. It is combined the 
   thresOddsUp to select the most frequent codons with the highest odds ratio. 
   }
-  \item{thresOddsDown}{select the top percentage threshold for odds ratio for selecting codons in down set. 
-  The default 0.3 indicates that 30\% of codons with lowest odds ratio is selected. It is combined 
-  the thresFreqDown to select the most frequent codons with the lowest odds ratio.
+  \item{thresOddsDown}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting
+  codons (or amino acids) in the depleted set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of depleted
+  codons with the highest odds ratios will be selected. The default is \code{0.3}.
   }
   \item{thresFreqDown}{select the top percentage threshold for frequency for selecting codons in the down set.
   The default 0.3 indicates that 30\% of the most frequent codons are selected. It is combined the 
