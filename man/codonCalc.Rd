@@ -22,7 +22,7 @@ codonCalc(ptn,
   }
   \item{featsel}{A named list of vectors specifying one or more codons or amino acids to qunatify and/or visualize. 
   For example, for use in the downstream \link[postNet]{featureIntegration}, it is usually desireable to select 
-  those with high frequency, and the highest and lowest Odds Ratios identified using the \link[postNet{codonUsage} 
+  those with high frequency, and the highest and lowest Odds Ratios identified using the \link[postNet]{codonUsage} 
   function. This list can be easily generated using the S4 method \link[postNet]{ptn_codonSelection}. See example below. 
   }
   \item{analysis}{A string specifying the type of the analysis to perform. The options are \code{"codon"}, or \code{"AA"} 
