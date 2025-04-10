@@ -59,6 +59,8 @@ codonCalc(ptn,
 }
 
 \seealso{
+\link[postNet]{codonUsage} \cr
+\link[postNet]{ptn_codonSelection}
 }
 
 \examples{
