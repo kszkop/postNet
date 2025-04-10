@@ -63,9 +63,7 @@ codonCalc <- function(ptn,
     #  featNameTmp <- paste("codon",names(featsel)[i],sep="_")
     #} 
     #
-  
     regName <- names(featsel[i])
-  
     nameTmp <- ifelse(is.null(pdfName),paste("features",regName,"codonCalc.pdf", sep = "_"), paste(pdfName,"features",regName,"codonCalc.pdf", sep = "_"))
     #nameOut <- paste(dirTmp,nameTmp, sep='/')
     nameOut <- nameTmp

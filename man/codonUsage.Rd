@@ -42,7 +42,7 @@ codonUsage(ptn,
   to automatically prepare reference sequences from ccds database,  "load" to load preprepared sequences for selected 
   species, or "custom" to use customFile. The default is "load". 
   }
-  \item{analysis}{A string specifying thes type of the analysis to perform. The options are \code{"codon"}, or \code{"AA"} 
+  \item{analysis}{A string specifying the type of the analysis to perform. The options are \code{"codon"}, or \code{"AA"} 
   to assess amino acid usage. The default is \code{"codon"}. 
   }
   \item{codonN}{An integer specifying the number of codon combinations to count. For example, \code{codonN = 1} will count each
