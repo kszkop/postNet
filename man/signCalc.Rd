@@ -1,6 +1,6 @@
 \name{signCalc}
 \alias{signCalc}
-\title{
+\title{Calculate signatures
 }
 
 \description{
