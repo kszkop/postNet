@@ -53,8 +53,8 @@ foldingEnergyAnalysis(ptn,
   folding energies for the specified sequence region(s) will be returned, and statistical comparisons between gene 
   sets will not be performed. The default is \code{TRUE}. 
   }
-  \item{plotType}{If \code{plotOut} is \code{TRUE}, indicate the type of output plot to generate. Options 
-  are, \code{"boxplot"}, \code{"violin"}, or \code{"ecdf"}. The default is \code{"ecdf"}.
+  \item{plotType}{If \code{plotOut} is \code{TRUE}, provide a string to indicate the type of output plot to 
+  generate. Options are, \code{"boxplot"}, \code{"violin"}, or \code{"ecdf"}. The default is \code{"ecdf"}.
   }
   \item{pdfName}{Name to be appended to output PDF files.
   }

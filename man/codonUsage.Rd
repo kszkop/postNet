@@ -77,9 +77,8 @@ codonUsage(ptn,
   \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either
   select or exclude from the analysis. This is done by providing a numeric value indicating the number of
   nucleotides from either the start of the sequence region if positive, or the end if negative. For example,
-  \code{subregion = 50}, would denote the first 50 nucleotides of the sequence region(s) specified by \code{region},
-  while \code{subregion = -50}, would denote the last 50 nucleotides of the sequence region(s). The
-  default is \code{NULL}.
+  \code{subregion = 50}, would denote the first 50 nucleotides of the CDS, while \code{subregion = -50}, would 
+  denote the last 50 nucleotides of the CDS. The default is \code{NULL}.
   }
   \item{subregionSel}{If a value is provided for \code{subregion}, indicate whether the subregion should be
   selected (limiting the analysis to this region) or excluded by specifying either \code{"select"} or 
@@ -92,13 +91,17 @@ codonUsage(ptn,
   background (0), and the first and second gene sets will be compared to each other. The default is
   \code{NULL}.
   }
-  \item{plotType_index}{
+  \item{plotType_index}{If \code{plotOut} is \code{TRUE}, provide a string to indicate the type of output 
+  plot to generate for codon indexes. Options are, \code{"boxplot"}, \code{"violin"}, or \code{"ecdf"}. 
+  The default is \code{"boxplot"}.
   }
   \item{pdfName}{Name to be appended to output PDF files. Default is \code{NULL}.
   }
 }
 
-\details{
+\details{A table containing for each gene: the gene list it belongs to, as well as several codon indexes such as CAI (codon adaptation index), CBI (Codon Bias Index),
+Fop (Frequency of optimal codons), GC3s (frequency of G or C at 3rd codon position), L_aa (Number of amino acids in protein), tai (tRNA adaptation index)
+
 }
 
 \value{List with selected codons in up and down sets for each desired comparison. In addition, summary codons 
@@ -107,26 +110,32 @@ calculation (list entry: codonAll) is also provided. The function will also outp
 
 \references{
 The NCBI Consensus CDS database:
-\url{https://www-ncbi-nlm-nih-gov.proxy.kib.ki.se/projects/CCDS/CcdsBrowse.cgi}
+\url{https://www.ncbi.nlm.nih.gov/projects/CCDS/CcdsBrowse.cgi}
+
+Sharp, P. M., and W. H. Li, (1987). The codon adaptation index a measure of directional synonymous codon usage bias, and its potential applications. Nucleic Acids Research 15: 1281-1295.
+
+Bennetzen, J. L., and B. D. Hall, (1982). Codon selection in yeast. Journal of Biological Chemistry 257: 3026-3031.
+
+Ikemura, T., (1981). Correlation between the abundance of Escherichia coli transfer RNAs and the occurrence of the respective codons in its protein genes: a proposal for a synonymous codon choice that is optimal for the E. coli system. Journal of Molecular Biology 151: 389-409.
+
+Bernardi G, Olofsson B, Filipski J, Zerial M, Salinas J, Cuny G, Meunier-Rotival M, Rodier F. The mosaic genome of warm-blooded vertebrates. Science. 1985 May 24;228(4702):953-8. doi: 10.1126/science.4001930. PMID: 4001930.
+
+Wright, F., (1990). The effective number of codons used in a gene. Gene  87: 23-29.
+
+Kyte, J., and R. Doolittle, (1982). A simple method for displaying the hydropathic character of a protein. Journal of Molecular Biology 157: 105-132.
+
+Lobry, J. R., and C. Gautier, (1994). Hydrophobicity, expressivity and aromaticity are the major trends of amino acid usage in 999 Escherichia coli chromosome encoded genes. Nucleic Acids Research 22:3174-3180.
+
+dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: a test for translational selection. Nucleic Acids Res. 2004 Sep 24;32(17):5036-44.
+
+dos Reis M, Wernisch L, Savva R. Unexpected correlations between gene expression and codon usage bias from microarray data for the whole Escherichia coli K-12 genome. Nucleic Acids Res. 2003 Dec 1;31(23):6976-85.
 }
 
 \seealso{
+\link[postNet]{codonCalc} \cr
+\link[postNet]{ptn_codonAnalysis} \cr
+\link[postNet]{ptn_codonSelection} \cr
 }
 
 \examples{
-# If only the anota2seq object
-codonOut <- codonUsage(annotType = "ccds", sourceSeq = "load", species = "human", analysis = "codon", codonN = 1, type = "sequence", pAdj = 0.01 , plotHeatmap = TRUE, ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = contrast = c(1,1), selection = "random", comparisons = list(c(0,1),c(0,2),c(1,2)))
-
-# If only the geneList
-codonOut <- codonUsage(annotType = "ccds", sourceSeq = "load", species = "human", analysis = "codon", codonN = 1, type = "sequence", pAdj = 0.01 , plotHeatmap = TRUE, geneList = inList,  selection = "random", comparisons = list(c(0,1),c(0,2),c(1,2)))
-
-### For ribosomal profiling
-#It is important that the annotation is the same as the one used for alignement. Optionally, it can be provided if different to the one in the package
-annot <- retrieveFormatData(source='load', species='human')
-
-dpn_files <- c(cond1_rep1.dpn, cond1_rep2.dpn, cond1_rep3.dpn,cond2_rep1.dpn, cond2_rep2.dpn, cond2_rep3.dpn)
-condition <- c(1,1,1,2,2,2)
-inputTable <- data.frame(dpnFiles=dpn_files, condition=condition,stringsAsFactors=FALSE)
-
-codonOut <- codonUsage(type = "riboseq", annot=annot, dpn_path = '.', analysis = "codon", codonN = 1, pAdj = 0.01 , plotHeatmap = TRUE, ads = anota2seqOutput, regulation = c("translationUp","translationDown"), contrast = contrast = c(1,1), selection = "random", comparisons = list(c(0,1),c(0,2),c(1,2)), inputTable = inputTable)
 }
