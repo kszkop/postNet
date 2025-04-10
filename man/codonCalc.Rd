@@ -1,6 +1,5 @@
 \name{codonCalc}
 \alias{codonCalc}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 A Capitalized Title (ideally limited to 65 characters)
 }
