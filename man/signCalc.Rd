@@ -34,8 +34,8 @@ encoded as a 0.
  data(postNetExample)
     
 # Initialize the postNetData object with custom gene lists:
- translationUp <- postNetExample$geneList[[1]]
- translationDown <- postNetExample$geneList[[2]]
+ translationUp <- postNetExample$geneList[[1]][1:100]
+ translationDown <- postNetExample$geneList[[2]][1:100]
  myGenes <- list('translationUp' = translationUp, 'translationDown' = translationDown)
  myBg <- postNetExample$background
  myEffect <- postNetExample$effect
