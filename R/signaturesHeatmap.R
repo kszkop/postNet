@@ -7,7 +7,7 @@ signaturesHeatmap <- function(ptn,
   check_ptn(ptn)
   check_geneList(signatureList)
   if(!check_shiftUnit(unit)){
-    stop("unit can be only 'FDR' or p25, p50, p75 or any percentile in format p with number). 
+    stop("'unit' can be only 'FDR' or p25, p50, p75 or any percentile in format p with number). 
          If FDR: -log10 FDR wilcoxon test corrected for multitesting with direction of ecdf shift, 
          if percentile: difference from background for one of the percentiles from ecdf")
   }

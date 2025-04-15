@@ -19,7 +19,7 @@ lengthAnalysis(ptn,
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{A \code{postNetData} object.
   }
   \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"}, \code{"UTR3"},
   \code{"CDS"}, or any combination of the regions.    

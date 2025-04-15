@@ -1,45 +1,32 @@
 \name{signaturesHeatmap}
 \alias{signaturesHeatmap}
-\title{Evaluate regulation of gene signatures in an anota2seq analysis with heatmaps
+\title{Generate heatmaps to evaluate the regulation of gene signatures in a \code{postNetData} object
 }
 
 \description{
 }
 
 \usage{
-signaturesHeatmap(signatureList, 
-                  ads, 
-                  contrast, 
-                  contrastNames,
-                  unit, 
-                  RegMode, 
-                  pdfName)
+signaturesHeatmap(ptn, signatureList, unit = "FDR", addEff = NULL, pdfName = NULL)
 }
 
 \arguments{
+  \item{ptn}{
+  }
   \item{signatureList}{
-}
-  \item{ads}{
-}
-  \item{contrast}{
-}
-  \item{contrastNames}{
-}
+  }
   \item{unit}{
-}
-  \item{RegMode}{
-}
+  }
+  \item{addEff}{
+  }
   \item{pdfName}{
-}
+  }
 }
 
 \details{
 }
 
 \value{
-}
-
-\references{
 }
 
 \seealso{
