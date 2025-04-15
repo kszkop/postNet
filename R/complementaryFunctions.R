@@ -1559,12 +1559,12 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
     minV <- quantile(colVec, remExtreme)
     maxV <- quantile(colVec, 1 - remExtreme)
     
-    fmapRes$colVecColour <- pmin(pmax(colVec, minV), maxV)
+    fMap$colVecColour <- pmin(pmax(colVec, minV), maxV)
   } else {
-    fmapRes$colVecColour <- colVec
+    fMap$colVecColour <- colVec
   }
   if(!is_binary(colVec)){
-    colVecPlot <- ggplot2::ggplot(fmapRes, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = colVecColour)) +
+    colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = colVecColour)) +
       ggplot2::geom_point(size = 2) +
       ggplot2::scale_color_gradient2(low = "blue",mid = 'white', high = "red") +
       ggplot2::labs(title = name,  x = "fUMAP 1", y = "fUMAP 2", color = name) +
@@ -1583,7 +1583,7 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
       ggplot2::theme(legend.key.height = ggplot2::unit(1.5, "cm"),legend.key.width = ggplot2::unit(0.75, "cm"))
   
   } else {
-    colVecPlot <- ggplot2::ggplot(fmapRes, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = factor(colVecColour))) +
+    colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = factor(colVecColour))) +
       ggplot2::geom_point(size = 2) +
       ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "firebrick1")) +
       ggplot2::labs(title =  name,  x = "fUMAP 1", y = "fUMAP 2", color = name) +
