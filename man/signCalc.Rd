@@ -52,7 +52,7 @@ encoded as a 0.
  )
  
 # Create signatures of interest to be used in featureIntegration models
- addSign < -list()
+ addSign <- list()
  addSign[["TOP_mRNAs"]] <- c("RPL4", "RPL5","EEF1A1","EIF3D")
  addSign[["Hypoxia_Induced"]] <- c("VEGFA","LOX","ENO1","PDK1","PGK1","HIF1")
 
