@@ -7,7 +7,11 @@
 }
 
 \usage{
-signaturesHeatmap(ptn, signatureList, unit = "FDR", addEff = NULL, pdfName = NULL)
+signaturesHeatmap(ptn, 
+                  signatureList, 
+                  unit = "FDR", 
+                  addEff = NULL, 
+                  pdfName = NULL)
 }
 
 \arguments{
@@ -15,9 +19,11 @@ signaturesHeatmap(ptn, signatureList, unit = "FDR", addEff = NULL, pdfName = NUL
   }
   \item{signatureList}{A named list of vectors of gene IDs   
   }
-  \item{unit}{
+  \item{unit}{"'unit' can be only 'FDR' or p25, p50, p75 or any percentile in format p with number). 
+  If FDR: -log10 FDR wilcoxon test corrected for multitesting with direction of ecdf shift, 
+  if percentile: difference from background for one of the percentiles from ecdf"
   }
-  \item{addEff}{
+  \item{addEff}{addEff must be a named list of named numeric vectors.
   }
   \item{pdfName}{Name to be appended to output PDF files.
   }

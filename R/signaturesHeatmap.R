@@ -1,7 +1,6 @@
 signaturesHeatmap <- function(ptn,
                               signatureList,
                               unit = 'FDR',
-                              addEff = NULL,
                               pdfName = NULL){
   #
   check_ptn(ptn)
@@ -11,28 +10,20 @@ signaturesHeatmap <- function(ptn,
          If FDR: -log10 FDR wilcoxon test corrected for multitesting with direction of ecdf shift, 
          if percentile: difference from background for one of the percentiles from ecdf")
   }
-  if(!is.null(addEff)){
-    if(!is_named_list_of_named_numeric_vectors(addEff)){
-      stop('addEff must be a named list of named numeric vectors')
-    }
-  }
-  compOut <- ifelse(is.null(addEff), 1, length(addEff)+1)
-  effNames <- ifelse(is.null(addEff), 'ptn_effect', c('ptn_effect', names(addEff)))
+  
+  compOut <- 1
+  effNames <- 'ptn_effect'
   #
   tableFinal <- matrix(NA, nrow=length(signatureList), ncol=compOut)
   row.names(tableFinal) <- names(signatureList)
   colnames(tableFinal) <- effNames
 
-  for(i in 1:compOut){
-    if(i == 1){
-      effIn <- ptn_effect(ptn)
-    } else {
-      effIn <- addEff[[i]]
-    }
-    regData <- data.frame(geneSymb = names(effIn))
-    regData$effIn <- as.numeric(effIn)
+  
+  effIn <- ptn_effect(ptn)
+  regData <- data.frame(geneSymb = names(effIn))
+  regData$effIn <- as.numeric(effIn)
     
-    ##colculate metric for each signature
+    ##calculate metric for each signature
     percOut <- as.numeric()
     if(unit=='FDR'){
       fdrOut <- as.numeric()
@@ -72,11 +63,11 @@ signaturesHeatmap <- function(ptn,
     if(unit=='FDR'){
       adjFDR <- -log10(p.adjust(fdrOut))
       fdrDirec <- ifelse(percOut>=0, adjFDR*1,adjFDR*-1)
-      tableFinal[,i] <- fdrDirec
+      tableFinal[,1] <- fdrDirec
     } else {
-      tableFinal[,i] <- percOut
+      tableFinal[,1] <- percOut
     }
-  }
+
   if(unit=='FDR'){
     if(max(abs(c(min(as.vector(tableFinal)),max(as.vector(tableFinal)))))>10){
       breaks <- seq(-10,10,length.out=20)
@@ -106,7 +97,7 @@ signaturesHeatmap <- function(ptn,
                     breaks = breaks,
                     Rowv = TRUE,
                     col = colTmp,
-                    key.xlab = keyL,key.title="",dendrogram   = "none", Colv=FALSE, ,density.info = "none",
+                    key.xlab = keyL,key.title="",dendrogram   = "row", Colv=FALSE, ,density.info = "none",
                     tracecol = NULL,margins = c(10,19),lhei=c(1,6),lwid=c(0.5,1),
                     cexRow = 0.9,cexCol = 0.9,offsetRow = -5)
   dev.off()
