@@ -11,15 +11,15 @@ signaturesHeatmap(ptn, signatureList, unit = "FDR", addEff = NULL, pdfName = NUL
 }
 
 \arguments{
-  \item{ptn}{
+  \item{ptn}{A \code{postNetData} object.
   }
-  \item{signatureList}{
+  \item{signatureList}{A named list of vectors of gene IDs   
   }
   \item{unit}{
   }
   \item{addEff}{
   }
-  \item{pdfName}{
+  \item{pdfName}{Name to be appended to output PDF files.
   }
 }
 
