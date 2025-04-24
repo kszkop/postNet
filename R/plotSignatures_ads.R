@@ -66,14 +66,14 @@ plotSignatures_ads <- function(ads,
       regData[,5+i] <- 'bkg'
       regData[,5+i][regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]
       #plot 
-      points(regData$totalApvEff[regData[,5+i]==names(signatureList)[i]],regData$polyApvEff[regData[,5+i]==names(signatureList)[i]],col=colours[i],pch=16,cex=1.7)
+      points(regData$totalApvEff[regData[,5+i]==names(signatureList)[i]],regData$polyApvEff[regData[,5+i]==names(signatureList)[i]],col=signature_colours[i],pch=16,cex=1.7)
     }
   } else {
     regData$signature <- 'bkg'
     for(i in 1:length(signatureList)){
       regData$signature[regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]
       #plot 
-      points(regData$totalApvEff[regData$signature==names(signatureList)[i]],regData$polyApvEff[regData$signature==names(signatureList)[i]],col=colours[i],pch=16,cex=1.7)
+      points(regData$totalApvEff[regData$signature==names(signatureList)[i]],regData$polyApvEff[regData$signature==names(signatureList)[i]],col=signature_colours[i],pch=16,cex=1.7)
     }
   }
   #
@@ -128,9 +128,9 @@ plotSignatures_ads <- function(ads,
       
       #
       for(i in 1:length(signatureList)){
-        lines(ecdf(as.numeric(regData[regData[,(5+i)]==signNames[i],][,eff])),col=colours[i],main='',xlab='',verticals=TRUE, do.p=FALSE,lwd=3)
+        lines(ecdf(as.numeric(regData[regData[,(5+i)]==signNames[i],][,eff])),col=signature_colours[i],main='',xlab='',verticals=TRUE, do.p=FALSE,lwd=3)
       }
-      plotrix::addtable2plot(xmin-abs((xmin*0.1)),1.05,tableOut,bty="n",display.rownames=FALSE,hlines=FALSE,vlines=TRUE,title="",cex = tableCex,bg=colours,xpad=0.2,ypad=1.4)
+      plotrix::addtable2plot(xmin-abs((xmin*0.1)),1.05,tableOut,bty="n",display.rownames=FALSE,hlines=FALSE,vlines=TRUE,title="",cex = tableCex,bg=signature_colours,xpad=0.2,ypad=1.4)
     } else {
       #Calculate percentiles for Background
       tmpBg <- sort(as.numeric(regData[regData$signature=='bkg',][,eff]))
@@ -165,7 +165,7 @@ plotSignatures_ads <- function(ads,
       for(i in 1:length(signatureList)){
         lines(ecdf(as.numeric(regData[regData$signature==signNames[i],][,eff])),col=colours[i],main='',xlab='',verticals=TRUE, do.p=FALSE,lwd=3)
       }
-      plotrix::addtable2plot(xmin-abs((xmin*0.1)),1.05,tableOut,bty="n",display.rownames=FALSE,hlines=FALSE,vlines=TRUE,title="",cex = tableCex,bg=colours,xpad=0.2,ypad=1.4)
+      plotrix::addtable2plot(xmin-abs((xmin*0.1)),1.05,tableOut,bty="n",display.rownames=FALSE,hlines=FALSE,vlines=TRUE,title="",cex = tableCex,bg=signature_colours,xpad=0.2,ypad=1.4)
     }
     #if(!is.null(signatureListAddNames)){
     #  legend(xmin,0.9,fill=coloursAdd,border=coloursAdd,'Regulated',bty='n',cex=1.3)

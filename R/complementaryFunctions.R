@@ -1566,7 +1566,8 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
   if(!is_binary(colVec)){
     colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = colVecColour)) +
       ggplot2::geom_point(size = 2) +
-      ggplot2::scale_color_gradient2(low = "blue",mid = 'white', high = "red") +
+      ggplot2::scale_color_gradient2(low = "#4575b4", mid = "grey95", high = "#d73027", 
+                                     midpoint = median(fMap$colVecColour, na.rm = TRUE)) +
       ggplot2::labs(title = name,  x = "fUMAP 1", y = "fUMAP 2", color = name) +
       ggplot2::theme_minimal() +
       ggplot2::theme_bw() +
@@ -1577,7 +1578,8 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
   
     colVecLeg<- ggplot2::ggplot(tmpLeg, ggplot2::aes(x = x, y = y, color = colVec)) +
       ggplot2::geom_point(size = 0) +
-      ggplot2::scale_color_gradient2(low = "blue", mid = "white", high = "red") +
+      ggplot2::scale_color_gradient2(low = "#4575b4", mid = "grey95", high = "#d73027", 
+                                     midpoint = median(colVec, na.rm = TRUE)) +
       ggplot2::labs(color = name) +
       ggplot2::theme_minimal() +
       ggplot2::theme(legend.key.height = ggplot2::unit(1.5, "cm"),legend.key.width = ggplot2::unit(0.75, "cm"))
@@ -1585,7 +1587,7 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
   } else {
     colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = factor(colVecColour))) +
       ggplot2::geom_point(size = 2) +
-      ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "firebrick1")) +
+      ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "#d73027")) +
       ggplot2::labs(title =  name,  x = "fUMAP 1", y = "fUMAP 2", color = name) +
       ggplot2::theme_minimal() +
       ggplot2::theme_bw() +
@@ -1594,7 +1596,7 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
     legDataTmp<- data.frame(category = factor(c("0", "1")))
     colVecLeg <- ggplot2::ggplot(legDataTmp, ggplot2::aes(x = 1, y = category, color = category)) +
       ggplot2::geom_point(size = 4) +  
-      ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "firebrick1")) +
+      ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "#d73027")) +
       ggplot2::labs(color = 'Feature') +
       ggplot2::theme_minimal() +
       ggplot2::theme(legend.key.height = ggplot2::unit(1, "cm"), legend.key.width = ggplot2::unit(0.5, "cm"))
