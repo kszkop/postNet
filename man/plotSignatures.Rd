@@ -7,17 +7,25 @@
 }
 
 \usage{
-plotSignatures(ptn, signatureList, signature_colours = NULL, xlim = c(-2, 2), tableCex = 1, pdfName = NULL)
+plotSignatures(ptn, 
+              signatureList, 
+              signature_colours = NULL, 
+              xlim = c(-2, 2), 
+              tableCex = 1, 
+              pdfName = NULL)
 }
 
 \arguments{
-  \item{ptn}{
+  \item{ptn}{A \code{postNetData} object
   }
-  \item{signatureList}{
+  \item{signatureList}{A named list of vectors containing gene IDs for the signatures of interest to be examined. Note that several
+  signatures of translational regulation are provided with the package for both human and mouse. These can be retrieved using the
+  \link[postNet]{retrieveSignatures} function.
   }
-  \item{signature_colours}{
+  \item{signature_colours}{A character vector specifying colours for plotting each signature. Note that \code{signature_colours} must be the same length as
+  \code{signatureList}. 
   }
-  \item{xlim}{
+  \item{xlim}{A numeric vector specifying the x-axis limits for the ecdf plots. Default is \code{c(-2,2)}.
   }
   \item{tableCex}{
   }
@@ -32,6 +40,9 @@ plotSignatures(ptn, signatureList, signature_colours = NULL, xlim = c(-2, 2), ta
 }
 
 \seealso{
+\link[postNet]{signaturesHeatmap} \cr
+\link[postNet]{plotSignatures_ads} \cr
+link[postNet]{retrieveSignatures}
 }
 
 \examples{

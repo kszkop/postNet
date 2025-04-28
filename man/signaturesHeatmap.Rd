@@ -20,7 +20,8 @@ signaturesHeatmap(ptn,
   \item{ptn}{A \code{postNetData} object.
   }
   \item{signatureList}{A named list of vectors containing gene IDs for the signatures of interest to be examined. Note that several
-  signatures of translational regulation are provided with the package for both human and mouse. These can be retrieved by XXXXX
+  signatures of translational regulation are provided with the package for both human and mouse. These can be retrieved using the
+  \link[postNet]{retrieveSignatures} function.
   }
   \item{unit}{A string specifying the unit to be plotted in the heatmap. The options are \code{"FDR"},
   or any percentile in format p with a number (for example \code{p25}, \code{p75}, etc.).
@@ -45,7 +46,8 @@ at the percentile specified.
 
 \seealso{
 \link[postNet]{plotSignatures} \cr
-\link[postNet]{plotSignatures_ads}
+\link[postNet]{plotSignatures_ads} \cr
+link[postNet]{retrieveSignatures}
 }
 
 \examples{

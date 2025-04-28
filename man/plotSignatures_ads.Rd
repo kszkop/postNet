@@ -21,7 +21,7 @@ plotSignatures_ads(ads,
 }
 
 \arguments{
-  \item{ads}{An S4 object of class \code{Anota2seqDataSet} (resulting from the \code{\link[anota2seq]{anota2seqRun}} function in the \pkg{anota2seq} package). 
+  \item{ads}{An S4 object of class \code{Anota2seqDataSet} (resulting from the \link[anota2seq]{anota2seqRun} function in the \pkg{anota2seq} package). 
   }
   \item{contrast}{An integer selecting the \pkg{anota2seq} contrast to retrieve regulatory effect measurements from. 
   For more details on contrasts, please see the \pkg{anota2seq} vignette. 
@@ -32,7 +32,8 @@ plotSignatures_ads(ads,
   \code{c("Total mRNA Log2FC", "Polysome-associated mRNA Log2FC", "Buffering Log2FC", "Translation Log2FC")}. 
   }
   \item{signatureList}{A named list of vectors containing gene IDs for the signatures of interest to be examined. Note that several
-  signatures of translational regulation are provided with the package for both human and mouse. These can be retrieved by XXXXX
+  signatures of translational regulation are provided with the package for both human and mouse. These can be retrieved using the
+  \link[postNet]{retrieveSignatures} function.
   }
   \item{generalName}{A character vector specifying the names of the signatures to be plotted. 
   }
@@ -58,6 +59,9 @@ plotSignatures_ads(ads,
 }
 
 \seealso{
+\link[postNet]{signaturesHeatmap} \cr
+\link[postNet]{plotSignatures} \cr
+link[postNet]{retrieveSignatures}
 }
 
 \examples{
