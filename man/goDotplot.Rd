@@ -45,7 +45,7 @@ goDotplot(ptn,
 \code{postNetData} object.
 }
 
-\value{No value is returned. Graphical outs are generated as PDF files. 
+\value{No value is returned. Graphical outputs are generated as PDF files. 
 }
 
 \seealso{
