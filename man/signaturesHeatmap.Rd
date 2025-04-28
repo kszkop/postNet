@@ -22,12 +22,7 @@ signaturesHeatmap(ptn,
   \item{signatureList}{A named list of vectors containing gene IDs for the signatures of interest to be examined.    
   }
   \item{unit}{A string specifying the unit to be plotted in the heatmap. The options are \code{"FDR"},
-  or any percentile in format p with a number (for example \code{p25}, \code{p75}, etc.). 
-  
-  
-  'unit' can be only 'FDR' or p25, p50, p75 or any percentile in format p with number). 
-  If FDR: -log10 FDR wilcoxon test corrected for multitesting with direction of ecdf shift, 
-  if percentile: difference from background for one of the percentiles from ecdf"
+  or any percentile in format p with a number (for example \code{p25}, \code{p75}, etc.).
   }
   \item{pdfName}{Name to be appended to output PDF files.
   }

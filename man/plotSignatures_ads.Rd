@@ -1,6 +1,6 @@
 \name{plotSignatures_ads}
 \alias{plotSignatures_ads}
-\title{
+\title{Analysis of signatures from an anota2seq object
 }
 
 \description{

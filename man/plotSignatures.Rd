@@ -1,6 +1,6 @@
 \name{plotSignatures}
 \alias{plotSignatures}
-\title{
+\title{Analysis of signatures from a postnetdata object
 }
 
 \description{
