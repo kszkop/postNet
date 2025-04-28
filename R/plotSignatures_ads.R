@@ -1,13 +1,13 @@
 plotSignatures_ads <- function(ads,
                                contrast,
                                dataName,
-                               effects_names = c('total mRNA log2FC', 'polysome associated mRNA log2FC','buffering log2FC','translation log2FC'),
+                               effects_names = c('Total mRNA Log2FC', 'Polysome-associated mRNA Log2FC','Buffering Log2FC','Translation Log2FC'),
                                signatureList,
                                generalName,
                                signature_colours, 
                                xlim = c(-2,2), 
                                scatterXY = NULL,
-                               tableCex = 1 ,
+                               tableCex = 1,
                                pdfName = NULL){
   #
   check_ads(ads)

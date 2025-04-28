@@ -28,10 +28,7 @@ plotSignatures(ptn, signatureList, signature_colours = NULL, xlim = c(-2, 2), ta
 \details{
 }
 
-\value{
-}
-
-\references{
+\value{No value is returned. Graphical outputs are generated as PDF files. 
 }
 
 \seealso{
