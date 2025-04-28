@@ -50,10 +50,6 @@ few genes will require slope filtering.
 \value{A character vector of the gene identifiers that will be excluded from downstream enrichment analyses based on the selected slope filtering thresholds.
 }
 
-\references{
-%% ~put references to the literature/web site here ~
-}
-
 \seealso{
 \code{\link[anota2seq]{anota2seqSelSigGenes}} \cr
 \code{\link[anota2seq]{anota2seqRun}} \cr

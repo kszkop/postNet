@@ -1,16 +1,18 @@
 \name{checkAvailableVersions}
 \alias{checkAvailableVersions}
 \title{Check the available RefSeq release versions for pre-prepared reference sequence annotations}
+
 \usage{
 checkAvailableVersions(
   species = NULL,
 )
 }
 \arguments{
-\item{species}{Select the species of interest. Currently, \code{"human"} and \code{"mouse"} are supported.}
+\item{species}{A string specifying the species of interest. Currently, \code{"human"} and \code{"mouse"} are supported.}
 }
 \description{
-The \code{checkAvailableVersions} function retrieves and lists the available release versions for the pre-prepared reference sequence annotations based on the NCBI RefSeq database.
+The \code{checkAvailableVersions} function retrieves and lists the available release versions for the pre-prepared reference sequence annotations
+based on the NCBI RefSeq database.
 }
 
 \examples{
@@ -18,6 +20,10 @@ The \code{checkAvailableVersions} function retrieves and lists the available rel
 # See RefSeq release versions of available annotations in the package
 checkAvailableVersions(species = 'human')
   
+}
+
+\references{
+See \url{https://www.ncbi.nlm.nih.gov/refseq/} for RefSeq documentation.
 }
 
 \seealso{
