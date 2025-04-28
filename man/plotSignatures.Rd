@@ -22,8 +22,8 @@ plotSignatures(ptn,
   signatures of translational regulation are provided with the package for both human and mouse. These can be retrieved using the
   \link[postNet]{retrieveSignatures} function.
   }
-  \item{signature_colours}{A character vector specifying colours for plotting each signature. Note that \code{signature_colours} must be the same length as
-  \code{signatureList}. 
+  \item{signature_colours}{An optional character vector specifying colours for plotting each signature. Note that \code{signature_colours} must be the same length as
+  \code{signatureList}. The default is \code{NULL}. 
   }
   \item{xlim}{A numeric vector specifying the x-axis limits for the ecdf plots. Default is \code{c(-2,2)}.
   }
