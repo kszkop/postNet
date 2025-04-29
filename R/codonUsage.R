@@ -109,7 +109,9 @@ codonUsage <- function(ptn,
       currTmp <- list.files(system.file("extdata/annotation/ccds", package = "postNet"))
       #
       if (!species %in% currTmp) {
-        stop("This option is only  available for species: human and mouse at the moment. Please use option createFromFile")
+        stop("This option is only  available for species: human and mouse at the moment. For analyses on other species or \
+             annotations, please use the source = 'custom' option in the PostNetStart function to provide custom reference \
+             sequences.")
       }
       if (species == "human") {
         annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/human", sep = "/"), "humanDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE)

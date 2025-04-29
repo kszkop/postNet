@@ -1,14 +1,14 @@
 \name{codonUsage}
 \alias{codonUsage}
-\title{Codon usage analysis
+\title{Analysis of differential codon usage
 }
 
 \description{The \code{codonUsage} function performs codon (or alternatively amino acid [AA]) usage analysis.
 The analysis identifies single (or multiple, e.g. dicodons) codons enriched or depleted between different gene 
-sets of interest. In the first step, for each gene set comparison, a chi-square test is applied to assess 
+sets of interest. In the first step, for each gene set comparison, a Chi-square test is applied to assess 
 significant differences in usage. Then, for significant codons (or AA), the odds ratio for each desired 
-comparison pair is calculated and plotted against the frequency. The codons (or AA) of interest are identified as 
-those with a high/low odds ratio and high frequency.
+comparison pair is calculated and plotted against the frequency. The codons (or AA) of interest are usually identified 
+as those with a high/low odds ratio and high frequency.
 }
 
 \usage{
@@ -35,44 +35,46 @@ codonUsage(ptn,
   \item{ptn}{A \code{postNetData} object.
   }
   \item{annotType}{A string specifying the reference coding sequences to be used for the analysis. The options 
-  are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"ptnCDS"} (the CDS sequences already stored in 
-  the \code{postNetData} object. The default is \code{"ccds"}. 
+  are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"ptnCDS"} (the CDS reference sequences already stored in 
+  the \code{postNetData} object). The default is \code{"ccds"}. 
   }
-  \item{sourceSeq}{A string specifying the source of \code{annotType}. If \code{annotType = "ccds"} choose "create" 
-  to automatically prepare reference sequences from ccds database,  "load" to load preprepared sequences for selected 
-  species, or "custom" to use customFile. The default is "load". 
+  \item{sourceSeq}{A string specifying the source of \code{annotType}. This parameter is only required if \code{annotType = "ccds"}.
+  The options are: \code{"create"} to automatically prepare reference sequences from ccds database, or \code{"load"} to load 
+  pr-eprepared sequences for selected species. The default is "load". 
   }
   \item{analysis}{A string specifying the type of the analysis to perform. The options are \code{"codon"}, or \code{"AA"} 
   to assess amino acid usage. The default is \code{"codon"}. 
   }
   \item{codonN}{An integer specifying the number of codon combinations to count. For example, \code{codonN = 1} will count each
   individual codon, while \code{codonN = 2}  will count di-codons, and so on. Note that this option is only available only 
-  for \code{analysis = "codon"}. Note that when \code{codonN} > 1 additional indexes and plots will not be generated.
-  The default is \code{1}. 
+  for \code{analysis = "codon"} and that when \code{codonN} > 1, odds ratios will not be calculated and additional indexes 
+  and plots will not be generated. The default is \code{1}. 
   }
-  \item{pAdj}{A numeric value providing the adjusted p-value threshold for chi-square test results. The default is \code{0.01}. 
+  \item{pAdj}{A numeric value specifying the adjusted p-value threshold for selecting significant Chi-square test results. 
+  The default is \code{0.01}. 
   }
   \item{rem5}{Logical specifying whether codons with fewer than five counts should be filtered out from the contingency table 
-  (counts of codons by geneset) before performing the chi-square test. The default is \code{TRUE}. 
+  (counts of codons by gene set) before performing the Chi-square test. The default is \code{TRUE}. 
   }
   \item{plotHeatmap}{Logical specifying whether to plot a heatmap of the standardized residuals for each codon from the
   Chi-square test. The default is \code{TRUE}. 
   }
   \item{thresOddsUp}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting
-  codons (or amino acids) in enriched set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of enriched
+  codons (or amino acids) in the enriched set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of enriched
   codons with the highest odds ratios will be selected. The default is \code{0.3}.
   }
-  \item{thresFreqUp}{select the top percentage threshold for frequency for selecting codons in the up set. 
-  The default 0.3 indicates that 30\% of the most frequent codons are selected. It is combined the 
-  thresOddsUp to select the most frequent codons with the highest odds ratio. 
+  \item{thresFreqUp}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting
+  codons (or amino acids) in the enriched set. For example, \code{thresFreqUp = 0.3} indicates that the top 30\% of
+  the most frequently occurring codons are selected. This metric is combined with \code{thresOddsUp} to select the most the 
+  frequent codons with the highest odds ratio. The default is \code{0.3}.  
   }
   \item{thresOddsDown}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting
-  codons (or amino acids) in the depleted set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of depleted
-  codons with the highest odds ratios will be selected. The default is \code{0.3}.
+  codons (or amino acids) in the depleted set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of
+  codons with the lowest odds ratios will be selected. The default is \code{0.3}.
   }
   \item{thresFreqDown}{select the top percentage threshold for frequency for selecting codons in the down set.
   The default 0.3 indicates that 30\% of the most frequent codons are selected. It is combined the 
-  thresOddsDown to select the most frequent codons with the lowest odds ratio.
+  thresOddsDown to select the most frequent codons with the lowest odds ratio. \code{0.3}.
   }
   \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either
   select or exclude from the analysis. This is done by providing a numeric value indicating the number of
