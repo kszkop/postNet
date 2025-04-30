@@ -11,11 +11,9 @@
 
 \title{Class \code{"postNetData"}}
 \description{
-%%  ~~ A concise (1-5 lines) description of what the class is. ~~
 }
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("postNetData", ...)}.
-%%  ~~ describe objects here ~~ 
 }
 \section{Slots}{
   \describe{
@@ -50,16 +48,11 @@ Objects can be created by calls of the form \code{new("postNetData", ...)}.
 	 }
 }
 \references{
-%%  ~~put references to the literature/web site here~~
 }
 \author{
-%%  ~~who you are~~
 }
 \note{
-%%  ~~further notes~~
 }
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
 %%  ~~objects to See Also as \code{\link{~~fun~~}}, ~~~

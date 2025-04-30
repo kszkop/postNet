@@ -1,9 +1,10 @@
 \name{plotSignatures_ads}
 \alias{plotSignatures_ads}
-\title{Analysis of signatures from an anota2seq object
+\title{Analysis of regulation of gene signatures from an anota2seq object
 }
 
-\description{
+\description{The \code{plotSignatures_ads} function assesses changes in the regulation of known gene signatures of interest in an 
+\code{Anota2seqDataSet} object from an \pkg{anota2seq} analysis.   
 }
 
 \usage{
@@ -52,13 +53,18 @@ plotSignatures_ads(ads,
   }
 }
 
-\details{
+\details{Gene signatures of interest are visualized in a scatterplot of log2 fold changes in polysome-associated and total mRNA. The empirical 
+cumulative distribution functions (ECDFs) of log2 fold changes in polysome-associated mRNA, total mRNA, translation, and buffering (offsetting) 
+are also plotted independently. Fold change ECDFs for genes belonging to the signatures of interest are compare to those for all other genes 
+(background). Differences in the fold change distributions are calculated at the quantiles. Significant directional shifts in the ECDFs for gene 
+signatures versus background are identified using a Wilcoxon rank-sum test.
 }
 
 \value{No value is returned. Graphical outputs are generated as PDF files. 
 }
 
 \seealso{
+\link[anota2seq]{anota2seqRun} \cr
 \link[postNet]{signaturesHeatmap} \cr
 \link[postNet]{plotSignatures} \cr
 link[postNet]{retrieveSignatures}
