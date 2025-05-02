@@ -51,4 +51,31 @@ link[postNet]{retrieveSignatures}
 }
 
 \examples{
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+ 
+# load signature data:
+ data('humanSignatures')
+ 
+# Examine the regulation of various transcripts sensitive to translational regulation by various pathways and factors 
+signaturesHeatmap(ptn,
+                  signatureList = humanSignatures,
+                  unit = 'FDR',
+                  pdfName = "mRNAtranslationSignatures")
 }
