@@ -34,8 +34,7 @@ plotSignatures_ads(ads,
   \code{c("Total mRNA Log2FC", "Polysome-associated mRNA Log2FC", "Buffering Log2FC", "Translation Log2FC")}. 
   }
   \item{signatureList}{A named list of vectors containing gene IDs for the signatures of interest to be examined. Note that several
-  signatures of translational regulation are provided with the package for both human and mouse. These can be retrieved using the
-  \link[postNet]{retrieveSignatures} function.
+  signatures of translational regulation are provided with the package for both human and mouse (see details and example below). 
   }
   \item{generalName}{A character vector specifying the names of the signatures to be plotted. 
   }
@@ -72,4 +71,40 @@ link[postNet]{retrieveSignatures}
 }
 
 \examples{
+# load example data:
+ data(postNetExample)
+
+# Initialize Anota2seqDataSet (see anota2seq vignette for details)
+ ads <- anota2seq::anota2seqDataSetFromMatrix(
+    dataP = postNetExample$ads_data$dataP,
+    dataT = postNetExample$ads_data$dataT,
+    phenoVec = postNetExample$ads_data$phenoVec,
+    batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
+    dataType = "RNAseq",
+    normalize = FALSE)
+    
+# Run an anota2seq analysis:
+# Note that the quality control and residual outlier testing are not 
+# performed to limit the running time of this example. For full details 
+# on running an analysis please see the anota2seq vignette and help manual.
+ ads <- anota2seqRun(ads,
+    performQC = FALSE, 
+    performROT = FALSE, 
+    useProgBar = FALSE)
+    
+# load signature data:
+ data('humanSignatures')
+ 
+# Examine the regulation of mTOR-sensitive transcripts in the results of the anota2seq analysis 
+plotSignatures_ads(ads = ads,
+                               contrast = 1,
+                               dataName = "Osmosis_1h",
+                               signatureList = humanSignatures[c('Gandin_etal_2016_mTOR_transUp','Gandin_etal_2016_mTOR_transDown')],
+                               generalName = "mTOR-sensitive translation",
+                               signature_colours = c('red','blue'), 
+                               xlim = c(-3,3), 
+                               scatterXY = 4,
+                               tableCex = 1,
+                               pdfName = 'mTORsignatures')
+
 }

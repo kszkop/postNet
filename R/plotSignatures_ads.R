@@ -13,30 +13,30 @@ plotSignatures_ads <- function(ads,
   check_ads(ads)
   
   if(!check_number(contrast) || !contrast %in% seq(1,ncol(ads@contrasts),1)){
-    stop("The 'contrast' provided should be a number corresponding to the number of the anota2seq contrast for selected comparison. Please see the anota2seq vignette for additional details on contrasts.")
+    stop("The 'contrast' provided should be a number corresponding to the number of the anota2seq contrast for the selected comparison. Please see the anota2seq vignette for additional details on contrasts.")
   }
   if(is.null(dataName)){
-    stop('Please provide the dataName representing the data in the anota2seq object')
+    stop('Please provide the "dataName" that will be assigned to the data in the anota2seq object')
   }
   if(length(effects_names) != 4){
-    stop('There must be 4 effect names provided. It reflects data in anota2seq object, with 1st for totalRNA, 2nd for polysomal RNA, 3rd for buffering, and 4th for translation')
+    stop('There must be 4 effect names provided. By default, these reflect the data in the anota2seq object (total mRNA log2FC, polysome-assocated mRNA log2FC, translation log2FC, and buffering log2FC)')
   }
   
   check_geneList(signatureList)
   signNames <- names(signatureList)
   
   if(is.null(generalName)){
-    stop('Please provide the generalName representing name of the signatures')
+    stop('Please provide the "generalName" that will be assigned to the the signatures plotted')
   }
   if (!is.character(signature_colours) || !length(signature_colours)== length(signatureList)) {
-    stop("'signature_colours' should be a character vector of the same length as number of signatures in signatureList. These colours will be used for plotting.")
+    stop("The 'signature_colours' parameter should be a character vector of the same length as number of signatures in 'signatureList'. These colours will be used for plotting.")
   }
 
   if(!check_number(tableCex)){
-    stop("please provide number for tableCex to scale size of table with statistics")
+    stop("Please provide numeric value for 'tableCex' to scale the size of table containing the statistical results.")
   }
   if(!check_number(scatterXY)){
-    stop("please provide number for scatterXY to indicate size of scatter plot")
+    stop("Please provide a numeric value for 'scatterXY' to indicate range of the x and y axes of the fold change scatter plot.")
   }
   
   ##apvEff of effect
@@ -60,7 +60,7 @@ plotSignatures_ads <- function(ads,
   
   #Check whether gene list overlap
   if(any(duplicated(unlist(signatureList)))){
-    cat("There are some genes that overlap between signatures. Separate background for each will be used")
+    cat("There are some genes that overlap between signatures. Separate background for each will be used for each.")
     ##collect signatures
     for(i in 1:length(signatureList)){
       regData[,5+i] <- 'bkg'
@@ -163,7 +163,7 @@ plotSignatures_ads <- function(ads,
       legend(xmin,0.95,fill='grey55',border='grey55','Background',bty='n',cex=1.3)
       #
       for(i in 1:length(signatureList)){
-        lines(ecdf(as.numeric(regData[regData$signature==signNames[i],][,eff])),col=colours[i],main='',xlab='',verticals=TRUE, do.p=FALSE,lwd=3)
+        lines(ecdf(as.numeric(regData[regData$signature==signNames[i],][,eff])),col=signature_colours[i],main='',xlab='',verticals=TRUE, do.p=FALSE,lwd=3)
       }
       plotrix::addtable2plot(xmin-abs((xmin*0.1)),1.05,tableOut,bty="n",display.rownames=FALSE,hlines=FALSE,vlines=TRUE,title="",cex = tableCex,bg=signature_colours,xpad=0.2,ypad=1.4)
     }
