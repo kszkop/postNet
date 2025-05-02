@@ -1,6 +1,6 @@
 \name{plotSignatures}
 \alias{plotSignatures}
-\title{Analysis of regulation of gene signatures from an \code{postNetData} object
+\title{Analysis of regulation of gene signatures in a \code{postNetData} object
 }
 
 \description{
@@ -46,4 +46,34 @@ link[postNet]{retrieveSignatures}
 }
 
 \examples{
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+ 
+# load signature data:
+ data('humanSignatures')
+ 
+# Examine the regulation of mTOR-sensitive transcripts in the results of the anota2seq analysis 
+plotSignatures(ptn = ptn,
+                               signatureList = humanSignatures[c('Gandin_etal_2016_mTOR_transUp','Gandin_etal_2016_mTOR_transDown')],
+                               signature_colours = c('red','blue'), 
+                               xlim = c(-3,3), 
+                               tableCex = 1,
+                               pdfName = 'mTORsignatures')
+
 }
