@@ -47,7 +47,6 @@ at the percentile specified.
 \seealso{
 \link[postNet]{plotSignatures} \cr
 \link[postNet]{plotSignatures_ads} \cr
-link[postNet]{retrieveSignatures}
 }
 
 \examples{

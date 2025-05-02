@@ -67,7 +67,6 @@ signatures versus background are identified using a Wilcoxon rank-sum test.
 \link[anota2seq]{anota2seqRun} \cr
 \link[postNet]{signaturesHeatmap} \cr
 \link[postNet]{plotSignatures} \cr
-link[postNet]{retrieveSignatures}
 }
 
 \examples{

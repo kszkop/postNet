@@ -42,7 +42,6 @@ plotSignatures(ptn,
 \seealso{
 \link[postNet]{signaturesHeatmap} \cr
 \link[postNet]{plotSignatures_ads} \cr
-link[postNet]{retrieveSignatures}
 }
 
 \examples{
