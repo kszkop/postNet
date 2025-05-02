@@ -1,10 +1,11 @@
 \name{plotSignatures_ads}
 \alias{plotSignatures_ads}
-\title{Analysis of regulation of gene signatures from an anota2seq object
+\title{Analysis of regulation of gene signatures from an \code{Anota2seqDataSet} object
 }
 
 \description{The \code{plotSignatures_ads} function assesses changes in the regulation of known gene signatures of interest in an 
-\code{Anota2seqDataSet} object from an \pkg{anota2seq} analysis.   
+\code{Anota2seqDataSet} object from an \pkg{anota2seq} analysis. Outputs include statistical analyses and visualizations of signature
+regulation. 
 }
 
 \usage{

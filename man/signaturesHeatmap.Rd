@@ -33,7 +33,7 @@ signaturesHeatmap(ptn,
 \details{When \code{unit = 'FDR'}, the values display in the heatmap are obtained from a two-sided Wilcoxon Rank Sum test comparing 
 the regulatory effect measurement values for the gene signature of interest against the background. See \link[postNet]{postNetStart} 
 for details on background gene sets. P-values are then corrected for multiple testing using the Benjamini & Hochberg method, and the
--log10 FDR value is multiplied by either 1 or -1 corresponding to up- and down-regulation of the gene signture compared to background,
+-log10 FDR value is multiplied by either 1 or -1 corresponding to up- or down-regulation of the gene signture compared to background,
 respectively.
 
 When \code{unit = 'p75'} (or any other percentile value), the values displayed in the heatmap are obtained by taking the difference between
