@@ -8,7 +8,6 @@
 translation downstream of mTOR signalling and activation of the integrated stress response (ISR). In addition, an example of a signature comprised of mRNAs containing 
 5'TOP motifs is also included. The list is not intended to be exhaustive, but provides examples of how gene signatures can be used in a \pkg{postNet} analysis to gain 
 insights into post-transcriptional regulation of gene expression.} 
-}
 
 \usage{data("humanSignatures")}
 \format{
