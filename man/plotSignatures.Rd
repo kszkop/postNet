@@ -27,13 +27,17 @@ plotSignatures(ptn,
   }
   \item{xlim}{A numeric vector specifying the x-axis limits for the ecdf plots. Default is \code{c(-2,2)}.
   }
-  \item{tableCex}{
+  \item{tableCex}{A numeric value specifying the size of the text in the table of statistical results that appears at the top of the ecdf plots.
+  Default is \code{1}.
   }
-  \item{pdfName}{
+  \item{pdfName}{Name to be appended to output PDF files.
   }
 }
 
-\details{
+\details{Gene signatures of interest are visualized as using empirical cumulative distribution functions (ECDFs) of log2 fold changes in the regulatory effect
+measurement in a \code{postNetData} object. ECDFs for genes belonging to the signatures of interest are compare to those for all other genes 
+(background). Differences in the regulatory effect measurement distributions are calculated at the quantiles. Significant directional shifts in the ECDFs for gene 
+signature versus background are identified using a Wilcoxon rank-sum test.
 }
 
 \value{No value is returned. Graphical outputs are generated as PDF files. 

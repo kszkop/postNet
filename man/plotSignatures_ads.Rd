@@ -57,7 +57,7 @@ plotSignatures_ads(ads,
 cumulative distribution functions (ECDFs) of log2 fold changes in polysome-associated mRNA, total mRNA, translation, and buffering (offsetting) 
 are also plotted independently. Fold change ECDFs for genes belonging to the signatures of interest are compare to those for all other genes 
 (background). Differences in the fold change distributions are calculated at the quantiles. Significant directional shifts in the ECDFs for gene 
-signatures versus background are identified using a Wilcoxon rank-sum test.
+signature versus background are identified using a Wilcoxon rank-sum test.
 }
 
 \value{No value is returned. Graphical outputs are generated as PDF files. 
