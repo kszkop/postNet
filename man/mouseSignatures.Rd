@@ -3,10 +3,10 @@
 \docType{data}
 \title{Mouse gene signatures of translational control
 }
-\description{The \code{mouseSignatures} dataset is a list of 13 gene signatures derived from published studies profiling mRNA
-translation downstream of various pathways and factors, or mRNAs containing features such as 5'TOP motifs. The list is not intended to be exhaustive,
-but provides examples of how gene signatures can be used in a \pkg{postNet} analysis to gain insights into post-transcriptional regulation
-of gene expression.}
+\description{The \code{mouseSignatures} dataset is a list of example gene signatures derived from published studies profiling mRNA
+translation downstream of mTOR signalling and activation of the integrated stress response (ISR). In addition, an example of a signature comprised of mRNAs containing 
+5'TOP motifs is also included. The list is not intended to be exhaustive, but provides examples of how gene signatures can be used in a \pkg{postNet} analysis to gain 
+insights into post-transcriptional regulation of gene expression.}
 
 \usage{data("mouseSignatures")}
 \format{
