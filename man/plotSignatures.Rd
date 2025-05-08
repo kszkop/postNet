@@ -68,7 +68,7 @@ plotSignatures(ptn,
  data('humanSignatures')
  
 # Examine the regulation of mTOR-sensitive transcripts in the results of the anota2seq analysis 
-plotSignatures(ptn = ptn,
+ plotSignatures(ptn = ptn,
                                signatureList = humanSignatures[c('Gandin_etal_2016_mTOR_transUp','Gandin_etal_2016_mTOR_transDown')],
                                signature_colours = c('red','blue'), 
                                xlim = c(-3,3), 
