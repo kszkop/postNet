@@ -29,8 +29,8 @@ List of 13
  $ Baird_etal_2014_Tg_transDown       : chr [1:194] "HMBS" "SGCB" "SMN1" "SMN2" ...
 }
 
-\details{The \code{humanSignatures} dataset contains a curated list of gene signatures relevent to understanding possible pathways and
-factors involved in regulation of mRNA translation, with a specific focus on mTOR and integrated stress response (ISR)-sensitive translation. 
+\details{The \code{humanSignatures} dataset contains a list of gene signatures relevent to understanding possible pathways and
+mRNA features involved in regulation of mRNA translation, with a specific focus on mTOR and integrated stress response (ISR)-sensitive translation. 
 These signatures have been compiled either directly from published studies, or from analyses of published datasets (sources and references 
 described in detail below). Note that if the orignal source of the gene signature was from mouse, these gene IDs have been converted to human. 
 
@@ -43,68 +43,6 @@ dataset.
 }
 
 \source{
-\strong{High eIF4E-dependent translation:} \cr
- \itemize{
- \item \strong{Signature Information}:{
-    \itemize{
-        \item Signature Name: Larsson_etal_2007_high4E
-        \item Source: HMEC cells immortalized with hTERT
-        \item Species: Human
-        \item Conditions: HMEC/hTERT + eIF4E over-expression (OE), HMEC/hTERT
-        \item Replicates: 2 Reps/Condition (HMEC/hTERT + eIF4E OE polyome-associated mRNA had 3 samples)
-        \item Comparison: HMEC/hTERT + eIF4E OE vs. HMEC/hTERT 
-  }
-  }
-  \item \strong{Publication Information}:{
-    \itemize{
-        \item Title: Eukaryotic translation initiation factor 4E induced progression of primary human mammary epithelial cells along the cancer pathway is associated with targeted translational deregulation of oncogenic drivers and inhibitors
-        \item Method: Polysome fractionation followed by microarray 
-        \item Data Source: Data obtained from supplementary materials (see: Table S2 of publication)
-        \item Analysis Method: Significance analysis of microarrays algorithm, genes with FDR < 0.10.
-        \item First Author,Last Author, Year:  Larsson, Polunovsky, 2007
-        \item PMID: 17638893
-        \item GEO Accession: GSE6043
-        \item DOI: 10.1158/0008-5472.CAN-07-0752
-    }
-    }
- \item \strong{Dataset Summary}:{
- Genes classified as translationally activated with high eIF4E expression in HMEC/hTERT + eIF4E OE compared to HMEC/hTERT.  
-  }
-}
-  
-\strong{Genes translationally regulated downstream of high phospho-eIF4E:} \cr
- \itemize{
- \item \strong{Signature Information}:{
-    \itemize{
-        \item Signature Name(s): Karampelias_etal_2022_p4E_transUp, Karampelias_etal_2022_p4E_transDown
-        \item Source: PANC1 cells
-        \item Species: Human
-        \item Conditions: Cercosporamide (5 μM), CID661578 (40 μM), DMSO: 6 hrs
-        \item Replicates: 4 Reps/Condition
-        \item Comparison: Cercosporamide vs. DMSO, CID661578 vs. DMSO
-  }
-  }
-  \item \strong{Publication Information}:{
-    \itemize{
-        \item Title: MNK2 deficiency potentiates β-cell regeneration via translational regulation
-        \item Method: Polysome fractionation followed by RNA sequencing 
-        \item Data Source: Data obtained from supplementary materials (see: Supplementary Data 3 of publication)
-        \item Analysis Method: Anota2seq algorithm (version 1.14.0). The following thresholds were applied within the anota2seqRun function: 
-        maxPAdj = 0.15; deltaP = log2(1); deltaT = log2(1); deltaPT = log2(1.2); deltaTP = log2(1.2); maxSlopeTranslation = 2; 
-        minSlopeTranslation = −1; minSlopeBuffering = −2; maxSlopeBuffering = 1. Replicate was included in the anota2seq model using the ‘batchVec’ 
-        parameter to account for batch effects.
-        \item First Author, Last Author, Year:  Karampelias, Andersson, 2022
-        \item PMID: 35697798
-        \item GEO Accession: GSE200477
-        \item DOI: 10.1038/s41589-022-01047-x
-    }
-    }
- \item \strong{Dataset Summary}:{
- The intersect of genes classified as translationally activated (transUp) or suppressed (transDown) following cercosporamide and CID661578 treatment
- compared to DMSO control in PANC1 cells. Both cercosporamide and CID661578 induce high phosphorylation of eIF4E in PANC1 cells.
-  }
-}
-
 \strong{Genes translationally regulated downstream of mTOR:} \cr
  \itemize{
  \item \strong{Signature Information}:{
@@ -198,14 +136,6 @@ dataset.
 
 \references{
 If you use these gene signatures in you analysis, please cite: \cr
-
-Larsson O, Li S, Issaenko OA, Avdulov S, Peterson M, Smith K, Bitterman PB, Polunovsky VA. Eukaryotic translation initiation factor 4E induced 
-progression of primary human mammary epithelial cells along the cancer pathway is associated with targeted translational deregulation of oncogenic 
-drivers and inhibitors. Cancer Res. 2007 Jul 15;67(14):6814-24. doi: 10.1158/0008-5472.CAN-07-0752. PMID: 17638893.
-
-Karampelias C, Watt K, Mattsson CL, Ruiz ÁF, Rezanejad H, Mi J, Liu X, Chu L, Locasale JW, Korbutt GS, Rovira M, Larsson O, Andersson O. 
-MNK2 deficiency potentiates β-cell regeneration via translational regulation. Nat Chem Biol. 2022 Sep;18(9):942-953. doi: 10.1038/s41589-022-01047-x. 
-Epub 2022 Jun 13. PMID: 35697798; PMCID: PMC7613404.
 
 Gandin V, Masvidal L, Cargnello M, Gyenis L, McLaughlan S, Cai Y, Tenkerian C, Morita M, Balanathan P, Jean-Jean O, Stambolic V, Trost M, Furic L, 
 Larose L, Koromilas AE, Asano K, Litchfield D, Larsson O, Topisirovic I. mTORC1 and CK2 coordinate ternary and eIF4F complex assembly. Nat Commun. 
