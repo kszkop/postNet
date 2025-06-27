@@ -62,6 +62,16 @@ contentAnalysis <- function(ptn,
     for (i in 1:length(contentIn)) {
       content <- contentIn[i]
     
+      ##
+      contentTmp <- gsub("[123]$", "", content)
+      nPos <- as.numeric(sub(".*([123])$", "\\1", content)) 
+      if (is.na(nPos) || contentTmp == content) {
+        nPos <- NA
+      }
+      
+      
+      
+      
       contentOut <- as.numeric()
       for (i in 1:length(seqTmp)) {
         tmpSeq <- seqTmp[i]

@@ -242,6 +242,16 @@ featureIntegration <- function(ptn,
       text(0.8, 0.1, font = 2, cex = 1.7, paste("Specificity: ", round(caret::confusionMatrix(predValidc, ValidSet$reg)[[4]][2], 2), sep = ""))
       dev.off()
       
+      pdf('pred_rocr.pdf',width=8,height=8, useDingbats = F)
+      plot(predOut, main = paste("ROC Curve for Random Forest \n AUC: ", round(auc@y.values[[1]], 3), sep = ""), col = "firebrick1", lwd = 3, xlab = "", ylab = "", )
+      abline(a = 0, b = 1, lwd = 2, lty = 2, col = "gray")
+      
+      mtext(side = 1, line = 4, "False positive rate", col = "black", font = 2, cex = 1.2)
+      mtext(side = 2, line = 3, "True positive rate", col = "black", font = 2, cex = 1.2)
+      text(0.8, 0.2, font = 2, cex = 1.7, paste("Sensitivity: ", round(caret::confusionMatrix(predValidc, ValidSet$reg)[[4]][1], 2), sep = ""))
+      text(0.8, 0.1, font = 2, cex = 1.7, paste("Specificity: ", round(caret::confusionMatrix(predValidc, ValidSet$reg)[[4]][2], 2), sep = ""))
+      dev.off()
+      
       rfOut <- new("postNetFeatureIntegration_rf",
                    preModel = model1,
                    borutaModel = model1Imp,
@@ -275,3 +285,4 @@ featureIntegration <- function(ptn,
   ptn@analysis@featureIntegration <- fiOut
   return(ptn)
 }
+

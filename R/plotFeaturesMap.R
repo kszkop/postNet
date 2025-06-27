@@ -71,13 +71,13 @@ plotFeaturesMap <- function(ptn,
   fmapRes <- fmapResOut <- as.data.frame(fmapRes$layout)
   colnames(fmapRes) <- colnames(fmapResOut) <- c("fUMAP1", "fUMAP2")
   fmapRes$Gene <- rownames(featuresOut)
-  
+
   #Plot every feature together with eff. Prepare effect plot first
   effTmp <- ptn_effect(ptn)
   eff <- effTmp[match(row.names(featuresOut),names(effTmp))]
-  
+
   effect_fmap <- plot_fmap(fmapRes, colVec = eff, remExtreme = remExtreme, name='Effect')
-  
+
   for(feat in featSel){
     featTmp <- features[,feat]
     #is_binary(featTmp)
