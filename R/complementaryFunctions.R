@@ -395,18 +395,24 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
     }
     #
     dataTmp <- as.numeric(unlist(resOut))
-    ylimTmp2 <- roundNice(quantile(dataTmp,0.9), direction='up')
+    ylimTmp2_1 <- roundNice(quantile(dataTmp,0.005), direction='up')
+    ylimTmp2_2 <- roundNice(quantile(dataTmp,0.995), direction='up')
+    
     par(mar = c(8, 8, 0, 0), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-    plot(1,ylimTmp2, xlim=xlimTmp, ylim=c(0,ylimTmp2), xaxt = "n",type="n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
+    plot(1,max(ylimTmp2_1,ylimTmp2_2), xlim=xlimTmp, ylim=c(ylimTmp2_1,ylimTmp2_2), xaxt = "n",type="n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
+    #vioplot::vioplot(dataTmp,type="n",xaxt = "n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
+    
     #
     if(ylabel == 'Length (Log2 scale)'){
       axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
-      mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(c(0, ylimTmp2)))
+      mtext(side = 2, line = 4,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(c(ylimTmp2_1, ylimTmp2_2)))
     } else {
       axis(side = 2, font = 2, las = 2, lwd = 2)
-      mtext(side = 2, line = 6,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(c(0, ylimTmp2)))
+      mtext(side = 2, line = 4,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(c(ylimTmp2_1, ylimTmp2_2)))
     }
-    text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+    #text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+    text(1:length(resOut), par("usr")[3] - (par("usr")[3]*0.1), labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+    
     #
     if (names(resOut)[1] == 'background') {
       abline(lty = 5, h = median(resOut[[1]]))
@@ -419,12 +425,12 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
         vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = colOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
       } 
       if(ylabel == 'Length (Log2 scale)'){
-        text(i, 0, ifelse(mean(antilog(resOut[[i]])) > 0 & mean(antilog(resOut[[i]])) < 1, 
-                    round(mean(antilog(resOut[[i]], 2)), 0), 
+        text(i, ylimTmp2_1, ifelse(mean(antilog(resOut[[i]])) > -1 & mean(antilog(resOut[[i]])) < 1, 
+                    round(mean(antilog(resOut[[i]], 2)), 2), 
                     round(mean(antilog(resOut[[i]],2)), 0)), font = 2)
       } else {
-        text(i, 0, ifelse(mean(resOut[[i]]) > 0 & mean(resOut[[i]]) < 1, 
-                    round(mean(resOut[[i]]), 0), 
+        text(i, ylimTmp2_1, ifelse(mean(resOut[[i]]) > -1 & mean(resOut[[i]]) < 1, 
+                    round(mean(resOut[[i]]), 2), 
                     round(mean(resOut[[i]]), 0)), font = 2)
       }
     } 
