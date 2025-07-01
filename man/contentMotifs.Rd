@@ -3,7 +3,7 @@
 \title{Detect and quantify the presence of sequence motifs
 }
 
-\description{The \code{contentMotifs} function detects and quantifies the presence of motifs in sequence regions
+\description{The \code{contentMotifs} function quantifies the presence of motifs in sequence regions
 of interest. Known motifs can be provided directly, or the output of the \link[postNet]{motifAnalysis} function,
 which detects de-novo motifs using STREME (part of the MEME-Suite), can be supplied. Finally, the function can 
 also apply \link[pqsfinder]{pqsfinder} to indeitify G-quadruplexes. In addition, the motifs can be plotted and 
