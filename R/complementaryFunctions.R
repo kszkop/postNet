@@ -411,12 +411,13 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
       mtext(side = 2, line = 4,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(c(ylimTmp2_1, ylimTmp2_2)))
     }
     #text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-    text(1:length(resOut), par("usr")[3] - (par("usr")[3]*0.1), labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+    text(1:length(resOut), par("usr")[3] - (par("usr")[3]*0.25), labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
     
     #
     if (names(resOut)[1] == 'background') {
       abline(lty = 5, h = median(resOut[[1]]))
     }
+    text(xlimTmp[2]-0.75, ylimTmp2_1,'(mean values)',font = 2)
     #
     for (i in 1:length(resOut)) {
       if(plotType=='boxplot'){
@@ -473,6 +474,48 @@ calc_content <- function(x, nuc){
   contentOut <- contTmp / stringr::str_length(x) * 100
   return(contentOut)
 }
+
+calc_content_pos <- function(x, nPos, nuc) {
+
+  seqChar <- seqinr::s2c(x)
+  seqLength <- stringr::str_length(x)
+  
+  # Identify codon start positions
+  nucIndex <- seq(0, seqLength - 1, by = 3)
+  
+  # Compute all positions to check (1-based indexing)
+  targetN <- unlist(lapply(nucIndex, function(start) {
+    idx <- start + nPos
+    idx[idx <= seqLength]  # stay within sequence length
+  }))
+  
+  # Count how many target positions match the nucleotides
+  contTmp <- seqChar[targetN] %in% nuc
+  contentOut <- sum(contTmp) / seqLength * 100
+  
+  return(contentOut)
+}
+
+#count_nucs <- function(codons, nuc, nPos) {
+#  count <- 0
+#  for (codon in codons) {
+#    for (pos in nPos) {
+#      if (substr(codon, pos, pos) %in% nuc) {
+#        count <- count + 1
+#      }
+#    }
+#  }
+#  return(count)
+#}
+
+#calc_content_pos <- function(x, nPos, nuc){
+#  
+#  out <- sapply(seq(1, stringr::str_length(x), by = 3), function(i) {paste(seqinr::s2c(x)[i:min(i+2, stringr::str_length(x))], collapse = "") })
+#    
+#  contTmp <- count_nucs(out, nuc, nPos)
+#  contentOut <- contTmp / stringr::str_length(x) * 100
+#  return(contentOut)
+#}
 
 ####
 subset_seq <- function(x, pos, subregionSel){

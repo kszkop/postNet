@@ -63,24 +63,27 @@ contentAnalysis <- function(ptn,
       content <- contentIn[i]
     
       ##
-      contentTmp <- gsub("[123]$", "", content)
-      nPos <- as.numeric(sub(".*([123])$", "\\1", content)) 
-      if (is.na(nPos) || contentTmp == content) {
-        nPos <- NA
+      contentTmp <- gsub("[0-9]", "", content)
+      
+      if(contentTmp != content & reg != 'CDS'){
+        next
       }
-      
-      
-      
-      
+
       contentOut <- as.numeric()
       for (i in 1:length(seqTmp)) {
         tmpSeq <- seqTmp[i]
-        tmpCont <- sapply(seqinr::s2c(toupper(content)), function(x) calc_content(tmpSeq, x))
+        
+        if (contentTmp != content) {
+          nPos <- as.numeric(gsub("[A-Z]", "", content))
+          tmpCont <- sapply(seqinr::s2c(toupper(contentTmp)), function(x) calc_content_pos(tmpSeq, nPos, x))
+        } else {
+          tmpCont <- sapply(seqinr::s2c(toupper(content)), function(x) calc_content(tmpSeq, x))
+        } 
         contentOut[i] <- sum(tmpCont)
       }
       names(contentOut) <- names(seqTmp)
-      
       contentOut <- contentOut[!is.na(contentOut)]
+      
       #
       if (isTRUE(plotOut)) {
         resOut <- resQuant(qvec = contentOut, ptn = ptn)
@@ -90,7 +93,7 @@ contentAnalysis <- function(ptn,
         colOut <- colPlot(ptn)
         # Plot
         pdf(ifelse(is.null(pdfName), paste(reg, content, "content.pdf", sep = "_"), paste(pdfName, reg, content, "content.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
-        ylabel = paste(reg, '%', paste0(content, "content"), sep = "_")
+        ylabel = paste(paste0(content, " content"), 'in ', reg,  '(%)', sep = " ")
         plotPostNet(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
         dev.off()
       }
