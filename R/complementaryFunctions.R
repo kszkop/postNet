@@ -411,7 +411,7 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
       mtext(side = 2, line = 4,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(c(ylimTmp2_1, ylimTmp2_2)))
     }
     #text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
-    text(1:length(resOut), par("usr")[3] - (par("usr")[3]*0.25), labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
+    text(1:length(resOut), par("usr")[3] - 0.05 * diff(par("usr")[3:4]), labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
     
     #
     if (names(resOut)[1] == 'background') {
