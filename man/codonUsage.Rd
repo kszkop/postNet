@@ -65,16 +65,17 @@ codonUsage(ptn,
   }
   \item{thresFreqUp}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting
   codons (or amino acids) in the enriched set. For example, \code{thresFreqUp = 0.3} indicates that the top 30\% of
-  the most frequently occurring codons are selected. This metric is combined with \code{thresOddsUp} to select the most the 
+  the most frequently occurring enriched codons are selected. This metric is combined with \code{thresOddsUp} to select the most the 
   frequent codons with the highest odds ratio. The default is \code{0.3}.  
   }
   \item{thresOddsDown}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting
-  codons (or amino acids) in the depleted set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of
+  codons (or amino acids) in the depleted set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of depleted
   codons with the lowest odds ratios will be selected. The default is \code{0.3}.
   }
-  \item{thresFreqDown}{select the top percentage threshold for frequency for selecting codons in the down set.
-  The default 0.3 indicates that 30\% of the most frequent codons are selected. It is combined the 
-  thresOddsDown to select the most frequent codons with the lowest odds ratio. \code{0.3}.
+  \item{thresFreqDown}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting
+  codons (or amino acids) in the depleted set. For example, \code{thresFreqDown = 0.3} indicates that the top 30\% of
+  the most frequently occurring depleted codons are selected. This metric is combined with \code{thresOddsDown} to select the most the 
+  frequent codons with the lowest odds ratio. The default is \code{0.3}.
   }
   \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either
   select or exclude from the analysis. This is done by providing a numeric value indicating the number of
@@ -108,6 +109,9 @@ Fop (Frequency of optimal codons), GC3s (frequency of G or C at 3rd codon positi
 
 \value{List with selected codons in up and down sets for each desired comparison. In addition, summary codons 
 calculation (list entry: codonAll) is also provided. The function will also output plots for desired comparisons.
+
+Frequency = number of codons relative to all codons
+Relative frequency = number of codons relative to synonymous codons
 }
 
 \references{

@@ -431,8 +431,8 @@ codonUsage <- function(ptn,
           ggplot2::theme(legend.position = "none") +
           ggrepel::geom_text_repel(ggplot2::aes(label = AAcodon), size = 3, segment.size = 0.2,max.overlaps = 100) +
           ggplot2::labs(
-            x = paste(colnames(resIn2)[1], "\n(average codon frequency", sep = ""),
-            y = paste(colnames(resIn2)[2], "\n(average codon frequency", sep = "")
+            x = paste(colnames(resIn2)[1], "\n(Average codon frequency)", sep = ""),
+            y = paste(colnames(resIn2)[2], "\n(Average codon frequency)", sep = "")
           )
         print(pOut1)
         dev.off()
