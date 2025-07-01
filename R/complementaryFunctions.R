@@ -395,7 +395,7 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
     }
     #
     dataTmp <- as.numeric(unlist(resOut))
-    ylimTmp2_1 <- roundNice(test, direction='down')
+    ylimTmp2_1 <- roundNice(quantile(dataTmp,0.0015), direction='down')
     ylimTmp2_2 <- roundNice(quantile(dataTmp,0.9975), direction='up')
     
     par(mar = c(8, 8, 0, 0), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
