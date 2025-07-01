@@ -20,7 +20,10 @@ plotSignatures <- function(ptn,
   if(!check_number(tableCex)){
     stop("please provide number for tableCex to scale size of table with statistics")
   }
-
+  
+  if(!is_numeric_vector(xlim) | length(xlim) != 2){
+    stop("please provide numeric vector for xlim. Exactly too numbers")
+  }
   ##apvEff of effect
   effIn <- ptn_effect(ptn)
   regData <- data.frame(geneSymb = names(effIn))

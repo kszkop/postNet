@@ -63,9 +63,9 @@ contentAnalysis <- function(ptn,
       content <- contentIn[i]
     
       ##
-      contentTmp <- gsub("[0-9]", "", content)
+      contentTmp <- nPos_extract(content)
       
-      if(contentTmp != content & reg != 'CDS'){
+      if(!is.na(contentTmp$positions[1]) & reg != 'CDS'){
         next
       }
 
@@ -73,9 +73,9 @@ contentAnalysis <- function(ptn,
       for (i in 1:length(seqTmp)) {
         tmpSeq <- seqTmp[i]
         
-        if (contentTmp != content) {
-          nPos <- as.numeric(gsub("[A-Z]", "", content))
-          tmpCont <- sapply(seqinr::s2c(toupper(contentTmp)), function(x) calc_content_pos(tmpSeq, nPos, x))
+        if (!is.na(contentTmp$positions[1])) {
+          nPos <- contentTmp$positions
+          tmpCont <- sapply(seqinr::s2c(toupper(contentTmp$nucleotide)), function(x) calc_content_pos(tmpSeq, nPos, x))
         } else {
           tmpCont <- sapply(seqinr::s2c(toupper(content)), function(x) calc_content(tmpSeq, x))
         } 
@@ -90,12 +90,16 @@ contentAnalysis <- function(ptn,
         if(length(resOut)==0){
           stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
         }
-        colOut <- colPlot(ptn)
-        # Plot
-        pdf(ifelse(is.null(pdfName), paste(reg, content, "content.pdf", sep = "_"), paste(pdfName, reg, content, "content.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
-        ylabel = paste(paste0(content, " content"), 'in ', reg,  '(%)', sep = " ")
-        plotPostNet(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
-        dev.off()
+        if(diff(range(as.numeric(unlist(resOut)))) < .Machine$double.eps ^ 0.5){
+          message(paste('No plot will be produced as all values are the same, (equal ', as.numeric(names(table(unlist(resOut)))), ') for', content, sep=' '))
+        } else { 
+          colOut <- colPlot(ptn)
+          # Plot
+          pdf(ifelse(is.null(pdfName), paste(reg, content, "content.pdf", sep = "_"), paste(pdfName, reg, content, "content.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
+          ylabel = paste(paste0(content, " content"), 'in ', reg,  '(%)', sep = " ")
+          plotPostNet(resOut, colOut, comparisons, ylabel = ylabel ,plotType = plotType)
+          dev.off()
+        }
       }
       contentFinal[[paste(reg, content, sep = "_")]] <- contentOut
     }

@@ -56,7 +56,7 @@ rfPred <- function(ptn,
   # 2. True Positive and Negative Rate
   predOut = ROCR::performance(perf, "tpr","fpr")
   # 3. Plot the ROC curve
-  pdf(paste(pdfName,'_rocr.pdf',sep=''),width=8,height=8, useDingbats = F)
+  pds(ifelse(is.null(pdfName), "rocr.pdf", paste(pdfName, "_rocr.pdf", sep = "")), width = 8, height = 8, useDingbats = F)
   plot(predOut,main=paste("ROC Curve for Random Forest \n Accuracy: ",round(as.numeric(caret::confusionMatrix(predValidc , featInSel$reg)[[3]][1]),3),sep=''),col='firebrick1',lwd=3,xlab='',ylab='',)
   abline(a=0,b=1,lwd=2,lty=2,col="gray")
   

@@ -190,7 +190,7 @@ check_DNAsequence <- function(contentIn) {
   pattern <- "^[ACGTacgt]+[123]*$" #"^[ACGTacgt]+$"
   
   if (!all(grepl(pattern, contentIn))) {
-    stop("The entries provided in contentIn do not appear to all be DNA sequences. Please check that the sequences are correct.")
+    stop("The entries provided in contentIn do not appear to all be DNA sequences. Please check that the sequences are correct. It must be nucleotide string followed by digits 1, 2, or 3 (e.g., 'GC', 'GC2', 'ACGT123').")
   }
 }
 

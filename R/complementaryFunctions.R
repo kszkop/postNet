@@ -395,7 +395,7 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
     }
     #
     dataTmp <- as.numeric(unlist(resOut))
-    ylimTmp2_1 <- roundNice(quantile(dataTmp,0.0025), direction='down')
+    ylimTmp2_1 <- roundNice(test, direction='down')
     ylimTmp2_2 <- roundNice(quantile(dataTmp,0.9975), direction='up')
     
     par(mar = c(8, 8, 0, 0), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -475,47 +475,32 @@ calc_content <- function(x, nuc){
   return(contentOut)
 }
 
+nPos_extract <- function(content) {
+  #
+  contTmp <- regmatches(content, regexec("^([ACGTacgt]+)([123]*)$", content))[[1]]
+  
+  nuc <- toupper(contTmp[2])
+  nPosTmp <- unlist(strsplit(contTmp[3], ""))
+
+  nPos <- if (length(nPosTmp) > 0) as.integer(nPosTmp) else NA
+  
+  list(nucleotide = nuc, positions = nPos)
+}
+
 calc_content_pos <- function(x, nPos, nuc) {
 
   seqChar <- seqinr::s2c(x)
   seqLength <- stringr::str_length(x)
   
-  # Identify codon start positions
-  nucIndex <- seq(0, seqLength - 1, by = 3)
-  
-  # Compute all positions to check (1-based indexing)
-  targetN <- unlist(lapply(nucIndex, function(start) {
-    idx <- start + nPos
-    idx[idx <= seqLength]  # stay within sequence length
-  }))
-  
-  # Count how many target positions match the nucleotides
-  contTmp <- seqChar[targetN] %in% nuc
-  contentOut <- sum(contTmp) / seqLength * 100
+  #
+  nucIndex <- seq(1, seqLength, by = 3)
+  targetN <- as.vector(outer(nucIndex, (nPos - 1), "+"))
+
+  contTmp <- stringr::str_count(seqinr::c2s(seqChar[targetN]), seqinr::s2c(nuc))
+  contentOut <- contTmp / seqLength * 100
   
   return(contentOut)
 }
-
-#count_nucs <- function(codons, nuc, nPos) {
-#  count <- 0
-#  for (codon in codons) {
-#    for (pos in nPos) {
-#      if (substr(codon, pos, pos) %in% nuc) {
-#        count <- count + 1
-#      }
-#    }
-#  }
-#  return(count)
-#}
-
-#calc_content_pos <- function(x, nPos, nuc){
-#  
-#  out <- sapply(seq(1, stringr::str_length(x), by = 3), function(i) {paste(seqinr::s2c(x)[i:min(i+2, stringr::str_length(x))], collapse = "") })
-#    
-#  contTmp <- count_nucs(out, nuc, nPos)
-#  contentOut <- contTmp / stringr::str_length(x) * 100
-#  return(contentOut)
-#}
 
 ####
 subset_seq <- function(x, pos, subregionSel){
