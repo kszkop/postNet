@@ -21,7 +21,7 @@ contentAnalysis(ptn,
 \arguments{
   \item{ptn}{a \code{postNetData} object.
   }
-  \item{contentIn}{A vector with desired content combinations of A,T,G,C
+  \item{contentIn}{A character vector with desired content combinations of A, T, G, or C. For example \code{c('GC')}, or \code{c('G', 'A')}. 
   }
   \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"},
   \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
@@ -82,7 +82,7 @@ contentAnalysis(ptn,
  )
  
 
-# Calculate the GC of the first 50 nucleotidfes of the 5'UTR for each gene, and compare between
+# Calculate the GC of the first 50 nucleotides of the 5'UTR for each gene, and compare between
 # translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes
  content_UTR5_first50 <- contentAnalysis(ptn = ptn, 
                            region = c("UTR5"),
