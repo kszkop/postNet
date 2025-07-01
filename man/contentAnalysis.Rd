@@ -21,7 +21,11 @@ contentAnalysis(ptn,
 \arguments{
   \item{ptn}{a \code{postNetData} object.
   }
-  \item{contentIn}{A character vector with desired content combinations of A, T, G, or C. For example \code{c('GC')}, or \code{c('G', 'A')}. 
+  \item{contentIn}{A character vector with desired nucleotide content to be quantified. These can be any selection or combination
+  of A, T, G, or C. For example \code{c('GC')}, or \code{c('G', 'A')}. Optionally, when \code{region} is \code{"CDS"}, nucleotide 
+  content at specific codon positions can also be quantified. For example, \code{c('GC3')} would calculate the percentage of GC 
+  content in the third codon position, and \code{c('A12')} would calculate the percentage of A content in the first and second codon 
+  positions. Note that this option will only return values and plots when \code{region} is \code{"CDS"}. 
   }
   \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"},
   \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
