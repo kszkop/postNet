@@ -90,7 +90,7 @@ all indicated comparisons between different sets of genes will be performed and 
  
 # Calculate and plot ecdfs of codons counts, and compare between gene sets of interest
 
- codons <- list(Up = c('GAA','GAT), Down = c('GAG','CAG'))
+ codons <- list(Up = c('GAA','GAT'), Down = c('GAG','CAG'))
 
  codonCounts  <- codonCalc(ptn = ptn,
                           analysis='codon', 
