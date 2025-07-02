@@ -29,7 +29,7 @@ codonUsage(ptn,
 }
 
 \arguments{
-  \item{ptn}{A \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
   \item{annotType}{A string specifying the reference coding sequences to be used for the analysis. The options 
   are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"ptnCDS"} (the CDS reference sequences already stored in 
@@ -101,11 +101,11 @@ codonUsage(ptn,
 Several codon indexes are also compared between gene sets of interest, including the CAI (codon adaptation index), CBI (Codon Bias Index), FOP (frequency of optimal codons), L_aa (Number of amino acids in protein), and tAI (tRNA adaptation index).
 }
 
-\value{List with selected codons in up and down sets for each desired comparison. In addition, summary codons 
-calculation (list entry: codonAll) is also provided. The function will also output plots for desired comparisons.
+\value{The results returned by the \code{codonUsage} function are compiled into an S4 object of class \code{postNetCodons} and stored in the "codons" slot of the \code{postNetData} object. The "codonAnalysis" slot provides a summary of calculations for all codons for each gene, and stores an S4 object of class \code{postNetCodonsAll} with the following slots: geneID, codon, AA, count, frequency, AACountPerGene, and relative_frequency. Here, frequency corresponds to the number of codons relative to all codons in the gene, and relative_frequency corresponds to the number of codons relative to all synonymous codons in the gene. The contents of the "codonAnalysis" slot can be accessed using the \link[postNet]{ptn_codonAnalysis} S4 method.     
 
-Frequency = number of codons relative to all codons
-Relative frequency = number of codons relative to synonymous codons
+The "codonSelection" slot stores a named list of the selected codons or AAs that were signficantly enriched or depleted (according to the selected thresholds) in the specified comparisons. The contents of the "codonSelection" slot can be accessed using the \link[postNet]{ptn_codonSelection} S4 method. 
+
+The \code{codonUsage} function also generates plots comparing the codon indexes described about between gene sets, a clustered heatmap of the Chi-square residuals for each codon between the gene sets of interest, and plots comparing the average codon count and frequency between the gene sets of interest (codons encoding the same amino acid are coloured and connected by lines).  
 }
 
 \references{

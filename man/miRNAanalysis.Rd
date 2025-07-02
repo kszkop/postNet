@@ -89,9 +89,11 @@ following columns:
   \item \strong{q.val}: The BH adjusted p-value, as implemented by the \pkg{multtest} package.
   \item \strong{set.size}: The number of genes included in the gene set.
   }
-  
-The "miRNA_to_gene" slot stores a list where each element is a vector of genes that are predicted to be targeted by the miRNA that passed 
-the filtering thresholds for \code{contextScore} and/or \code{Pct}. 
+The contents of the "miRNA_analysis" slot can be accessed using the \link[postNet]{ptn_miRNA_analysis} S4 method. 
+\cr
+The "miRNA_to_gene" slot stores a list where each element is a vector of genes that are predicted to be targeted by the miRNA that passed the filtering thresholds for \code{contextScore} and/or \code{Pct}. 
+
+The contents of the "miRNA_to_gene" slot can be accessed using the \link[postNet]{ptn_miRNA_to_gene} S4 method. 
 }
 
 \references{
