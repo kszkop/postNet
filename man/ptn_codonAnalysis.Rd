@@ -1,6 +1,6 @@
 \docType{methods}
-\name{codonAnalysis}
-\alias{codonAnalysis,postNetData-method}
+\name{ptn_codonAnalysis}
+\alias{ptn_codonAnalysis,postNetData-method}
 \title{Accessor for the "codonAnalysis" slot of a \code{postNetData} object
 }
 
