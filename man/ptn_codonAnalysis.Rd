@@ -8,7 +8,7 @@
 }
 
 \usage{
-ptn_codonAnalysis(x)
+\S4method{ptn_codonAnalysis}{postNetData}(x)
 }
 
 \arguments{
