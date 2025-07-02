@@ -411,7 +411,7 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
     #
     dataTmp <- as.numeric(unlist(resOut))
     ylimTmp2_1 <- roundNice(quantile(dataTmp,0.0015), direction='down')
-    ylimTmp2_2 <- roundNice(quantile(dataTmp,0.9975), direction='up')
+    ylimTmp2_2 <- ifelse(ylabel == 'Length (Log2 scale)', 15, roundNice(quantile(dataTmp,0.9975), direction='up'))
     ylimTmp <- as.numeric(adjust_ylim(ylimTmp2_1,ylimTmp2_2))
     
     par(mar = c(8, 8, 0, 0), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -421,10 +421,10 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
     #
     if(ylabel == 'Length (Log2 scale)'){
       axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
-      mtext(side = 2, line = 4,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(ylimTmp))
+      mtext(side = 2, line = 5,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(ylimTmp))
     } else {
       axis(side = 2, font = 2, las = 2, lwd = 2)
-      mtext(side = 2, line = 4,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(ylimTmp))
+      mtext(side = 2, line = 5,  ylabel, col = "black", font = 2, cex = 1.7, at = mean(ylimTmp))
     }
     #text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
     text(1:length(resOut), par("usr")[3] - 0.05 * diff(par("usr")[3:4]), labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
@@ -442,11 +442,11 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
         vioplot::vioplot(resOut[[i]], add = TRUE, at = i, col = colOut[i], xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, frame.plot = FALSE)
       } 
       if(ylabel == 'Length (Log2 scale)'){
-        text(i, ylimTmp2_1, ifelse(mean(antilog(resOut[[i]])) > -1 & mean(antilog(resOut[[i]])) < 1, 
+        text(i, ylimTmp[1], ifelse(mean(antilog(resOut[[i]])) > -1 & mean(antilog(resOut[[i]])) < 1, 
                     round(mean(antilog(resOut[[i]], 2)), 2), 
                     round(mean(antilog(resOut[[i]],2)), 0)), font = 2)
       } else {
-        text(i, ylimTmp2_1, ifelse(mean(resOut[[i]]) > -1 & mean(resOut[[i]]) < 1, 
+        text(i, ylimTmp[1], ifelse(mean(resOut[[i]]) > -1 & mean(resOut[[i]]) < 1, 
                     round(mean(resOut[[i]]), 2), 
                     round(mean(resOut[[i]]), 0)), font = 2)
       }
