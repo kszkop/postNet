@@ -105,7 +105,7 @@ Several codon indexes are also compared between gene sets of interest, including
 
 The "codonSelection" slot stores a named list of the selected codons or AAs that were signficantly enriched or depleted (according to the selected thresholds) in the specified comparisons. The contents of the "codonSelection" slot can be accessed using the \link[postNet]{ptn_codonSelection} S4 method. 
 
-The \code{codonUsage} function also generates plots comparing the codon indexes described about between gene sets, a clustered heatmap of the Chi-square residuals for each codon between the gene sets of interest, and plots comparing the average codon count and frequency between the gene sets of interest (codons encoding the same amino acid are coloured and connected by lines).  
+The \code{codonUsage} function also generates plots comparing the codon indexes described above between gene sets, a clustered heatmap of the Chi-square residuals for each codon between the gene sets of interest, and plots comparing the average codon count and frequency between the gene sets of interest (codons encoding the same amino acid are coloured and connected by lines).  
 }
 
 \references{
