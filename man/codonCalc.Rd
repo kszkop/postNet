@@ -3,9 +3,7 @@
 \title{Calculate and visualize codon or amino acid counts and/or frequency
 }
 
-\description{The \code{codonCalc} function calculates the number or frequency of selected codons or amino acids for each gene.
-In addition, codon or amino acid content for gene sets of interest can be compared against background, or other genes sets. 
-Several options are available for plotting the comparisons.
+\description{After running \code{codonUsage}, the \code{codonCalc} function can be used to calculate the number or frequency of selected codons or amino acids for each gene. These outputs can be used in the downstream \link[postNet]{featureIntegration} analysis. In addition, codon or amino acid content for gene sets of interest can be compared against background, or other gene sets. Several options are available for plotting the comparisons.
 }
 
 \usage{
@@ -20,9 +18,9 @@ codonCalc(ptn,
 }
 
 \arguments{
-  \item{ptn}{A \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
-  \item{featsel}{A named list of vectors specifying one or more codons or amino acids to qunatify and/or visualize. 
+  \item{featsel}{A named list of vectors specifying one or more codons or amino acids to quantify and/or visualize. 
   For example, for use in the downstream \link[postNet]{featureIntegration}, it is usually desireable to select 
   those with high frequency, and the highest and lowest Odds Ratios identified using the \link[postNet]{codonUsage} 
   function. This list can be easily generated using the S4 method \link[postNet]{ptn_codonSelection}. See example below. 
@@ -34,7 +32,7 @@ codonCalc(ptn,
   The default is \code{"count"}.
   }
   \item{comparisons}{A list of numeric vectors indicating which gene sets in \code{regulation} or 
-  \code{geneList} should be used in pair-wise comparisons. The numeric vectors should correspond to the
+  \code{geneList} should be used in pairwise comparisons. The numeric vectors should correspond to the
   indexes of the gene sets, where 0 denotes the background. For example, \code{list(c(0,2),c(1,2))} 
   indicates that the second gene set in \code{regulation} or \code{geneList} will be compared to the
   background (0), and the first and second gene sets will be compared to each other. The default is
@@ -56,10 +54,7 @@ is performed to identify significant differences between gene sets of interest, 
 all indicated comparisons between different sets of genes will be performed and plotted.  
 }
 
-\value{A named list of vectors for selected codons or amino acids with the calculated number of counts or frequency for each gene. The elements in each vector are named with the gene ID. The \code{codonCalc} function can also return PDF files of output plots with statistical comparisons between gene sets of interest.
-}
-
-\references{
+\value{A named list of numeric vectors for selected codons or amino acids with the calculated number of counts or frequency for each gene. The elements in each vector are named with the gene ID. The \code{codonCalc} function can also return PDF files of output plots with statistical comparisons between gene sets of interest.
 }
 
 \seealso{
@@ -88,9 +83,29 @@ all indicated comparisons between different sets of genes will be performed and 
    species = "human"
  )
  
+# Run codon usage analysis
+ ptn <- codonUsage(ptn = ptn, 
+          annotType = 'ptnCDS', 
+          sourceSeq = "load", 
+          analysis = 'codon', 
+          codonN = 1, 
+          pAdj = 0.01, 
+          rem5 = TRUE, 
+          plotHeatmap = FALSE, 
+          thresOddsUp = 0.3, 
+          thresFreqUp = 0.3, 
+          thresOddsDown = 0.3, 
+          thresFreqDown = 0.3, 
+          subregion = NULL, 
+          subregionSel = NULL, 
+          comparisons = list(c(1,2)), 
+          plotType_index = "violin", 
+          pdfName = 'codons')
+          
+# Select codons of interest with high frequency, and the highest and lowest Odds ratios
+ codons <- ptn_codonSelection(ptn, comparison = 1)
+ 
 # Calculate and plot ecdfs of codons counts, and compare between gene sets of interest
-
- codons <- list(Up = c('GAA','GAT'), Down = c('GAG','CAG'))
 
  codonCounts  <- codonCalc(ptn = ptn,
                           analysis='codon', 
@@ -99,5 +114,5 @@ all indicated comparisons between different sets of genes will be performed and 
                           comparisons = list(c(1,2)),
                           plotType = 'ecdf')
                       
- str(GAAcounts)
+ str(codonCounts)
 }

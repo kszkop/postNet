@@ -4,22 +4,18 @@
 
 \usage{
 checkAvailableVersions(
-  species = NULL,
+  species = NULL
 )
 }
 \arguments{
 \item{species}{A string specifying the species of interest. Currently, \code{"human"} and \code{"mouse"} are supported.}
 }
 \description{
-The \code{checkAvailableVersions} function retrieves and lists the available release versions for the pre-prepared reference sequence annotations
-based on the NCBI RefSeq database.
+The \code{checkAvailableVersions} function retrieves available release versions of pre-prepared reference sequence annotations based on the NCBI RefSeq database.
 }
 
-\examples{
-
-# See RefSeq release versions of available annotations in the package
-checkAvailableVersions(species = 'human')
-  
+\value{
+  A character vector of available RefSeq release versions for the specified species
 }
 
 \references{
@@ -27,5 +23,10 @@ See \url{https://www.ncbi.nlm.nih.gov/refseq/} for RefSeq documentation.
 }
 
 \seealso{
-\code{\link[postNet]{postNetStart}} for details on creating reference sequence annotations.
+See \code{\link[postNet]{postNetStart}} for details on creating reference sequence annotations.
+}
+
+\examples{
+# List RefSeq release versions of available annotations in the package
+checkAvailableVersions(species = 'human')
 }
