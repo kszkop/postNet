@@ -80,33 +80,36 @@ uorfAnalysis <- function(ptn,
     for (i in 1:length(resOut)) {
       resProp[i] <- length(resOut[[i]][resOut[[i]] > 0]) / length(resOut[[i]])
     }
+    dataTmp <- as.numeric(unlist(resProp))
+    ylimTmp2_1 <- 0
+    ylimTmp2_2 <- roundNice(max(dataTmp), direction='up')
+    ylimTmp <- as.numeric(adjust_ylim(ylimTmp2_1,ylimTmp2_2))
+    
     # Plot
     pdf(ifelse(is.null(pdfName), paste("uORFs_", KozakContext, ".pdf", sep = ""), paste(pdfName, "_uORFs_", KozakContext, ".pdf", sep = "")), width = 8, height = 8, useDingbats = F)
-    par(mar = c(8, 12, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
-    barplot(resProp, col = colOut, xaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", yaxt = "n", font = 2, ylim = c(0, ifelse(is.null(comparisons), 1, 1 + (length(comparisons) * 0.1))), space = 0)
-
-    axis(side = 2, font = 2, las = 2, lwd = 2, at = seq(0, 1, 0.2), labels = seq(0, 1, 0.2))
-    text(seq(0.5, length(resOut), 1), par("usr")[3] - 0.05, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1.1)
-
-    mtext(side = 2, line = 6, paste("proportion of uORFs in \n", KozakContext, "Kozak context", sep = ""), col = "black", font = 2, cex = 1.7, at = 0.5)
-
-    # Plot stats
-    if (!is.null(comparisons)) {
-      for (j in 1:length(comparisons)) {
-        if (names(resOut)[1] == 'background') {
-          compTmp <- comparisons[[j]] + 1
-        } else {
-          compTmp <- comparisons[[j]]
-        }
-        # stats
-        pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
-        #
-        yposTmp <- (max(as.numeric(resProp)) + 0.05) + (j * 0.1)
-        rect(xleft = compTmp[1] - 0.5, xright = compTmp[2] - 0.5, ybottom = yposTmp, ytop = yposTmp, lwd = 2)
-        #
-        text((sum(compTmp) / 2) - 0.5, yposTmp + 0.05, pvalTmp, cex = 0.75)
-      }
+    m <- layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1), heights = c(1, 5))
+    xlimTmp <- c(0.5, length(resProp)+0.5)
+    #
+    par(mar = c(0, 8, 3, 0),bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+    ylimTmp1 <- ifelse(!is.null(comparisons), length(comparisons), 0)
+    plot(1,ylimTmp1, xlim=xlimTmp, ylim=c(0,ylimTmp1),xaxt = "n",type="n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
+    if(!is.null(comparisons)){
+      addStats(comparisons, plotType='boxplot',resOut, colOut)
     }
+    par(mar = c(8, 8, 0, 0), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
+    plot(1,max(ylimTmp2_1,ylimTmp2_2), xlim=xlimTmp, ylim=ylimTmp, xaxt = "n",type="n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
+    xpos <- seq_along(resProp)
+    bar_width <- 1
+    for (i in xpos) {
+      rect(xleft = xpos[i] - bar_width / 2,xright = xpos[i] + bar_width / 2,ybottom = 0,ytop = resProp[i],col = colOut[i],border = NA)
+      resPropTmp <- resProp[[i]]*100
+      resPropTmp <- ifelse(resPropTmp > -1 & resPropTmp < 1, round(resPropTmp, 2), round(resPropTmp, 0))
+      text(i, 0.05, paste(resPropTmp,'%', sep=' '), font = 2, cex=1.3)
+    }
+    axis(side = 2, font = 2, las = 2, lwd = 2)#), at = seq(0, ylimTmp[2], 0.2), labels = seq(0, 1, 0.2))
+    text(x = xpos, y = par("usr")[3] - 0.05 * diff(par("usr")[3:4]),labels = names(resOut), xpd = TRUE, cex = 0.9, srt = 45, adj = 1.1)
+    mtext(side = 2, line = 5, paste("proportion of uORFs in \n", KozakContext, "Kozak context", sep = ""), col = "black", font = 2, cex = 1.7, at = mean(ylimTmp))
+    
     dev.off()
   }
   uORFFinal[[paste('uORFs',startCodon,KozakContext,sep='_')]] <- uorfOut
