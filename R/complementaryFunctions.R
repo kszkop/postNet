@@ -386,7 +386,7 @@ adjust_ylim <- function(lowerLimit, upperLimit) {
   }
   
   #
-  if (abs(lowerLimit) < abs(upperLimit)) {
+  if (abs(lowerLimit) > abs(upperLimit)) {
     #
     return(c(lowerLimit, 0))
   } else {
@@ -412,7 +412,7 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
     dataTmp <- as.numeric(unlist(resOut))
     ylimTmp2_1 <- roundNice(quantile(dataTmp,0.0015), direction='down')
     ylimTmp2_2 <- roundNice(quantile(dataTmp,0.9975), direction='up')
-    ylimTmp <- adjust_ylim(ylimTmp2_1,ylimTmp2_2)
+    ylimTmp <- as.numeric(adjust_ylim(ylimTmp2_1,ylimTmp2_2))
     
     par(mar = c(8, 8, 0, 0), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
     plot(1,max(ylimTmp2_1,ylimTmp2_2), xlim=xlimTmp, ylim=ylimTmp, xaxt = "n",type="n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
