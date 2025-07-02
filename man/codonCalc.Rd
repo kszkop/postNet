@@ -88,10 +88,13 @@ all indicated comparisons between different sets of genes will be performed and 
    species = "human"
  )
  
-# Calculate and plot ecdfs of GAA codons counts, and compare between gene sets of interest
- GAAcounts  <- codonCalc(ptn = ptn,
+# Calculate and plot ecdfs of codons counts, and compare between gene sets of interest
+
+ codons <- list(Up = c('GAA','GAT), Down = c('GAG','CAG'))
+
+ codonCounts  <- codonCalc(ptn = ptn,
                           analysis='codon', 
-                          featsel= 'GAA',
+                          featsel= codons,
                           unit='count', 
                           comparisons = list(c(1,2)),
                           plotType = 'ecdf')
