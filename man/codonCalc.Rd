@@ -3,7 +3,9 @@
 \title{Calculate and visualize codon counts and/or frequency
 }
 
-\description{
+\description{The \code{codonCalc} function calculates the number or frequency of selected codons or amino acids for each gene.
+In addition, codon or amino acid content for gene sets of interest can be compared against background, or other genes sets. 
+Several options are available for plotting the comparisons.
 }
 
 \usage{
@@ -39,7 +41,7 @@ codonCalc(ptn,
   \code{NULL}.
   }
   \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the 
-  values for the selected \code{analysis} and \code{unit} will be retruned, and statistical 
+  values for the selected \code{analysis} and \code{unit} will be returned, and statistical 
   comparisons between gene sets will not be performed. The default is \code{TRUE}.
   }
   \item{plotType}{If \code{plotOut} is \code{TRUE}, indicate the type of output plot to generate. Options are,
@@ -52,7 +54,8 @@ codonCalc(ptn,
 \details{
 }
 
-\value{
+\value{Number or Frequency of selected codons is calculated for each gene. If plotOut is TRUE, all indicated 
+comparisons between different sets of genes are performed and plotted. 
 }
 
 \references{
