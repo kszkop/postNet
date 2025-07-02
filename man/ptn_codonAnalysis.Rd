@@ -1,3 +1,4 @@
+\docType{methods}
 \name{ptn_codonAnalysis}
 \alias{ptn_codonAnalysis,postNetData-method}
 \title{Accessor for the "codonAnalysis" slot of a \code{postNetData} object
@@ -15,7 +16,7 @@ ptn_codonAnalysis(x)
 }
 }
 
-\value{The results returned by the \code{codonUsage} function are compiled into an S4 object of class \code{postNetCodons} and stored in the "codons" slot of the \code{postNetData} object. The "codonAnalysis" slot provides a summary of calculations for all codons for each gene, and stores an S4 object of class \code{postNetCodonsAll} with the following slots: geneID, codon, AA, count, frequency, AACountPerGene, and relative_frequency. Here, frequency corresponds to the number of codons relative to all codons in the gene, and relative_frequency corresponds to the number of codons relative to all synonymous codons in the gene.
+\value{The value returned by the \code{ptn_codonAnalysis} function is a data.frame with the following columns: geneID, codon, AA, count, frequency, AACountPerGene, and relative_frequency. Here, frequency corresponds to the number of codons relative to all codons in the gene, and relative_frequency corresponds to the number of codons relative to all synonymous codons in the gene.
 }
 
 \seealso{
@@ -24,6 +25,7 @@ ptn_codonAnalysis(x)
 }
 
 \examples{
+# load example data:
  data(postNetExample)
     
 # Initialize the postNetData object with custom gene lists:
@@ -63,6 +65,6 @@ ptn_codonAnalysis(x)
           
 # Get the results of the codon usage analysis
  
- codonResults <- ptn_codonSelection(ptn, comparison = 1)
+ codonResults <- ptn_codonAnalysis(ptn)
  str(codonResults)
 }

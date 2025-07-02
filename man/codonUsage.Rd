@@ -130,7 +130,8 @@ dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: 
 \link[postNet]{ptn_codonSelection} \cr
 }
 
-\examples{# load example data:
+\examples{
+# load example data:
  data(postNetExample)
     
 # Initialize the postNetData object with custom gene lists:
