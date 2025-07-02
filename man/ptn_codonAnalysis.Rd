@@ -25,7 +25,7 @@ A Capitalized Title (ideally limited to 65 characters)
 }
 
 \examples{
-# load example data:
+ # load example data:
   data(postNetExample)
   
   # Initialize the postNetData object with custom gene lists:

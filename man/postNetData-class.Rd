@@ -2,7 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{postNetData-class}
-\alias{ptn_codonAnalysis,postNetData-method}
 \alias{ptn_codonSelection,postNetData-method}
 \alias{ptn_features,postNetData-method}
 \alias{ptn_motifgeneList,postNetData-method}
