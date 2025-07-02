@@ -1,6 +1,6 @@
 \name{codonCalc}
 \alias{codonCalc}
-\title{Calculate and visualize codon counts and/or frequency
+\title{Calculate and visualize codon or amino acid counts and/or frequency
 }
 
 \description{The \code{codonCalc} function calculates the number or frequency of selected codons or amino acids for each gene.
@@ -51,11 +51,12 @@ codonCalc(ptn,
   }
 }
 
-\details{
+\details{The number or frequency of selected codons or amino acids is calculated for each gene, and a two-sided Wilcoxon Rank Sum test 
+is performed to identify significant differences between gene sets of interest, or against background. If \code{plotOut} is \code{TRUE},
+all indicated comparisons between different sets of genes will be performed and plotted.  
 }
 
-\value{Number or Frequency of selected codons is calculated for each gene. If plotOut is TRUE, all indicated 
-comparisons between different sets of genes are performed and plotted. 
+\value{A named list of vectors for selected codons or amino acids with the calculated number of counts or frequency for each gene. The elements in each vector are named with the gene ID. The \code{codonCalc} function can also return PDF files of output plots with statistical comparisons between gene sets of interest.
 }
 
 \references{
@@ -63,8 +64,37 @@ comparisons between different sets of genes are performed and plotted.
 
 \seealso{
 \link[postNet]{codonUsage} \cr
-\link[postNet]{ptn_codonSelection}
+\link[postNet]{ptn_codonSelection} \cr
+\link[postNet]{ptn_codonAnalysis} 
 }
 
 \examples{
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+ 
+# Calculate and plot ecdfs of GAA codons counts, and compare between gene sets of interest
+ GAAcounts  <- codonCalc(ptn = ptn,
+                          analysis='codon', 
+                          featsel= 'GAA',
+                          unit='count', 
+                          comparisons = list(c(1,2)),
+                          plotType = 'ecdf')
+                      
+ str(GAAcounts)
 }
