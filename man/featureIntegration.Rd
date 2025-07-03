@@ -43,10 +43,14 @@ featureIntegration(ptn,
 }
   \item{NetModelSel}{Values for the variance explained for the network plot. The default is "Omnibus". Aternatively "Adjusted" or "Univariate" can be provided. 
 }
-  \item{comparisons}{Relevant for linear model only (analysis_type="lm") and if regulated genes are only considered (regOnly=TRUE). Indicate which 
-  regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) 
-  would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are 
-  provided, geneList is appended to the end.
+  \item{comparisons}{Relevant for linear model only (analysis_type="lm") and if regulated genes are only considered (regOnly=TRUE). Indicate which regulation/geneList pairs should be compared. It should be provided as a list of vectors with pairs of indexes in regulation/geneList (for example list(c(0,2),c(2,4)) would indicate that the background (0) would be compared to the second and the second to the fourth mode of regulation/geneList. If both regulation and geneList are provided, geneList is appended to the end.
+  
+  A list of numeric vectors indicating which gene sets defined in the \code{regulation} or \code{geneList} slots
+  of the \code{postNetData} object should be used in pairwise comparisons. The numeric vectors should correspond to the indexes of
+  the gene sets, where 0 denotes the background. For example, \code{list(c(0,2),c(1,2))} indicates that the second gene set in
+  \code{regulation} or \code{geneList} will be compared to the background (0), and the first and second gene sets will be compared
+  to each other. The default is \code{NULL}.
+  
 }
   \item{pdfName}{Name of the output pdf files.
 }
