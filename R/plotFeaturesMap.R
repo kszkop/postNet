@@ -66,7 +66,7 @@ plotFeaturesMap <- function(ptn,
   }
   fmapRes <- umap::umap(featuresOut, n_components = 2)
   fmapRes <- fmapResOut <- as.data.frame(fmapRes$layout)
-  colnames(fmapRes) <- colnames(fmapResOut) <- c("UMAP1", "UMAP2")
+  colnames(fmapRes) <- colnames(fmapResOut) <- c("fUMAP1", "fUMAP2")
   fmapRes$Gene <- rownames(featuresOut)
 
   # Plot every feature together with eff. Prepare effect plot first
