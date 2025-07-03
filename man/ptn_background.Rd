@@ -14,17 +14,21 @@
   }
 }
 
-\value{A character vector containing the gene IDs for the set of genes used a background.
+\value{A character vector containing the gene IDs for the set of genes used as background.
+}
+
+\seealso{
+\code{\link[postNet]{postNetStart}} for details on background gene sets.
 }
 
 \examples{
 
 # load and create example data:
- data("postNetData")
+ data(postNetExample)
 
- myGenes <- ptn_getExampleGeneList(ads)
- myBg <- ptn_getExampleBg(ads)
- myEffect <- ptn_getExampleEffect(ads)
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
 
 # Initialize the postNetData object with custom gene lists:
  ptn <- postNetStart(
@@ -33,7 +37,6 @@
    customBg = myBg,
    effectMeasure = myEffect,
    selection = "random",
-   #setSeed = 123
    source = "load", 
    species = "human"
  )
@@ -42,8 +45,4 @@
   myBg <- ptn_background(ptn)
   str(myBg)
 
-}
-
-\seealso{
-\code{\link[postNet]{postNetStart}} for details on background gene sets.
 }
