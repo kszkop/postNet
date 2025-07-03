@@ -1,6 +1,6 @@
 \name{rfPred}
 \alias{rfPred}
-\title{
+\title{Predictions
 }
 
 \description{
