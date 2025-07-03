@@ -22,9 +22,9 @@ featureIntegration(ptn,
 }
 
 \arguments{
-  \item{ptn}{
+  \item{ptn}{A \linkS4class{postNetData} object.
 }
-  \item{features}{Named list of features. Each entry in the list is a vector with "quantified" feature at each step of the analysis.
+  \item{features}{Named list of vectors corresponding to features that will be included in modelling. Each vector element with "quantified" feature at each step of the analysis.
 }
   \item{lmfeatGroup}{
 }

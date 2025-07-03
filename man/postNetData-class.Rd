@@ -2,10 +2,6 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{postNetData-class}
-\alias{ptn_features,postNetData-method}
-\alias{ptn_motifgeneList,postNetData-method}
-\alias{ptn_motifSelection,postNetData-method}
-\alias{ptn_networkGraph,postNetData-method}
 
 \title{Class \code{"postNetData"}}
 \description{
