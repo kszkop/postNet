@@ -1,6 +1,6 @@
 \name{plotFeaturesMap}
 \alias{plotFeaturesMap}
-\title{
+\title{UMAPs
 }
 
 \description{
