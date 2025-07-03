@@ -19,17 +19,54 @@ ptn_codonSelection(x, comparison)
   }
 }
 
-\details{
-}
-
-\value{
-}
-
-\references{
+\value{The value returned is a named list of the selected codons or AAs that were signficantly enriched or depleted (according to the thresholds selected in the \link[postNet]{codonUsage} function) in the specified comparisons. This list can be used as input for the \link[postNet]{codonCalc} function. 
 }
 
 \seealso{
+\link[postNet]{codonUsage} \cr
+\link[postNet]{codonCalc}
 }
 
 \examples{
+# load example data:
+ data(postNetExample)
+    
+# Initialize the postNetData object with custom gene lists:
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+ 
+# Run codon usage analysis of single codons
+ ptn <- codonUsage(ptn = ptn, 
+          annotType = 'ptnCDS', 
+          sourceSeq = "load", 
+          analysis = 'codon', 
+          codonN = 1, 
+          pAdj = 0.01, 
+          rem5 = TRUE, 
+          plotHeatmap = FALSE, 
+          thresOddsUp = 0.3, 
+          thresFreqUp = 0.3, 
+          thresOddsDown = 0.3, 
+          thresFreqDown = 0.3, 
+          subregion = NULL, 
+          subregionSel = NULL, 
+          comparisons = list(c(1,2)), 
+          plotType_index = "violin", 
+          pdfName = 'codons')
+          
+# Select codons of interest that were significantly enriched or depleted with high frequency, and the highest and lowest Odds ratios
+ 
+ codons <- ptn_codonSelection(ptn, comparison = 1)
 }

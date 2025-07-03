@@ -1,11 +1,10 @@
 \docType{methods}
 \name{ptn_codonAnalysis}
 \alias{ptn_codonAnalysis,postNetData-method}
-\title{
-A Capitalized Title (ideally limited to 65 characters)
+\title{Accessor for the "codonAnalysis" slot of a \code{postNetData} object
 }
 
-\description{
+\description{Retrieve the "codonAnalysis" slot from a \code{postNetData} object, which holds the results of of the codon usage analysis produced using the \link[postNet]{codonUsage} function.
 }
 
 \usage{
@@ -13,15 +12,16 @@ A Capitalized Title (ideally limited to 65 characters)
 }
 
 \arguments{
-  \item{x}{
+  \item{x}{A \code{postNetData} object.
 }
 }
 
-\value{
-
+\value{The value returned by the \code{ptn_codonAnalysis} function is a data.frame with the following columns: geneID, codon, AA, count, frequency, AACountPerGene, and relative_frequency. Here, frequency corresponds to the number of codons relative to all codons in the gene, and relative_frequency corresponds to the number of codons relative to all synonymous codons in the gene.
 }
 
-\seealso{
+\seealso{ 
+\link[postNet]{codonUsage} \cr
+\link[postNet]{ptn_codonSelection}
 }
 
 \examples{
