@@ -30,7 +30,7 @@ featureIntegration(ptn,
 }
   \item{lmfeatGroupColour}{If \code{analysis_type = "lm"}, provide an optional character vector specifying colours for the different groups defined with \code{lmfeatGroup} that will be used in the network plot. For example, \code{c("red", "red", "blue", "green", "green")}. Colour vectors must be the same length as \code{lmfeatGroup}, and specify one colour per group. Default is \code{NULL}. 
 }
-  \item{analysis_type}{Method for the analysis. Choose "lm" for stepwise linear model or "rf" random forest based analysis
+  \item{analysis_type}{A string specifying the method for the analysis. The options are \code{"lm"} to perform stepwise linear regression modelling, or \code{"rf"} to perform a random forest-based analysis. 
 }
   \item{regOnly}{Logical, whether only regulated genes should be considered for the analysis or all expressed. The default is TRUE. 
 }
