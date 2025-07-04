@@ -45,7 +45,7 @@ contentMotifs(ptn,
   }
   \item{comparisons}{A list of numeric vectors indicating which gene sets defined in the \code{regulation} or \code{geneList} slots of the \code{postNetData} object should be used in pairwise comparisons. The numeric vectors should correspond to the indices of the gene sets, where 0 denotes the background. For example, \code{list(c(0,2),c(1,2))} indicates that the second gene set in \code{regulation} or \code{geneList} will be compared to the background (0), and the first and second gene sets will be compared to each other. The default is \code{NULL}.
   }
-  \item{pdfName}{Name to be appended to output PDF files. Default is \code{NULL}.
+  \item{pdfName}{Name to be appended to output PDF files. The default is \code{NULL}.
   }
   \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the values specified with \code{unitOut} will be returned, and statistical comparisons between gene sets will not be performed. Note that plots will only be generated if \code{unitOut = "number"}. The default is \code{TRUE}. 
   }
