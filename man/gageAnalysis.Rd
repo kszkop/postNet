@@ -2,7 +2,7 @@
 \alias{gageAnalysis}
 \title{Perform GAGE analysis with a \code{postNetData} object 
 }
-\description{The \code{gageAnalysis} function implements the \link[gage]{gage} package to perform Generally Applicable Gene-set/Pathway Analysis (GAGE) using the regulatory effect measurement contained in a \code{postNetData} object. These values are specified by the \code{regulationGen} or \code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
+\description{The \code{gageAnalysis} function implements the \link[gage]{gage} package to perform Generally Applicable Gene-set Enrichement (GAGE) analysis using the regulatory effect measurement contained in a \code{postNetData} object. These values are specified by the \code{regulationGen} or \code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
 }
 
 \usage{
@@ -56,7 +56,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 
 \seealso{
 \link[gage]{gage} \cr
-\link[postNet]{ptn_GAGE,postNetData-method} \cr 
+\link[postNet]{ptn_GAGE} \cr 
 \link[postNet]{slopeFilt} 
 }
 
