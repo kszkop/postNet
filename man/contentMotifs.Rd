@@ -68,8 +68,8 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
 }
 
 \seealso{
-\link[pqsfinder]{pqsfinder}
-\link[memes]{runFimo}
+\link[pqsfinder]{pqsfinder} \cr
+\link[memes]{runFimo} \cr
 \link[postNet]{motifAnalysis}
 }
 
