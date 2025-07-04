@@ -34,7 +34,7 @@ values for the selected \code{analysis} and \code{unit} will be returned, and st
   }
   \item{plotType}{If \code{plotOut} is \code{TRUE}, indicate the type of output plot to generate. Options are \code{"boxplot"}, \code{"violin"}, or \code{"ecdf"}. The default is \code{"ecdf"}. 
   }
-  \item{pdfName}{Name to be appended to output PDF files.
+  \item{pdfName}{Name to be appended to output PDF files. The default is \code{NULL}.
   }
 }
 
