@@ -19,7 +19,7 @@ contentAnalysis(ptn,
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
   \item{contentIn}{A character vector with desired nucleotide content to be quantified. These can be any selection or combination of A, T, G, or C. For example \code{c('GC')}, or \code{c('G', 'A')}. Optionally, when \code{region} is \code{"CDS"}, nucleotide content at specific codon positions can also be quantified. For example, \code{c('GC3')} would calculate the proportion (percentage) of GC content in the third codon position, and \code{c('A12')} would calculate the percentage of A content in the first and second codon positions. Note that this option will only return values and plots when \code{region} is \code{"CDS"}. 
   }
@@ -29,7 +29,7 @@ contentAnalysis(ptn,
   }
   \item{subregionSel}{If a value is provided for \code{subregion}, indicate whether the subregion should be selected (limiting the analysis to this region) or excluded by specifying either \code{"select"} or \code{"exclude"}. The default is \code{NULL}.
   }
-  \item{comparisons}{A list of numeric vectors indicating which gene sets in \code{regulation} or \code{geneList} should be used in pairwise comparisons. The numeric vectors should correspond to the indices of the gene sets, where 0 denotes the background. For example, \code{list(c(0,2),c(1,2))} indicates that the second gene set in \code{regulation} or \code{geneList} will be compared to the background (0), and the first and second gene sets will be compared to each other. The default is \code{NULL}.
+  \item{comparisons}{A list of numeric vectors indicating which gene sets defined in the \code{regulation} or \code{geneList} slots of the \code{postNetData} object should be used in pairwise comparisons. The numeric vectors should correspond to the indices of the gene sets, where 0 denotes the background. For example, \code{list(c(0,2),c(1,2))} indicates that the second gene set in \code{regulation} or \code{geneList} will be compared to the background (0), and the first and second gene sets will be compared to each other. The default is \code{NULL}.
   }
   \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the nucleotide content for the sequence regions of interest will be returned, and statistical comparisons between gene sets will not be performed. The default is \code{TRUE}. 
   }
