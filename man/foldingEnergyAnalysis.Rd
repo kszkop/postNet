@@ -36,7 +36,7 @@ foldingEnergyAnalysis(ptn,
   sequence regions (e.g. 5'UTR and 3'UTR) must be provided separately.
   }
   \item{residFE}{Logical indicating if the folding energies should be corrected for the length of the
-  sequences. If \code{TRUE}, the values returned are the residuals from the linear model: FE ~ log2(length).
+  sequences. If \code{TRUE}, the values returned are the residuals from the linear model: FE ~ log2(sequence region length).
   See details below for usage recommendations. The default is \code{FALSE}.
   }
   \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"},

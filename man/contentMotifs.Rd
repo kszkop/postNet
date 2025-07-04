@@ -27,7 +27,7 @@ contentMotifs(ptn,
   }
   \item{motifsIn}{A character vector specifying the motif sequences to be detected and quantified. Ambiguities can be specified using IUPAC codes or [ ] annotations. Optionally, g-quadruplexes can be specified as "G4".
   }
-  \item{seqType}{A string specifying the type of sequence being provided to search for motifs. The options are, \code{"dna"}, \code{"rna"}, or \code{"protein"}. The default is \code{"dna"}.
+  \item{seqType}{A string specifying the type of sequence being provided to search for motifs. The options are \code{"dna"}, \code{"rna"}, or \code{"protein"}. The default is \code{"dna"}.
   }
   \item{dist}{A numeric value specifying the minimal nucleotide distance between motifs. The default is 1.
   }
@@ -35,11 +35,11 @@ contentMotifs(ptn,
   }
   \item{unitOut}{A string to specify whether the output should be the \code{"number"} of motifs detected per gene (for a given sequence region), or the \code{"position"} of the detected motifs in the mRNA sequence (start and end). Note that only the output with \code{"number"} can be used in the downstream analysis with the \link[postNet]{featureIntegration} function. The default is \code{"number"}.
   }
-  \item{resid}{Logical indicating if the quantification of motifs should be corrected for the length of the sequences. If \code{TRUE}, the values returned are the residuals from the linear model: # of motifs ~ log2(length).Note that this option can only be \code{TRUE} when \code{unitOut = "number"}. See details below for usage recommendations. The default is \code{FALSE}.
+  \item{resid}{Logical indicating if the quantification of motifs should be corrected for the length of the sequences. If \code{TRUE}, the values returned are the residuals from the linear model: number of motifs ~ log2(sequence region length). Note that this option can only be \code{TRUE} when \code{unitOut = "number"}. See details below for usage recommendations. The default is \code{FALSE}.
   }
-  \item{region}{A character vector specifying the sequence region(s) of interest. This can be one or more of \code{"UTR5"}, \code{"UTR3"}, \code{"CDS"}.
+  \item{region}{A character vector specifying the sequence region(s) of interest. This can be one or more of \code{"UTR5"}, \code{"UTR3"}, or \code{"CDS"}.
   }
-  \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either select or exclude from the analysis. This is done by providing a numeric value indicating the number of nucleotides from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50}, would denote the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50}, would denote the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.
+  \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either select or exclude from the analysis. This is done by providing a numeric value indicating the number of nucleotides from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50} denotes the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50}, denotes the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.
   }
   \item{subregionSel}{If a value is provided for \code{subregion}, indicate whether the subregion should be selected (limiting the analysis to this region) or excluded by specifying either \code{"select"} or \code{"exclude"}. The default is \code{NULL}.
   }
@@ -53,13 +53,12 @@ contentMotifs(ptn,
 
 \details{A two-sided Wilcoxon Rank Sum test is performed to identify significant differences in motif content between gene sets of interest, or against the background gene set. 
 
-Note that the \code{contentMotifs} function uses a more strict method of sequence matching to count motifs than the MEME-Suite, and for this reason some motifs identified with \link[postNet]{motifAnalysis}, which implements STREME, may not be detected. Using a more stringent threshold with the \code{stremeThreshold} 
-parameter may remedy this. Alternatively, motifs identified with STREME can be counted using the \link[memes]{runFimo} tool provided with the MEME-Suite.
+Note that the \code{contentMotifs} function uses a more strict method of sequence matching to count motifs than the MEME-Suite, and for this reason some motifs identified with \link[postNet]{motifAnalysis}, which implements STREME, may have divergent quantifications between methods. Using a more stringent threshold with the \code{stremeThreshold} parameter may remedy this. Alternatively, motifs identified with STREME can be counted using the \link[memes]{runFimo} tool provided with the MEME-Suite.
 
-If the output motifs will be used in downstream analysis with \link[postNet]{featureIntegration}, consideration should be given to the \code{resid} argument. If the length of the sequence regions will be included in the \code{featureIntegration} model, it is not recommended to correct the motif content for the sequence length. However, if length will not be included in \code{featureIntegration}, the correction can be performed.
+If the output motifs will be used in downstream analysis with \link[postNet]{featureIntegration}, consider carefully whether to apply the \code{resid} correction. If the length of the sequence regions will be included in the \code{featureIntegration} model, it is not recommended to correct the motif content for the sequence length. However, if length will not be included in \code{featureIntegration}, the correction can be performed.
 }
 
-\value{If the \code{unitOut = "number"}, the output will be a named list of vectors with the number of motifs detected for each gene in each sequence region specified. This list can be used with the downstream \link[postNet]{featureIntegration} function. If the \code{unitOut = "position"}, the output will be a named list of lists with the start and end positions of each motif for each gene in each sequence region specified. These positions cannot be used in \link[postNet]{featureIntegration}. The \code{contentMotifs} function can also return PDF files of output plots with statistical comparisons between gene sets of interest when \code{unitOut = "number"}.
+\value{If \code{unitOut = "number"}, the output will be a named list of vectors with the number of motifs detected for each gene in each sequence region specified. This list can be used as input for the downstream \link[postNet]{featureIntegration} analysis. If the \code{unitOut = "position"}, the output will be a named list of lists with the start and end positions of each motif for each gene in each sequence region specified. These positions cannot be used in \link[postNet]{featureIntegration}. The \code{contentMotifs} function can also return PDF files of output plots with statistical comparisons between gene sets of interest when \code{unitOut = "number"}.
 }
 
 \references{
@@ -82,7 +81,7 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
 # Initialize the postNetData object with custom gene lists:
  translationUp <- postNetExample$geneList[[1]][1:100]
  translationDown <- postNetExample$geneList[[2]][1:100]
- myGenes <- list('translationUp' = translationUp, 'translationDown' = translationDown)
+ myGenes <- list(translationUp = translationUp, translationDown = translationDown)
  myBg <- postNetExample$background
  myEffect <- postNetExample$effect
 
@@ -104,12 +103,12 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
 # Detect and quantify a given motif within 5'UTRs, and compare between translationUp vs. translationDown genes
 
  UTR5_SGCSGCS_num <- contentMotifs(ptn = ptn, 
-                        motifsIn = 'SGCSGCS',
-                        region = c('UTR5'), 
+                        motifsIn = "SGCSGCS",
+                        region = c("UTR5"), 
                         comparisons = list(c(1,2)),
                         dist = 1,
                         unitOut = "number",
-                        pdfName = 'example',
+                        pdfName = "example",
                         plotOut = TRUE)
                       
  str(UTR5_SGCSGCS_num)
@@ -117,8 +116,8 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
  # Now find the positions of the motif in the 5'UTR
  
  UTR5_SGCSGCS_pos <- contentMotifs(ptn = ptn, 
-                        motifsIn = 'SGCSGCS',
-                        region = c('UTR5'), 
+                        motifsIn = "SGCSGCS",
+                        region = c("UTR5"), 
                         comparisons = list(c(1,2)),
                         dist = 1,
                         unitOut = "position")
@@ -135,19 +134,18 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
                      stremeThreshold = 0.05,
                      minwidth = 6,
                      memePath = "/meme/bin", 
-                     region = c('UTR3'))
+                     region = c("UTR3"))
 
-# Quantify the presence of these motifs in transcripts, and compare between translationUp vs. translationDown 
-# genes, adjusting for the length of the sequence.
+# Quantify the presence of these motifs in transcripts, and compare between translationUp vs. translationDown genes, adjusting for the length of the sequence.
  
  UTR3_denovo_motifs <- contentMotifs(ptn = ptn, 
-                        motifsIn = ptn_motifSelection(ptn, region = 'UTR3'),
-                        region = c('UTR3'), 
+                        motifsIn = ptn_motifSelection(ptn, region = "UTR3"),
+                        region = c("UTR3"), 
                         comparisons = list(c(1,2)),
                         dist = 1,
                         resid = TRUE,
                         unitOut = "number",
-                        pdfName = 'example',
+                        pdfName = "example",
                         plotOut = TRUE)
                       
  str(UTR3_denovo_motifs)
@@ -160,16 +158,15 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
 # genes.
  
  G4_UT5_CDS <- contentMotifs(ptn = ptn, 
-                        motifsIn = 'G4',
-                        region = c('CDS','UTR3'), 
+                        motifsIn = "G4",
+                        region = c("CDS", "UTR3"), 
                         comparisons = list(c(1,2)),
                         dist = 1,
                         resid = FALSE,
                         unitOut = "number",
-                        pdfName = 'example',
+                        pdfName = "example",
                         plotOut = TRUE)
                       
  str(G4_UT5_CDS)
  }
-
 }

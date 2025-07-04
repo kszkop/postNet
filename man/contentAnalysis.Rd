@@ -23,7 +23,7 @@ contentAnalysis(ptn,
   }
   \item{contentIn}{A character vector with desired nucleotide content to be quantified. These can be any selection or combination of A, T, G, or C. For example \code{c('GC')}, or \code{c('G', 'A')}. Optionally, when \code{region} is \code{"CDS"}, nucleotide content at specific codon positions can also be quantified. For example, \code{c('GC3')} would calculate the proportion (percentage) of GC content in the third codon position, and \code{c('A12')} would calculate the percentage of A content in the first and second codon positions. Note that this option will only return values and plots when \code{region} is \code{"CDS"}. 
   }
-  \item{region}{A character vector specifying the sequence region(s) of interest. This can be one or more of \code{"UTR5"}, \code{"UTR3"}, \code{"CDS"}.
+  \item{region}{A character vector specifying the sequence region(s) of interest. This can be one or more of \code{"UTR5"}, \code{"UTR3"}, or \code{"CDS"}.
   }
   \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either select or exclude from the analysis. This is done by providing a numeric value indicating the number of nucleotides from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50}, would denote the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50}, would denote the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.  
   }
