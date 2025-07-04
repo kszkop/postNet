@@ -72,7 +72,7 @@ values for the selected \code{analysis} and \code{unit} will be returned, and st
  
 # Run codon usage analysis
  ptn <- codonUsage(ptn = ptn, 
-          annotType = "ptnCDS"", 
+          annotType = "ptnCDS", 
           sourceSeq = "load", 
           analysis = "codon", 
           codonN = 1, 
