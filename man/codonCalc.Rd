@@ -3,7 +3,7 @@
 \title{Quantify and compare codon or amino acid usage across gene sets
 }
 
-\description{After running \code{codonUsage}, the \code{codonCalc} function can be used to calculate the number or frequency of selected codons or amino acids for each gene. These outputs can be used in the downstream \link[postNet]{featureIntegration} analysis. In addition, codon or amino acid content for gene sets of interest can be compared against background, or other gene sets. Several options are available for plotting the comparisons.
+\description{After running \code{codonUsage}, the \code{codonCalc} function can be used to calculate the number or frequency of selected codons or amino acids (AA) for each gene. These values can be used in the downstream \link[postNet]{featureIntegration} analysis. In addition, codon or amino acid content for gene sets of interest can be compared against background, or other gene sets. Several options are available for plotting the comparisons.
 }
 
 \usage{
@@ -20,9 +20,9 @@ codonCalc(ptn,
 \arguments{
   \item{ptn}{A \linkS4class{postNetData} object.
   }
-  \item{featsel}{A named list of vectors specifying one or more codons or amino acids to quantify and/or visualize. For example, for use in the downstream \link[postNet]{featureIntegration}, it is usually desirable to select those with high frequency, and the highest and lowest odds Ratios identified using the \link[postNet]{codonUsage} function. This list can be easily generated using the S4 method \link[postNet]{ptn_codonSelection}. See example below. 
+  \item{featsel}{A named list of vectors specifying one or more codons or amino acids to quantify and/or visualize. For example, for use in the downstream \link[postNet]{featureIntegration}, it is usually desirable to select those with high frequency, and the highest and lowest odds ratios identified using the \link[postNet]{codonUsage} function. This list can be easily generated using the S4 method \link[postNet]{ptn_codonSelection}. 
   }
-  \item{analysis}{A string specifying the type of the analysis to perform. The options are \code{"codon"}, or \code{"AA"} to assess amino acid usage. The default is \code{"codon"}. 
+  \item{analysis}{A string specifying whether to assess \code{"codon"}, or \code{"AA"} (amino acid) usage. The default is \code{"codon"}. 
   }
   \item{unit}{A string specifying the unit to quantify. The options are \code{"count"} or \code{"freq"} for frequency. The default is \code{"count"}.
   }
