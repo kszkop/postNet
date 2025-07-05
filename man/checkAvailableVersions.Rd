@@ -1,6 +1,10 @@
 \name{checkAvailableVersions}
 \alias{checkAvailableVersions}
-\title{Check the available RefSeq release versions for pre-prepared reference sequence annotations}
+\title{List the available RefSeq release versions for pre-prepared reference sequence annotations}
+
+\description{
+The \code{checkAvailableVersions} function lists the available NCBI RefSeq release versions for which reference sequence annotations are provided in the package.
+}
 
 \usage{
 checkAvailableVersions(species)
@@ -9,15 +13,12 @@ checkAvailableVersions(species)
 \arguments{
 \item{species}{A string specifying the species of interest. Currently, \code{"human"} and \code{"mouse"} are supported.}
 }
-\description{
-The \code{checkAvailableVersions} function retrieves available release versions of pre-prepared reference sequence annotations based on the NCBI RefSeq database.
-}
 
-\value{A character vector of available RefSeq release versions for the specified species. Selected versions can be specified using the \code{version} parameter of the \link[postNet]{postNetStart} function. 
+\value{A character vector of available RefSeq release versions for the specified species. The desired annotation version to be used in analysis can be specified using the \code{version} parameter of the \link[postNet]{postNetStart} function. 
 }
 
 \references{
-See \url{https://www.ncbi.nlm.nih.gov/refseq/} for RefSeq documentation.
+See the RefSeq documentation at \url{https://www.ncbi.nlm.nih.gov/refseq/}.
 }
 
 \seealso{
@@ -26,5 +27,7 @@ See \url{https://www.ncbi.nlm.nih.gov/refseq/} for RefSeq documentation.
 
 \examples{
 # List RefSeq release versions of available annotations in the package
-checkAvailableVersions(species = 'human')
+ checkAvailableVersions(species = "human")
+
+ checkAvailableVersions(species = "mouse")
 }
