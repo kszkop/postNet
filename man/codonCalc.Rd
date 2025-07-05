@@ -24,7 +24,7 @@ codonCalc(ptn,
   }
   \item{analysis}{A string specifying whether to assess \code{"codon"}, or \code{"AA"} (amino acid) usage. The default is \code{"codon"}. 
   }
-  \item{unit}{A string specifying the unit to quantify. The options are \code{"count"} or \code{"freq"} for frequency. The default is \code{"count"}.
+  \item{unit}{A string specifying the unit to quantify. The options are \code{"count"} or \code{"freq"} for frequency. Here, frequency corresponds to the number of codons relative to all codons in the gene. The default is \code{"count"}.
   }
   \item{comparisons}{A list of numeric vectors indicating which gene sets defined in the \code{regulation} or \code{geneList} slots of the \code{postNetData} object should be used in pairwise comparisons. The numeric vectors should correspond to the indices of the gene sets, where 0 denotes the background. For example, \code{list(c(0,2),c(1,2))} indicates that the second gene set in \code{regulation} or \code{geneList} will be compared to the background (0), and the first and second gene sets will be compared to each other. The default is \code{NULL}.
   }
