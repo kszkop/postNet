@@ -30,8 +30,7 @@ motifAnalysis(ptn,
   \item{seqType}{A string specifying the type of sequence being provided to search for motifs. The options are,
   \code{"dna"}, \code{"rna"}, or \code{"protein"}. The default is \code{"dna"}.
   }
-  \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"},
-  \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
+  \item{region}{A character vector specifying the sequence region(s) to be analyzed. This can be \code{"UTR5"}, \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
   }
   \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either
   select or exclude from the analysis. This is done by providing a numeric value indicating the number of

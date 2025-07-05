@@ -37,7 +37,7 @@ contentMotifs(ptn,
   }
   \item{resid}{Logical indicating if the quantification of motifs should be corrected for the length of the sequences. If \code{TRUE}, the values returned are the residuals from the linear model: number of motifs ~ log2(sequence region length). Note that this option can only be \code{TRUE} when \code{unitOut = "number"}. See details below for usage recommendations. The default is \code{FALSE}.
   }
-  \item{region}{A character vector specifying the sequence region(s) of interest. This can be one or more of \code{"UTR5"}, \code{"UTR3"}, or \code{"CDS"}.
+  \item{region}{A character vector specifying the sequence region(s) to be analyzed. This can be \code{"UTR5"}, \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
   }
   \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either select or exclude from the analysis. This is done by providing a numeric value indicating the number of nucleotides from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50} denotes the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50}, denotes the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.
   }

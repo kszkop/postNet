@@ -1,9 +1,9 @@
 \name{contentAnalysis}
 \alias{contentAnalysis}
-\title{Calculate the nucleotide content of mRNA sequence regions and compare between gene sets 
+\title{Calculate nucleotide content of mRNA sequence regions and compare between gene sets 
 }
 
-\description{The \code{contentAnalysis} function calculates the percentage of nucleotide content of mRNA sequences (5'UTR, 3'UTR, and CDS) for each gene. In addition, the nucleotide content of different sequence regions for can be compared between gene sets of interest, or against background. Several options are available for plotting the comparisons.
+\description{The \code{contentAnalysis} function calculates the nucleotide content (as a percentage) of mRNA sequences (5'UTR, 3'UTR, and CDS) for each gene. Nucleotide content of different sequence regions can be compared between gene sets of interest, or against background. Several options are available for plotting the comparisons.
 }
 
 \usage{
@@ -21,9 +21,9 @@ contentAnalysis(ptn,
 \arguments{
   \item{ptn}{A \linkS4class{postNetData} object.
   }
-  \item{contentIn}{A character vector with desired nucleotide content to be quantified. These can be any selection or combination of A, T, G, or C. For example \code{c('GC')}, or \code{c('G', 'A')}. Optionally, when \code{region} is \code{"CDS"}, nucleotide content at specific codon positions can also be quantified. For example, \code{c('GC3')} would calculate the proportion (percentage) of GC content in the third codon position, and \code{c('A12')} would calculate the percentage of A content in the first and second codon positions. Note that this option will only return values and plots when \code{region} is \code{"CDS"}. 
+  \item{contentIn}{A character vector specifying one or more nucleotide(s) or nucleotide combinations to quantify. These can be any selection or combination of A, T, G, or C. For example \code{c("GC")}, or \code{c("G", "A")}. When \code{region} includes \code{"CDS"}, nucleotide content at specific codon positions can also be quantified. For example, \code{c("GC3")} calculates GC content in the third codon position, and \code{c("A12")} calculates the percentage of A content in the first and second codon positions. 
   }
-  \item{region}{A character vector specifying the sequence region(s) of interest. This can be one or more of \code{"UTR5"}, \code{"UTR3"}, or \code{"CDS"}.
+  \item{region}{A character vector specifying the sequence region(s) to be analyzed. This can be \code{"UTR5"}, \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
   }
   \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either select or exclude from the analysis. This is done by providing a numeric value indicating the number of nucleotides from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50}, would denote the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50}, would denote the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.  
   }

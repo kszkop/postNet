@@ -28,7 +28,7 @@ foldingEnergyAnalysis(ptn,
   }
   \item{residFE}{Logical indicating if the folding energies should be corrected for the length of the sequences. If \code{TRUE}, the values returned are the residuals from the linear model: FE ~ log2(sequence region length). See details below for usage recommendations. The default is \code{FALSE}.
   }
-  \item{region}{A character vector specifying the sequence region(s) of interest. This can be \code{"UTR5"}, \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
+  \item{region}{A character vector specifying the sequence region(s) to be analyzed. This can be \code{"UTR5"}, \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
   }
   \item{comparisons}{A list of numeric vectors specifying pairwise comparisons between gene sets defined in the \code{regulation} or \code{geneList} slots of the \code{postNetData} object. Use 0 to denote the background set. For example, \code{list(c(0,2), c(1,2))} compares gene set 2 to the background and gene set 1 to gene set 2. The default is \code{NULL}.
   }
