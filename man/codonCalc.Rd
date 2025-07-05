@@ -1,6 +1,6 @@
 \name{codonCalc}
 \alias{codonCalc}
-\title{Calculate and visualize codon or amino acid counts and/or frequency
+\title{Quantify and compare codon or amino acid usage across gene sets
 }
 
 \description{After running \code{codonUsage}, the \code{codonCalc} function can be used to calculate the number or frequency of selected codons or amino acids for each gene. These outputs can be used in the downstream \link[postNet]{featureIntegration} analysis. In addition, codon or amino acid content for gene sets of interest can be compared against background, or other gene sets. Several options are available for plotting the comparisons.
