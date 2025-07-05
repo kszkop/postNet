@@ -3,8 +3,7 @@
 \title{Compare mRNA folding energy between gene sets  
 }
 
-\description{The \code{foldingEnergyAnalysis} function compares folding energies for each mRNA sequence region. Pre-calculated folding energies for reference sequences are available for certain RefSeq releases (for human and mouse). These values were calculated using the mfold algorithm. Alternatively, user-supplied values can be used in analyses. In addition, folding energies for gene sets of interest can be compared against background, or other gene sets. 
-Several options are available for plotting the comparisons. 
+\description{The \code{foldingEnergyAnalysis} function compares folding energies for each mRNA sequence region. Pre-calculated folding energies for reference sequences are available for certain RefSeq releases (for human and mouse). These values were calculated using the mfold algorithm. Alternatively, user-supplied values can be used in analyses. In addition, folding energies for gene sets of interest can be compared against background, or other gene sets. Several options are available for plotting the comparisons. 
 }
 
 \usage{

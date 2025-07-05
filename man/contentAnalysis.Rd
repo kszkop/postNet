@@ -25,7 +25,7 @@ contentAnalysis(ptn,
   }
   \item{region}{A character vector specifying the sequence region(s) to be analyzed. This can be \code{"UTR5"}, \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
   }
-  \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either select or exclude from the analysis. This is done by providing a numeric value indicating the number of nucleotides from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50}, would denote the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50}, would denote the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.  
+  \item{subregion}{Optionally, specify a more specific subregion of the sequences to either select or exclude from the analysis. Provide an integer indicating the number of nucleotides to include or exclude from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50}, denotes the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50}, denotes the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.  
   }
   \item{subregionSel}{If a value is provided for \code{subregion}, indicate whether the subregion should be selected (limiting the analysis to this region) or excluded by specifying either \code{"select"} or \code{"exclude"}. The default is \code{NULL}.
   }
@@ -39,7 +39,7 @@ contentAnalysis(ptn,
   }
 }
 
-\details{A two-sided Wilcoxon Rank Sum test is performed to identify significant differences in mRNA sequence region nucleotide content between gene sets of interest, and/or against the background gene set.
+\details{When \code{plotOut = TRUE}, a two-sided Wilcoxon Rank Sum test is performed to identify significant differences in mRNA sequence region nucleotide content between gene sets of interest, and/or against the background gene set.
 }
 
 \value{A named list of vectors for selected mRNA sequence regions with the calculated nucleotide content for each gene. This list can be used as input for the downstream \link[postNet]{featureIntegration} analysis. The elements in each vector are named with the gene ID. The \code{contentAnalysis} function can also return PDF files of output plots with statistical comparisons between gene sets of interest.
