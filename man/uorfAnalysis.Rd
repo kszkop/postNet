@@ -37,12 +37,7 @@ uorfAnalysis(ptn,
   that only the output with \code{"number"} can be used in the downstream analysis with the
   \link[postNet]{featureIntegration} function. The default is \code{"number"}.
   }
-  \item{comparisons}{A list of numeric vectors indicating which gene sets in \code{regulation} or 
-  \code{geneList} should be used in pair-wise comparisons. The numeric vectors should correspond to the
-  indexes of the gene sets, where 0 denotes the background. For example, \code{list(c(0,2),c(1,2))} 
-  indicates that the second gene set in \code{regulation} or \code{geneList} will be compared to the
-  background (0), and the first and second gene sets will be compared to each other. The default is
-  \code{NULL}.
+  \item{comparisons}{A list of numeric vectors specifying pairwise comparisons between gene sets defined in the \code{regulation} or \code{geneList} slots of the \code{postNetData} object. Use 0 to denote the background set. For example, \code{list(c(0,2), c(1,2))} compares gene set 2 to the background and gene set 1 to gene set 2. The default is \code{NULL}.
   }
   \item{plotOut}{Logical indicating whether PDF files of plots are generated. If \code{FALSE}, only the 
   values specified with \code{unitOut} will be returned, and statistical comparisons between gene sets will not be
