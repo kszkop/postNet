@@ -1109,8 +1109,6 @@ normalizeLayout <- function(layout) {
   return(layout)
 }
 
-
-<<<<<<< HEAD
 colourAssign <- function(groups, colours = NULL) {
   #
   if (is.null(colours)) {
@@ -1127,9 +1125,6 @@ colourAssign <- function(groups, colours = NULL) {
 
 
 runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, coloursIn, lmfeatGroup, lmfeatGroupColour = NULL){
-=======
-runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, coloursIn, lmfeatGroup, lmfeatGroupColour) {
->>>>>>> 15c7b1170844d1e76dfc836b2cb76526172b0a48
   #
   fval <- list()
   pval <- list()
