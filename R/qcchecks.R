@@ -539,7 +539,7 @@ check_features <- function(features) {
   }
 }
 
-checklmfeatGroup <- function(lmfeatGroup, numfeatures) {
+check_lmfeatGroup <- function(lmfeatGroup, numfeatures) {
   if (!is.null(lmfeatGroup)) {
     #
     if (!is.vector(lmfeatGroup)) {
@@ -553,20 +553,22 @@ checklmfeatGroup <- function(lmfeatGroup, numfeatures) {
   }
 }
 
-checklmfeatGroupColour <- function(lmfeatGroupColour, lmfeatGroup) {
+
+check_lmfeatGroupColour <- function(lmfeatGroupColour, lmfeatGroup) {
+  # 
+  if (is.null(names(lmfeatGroupColour))) {
+    stop("lmfeatGroupColour has no names. It should be a named vector.")
+  }
+  
   #
-  if (!is.null(lmfeatGroupColour)) {
-    #
-    if (is.null(lmfeatGroup)) {
-      stop("Error: 'lmfeatGroup' cannot be NULL when 'lmfeatGroupColour' is provided.")
-    }
-    # 
-    unique_lmfeatGroup <- length(unique(lmfeatGroup))
-    
-    #
-    if (length(unique(lmfeatGroupColour)) != unique_lmfeatGroup) {
-      stop("Error: Length of 'lmfeatGroupColour' must match the number of unique values in 'lmfeatGroup'.")
-    }
+  if (!setequal(names(lmfeatGroupColour), unique(lmfeatGroup))) {
+    stop("Names in lmfeatGroupColour do not exactly match the unique categories names in lmfeatGroup.")
+  }
+  
+  #
+  is_hex_color <- grepl("^#([A-Fa-f0-9]{6})$", lmfeatGroupColour)
+  if (!all(is_hex_color)) {
+    stop("Some values are not valid hex color codes.")
   }
 }
 

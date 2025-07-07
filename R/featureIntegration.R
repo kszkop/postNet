@@ -68,11 +68,16 @@ featureIntegration <- function(ptn,
   if (analysis_type == 'lm'){
     #
     if(!is.null(lmfeatGroup)){
-      checklmfeatGroup(lmfeatGroup, ncol(dataTmp)-1)
+      check_lmfeatGroup(lmfeatGroup, ncol(dataTmp)-1)
       names(lmfeatGroup) <- colnames(dataTmp)[1:ncol(dataTmp)-1]
       
-      checklmfeatGroupColour(lmfeatGroupColour, lmfeatGroup)
-      names(lmfeatGroupColour) <- lmfeatGroup
+      if(is.null(lmfeatGroupColour)){
+        lmfeatGroupColourOut <- colourAssign(group = lmfeatGroup, colours = lmfeatGroupColour)
+      } else {
+        check_lmfeatGroupColour(lmfeatGroupColour, lmfeatGroup)
+        
+        lmfeatGroupColourOut <- colourAssign(group = lmfeatGroup, colours = lmfeatGroupColour)
+      }
     }
     #
     if (isTRUE(regOnly)){
@@ -90,7 +95,7 @@ featureIntegration <- function(ptn,
         listSel <- c(names(resOut[[compTmp[1]]]), names(resOut[[compTmp[2]]]))
         dataTmpSel <- dataTmp[row.names(dataTmp) %in% listSel, ]
         #
-        lmOut <- runLM(dataIn = dataTmpSel, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColour)
+        lmOut <- runLM(dataIn = dataTmpSel, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColourOut)
         fiOut@lm[[paste(names(resOut)[compTmp], collapse='_')]] <- lmOut
         
         bestSel <- names(lmOut@selectedFeatures)
@@ -115,7 +120,7 @@ featureIntegration <- function(ptn,
       #fiOut@comparisons <- 'allData'
       #
       coloursTmp <- c('salmon','skyblue')
-      lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel,  covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColour)
+      lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel,  covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColourOut)
       fiOut@lm[['allData']] <- lmOut
       #
       bestSel <- names(lmOut@selectedFeatures)

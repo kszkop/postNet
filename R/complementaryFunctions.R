@@ -1106,7 +1106,22 @@ normalizeLayout <- function(layout) {
 }
 
 
-runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, coloursIn, lmfeatGroup, lmfeatGroupColour){
+colourAssign <- function(groups, colours = NULL) {
+  #
+  if (is.null(colours)) {
+    groups_un <- unique(groups)
+    colours <- RColorBrewer::brewer.pal(length(groups_un), "Pastel1")
+    coloursMap <- setNames(colours, groups_un)
+  }
+  
+  #
+  colourAssigned <- coloursMap[as.character(groups)]
+  
+  return(colourAssigned)
+}
+
+
+runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, coloursIn, lmfeatGroup, lmfeatGroupColour = NULL){
   #
   fval <- list()
   pval <- list()
@@ -1614,11 +1629,11 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
     fMap$colVecColour <- colVec
   }
   if(!is_binary(colVec)){
-    colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = colVecColour)) +
+    colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = UMAP1, y = UMAP2, color = colVecColour)) +
       ggplot2::geom_point(size = 2) +
       ggplot2::scale_color_gradient2(low = "#4575b4", mid = "grey95", high = "#d73027", 
                                      midpoint = median(fMap$colVecColour, na.rm = TRUE)) +
-      ggplot2::labs(title = name,  x = "fUMAP 1", y = "fUMAP 2", color = name) +
+      ggplot2::labs(title = name,  x = "UMAP 1", y = "UMAP 2", color = name) +
       ggplot2::theme_minimal() +
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "none") 
@@ -1635,10 +1650,10 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name){
       ggplot2::theme(legend.key.height = ggplot2::unit(1.5, "cm"),legend.key.width = ggplot2::unit(0.75, "cm"))
   
   } else {
-    colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = factor(colVecColour))) +
+    colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = UMAP1, y = UMAP2, color = factor(colVecColour))) +
       ggplot2::geom_point(size = 2) +
       ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "#d73027")) +
-      ggplot2::labs(title =  name,  x = "fUMAP 1", y = "fUMAP 2", color = name) +
+      ggplot2::labs(title =  name,  x = "UMAP 1", y = "UMAP 2", color = name) +
       ggplot2::theme_minimal() +
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "none")
