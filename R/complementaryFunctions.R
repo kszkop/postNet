@@ -1631,23 +1631,12 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
   } else {
     fMap$colVecColour <- colVec
   }
-<<<<<<< HEAD
   if(!is_binary(colVec)){
     colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = UMAP1, y = UMAP2, color = colVecColour)) +
       ggplot2::geom_point(size = 2) +
       ggplot2::scale_color_gradient2(low = "#4575b4", mid = "grey95", high = "#d73027", 
                                      midpoint = median(fMap$colVecColour, na.rm = TRUE)) +
       ggplot2::labs(title = name,  x = "UMAP 1", y = "UMAP 2", color = name) +
-=======
-  if (!is_binary(colVec)) {
-    colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = fUMAP1, y = fUMAP2, color = colVecColour)) +
-      ggplot2::geom_point(size = 2) +
-      ggplot2::scale_color_gradient2(
-        low = "#4575b4", mid = "grey95", high = "#d73027",
-        midpoint = median(fMap$colVecColour, na.rm = TRUE)
-      ) +
-      ggplot2::labs(title = name, x = "fUMAP 1", y = "fUMAP 2", color = name) +
->>>>>>> 15c7b1170844d1e76dfc836b2cb76526172b0a48
       ggplot2::theme_minimal() +
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "none")
@@ -1668,11 +1657,7 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
     colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = UMAP1, y = UMAP2, color = factor(colVecColour))) +
       ggplot2::geom_point(size = 2) +
       ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "#d73027")) +
-<<<<<<< HEAD
       ggplot2::labs(title =  name,  x = "UMAP 1", y = "UMAP 2", color = name) +
-=======
-      ggplot2::labs(title = name, x = "fUMAP 1", y = "fUMAP 2", color = name) +
->>>>>>> 15c7b1170844d1e76dfc836b2cb76526172b0a48
       ggplot2::theme_minimal() +
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "none")
