@@ -47,6 +47,6 @@ Imports:
   httr (>= 1.4.7),
   rvest (>= 1.0.3),
   umap (>= 0.2.10.0),
-  clusterProfiler (>=4.14.6),
-  gage (>=2.56.0)
+  clusterProfiler (>= 4.14.6),
+  gage (>= 2.56.0)
 biocViews: GeneExpression, GeneRegulation, Network, Regression, RNASeq, Sequencing, RNA features
