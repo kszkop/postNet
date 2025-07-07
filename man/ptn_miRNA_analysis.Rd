@@ -4,8 +4,7 @@
 \title{Accessor for the "miRNA_analysis" slot of a \code{postNetData} object
 }
 
-\description{Retrieve the "miRNA_analysis" slot from a \code{postNetData} object, which holds the results of GAGE analysis identifying miRNA target enrichments in
-gene sets of interest created by the \link[postNet]{miRNAAnalysis} function.
+\description{Retrieve the "miRNA_analysis" slot from a \code{postNetData} object, which holds the results of GAGE analysis identifying miRNA target enrichments in gene sets of interest created by the \link[postNet]{miRNAAnalysis} function.
 }
 
 \usage{
@@ -24,10 +23,7 @@ gene sets of interest created by the \link[postNet]{miRNAAnalysis} function.
   }
 }
 
-\details{Note that note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear
-in the results table labelled "greater" can be interpretted as those miRNA that may be dwonregulated or otherwise not active in the experimental condition. Likewise, 
-enrichments in miRNA predicted to target genes that are downregulated that appear in the results table labelled "less" can be interpretted as those miRNA that may be
-upregulated or active in the experimental condition. 
+\details{Note that note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear in the results table labelled "greater" can be interpretted as those miRNA that may be dwonregulated or otherwise not active in the experimental condition. Likewise, enrichments in miRNA predicted to target genes that are downregulated that appear in the results table labelled "less" can be interpretted as those miRNA that may be upregulated or active in the experimental condition. 
 }
 
 \value{The value returned by the \code{ptn_miRNA_analysis} function is a data.frame with the following columns (see the \link[gage]{gage} package for full details):

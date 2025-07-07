@@ -15,8 +15,7 @@
   \item{x}{a \code{postNetData} object.
   }
 
-  \item{region}{The sequence region to be accessed. Can be either: \code{"UTR5"}, \code{"CDS"}, or
-  \code{"UTR3"}.
+  \item{region}{The sequence region to be accessed. Can be either: \code{"UTR5"}, \code{"CDS"}, or \code{"UTR3"}.
   }
 }
 
