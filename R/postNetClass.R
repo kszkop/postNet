@@ -157,12 +157,12 @@ setClassUnion("codonsOrNULL",members=c("postNetCodons", "NULL"))
 setClassUnion("miRNAOrNULL",members=c("postNetmiRNA", "NULL"))
 setClassUnion("GOOrNULL",members=c("postNetGO", "NULL"))
 setClassUnion("GAGEOrNULL",members=c("postNetGAGE", "NULL"))
-setClassUnion("FIOrNULL",members=c("postNetFeatureIntegration", "NULL"))
+#setClassUnion("FIOrNULL",members=c("postNetFeatureIntegration", "NULL"))
 
 
 setClass("postNetAnalysis",
          slots = c(
-           featureIntegration = "FIOrNULL",
+           featureIntegration = "listOrNULL",
            motifs  = "motifsOrNULL",
            codons = "codonsOrNULL",
            GO = "GOOrNULL",
