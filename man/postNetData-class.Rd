@@ -1,17 +1,18 @@
 \name{postNetData-class}
 \Rdversion{1.1}
 \docType{class}
-\alias{postNetData-class}
-
+\alias{postNetData,postNetData-class}
 \title{Class \code{"postNetData"}}
-\description{
+
+\description{The S4 \code{postNetData} class stores the core data structure used throughout the postNet analysis. It stores input gene sets and regulatory effect measurements, annotation and sequence information, quantified mRNA features, and the results from GSEA, GAGE, GO term, miRNA, codon, motif, and feature integration analyses. This object is created by the \code{\link[postNet]{postNetStart}} function and serves as the input/output container for most downstream functions.
 }
+
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("postNetData", ...)}.
 }
 \section{Slots}{
   \describe{
-    \item{\code{species}:}{Object of class \code{"characterOrNULL"} ~~ }
+    \item{\code{species}:}{Object of class \code{"characterOrNULL"}. Indicates the species of the sequence annotations and input gene sets, e.g., \code{"human"} or \code{"mouse"}.}
     \item{\code{version}:}{Object of class \code{"characterOrNULL"} ~~ }
     \item{\code{selection}:}{Object of class \code{"character"} ~~ }
     \item{\code{annot}:}{Object of class \code{"postNetAnnot"} ~~ }
@@ -49,10 +50,10 @@ Objects can be created by calls of the form \code{new("postNetData", ...)}.
 }
 
 \seealso{
-%%  ~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-%%  ~~or \code{\linkS4class{CLASSNAME}} for links to other classes ~~~
 }
+
 \examples{
 showClass("postNetData")
+
 }
 \keyword{classes}

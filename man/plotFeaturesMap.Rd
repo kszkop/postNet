@@ -1,13 +1,14 @@
 \name{plotFeaturesMap}
 \alias{plotFeaturesMap}
-\title{UMAPs
+\title{
+A Capitalized Title (ideally limited to 65 characters)
 }
 
 \description{
 }
 
 \usage{
-plotFeaturesMap(ptn, regOnly = TRUE, comparisons = NULL, featSel, scaled = TRUE, remExtreme = NULL, pdfName = NULL)
+plotFeaturesMap(ptn, regOnly = TRUE, comparisons = NULL, featSel, remBinary = TRUE, featCol = NULL, scaled = FALSE, remExtreme = NULL, pdfName = NULL)
 }
 
 \arguments{
@@ -18,6 +19,10 @@ plotFeaturesMap(ptn, regOnly = TRUE, comparisons = NULL, featSel, scaled = TRUE,
   \item{comparisons}{
 }
   \item{featSel}{
+}
+  \item{remBinary}{
+}
+  \item{featCol}{
 }
   \item{scaled}{
 }
@@ -41,3 +46,4 @@ plotFeaturesMap(ptn, regOnly = TRUE, comparisons = NULL, featSel, scaled = TRUE,
 
 \examples{
 }
+
