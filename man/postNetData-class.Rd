@@ -1,22 +1,31 @@
 \name{postNetData-class}
-\Rdversion{1.1}
 \docType{class}
 \alias{postNetData,postNetData-class}
-\title{Class \code{"postNetData"}}
 
-\description{The S4 \code{postNetData} class stores the core data structure used throughout the postNet analysis. It stores input gene sets and regulatory effect measurements, annotation and sequence information, quantified mRNA features, and the results from GSEA, GAGE, GO term, miRNA, codon, motif, and feature integration analyses. This object is created by the \code{\link[postNet]{postNetStart}} function and serves as the input/output container for most downstream functions.
+\title{S4 Class \code{postNetData}: Core data container for postNet analyses
+}
+
+\description{The \code{postNetData} class stores the core data structure used throughout the postNet analysis. It contains input gene lists, sequence annotations and source information, and results from codon, motif, GSEA, GAGE, Go term, and feature integration analyses. This object is created by the \code{\link[postNet]{postNetStart}} function and serves as the input/output container for most downstream functions.
 }
 
 \section{Objects from the Class}{
-Objects can be created by calls of the form \code{new("postNetData", ...)}.
+Objects of this class are typically created using the constructor function \code{\link[postNet]{postNetStart}}. Alternatively, they can be created manually using \code{new("postNetData", ...)}.
 }
+
 \section{Slots}{
   \describe{
-    \item{\code{species}:}{Object of class \code{"characterOrNULL"}. Indicates the species of the sequence annotations and input gene sets, e.g., \code{"human"} or \code{"mouse"}.}
-    \item{\code{version}:}{Object of class \code{"characterOrNULL"} ~~ }
-    \item{\code{selection}:}{Object of class \code{"character"} ~~ }
-    \item{\code{annot}:}{Object of class \code{"postNetAnnot"} ~~ }
-    \item{\code{dataIn}:}{Object of class \code{"postNetDataIn"} ~~ }
+    \item{\code{species}:}{Object of class \code{"characterOrNULL"} Specifies the species associated with the sequence annotations and input gene lists, e.g. \code{"human"}, \code{"mouse"}. Used to load species-specific reference sequences.
+ }
+    \item{\code{version}:}{Object of class \code{"characterOrNULL"} Version identifier for the RefSeq sequence annotations loaded.
+}
+    \item{\code{selection}:}{Object of class \code{"character"} Indicates the method used to select representative transcript isoforms, e.g. \code{"random"}, \code{"shortest"}, or \code{"longest"}.
+}
+    \item{\code{seed}:}{Object of class \code{"ANY"} Stores the integer used to set the seed for random sampling if \code{selection = "random"}
+}
+    \item{\code{annot}:}{Object of class \code{"postNetAnnot"} Stores the annotated sequences for each mRNA transcript region, \code{"UTR5"}, \code{"CDS"}, \code{"CCDS"}, and \code{"UTR3"}.
+}
+    \item{\code{dataIn}:}{Object of class \code{"postNetDataIn"} Contains the user-defined input gene lists of interest, background gene set, regulatory effect measurement, and selected colours for plotting.
+}
     \item{\code{features}:}{Object of class \code{"dataframeOrNULL"} ~~ }
     \item{\code{analysis}:}{Object of class \code{"postNetAnalysis"} ~~ }
   }
@@ -43,17 +52,22 @@ Objects can be created by calls of the form \code{new("postNetData", ...)}.
 	 }
 }
 \references{
+%%  ~~put references to the literature/web site here~~
 }
 \author{
+%%  ~~who you are~~
 }
 \note{
+%%  ~~further notes~~
 }
+
+%% ~Make other sections like Warning with \section{Warning }{....} ~
 
 \seealso{
+%%  ~~objects to See Also as \code{\link{~~fun~~}}, ~~~
+%%  ~~or \code{\linkS4class{CLASSNAME}} for links to other classes ~~~
 }
-
 \examples{
 showClass("postNetData")
-
 }
 \keyword{classes}
