@@ -22,11 +22,11 @@ plotFeaturesMap <- function(ptn,
          These can be obtained by running ptn_selectedFeatures function and providing ptn object, analysis_type (ie lm or rf) and comparison (it would be a consecutive number from the comparisons provided running featureIntegration)")
   }
   if(!is.null(featCol)){
-    if(!check_featSel(featCol, features = featuresIn)){
+    if(!check_featCol(featCol, features = featuresIn)){
       stop("Please provide character vector of features to be plotted. All of them must be already calculated, to check what these are run: colnames(ptn_features(ptn)) ")
     }
   }
-  featuresIn <- featuresIn[,colnames(featuresIn) %in% featSel]
+  featuresSel <- featuresIn[,colnames(featuresIn) %in% featSel]
 
   if (!check_logical(regOnly)) {
     stop("'regOnly' can only be TRUE or FALSE")
@@ -71,11 +71,13 @@ plotFeaturesMap <- function(ptn,
       compTmp <- comparisons[[1]]
     }
     listSel <- c(names(resOut[[compTmp[1]]]), names(resOut[[compTmp[2]]]))
-    featuresIn<- featuresIn[row.names(featuresIn) %in% listSel,]
+    featuresSel<- featuresSel[row.names(featuresSel) %in% listSel,]
   } 
   if(isTRUE(remBinary)){
-    binaryCols <- sapply(featuresIn, is_binary)
-    featuresCluster <- featuresIn[, !binaryCols, drop = FALSE]
+    binaryCols <- sapply(featuresSel, is_binary)
+    featuresCluster <- featuresSel[, !binaryCols, drop = FALSE]
+  } else {
+    featuresCluster <- featuresSel
   }
   if(isTRUE(scaled)){
     featuresCluster <- scale(na.omit(featuresCluster), center=T)

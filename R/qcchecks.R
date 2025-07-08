@@ -597,6 +597,14 @@ check_featSel <- function(featSel, features) {
   }
 }
 
+check_featCol <- function(featCol, features) {
+  if (all(featCol %in% colnames(features))) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+}
+
 check_predFeat <- function(predFeat) {
   is_list<- is.list(predFeat)
   has_rownames <- !is.null(rownames(predFeat)) && all(rownames(predFeat) != "")
