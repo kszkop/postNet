@@ -94,6 +94,8 @@ featureIntegration <- function(ptn,
         }
         listSel <- c(names(resOut[[compTmp[1]]]), names(resOut[[compTmp[2]]]))
         dataTmpSel <- dataTmp[row.names(dataTmp) %in% listSel, ]
+        
+        nameOut <- ifelse(is.null(pdfName), paste('lm', paste(names(resOut)[compTmp], collapse = '_'), sep='_'), paste(pdfName, 'lm', paste(names(resOut)[compTmp], collapse = '_'), sep='_'))
         #
         lmOut <- runLM(dataIn = dataTmpSel, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColourOut)
         compOut[[paste(names(resOut)[compTmp], collapse='_')]] <- lmOut
