@@ -141,16 +141,16 @@ setClass("postNetFeatureIntegration_rf",
 )
 
 
-setClassUnion("lmOrNULL",members=c("postNetFeatureIntegration_lm", "NULL"))
-setClassUnion("rfOrNULL",members=c("postNetFeatureIntegration_rf", "NULL"))
+#setClassUnion("lmOrNULL",members=c("postNetFeatureIntegration_lm", "NULL"))
+#setClassUnion("rfOrNULL",members=c("postNetFeatureIntegration_rf", "NULL"))
 
-setClass("postNetFeatureIntegration",
-         slots = c(
-           lm = "listOrNULL",
-           rf  = "listOrNULL",
-           featureMap = "ANY"
-         )
-)
+#setClass("postNetFeatureIntegration",
+#         slots = c(
+#           lm = "listOrNULL",
+#           rf  = "listOrNULL",
+#           featureMap = "ANY"
+#         )
+#)
 
 setClassUnion("motifsOrNULL",members=c("postNetMotifs", "NULL"))
 setClassUnion("codonsOrNULL",members=c("postNetCodons", "NULL"))

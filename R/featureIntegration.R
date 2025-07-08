@@ -59,10 +59,10 @@ featureIntegration <- function(ptn,
   #
   resOut <- resQuant(qvec = ptn_effect(ptn), ptn = ptn)
   #
-  fiOut <- new("postNetFeatureIntegration",
-               lm = NULL,
-               rf = NULL,
-               featureMap = NULL)
+  #fiOut <- new("postNetFeatureIntegration",
+  #             lm = NULL,
+  #             rf = NULL,
+  #             featureMap = NULL)
   
   ######
   if (analysis_type == 'lm'){
@@ -82,7 +82,7 @@ featureIntegration <- function(ptn,
     #
     if (isTRUE(regOnly)){
       #
-      #compOut <- character()
+      compOut <- list()
       for (i in 1:length(comparisons)) {
         coloursTmp <- ptn_colours(ptn)
         if (names(resOut)[1] == 'background') {
@@ -96,7 +96,9 @@ featureIntegration <- function(ptn,
         dataTmpSel <- dataTmp[row.names(dataTmp) %in% listSel, ]
         #
         lmOut <- runLM(dataIn = dataTmpSel, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColourOut)
-        fiOut@lm[[paste(names(resOut)[compTmp], collapse='_')]] <- lmOut
+        compOut[[paste(names(resOut)[compTmp], collapse='_')]] <- lmOut
+        
+        #fiOut@lm[[paste(names(resOut)[compTmp], collapse='_')]] <- lmOut
         
         bestSel <- names(lmOut@selectedFeatures)
         
@@ -115,13 +117,14 @@ featureIntegration <- function(ptn,
         }
         #compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
       }
-      #fiOut@comparisons <- compOut
+      #fiOut@lm <- compOut
     } else {
       #fiOut@comparisons <- 'allData'
       #
       coloursTmp <- c('salmon','skyblue')
       lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel,  covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColourOut)
-      fiOut@lm[['allData']] <- lmOut
+      #fiOut@lm[['allData']] <- lmOut
+      compOut <- lmOut
       #
       bestSel <- names(lmOut@selectedFeatures)
       
@@ -139,12 +142,13 @@ featureIntegration <- function(ptn,
         plotScatterInd(set1=set, set2=NULL, orgName=feat, coloursIn='grey75', nameOut=pdfName)
       }
     }
+    ptn@analysis@featureIntegration[['lm']] <- compOut
   } else if (analysis_type == "rf") {
     dataTmpReg <- dataTmp[, colnames(dataTmp) != "effM"]
     colnames(dataTmpReg) <- namesDf$originalNames[match(colnames(dataTmpReg), namesDf$newNames)]
     
     #
-    #compOut <- character()
+    compOut <- list()
     for (i in 1:length(comparisons)) {
       coloursTmp <- ptn_colours(ptn)
       if (names(resOut)[1] == 'background') {
@@ -263,7 +267,8 @@ featureIntegration <- function(ptn,
                    finalModel = model2,
                    selectedFeatures = varImpIn)
       #
-      fiOut@rf[[paste(names(resOut)[compTmp], collapse='_')]] <- rfOut
+      compOut[[paste(names(resOut)[compTmp], collapse='_')]] <-  rfOut
+      #fiOut@rf[[paste(names(resOut)[compTmp], collapse='_')]] <- rfOut
     
       bestSel <- names(rfOut@selectedFeatures)
         
@@ -283,11 +288,11 @@ featureIntegration <- function(ptn,
       }
       #compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
     }
-    #fiOut@comparisons <- compOut
+    #fiOut@rf <- compOut
+    ptn@analysis@featureIntegration[['rf']] <- compOut
   } else {
     stop("Please provide correct type: lm for linear regression or rf for random forest")
   }
-  ptn@analysis@featureIntegration <- fiOut
   return(ptn)
 }
 

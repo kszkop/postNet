@@ -118,6 +118,6 @@ plotFeaturesMap <- function(ptn,
 
     dev.off()
   }
-  ptn@analysis@featureIntegration@featureMap <- fmapResOut
+  ptn@analysis@featureIntegration[['featuresMap']] <- fmapResOut
   return(ptn)
 }
