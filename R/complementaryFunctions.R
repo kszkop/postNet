@@ -1109,16 +1109,18 @@ normalizeLayout <- function(layout) {
   return(layout)
 }
 
-colourAssign <- function(groups, colours = NULL) {
+colourAssign <- function(group, colours = NULL) {
   #
   if (is.null(colours)) {
-    groups_un <- unique(groups)
+    groups_un <- unique(group)
     colours <- RColorBrewer::brewer.pal(length(groups_un), "Pastel1")
     coloursMap <- setNames(colours, groups_un)
+  } else {
+    coloursMap <- colours
   }
   
   #
-  colourAssigned <- coloursMap[as.character(groups)]
+  colourAssigned <- coloursMap[as.character(group)]
   
   return(colourAssigned)
 }
