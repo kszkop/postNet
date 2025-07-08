@@ -310,23 +310,23 @@ ptn_GAGE <- function(ptn,
   }
 }
 
-ptn_check_comparisons <- function(ptn, analysis_type){
-  check_ptn(ptn)
-  check_analysis_type(analysis_type)
-  
-  tmpIn <- slot(ptn@analysis@featureIntegration,analysis_type)
-  if(is.null(tmpIn)){
-    stop(paste('Please run ', analysis_type, 'analysis first', sep=''))
-  } else {
-    print(names(tmpIn))
-  }
-}
+#ptn_check_comparisons <- function(ptn, analysis_type){
+#check_ptn(ptn)
+#  check_analysis_type(analysis_type)
+#  
+#  tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
+#  if(is.null(tmpIn)){
+#    stop(paste('Please run ', analysis_type, 'analysis first', sep=''))
+#  } else {
+#    print(names(tmpIn))
+#  }
+#}
 
 ptn_check_models <- function(ptn, analysis_type){
   check_ptn(ptn)
   check_analysis_type(analysis_type)
   
-  tmpIn <- slot(ptn@analysis@featureIntegration,analysis_type)
+  tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
   if(is.null(tmpIn)){
     stop(paste('Please run ', analysis_type, 'analysis first', sep=''))
   } else {
@@ -343,7 +343,7 @@ ptn_model <- function(ptn, analysis_type, model, comparison){
     stop(paste("Please provide one numeric value for ", comparison, sep=''))
   }
 
-  tmpIn <- slot(ptn@analysis@featureIntegration,analysis_type)
+  tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
   if(comparison > length(tmpIn)){
     stop(paste("There are only ",length(tmpIn), " comparisons", sep=''))
   }
@@ -361,7 +361,7 @@ ptn_selectedFeatures <- function(ptn, analysis_type, comparison){
     stop(paste("Please provide one numeric value for ", comparison, sep=''))
   }
   #
-  tmpIn <- slot(ptn@analysis@featureIntegration, analysis_type)
+  tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
   if(comparison > length(tmpIn)){
     stop(paste("There are only ",length(tmpIn), " comparisons", sep=''))
   }
