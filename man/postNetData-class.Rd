@@ -26,8 +26,10 @@ Objects of this class are typically created using the constructor function \code
 }
     \item{\code{dataIn}:}{Object of class \code{"postNetDataIn"} Contains the user-defined input gene lists of interest, background gene set, regulatory effect measurement, and selected colours for plotting.
 }
-    \item{\code{features}:}{Object of class \code{"dataframeOrNULL"} ~~ }
-    \item{\code{analysis}:}{Object of class \code{"postNetAnalysis"} ~~ }
+    \item{\code{features}:}{Object of class \code{"dataframeOrNULL"} A \code{data.frame} containing the features for each gene (e.g., UTR lengths, GC content, codon or motif counts) that were used as input for stepwise regression and/or random forest models during \code{\link[postNet]{featureIntegration}} analysis.
+}
+    \item{\code{analysis}:}{Object of class \code{"postNetAnalysis"} Stores the results from analysis functions including \code{codonUsage}, \code{motifAnalysis}, \code{gseaAnalysis}, \code{gageAnalysis}, \code{goAnalysis}, \code{miRNAAnalysis} and \code{featureIntegration}. Structured into nested S4 objects.
+}
   }
 }
 \section{Methods}{
