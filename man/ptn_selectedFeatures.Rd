@@ -1,9 +1,9 @@
 \docType{methods}
 \name{ptn_selectedFeatures}
 \alias{ptn_selectedFeatures,postNetData-method}
-\title{Retrieve significant features identified by the step-wise regression model from the postNetData object
+\title{Accessor for the \code{selectedFeatures} slot of a \code{postNetData} object
 }
-\description{
+\description{Retrieve significant features identified by the step-wise regression model from the postNetData object
 }
 
 \usage{

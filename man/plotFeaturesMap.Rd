@@ -1,18 +1,25 @@
 \name{plotFeaturesMap}
 \alias{plotFeaturesMap}
-\title{
-A Capitalized Title (ideally limited to 65 characters)
+\title{Visualized features and regulatory effects using UMAPs
 }
 
 \description{
 }
 
 \usage{
-plotFeaturesMap(ptn, regOnly = TRUE, comparisons = NULL, featSel, remBinary = TRUE, featCol = NULL, scaled = FALSE, remExtreme = NULL, pdfName = NULL)
+plotFeaturesMap(ptn, 
+                regOnly = TRUE, 
+                comparisons = NULL, 
+                featSel, 
+                remBinary = TRUE, 
+                featCol = NULL, 
+                scaled = FALSE, 
+                remExtreme = NULL, 
+                pdfName = NULL)
 }
 
 \arguments{
-  \item{ptn}{
+  \item{ptn}{A \linkS4class{postNetData} object.
 }
   \item{regOnly}{
 }
