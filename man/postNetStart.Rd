@@ -163,8 +163,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
   match those in your reference annotation. You can choose to exclude or keep 
   genes that lack updated sequences via \code{excl} and \code{keepAll}.
   
-  The outputs of each step of postNet analysis will also be stored in the \code{postNetData}
-  object, and can be retrieved through the use of a series of helper functions (see Note and examples below).
+  The outputs of each step of postNet analysis will also be stored in the \linkS4class{postNetData} object, and can be retrieved through the use of a series of helper functions (see Note and examples below).
   
   See the \pkg{postNet} vignette for a more extensive tutorial and examples.
 }
@@ -187,7 +186,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
     }
 }
 
-\note{The helper functions available to retrieve inputs and results from the \code{postNetData} object are:
+\note{The helper functions available to retrieve inputs and results from the \linkS4class{postNetData} object are:
   \describe{
      \item{\link[postNet]{ptn_backround}}{}
      \item{\link[postNet]{ptn_codonAnalysis}}{}
