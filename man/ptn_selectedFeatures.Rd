@@ -13,17 +13,18 @@
 \arguments{
   \item{ptn}{A \linkS4class{postNetData} object.
 }
-  \item{analysis_type}{
+  \item{analysis_type}{A string specifying the method of analysis to retrieve the selected features from. The options are \code{"lm"} to retrieve stepwise linear regression modelling results, or \code{"rf"} for features selected using random forest-based analysis.
 }
 }
 
-\details{
+\details{If \code{analysis_type = "lm"}
 }
 
 \value{
 }
 
 \seealso{
+\link[postNet]{featureIntegration}
 }
 
 \examples{
