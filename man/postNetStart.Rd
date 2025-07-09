@@ -1,7 +1,6 @@
 \name{postNetStart}
 \alias{postNetStart}
-\alias{postNetData-class}
-\title{Retrieve and format reference sequences and inputs for postNet analysis
+\title{Create the data container and inputs for postNet analyses
 }
 \description{
   The \code{postNetStart} function is the first step in a \pkg{postNet} analysis workflow. It retrieves and compiles    all necessary inputs and annotations into a \code{postNetData} S4 object, including:
