@@ -1,10 +1,10 @@
 \docType{methods}
 \name{ptn_features}
 \alias{ptn_features,postNetData-method}
-\title{Retrieve selected features from step-wise regression models in the postNetData object
+\title{Accessor for the \code{features} slot of a \code{postNetData} object
 }
 
-\description{
+\description{Retrieve the input features used in stepwise regression and random forest modelling from the \code{postNetData} object.
 }
 
 \usage{
@@ -16,13 +16,12 @@
 }
 }
 
-\details{
-}
-
-\value{
+\value{Returns a \code{data.frame} of features and/or gene signatures (see \link[postNet]{signCalc}) quantified during a postNet analysis and used as input for \link[postNet]{featureIntegration}. Rows correspond to genes, and columns correspond to features.  
 }
 
 \seealso{
+\link[postNet]{featureIntegration}
+\link[postNet]{signCalc}
 }
 
 \examples{
