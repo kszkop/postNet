@@ -19,8 +19,7 @@ the filtering thresholds for \code{contextScore} and/or \code{Pct}.
   }
 }
 
-\value{A list where each element is a vector of genes that are predicted to be targeted by the miRNA that passed 
-the filtering thresholds for \code{contextScore} and/or \code{Pct}. 
+\value{A list where each element is a vector of genes that are predicted to be targeted by the miRNA that passed the filtering thresholds for \code{contextScore} and/or \code{Pct}. 
 }
 
 \references{
