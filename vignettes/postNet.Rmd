@@ -1,0 +1,42 @@
+---
+title: "Post-transcriptional network modelling with postNet"
+author: "Krzysztof J. Szkop, Kathleen Watt, Ola Larsson"
+package: postNet
+abstract: > 
+  Blah blah blah
+output: 
+  BiocStyle::html_document:
+    highlight: pygments
+    toc: true
+    fig_width: 5
+vignette: >
+  %\VignetteIndexEntry{Post-transcriptional network modelling with postNet}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: vignette_references.bib
+---
+
+
+
+```{r setup, echo=FALSE, results="hide"}
+knitr::opts_chunk$set(tidy = FALSE,
+                      cache = FALSE,
+                      dev = "png",
+                      message = FALSE, error = FALSE, warning = TRUE)
+```
+
+# Introduction
+
+[@Hon2017]
+
+# Workflow 
+
+## Quickstart
+
+```{r quickStart, eval=FALSE}
+library(postNet)
+```
+
+## How to get help
+
+# References
