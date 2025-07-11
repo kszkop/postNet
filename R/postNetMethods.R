@@ -371,12 +371,15 @@ ptn_selectedFeatures <- function(ptn, analysis_type, comparison){
   return(tmpOut)
 }
 
-setGeneric("ptn_networkGraph",
-           function(x) standardGeneric("ptn_networkGraph"))
-setMethod("ptn_networkGraph", "postNetData",
-          function(x){
-            check_ptn(x)
-            #
-            tmpOut <- x@analysis@featureIntegration@lm@networkGraph
-            return(tmpOut)
-          })
+ptn_networkGraph <- function(ptn, comparison){
+  check_ptn(ptn)
+  if(!check_number(comparison)){
+    stop(paste("Please provide one numeric value for ", comparison, sep=''))
+  }
+  
+  tmpIn <- ptn@analysis@featureIntegration$lm[[comparison]]
+  
+  tmpOut <- tmpIn@networkGraph
+  return(tmpOut)
+}
+

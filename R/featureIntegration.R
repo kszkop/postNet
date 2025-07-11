@@ -9,6 +9,8 @@ featureIntegration <- function(ptn,
                                covarFilt = 20,
                                NetModelSel = "omnibus",
                                comparisons = NULL,
+                               fdrUni = 0.05,
+                               stepP = 0.05,
                                pdfName = NULL) {
   #
   check_ptn(ptn)
@@ -37,7 +39,7 @@ featureIntegration <- function(ptn,
       stop("'covarFilt' can only be a numerical value")
     }
     if(!is_valid_NetModelSel(NetModelSel)){
-      stop("'NetModelSel' has to be not null and one one of the: omnibus, adjusted or univariate")
+      stop("'NetModelSel' has to be not null and one one of the: omnibus, adjusted")
     }
   }
   if(analysis_type=='rf'){
@@ -97,7 +99,7 @@ featureIntegration <- function(ptn,
         
         nameOut <- ifelse(is.null(pdfName), paste('lm', paste(names(resOut)[compTmp], collapse = '_'), sep='_'), paste(pdfName, 'lm', paste(names(resOut)[compTmp], collapse = '_'), sep='_'))
         #
-        lmOut <- runLM(dataIn = dataTmpSel, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt=covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColourOut)
+        lmOut <- runLM(dataIn = dataTmpSel, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt=covarFilt, nameOut = nameOut, NetModelSel = NetModelSel, coloursIn=coloursTmp,lmfeatGroup=lmfeatGroup,lmfeatGroupColour=lmfeatGroupColourOut, fdrUni = fdrUni, stepP = stepP)
         compOut[[paste(names(resOut)[compTmp], collapse='_')]] <- lmOut
         
         #fiOut@lm[[paste(names(resOut)[compTmp], collapse='_')]] <- lmOut
@@ -115,7 +117,7 @@ featureIntegration <- function(ptn,
           set2 <- names(resOut[[compTmp[2]]])
           setSel2 <- set[row.names(set) %in% set2,]
           #
-          plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
+          plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=nameOut)
         }
         #compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
       }
@@ -141,7 +143,7 @@ featureIntegration <- function(ptn,
         #set2 <- names(resOut[[compTmp[2]]])
         #setSel2 <- set[row.names(set) %in% set2,]
         
-        plotScatterInd(set1=set, set2=NULL, orgName=feat, coloursIn='grey75', nameOut=pdfName)
+        plotScatterInd(set1=set, set2=NULL, orgName=feat, coloursIn='grey75', nameOut=nameOut)
       }
     }
     ptn@analysis@featureIntegration[['lm']] <- compOut
@@ -286,7 +288,7 @@ featureIntegration <- function(ptn,
         set2 <- names(resOut[[compTmp[2]]])
         setSel2 <- set[row.names(set) %in% set2,]
         #
-        plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=pdfName)
+        plotScatterInd(set1=setSel1, set2=setSel2, orgName=feat, coloursIn=coloursTmp, nameOut=nameOut)
       }
       #compOut[i] <- paste(names(resOut)[compTmp], collapse='_') 
     }

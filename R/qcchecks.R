@@ -491,7 +491,7 @@ is_valid_NetModelSel <- function(NetModelSel) {
   if (is.null(NetModelSel)) {
     return(FALSE)
   }
-  if (NetModelSel %in% c("omnibus", "adjusted", "univariate")) {
+  if (NetModelSel %in% c("omnibus", "adjusted")) {
     return(TRUE)
   }
   return(FALSE)
