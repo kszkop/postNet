@@ -3,7 +3,7 @@ title: "Post-transcriptional network modelling with postNet"
 author: "Krzysztof J. Szkop, Kathleen Watt, Ola Larsson"
 package: postNet
 abstract: > 
-  Blah blah blah
+  Post-transcriptional mechanisms play a central role in the regulation of gene expression, with protein levels partly determined by various features within target mRNAs. Emerging evidence indicates that most individual mRNAs contain multiple regulatory elements. This underscores the need for efficient bioinformatic tools that can capture and integrate multiple mRNA features to assess their combined impact on the proteome. Here, we present postNet modeling, a tool that enables in silico identification, integration, and modeling of mRNA features that influence post-transcriptional regulation of gene expression at a transcriptome-wide scale. Although geared towards studies of post-transcriptional regulation, postNet is highly customizable and can, in principle, be applied in a variety of other contexts to explain changes in a continuous numeric variable between two or more conditions/groups. This vignette provides details regarding the use of postNet, and demonstrates typical workflows and results interpretation. 
 output: 
   BiocStyle::html_document:
     highlight: pygments
@@ -16,8 +16,6 @@ vignette: >
 bibliography: vignette_references.bib
 ---
 
-
-
 ```{r setup, echo=FALSE, results="hide"}
 knitr::opts_chunk$set(tidy = FALSE,
                       cache = FALSE,
@@ -27,16 +25,29 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 # Introduction
 
+
 [@Hon2017]
 
 # Workflow 
 
-## Quickstart
+A typical postNet analysis consists of the following sequential steps: 
 
-```{r quickStart, eval=FALSE}
+1) Initialize a \code{postNetData} object with with the `postNetStart` function, containing curated reference mRNA sequences, gene sets of interest to be compared, and a regulatory effect measurement that will be used in downstream analyses. See [Setting up a postNet analysis](#settingUp) for details.
+2) From a [count matrix](#countmat)
+3) From [htseq-count files](#htseq)
+4) From a [SummarizedExperiment](#se) object
+
+# Getting started
+
+```{r quickStart, eval=TRUE, echo=TRUE} 
 library(postNet)
+data("postNetExample")
 ```
 
-## How to get help
+
+
+<a name="settingUp"/>
+
+# Setting up a postNet analysis
 
 # References
