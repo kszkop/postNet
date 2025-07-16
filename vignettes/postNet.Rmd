@@ -233,20 +233,6 @@ The basic workflow of a postNet analysis aims to explain the regulatory fate of 
 1) Reference sequence annotations
 2) Gene sets of interest
 3)
-    \itemize{
-      \item Reference sequence annotations (5'UTR, CDS, 3'UTR), including in-built, custom, or retrieved directly 
-      from the NCBI RefSeq database. Optionally, UTR sequences can also be adjusted if more precise sequences are 
-      available (e.g. from CAGE, QuantSeq, etc.)
-      \item Gene sets of interest (either from an \pkg{anota2seq} analysis by providing the \code{Anota2seqDataSet}
-      object, or using custom gene lists of interest).
-      \item A numeric regulation effect measurement (e.g., fold changes in gene expression or translation 
-      efficiency, etc.) either from an \pkg{anota2seq} analysis, or from a custom source. These values will be used
-      in the \link[postNet]{featureIntegration} analysis, where mRNA features, gene signatures, and/or other variables
-      can be used to explain changes in the regulation effect measurement using step-wise regression and/or random
-      forest approaches.
-    }
-  The resulting \code{postNetData} object is then passed to downstream functions in the \pkg{postNet}
-  workflow, and stores analysis results.
 
 <a name="mRNAfeatures"/>
 
