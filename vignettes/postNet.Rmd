@@ -26,8 +26,11 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 # Introduction
 
+To enable efficient assessment of features underlying alterations in translational efficiencies we developed postNet, which includes methods to quantify and identify RNA features (e.g. nucleotide content, length of UTRs and CDS, folding energy of UTRs and CDS, RNA motifs, uORFs, codon composition etc.) associating with selective alterations in mRNA translation and statistical analysis of whether the catalogue of identified features appear to modulate translation in a distinct or overlapping fashion.
 
-[@Hon2017]
+PostNet uses stepwise linear regressions to model changes in post-transcriptional regulation (translation, or translational offsetting) across subsets of regulated mRNAs and assesses the contribution of each feature included in the modelling in a hierarchical manner. This allows postNet to rank mRNA features according to their ability to explain changes in gene expression regulation. Furthermore, because of the hierarchical approach, the interdependence between different features is revealed. 
+
+In the first phase of postNet modelling, each candidate feature is evaluated separately (i.e. using univariate linear models). This allows assessment of associations between changes in post-transcriptional regulation and each selected feature to provide an overview. Moreover, the univariate output is used to identify of a set of features for further modeling in phase two of the postNet analysis. In the second phase, postNet selects the feature that best explained the regulatory changes from phase one and adds additional features to the model in an iterative fashion, keeping covariance between features in the model assigned to the feature which appeared most influential. During each iteration, the best performing model (i.e. the feature showing the strongest association with the regulatory effect) is kept and features that do not explain any additional variation are discarded. This generates a hierarchical output that reveals dependence between RNA features (i.e. co-occurrence in mRNAs) identified under phase one. In the third and final phase of postNet analysis, the independent contribution of each of the features that emerged as significant from phase two is determined (i.e. in contrast to assigning covariance to the most influential feature under phase 2, such covariance is eliminated from the output to derive the independent contribution of each feature during phase three).
 
 # Workflow 
 
@@ -227,12 +230,13 @@ This example provided an overview of a minimal postNet workflow. Full details of
 
 # Setting up a postNet analysis
 
-The basic workflow of a postNet analysis aims to explain the regulatory fate of mRNA based on their repertoire of *cis*-acting sequence features and/or interactions with *trans*-acting factors.  identifying and/or enumerating  three basic inputs: 
+The basic workflow of a postNet analysis aims to explain the post-transcriptional regulatory fate of mRNA based on their repertoire of *cis*-acting sequence features and/or interactions with *trans*-acting factors.  Three basic inputs are required to run a postNet analysis:
 
+1) Reference sequence annotations that will be used to identify and/or enumerate regulatory features.
+2) Gene sets of interest that undergo post-transcriptional regulation.
+3) A regulatory effect measurement, for example the log2 fold change in translation efficiency between a experimental and control condition.
 
-1) Reference sequence annotations
-2) Gene sets of interest
-3)
+These inputs are compiled at the start of the analysis by initializing a `postNetData` object. This class of object serves as the container for storing inputs and some outputs generated during the analysis, and is designated by `ptn` in the example code provided here.  
 
 <a name="mRNAfeatures"/>
 
