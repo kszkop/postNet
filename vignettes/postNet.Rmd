@@ -236,7 +236,12 @@ The basic workflow of a postNet analysis aims to explain the post-transcriptiona
 2) Gene sets of interest that undergo post-transcriptional regulation.
 3) A regulatory effect measurement, for example the log2 fold change in translation efficiency between a experimental and control condition.
 
-These inputs are compiled at the start of the analysis by initializing a `postNetData` object. This class of object serves as the container for storing inputs and some outputs generated during the analysis, and is designated by `ptn` in the example code provided here.  
+These inputs are compiled at the start of the analysis by initializing a `postNetData` object. This class of object serves as the container for storing inputs and some outputs generated during the analysis, and is designated by `ptn` in the example code provided here. The following sections describe the different options and customization available, along with examples illustrating how to set up a postNet analysis.
+
+## Reference sequence annotations
+
+
+
 
 <a name="mRNAfeatures"/>
 
