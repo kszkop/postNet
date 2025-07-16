@@ -240,7 +240,7 @@ These inputs are compiled at the start of the analysis by initializing a `postNe
 
 ## Reference sequence annotations
 
-
+Reference sequence annotations corresponding to the 5'UTR, CDS, and 3'UTR regions of mRNAs, including in-built, custom, or retrieved directly from the NCBI RefSeq database [@OLeary2016]. Optionally, UTR sequences can also be adjusted if more precise sequences are available (e.g. from CAGE, QuantSeq, long-read sequencing, etc.)
 
 
 <a name="mRNAfeatures"/>
