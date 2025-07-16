@@ -32,22 +32,68 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 A typical postNet analysis consists of the following sequential steps: 
 
-1) Initialize a \code{postNetData} object with with the `postNetStart` function, containing curated reference mRNA sequences, gene sets of interest to be compared, and a regulatory effect measurement that will be used in downstream analyses. See [Setting up a postNet analysis](#settingUp) for details.
-2) From a [count matrix](#countmat)
-3) From [htseq-count files](#htseq)
-4) From a [SummarizedExperiment](#se) object
+1) Initialize a `postNetData` object with the `postNetStart()` function, containing curated reference mRNA sequences, gene sets of interest to be compared, and a regulatory effect measurement that will be used in downstream analyses. See [Setting up a postNet analysis](#settingUp) for details.
+2) Identify and quantify mRNA sequence features, and compare them between gene sets of interest. See [Analysis of mRNA sequence features](#mRNAfeatures) for details.
+3) Model post-transcriptional changes in gene expression using mRNA features (or other variables) underlying regulatory processes with the `featureIntegration()` function. See [Modelling post-transcriptional regulation](#modelling) for details.
+4) Perform network analysis based on stepwise regression models to understand the independent and overlapping contribution of mRNA features to post-transcriptional regulation, and use identified features to predict regulation in other data sets using machine learning with the `rfPred()`function. See [Network analysis and prediction](#networkPred)
+5) Explore relationships between mRNA features (or other variables) and regulatory effects using UMAP visualizations with the `plotFeaturesMap()`function. See [Visualize and explore relationships between mRNA features and regulation](#UMAPvis)
+6) Optionally, perform functional enrichment analyses on the regulated gene sets of interest. See [Functional enrichment analyses with postNet](#enrichmentAnalysis) for details.
 
 # Getting started
 
-```{r quickStart, eval=TRUE, echo=TRUE} 
+PostNet was designed to be highly flexible to accommodate a variety of inputs and biological contexts. Here, we demonstrate a minimal example of the steps of a standard postNet analysis workflow using an example data set illustrating changes in mRNA translation, with default parameters. This includes compiling input data and selecting reference mRNA sequence annotations, enumeration of mRNA features in regulated gene sets of interest, modelling changes in mRNA translation efficiency using stepwise regression to identify the collection of mRNA features that best explain the observed regulation (omnibus model), network analysis visualizing the independent and overlapping regulatory contribution of mRNA features, and finally exploration of modelling results using UMAP visualizations.
+
+```{r load_package_data, eval=TRUE, echo=TRUE} 
 library(postNet)
 data("postNetExample")
 ```
 
+In the first step, a `postNetData`object is initialized containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency), and reference mRNA sequence annotations.   
+```{r gettingStartinput, eval=TRUE, echo=TRUE}
+# Initialize the postNetData object with custom gene lists:
+myGenes <- postNetExample$geneList
+str(myGenes)
+myBg <- postNetExample$background
+str(myBg)
+myEffect <- postNetExample$effect
+str(myEffect)
 
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+
+```
 
 <a name="settingUp"/>
 
 # Setting up a postNet analysis
+
+<a name="mRNAfeatures"/>
+
+# Analysis of mRNA sequence features
+
+<a name="modelling"/>
+
+# Modelling post-transcriptional regulation 
+
+<a name="networkPred"/>
+
+# Network analysis and prediction
+
+<a name="UMAPvis"/>
+
+# Visualize and explore relationships between mRNA features and regulatory effects 
+
+<a name="enrichmentAnalysis"/>
+
+# Functional enrichment analyses with postNet
+
 
 # References
