@@ -19,7 +19,9 @@ bibliography: vignette_references.bib
 knitr::opts_chunk$set(tidy = FALSE,
                       cache = FALSE,
                       dev = "png",
-                      message = FALSE, error = FALSE, warning = TRUE)
+                      message = FALSE, 
+                      error = FALSE, 
+                      warning = TRUE)
 ```
 
 # Introduction
@@ -123,7 +125,7 @@ image_write(combined, path = "Figures/combined_UTR5_features.png")
 
 ```
 
-```{r gettingStartedenumeratePNGS, echo=FALSE, fig.align="center", fig.height=20, fig.width=20, out.width="120%", fig.cap="Comparisons of 5'UTR length and GC content between mRNA belonging to regulated gene sets."}
+```{r gettingStartedenumeratePNGS, echo=FALSE, fig.wide = TRUE, fig.cap="Comparisons of 5'UTR length and GC content between mRNA belonging to regulated gene sets."}
 knitr::include_graphics("Figures/combined_UTR5_features.png")
 
 ```
@@ -159,10 +161,64 @@ ptn <- featureIntegration(ptn=ptn,
 
 ```
 
-```{r gettingStartedFeatureIntHidePlots, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
-unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf","Figures/Example_UTR5_boxplot_lengthAnalysis.png","Figures/Example_UTR5_GC_content.png"))
+```{r gettingStartedFeatureIntPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+library(magick)
+image_read_pdf("omnibus_lm_translationUp_translationDown_network.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/omnibus_lm_translationUp_translationDown_network.png")
+
+image_read_pdf("omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.png")
+
 ```
 
+
+```{r gettingStartedFeatureIntNetworkPNG, echo=FALSE, fig.cap="Network plot of the results of the stepwise regression omnibus model."}
+knitr::include_graphics("Figures/omnibus_lm_translationUp_translationDown_network.png")
+
+```
+
+```{r gettingStartedhideFeatureIntPlots, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("omnibus_lm_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "omnibus_lm_translationUp_translationDown_Down_individually.pdf","omnibus_lm_translationUp_translationDown_FinalModel.pdf","omnibus_lm_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf","omnibus_lm_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf","omnibus_lm_translationUp_translationDown_network.pdf","omnibus_lm_translationUp_translationDown_uORFs_ATG_strong_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_C_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_T_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_T_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_A_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_length_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_T_individually.pdf"))
+```
+
+**Step 4:** Visualize the relationship between translation efficiency and different features that were identified in the modelling step as significantly contributing to the observed translational regulation. These visualizations are also useful for exploring the overlaps between different features within the same mRNAs.  
+
+```{r gettingStartedPlotFeautresMap, eval=TRUE, echo=TRUE}
+
+ptn <- plotFeaturesMap(ptn,
+                regOnly = TRUE,
+                comparisons = list(c(1,2)),
+                featSel = names(ptn_selectedFeatures(ptn, 
+                                               analysis_type = "lm",
+                                               comparison = 1)),
+                remBinary = T,
+                featCol = "UTR5_SCSCGS",
+                scaled = F,
+                remExtreme = 0.1,
+                pdfName = 'Example')
+
+```
+
+```{r gettingStartedPlotFeautresMapPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+library(magick)
+image_read_pdf("Example_UTR5_SCSCGS_featureUMAP.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR5_SCSCGS_featureUMAP.png")
+
+```
+
+```{r gettingStartedPlotFeautresMapPNG, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) clustered according to features identified in the omnibus model (left), with mRNAs containing SCSCGS motifs in the 5'UTR coloured (right)."}
+knitr::include_graphics("Figures/Example_UTR5_SCSCGS_featureUMAP.png")
+
+```
+
+```{r gettingStartedhidePlotFeautresMaps, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_UTR5_SCSCGS_featureUMAP.pdf"))
+```
 
 <a name="settingUp"/>
 
