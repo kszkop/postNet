@@ -29,7 +29,7 @@ knitr::opts_chunk$set(tidy = FALSE,
 
 # Workflow 
 
-A typical postNet analysis consists of the following sequential steps: 
+A postNet analysis can consists of the following steps: 
 
 1) Initialize a `postNetData` object with the `postNetStart()` function, containing curated reference mRNA sequences, gene sets of interest to be compared, and a regulatory effect measurement that will be used in downstream analyses. See [Setting up a postNet analysis](#settingUp) for details.
 2) Identify and quantify mRNA sequence features, and compare them between gene sets of interest. See [Analysis of mRNA sequence features](#mRNAfeatures) for details.
