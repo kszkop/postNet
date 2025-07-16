@@ -1570,7 +1570,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
 
 
 plotScatterInd <- function(set1, set2 = NULL, orgName, coloursIn, nameOut) {
-  pdf(paste(nameOut, orgName, "individually.pdf", sep = "_"), width = ifelse(is_binary(set[, 1]), 6,8), height = 8, useDingbats = F)
+  pdf(paste(nameOut, orgName, "individually.pdf", sep = "_"), width = ifelse(is_binary(set1[, 1]), 6,8), height = 8, useDingbats = F)
   par(mar = c(9, 5, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.7, cex.main = 1.7, cex.lab = 1.3)
   #
   if (is.null(set2)) {
