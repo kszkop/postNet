@@ -8,7 +8,6 @@ output:
   BiocStyle::html_document:
     highlight: pygments
     toc: true
-    fig_width: 5
 vignette: >
   %\VignetteIndexEntry{Post-transcriptional network modelling with postNet}
   %\VignetteEngine{knitr::rmarkdown}
@@ -48,14 +47,15 @@ library(postNet)
 data("postNetExample")
 ```
 
-In the first step, a `postNetData`object is initialized containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency), and reference mRNA sequence annotations.   
+**Step 1:** A `postNetData` object is initialized containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency), and reference mRNA sequence annotations.   
 ```{r gettingStartedInput, eval=TRUE, echo=TRUE}
 # Prepare custom gene lists and regulatory effect measurement:
 myGenes <- postNetExample$geneList
-str(myGenes)
 myBg <- postNetExample$background
-str(myBg)
 myEffect <- postNetExample$effect
+
+str(myGenes)
+str(myBg)
 str(myEffect)
 
 ```
@@ -75,6 +75,95 @@ ptn <- postNetStart(
 
 ```
 
+**Step 2:** mRNA features that may influence post-transcriptional regulation of gene expression are enumerated. In this minimal example, the length and nucleotide content of 5'UTR regions are calculated and compared between gene sets. However, numerous other features across all sequence regions can be examined (see [Analysis of mRNA sequence features](#mRNAfeatures)).
+
+```{r gettingStartedenumerate, eval=TRUE, echo=TRUE}
+# Quantify the length and nucleotide content of the 5'UTR and compare between regulated gene sets 
+len <- lengthAnalysis(ptn = ptn, 
+                      region = c("UTR5"), 
+                      comparisons = list(c(0,1),c(0,2),c(1,2)),
+                      plotOut = TRUE,
+                      plotType = 'boxplot',
+                      pdfName = "Example")
+                  
+ str(len)
+ 
+ content_UTR5 <- contentAnalysis(ptn = ptn, 
+                           region = c("UTR5"),
+                           comparisons = list(c(0,1),c(0,2),c(1,2)), 
+                           contentIn = c("GC"),
+                           plotOut = TRUE,
+                           plotType = "ecdf",
+                           pdfName = "Example")
+                      
+ str(content_UTR5)
+
+```
+
+```{r gettingStartedenumeratePDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+library(magick)
+image_read_pdf("Example_UTR5_boxplot_lengthAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
+
+image_read_pdf("Example_UTR5_GC_content.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR5_GC_content.png")
+
+# Read each image
+img1 <- image_read("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
+img2 <- image_read("Figures/Example_UTR5_GC_content.png")
+
+# Append them horizontally
+combined <- image_append(c(img1, img2), stack = FALSE)
+
+# Save combined image at high resolution
+image_write(combined, path = "Figures/combined_UTR5_features.png")
+
+```
+
+```{r gettingStartedenumeratePNGS, echo=FALSE, fig.align="center", fig.height=20, fig.width=20, out.width="120%", fig.cap="Comparisons of 5'UTR length and GC content between mRNA belonging to regulated gene sets."}
+knitr::include_graphics("Figures/combined_UTR5_features.png")
+
+```
+
+```{r gettingStartedhidePlots, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf","Figures/Example_UTR5_boxplot_lengthAnalysis.png","Figures/Example_UTR5_GC_content.png"))
+```
+
+**Step 3:** changes in translation efficiency are modeled using stepwise regression to identify the collection of features that best explains the observed regulation. In this minimal example, a set of pre-calculated features is used (including enumerated mRNA features and signatures of upstream regulatorys pathways). 
+
+```{r gettingStartedFeatureInt, eval=TRUE, echo=TRUE}
+# Prepare the list of features to be used in modelling 
+features <- postNetExample$features
+str(features)
+
+# Group the features according to category (optional)
+lmfeatGroup = c("UTR5", "UTR3", rep("UTR5",3), rep("UTR3",4), "CDS", "CDS", "UTR5", "UTR5", rep("Pathway",2),"UTR5", rep("Pathway",2))
+lmfeatGroupColour = c('#534b62','#6699cc','#e9724c','#fff275')
+names(lmfeatGroupColour) <- c("UTR5","CDS", "UTR3","Pathway")
+
+# Run feature integration modelling using stepwise regression
+ptn <- featureIntegration(ptn=ptn, 
+                          features = features, 
+                          pdfName = 'omnibus', 
+                          regOnly = T, 
+                          allFeat = F,
+                          analysis_type ='lm',
+                          covarFilt = 20,
+                          comparisons = list(c(1,2)),
+                          lmfeatGroup = lmfeatGroup,
+                          lmfeatGroupColour = lmfeatGroupColour,
+                          NetModelSel = 'omnibus')
+
+```
+
+```{r gettingStartedFeatureIntHidePlots, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf","Figures/Example_UTR5_boxplot_lengthAnalysis.png","Figures/Example_UTR5_GC_content.png"))
+```
+
+
 <a name="settingUp"/>
 
 # Setting up a postNet analysis
@@ -83,17 +172,21 @@ ptn <- postNetStart(
 
 # Analysis of mRNA sequence features
 
+
 <a name="modelling"/>
 
 # Modelling post-transcriptional regulation 
+
 
 <a name="networkPred"/>
 
 # Network analysis and prediction
 
+
 <a name="UMAPvis"/>
 
 # Visualize and explore relationships between mRNA features and regulatory effects 
+
 
 <a name="enrichmentAnalysis"/>
 
