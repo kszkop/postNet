@@ -263,7 +263,7 @@ postNetStart <- function(ads = NULL,
     }
 
     if (is.null(version)) {
-      version <- invisible(checkAvailableVersions(species = species))
+      version <- checkAvailableVersions(species = species)
       versionInd <- sub("^[^.]*.", "", version)
       versionInd <- sort(versionInd, decreasing = TRUE)[1]
       version <- version[grep(versionInd, version)]

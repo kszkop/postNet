@@ -41,7 +41,7 @@ A typical postNet analysis consists of the following sequential steps:
 
 # Getting started
 
-PostNet was designed to be highly flexible to accommodate a variety of inputs and biological contexts. Here, we demonstrate a minimal example of the steps of a standard postNet analysis workflow using an example data set illustrating changes in mRNA translation, with default parameters. This includes compiling input data and selecting reference mRNA sequence annotations, enumeration of mRNA features in regulated gene sets of interest, modelling changes in mRNA translation efficiency using stepwise regression to identify the collection of mRNA features that best explain the observed regulation (omnibus model), network analysis visualizing the independent and overlapping regulatory contribution of mRNA features, and finally exploration of modelling results using UMAP visualizations.
+PostNet was designed to be highly flexible to accommodate a variety of inputs and biological contexts. Here, we demonstrate a minimal example of the steps of a standard postNet analysis workflow using an example data set illustrating changes in mRNA translation, with default parameters. This includes compiling input data and selecting reference mRNA sequence annotations, enumeration of mRNA features in regulated gene sets of interest, modelling changes in mRNA translation efficiency using stepwise regression to identify the collection of mRNA features that best explain the observed regulation (omnibus model), network analysis visualizing the independent and overlapping regulatory contribution of mRNA features, and finally exploration of modelling results using UMAP visualizations. Alternative workflows and additional inputs and options are discussed in detail in the following sections.
 
 ```{r load_package_data, eval=TRUE, echo=TRUE} 
 library(postNet)
@@ -49,8 +49,8 @@ data("postNetExample")
 ```
 
 In the first step, a `postNetData`object is initialized containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency), and reference mRNA sequence annotations.   
-```{r gettingStartinput, eval=TRUE, echo=TRUE}
-# Initialize the postNetData object with custom gene lists:
+```{r gettingStartedInput, eval=TRUE, echo=TRUE}
+# Prepare custom gene lists and regulatory effect measurement:
 myGenes <- postNetExample$geneList
 str(myGenes)
 myBg <- postNetExample$background
@@ -58,7 +58,11 @@ str(myBg)
 myEffect <- postNetExample$effect
 str(myEffect)
 
- ptn <- postNetStart(
+```
+
+```{r gettingStartedInitialize, eval=TRUE, echo=TRUE, results='hide'}
+# Initialize a postNetData object:
+ptn <- postNetStart(
    geneList = myGenes,
    geneListcolours = c("#7FB7BE","#DB7F67"),
    customBg = myBg,
