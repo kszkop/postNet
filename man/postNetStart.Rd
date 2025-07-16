@@ -3,7 +3,7 @@
 \title{Create the data container and inputs for postNet analyses
 }
 \description{
-  The \code{postNetStart} function is the first step in a \pkg{postNet} analysis workflow. It retrieves and compiles    all necessary inputs and annotations into a \code{postNetData} S4 object, including:
+  The \code{postNetStart} function is the first step in a \pkg{postNet} analysis workflow. It retrieves and compiles all necessary inputs and annotations into a \code{postNetData} S4 object, including:
     \itemize{
       \item Reference sequence annotations (5'UTR, CDS, 3'UTR), including in-built, custom, or retrieved directly 
       from the NCBI RefSeq database. Optionally, UTR sequences can also be adjusted if more precise sequences are 
