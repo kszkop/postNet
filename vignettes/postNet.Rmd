@@ -137,7 +137,7 @@ knitr::include_graphics("Figures/combined_UTR5_features.png")
 unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf","Figures/Example_UTR5_boxplot_lengthAnalysis.png","Figures/Example_UTR5_GC_content.png"))
 ```
 
-**Step 3:** changes in translation efficiency are modeled using stepwise regression to identify the collection of features that best explains the observed regulation. In this minimal example, a set of pre-calculated features is used (including enumerated mRNA features and signatures of upstream regulatorys pathways). 
+**Step 3:** changes in translation efficiency are modeled using stepwise regression to identify the collection of features that best explains the observed regulation. In this minimal example, a set of pre-calculated features is used including both *cis*-acting (enumerated mRNA features) and *trans*-acting (signatures of upstream regulatory pathways) factors. 
 
 ```{r gettingStartedFeatureInt, eval=TRUE, echo=TRUE}
 # Prepare the list of pre-calculated features to be used in modelling (for example, the 'len' and 'content_UTR' variables defined in the previous step can be included) 
@@ -236,21 +236,138 @@ The basic workflow of a postNet analysis aims to explain the post-transcriptiona
 2) Gene sets of interest that undergo post-transcriptional regulation.
 3) A regulatory effect measurement, for example the log2 fold change in translation efficiency between a experimental and control condition.
 
-These inputs are compiled at the start of the analysis by initializing a `postNetData` object. This class of object serves as the container for storing inputs and some outputs generated during the analysis, and is designated by `ptn` in the example code provided here. The following sections describe the different options and customization available, along with examples illustrating how to set up a postNet analysis.
+These inputs are compiled at the start of the analysis by initializing a `postNetData` object using the `postNetStart()` function. This class of object serves as the container for storing inputs and most outputs generated during the analysis, and is designated by `ptn` in the example code provided here. The following sections describe the different options and customizations available, along with examples illustrating how to set up a postNet analysis.
 
 ## Reference sequence annotations
 
-Reference sequence annotations corresponding to the 5'UTR, CDS, and 3'UTR regions of mRNAs, including in-built, custom, or retrieved directly from the NCBI RefSeq database [@OLeary2016]. Optionally, UTR sequences can also be adjusted if more precise sequences are available (e.g. from CAGE, QuantSeq, long-read sequencing, etc.)
+Reference sequence annotations are divided according to different regions of mRNA molecules (5'UTR, CDS, and 3'UTR) to allow regions to be compared separately. The `source` parameter of the `postNetStart()` function allows the user to select from several in-built sequence annotations provided with the package, retrieve sequence annotations directly from the NCBI RefSeq database [@OLeary2016], or provide custom sequence annotations. Optionally, UTR sequences can also be adjusted if more precise sequences are available, for example those experimentally determined using approaches like CAGE, QuantSeq, or long-read sequencing, etc.
 
-### Loading in-built sequence annotations
+It is highly recommended to use reference sequence annotations that correspond to those that were used in generating the input gene lists. For example, if RNA sequencing reads were counted using Ensembl gene/transcript annotations, these may not always correspond well to the sequences defined by RefSeq annotations, even if identifiers have been converted to be compatible. When running `postNetStart()`, a warning message describing differences in gene identifiers between the input gene lists and the reference sequence annotations will be printed to the console. Minor differences may be acceptable depending on the application. However, larger differences may warrant either reprocessing of input data, or selecting a more compatible reference sequence annotation before proceeding with the analysis.
 
-### Retrieving sequence annotations from the NCBI RefSeq database
+### Loading in-built reference sequence annotations
+
+By default, `source = "load"` meaning `postNetStart()` will load one of the in-built reference sequence annotations provided with the package. This option is available when `species = "human"` or `"mouse"`, and several several versions can be chosen from with the `version` parameter. All in-built annotations provided with the package are based on different releases of NCBI RefSeq GRCh38 (human) and GCRm39 (mouse) genome assemblies and corresponding transcript annotations.     
+
+It is possible to check which RefSeq release versions have in-built annotations available within the package using the `checkAvailableVersions()` function.
+
+```{r RefSeqCheckVersions, eval=TRUE, echo=TRUE}
+
+library(postNet)
+
+# List RefSeq release versions of available annotations in the package
+checkAvailableVersions(species = "human")
+checkAvailableVersions(species = "mouse")
+
+```
+
+A `postNetData` object can then be initialized using the in-built reference sequence annotations, in this case using the RefSeq ver_40.202408 release version for human. Note that if no version is specified, the latest release will be used.
+
+```{r RefSeqLoad, eval=FALSE, echo=TRUE}
+
+data("postNetExample")
+
+# Prepare custom gene lists and regulatory effect measurement:
+myGenes <- postNetExample$geneList
+myBg <- postNetExample$background
+myEffect <- postNetExample$effect
+
+# Initialize a postNetData object using in-built annotations for human:
+ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   source = "load", 
+   species = "human",
+   version = "ver_40.202408"
+ )
+
+```
+
+
+### Retrieving or constructing reference sequence annotations from the NCBI RefSeq database
+
+In addition to the in-built annotations, it is also possible to either retrieve or construct reference sequences for any RefSeq release version. Currently, only human and mouse are supported with these options. 
+
+By specifying `source = "create"` in `postNetStart()`, annotation files from the most recent RefSeq release version for the indicated species will be automatically downloaded and used to construct a new reference sequence annotation locally. Note that downloads may take several minutes, and files will be stored in the working directory. Using this option requires an internet connection.
+
+```{r RefSeqCreate, eval=FALSE, echo=TRUE}
+
+# Initialize a postNetData object creating new RefSeq reference sequence annotations for human:
+ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   source = "create", 
+   species = "human",
+ )
+
+```
+
+Alternatively, two additional off-line methods are available to construct reference sequence annotations if files have already been downloaded from [RefSeq](https://www.ncbi.nlm.nih.gov/refseq/) and are available locally. This can be done by specifying `source = "createFromSourceFiles"` in `postNetStart()`, and providing the the RNA GBFF ("rna.gbff"), RNA FASTA ("rna.fna"), and genomic GFF ("genomic.gff") files. These files must be provided using the `rna_gbff_file`, `rna_fa_file`, and `genomic_gff_file` parameters of `postNetStart()`.    
+
+```{r RefSeqCreateFromSourceFiles, eval=FALSE, echo=TRUE}
+
+#  The required RefSeq annotation files downloaded from the NCBI database will 
+#  have the following naming:
+#  - "_rna.gbff.gz"
+#  - "_rna.fa.gz"
+#  - "_genomic.gff.gz"
+
+# Initialize a postNetData object creating a new RefSeq reference sequence annotation 
+# from source files:
+ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   source = "createFromSourceFiles",
+   species = "human",
+   rna_gbff_file = "_rna.gbff.gz",
+   rna_fa_file = "_rna.fa.gz",
+   genomic_gff_file = "_genomic.gff.gz"
+ )
+
+```
+
+It is also possible to assemble reference sequence annotations from a FASTA file using `source = "createFromFasta"` in `postNetStart()`. This option requires that a FASTA file be provided using the `fastaFile` parameter, along with an additional file specifying the coordinates of the mRNA sequence regions (provided with the `posFile` parameter). This position file must tab delimited and have columns indicating the transcript id, 5'UTR length, end of the coding sequence, and the total transcript length (see example below). Optionally, a genomic GFF file can also be provided using the `genomic_gff_file` parameter, however, if not GFF is provided the latest version for the indicated species will be automatically downloaded from the RefSeq database.  
+
+```{r RefSeqCreateFromFasta, eval=FALSE, echo=TRUE}
+
+# An example for the required format for the posFile parameter:
+# id	UTR5_len	cds_stop	total_length
+# NM_000014	70	4495	4610
+# NM_000015	70	943	1285
+# NM_000016	79	1345	2261
+
+# Initialize a postNetData object creating a new RefSeq reference sequence annotation 
+# from source files:
+ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   source = "createFromFasta",
+   species = "human",
+   fasta_file = "_rna.fa.gz",
+   posFile  = "positions.txt"
+   genomic_gff_file = "_genomic.gff.gz"
+ )
+
+```
+
 
 ### Using custom sequence annotations
 
 ### Adjusting sequence annotations
 
 ### Selecting isoforms
+
+## Setting up a postNet analysis using gene lists
+
+## Setting up a postNet analysis using an anota2seq object
+
 
 <a name="mRNAfeatures"/>
 
@@ -270,23 +387,67 @@ Reference sequence annotations corresponding to the 5'UTR, CDS, and 3'UTR region
 
 ## Codon and amino acid usage
 
+### Selecting enriched or depleted codons or amino acids
+
+### Enumerating codons or amino acids 
+
 <a name="modelling"/>
 
 # Modelling and network analysis of post-transcriptional regulation 
 
-## Overview
-
 ## Selecting features for modelling
+
+### *Cis*-acting features
+
+### *Trans*-acting features
+
+### Creating the feature list
+
+### Highly correlated variables 
+
+## Post-transcriptional network modelling with stepwise linear regression
+
+### Overview
+
+### Univariate models
+
+### Omnibus model
+
+### Adjusted model
+
+### Understanding covariance and feature correlations
+
+### Network visualizations
+
+### Feature visualizations
+
+## Post-transcriptional network modelling with random forest classification
+
+### Overview
+
+### Receiver Operating Characteristic (ROC) analysis
+
+### Feature Importance
 
 
 <a name="UMAPvis"/>
 
 # Visualize and explore relationships between mRNA features and regulatory effects 
 
+## Plotting UMAPs
+
+### Clustering and colouring options
+
+### Scaling and binary features 
+
 
 <a name="networkPred"/>
 
 # Predicting post-transcriptional regulation
+
+## Selecting features to predict post-transcriptional regulation
+
+## Predicting regulation in a new data set 
 
 
 <a name="enrichmentAnalysis"/>
@@ -307,7 +468,7 @@ Reference sequence annotations corresponding to the 5'UTR, CDS, and 3'UTR region
 
 ## miRNA enrichment analysis with a postNetData object
 
-## Gene Signatures
+## Threshold-independent analysis of gene signatures
 
 ### Assessing gene signatures using the gene list workflow
 
