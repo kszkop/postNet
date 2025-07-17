@@ -52,7 +52,7 @@ library(postNet)
 data("postNetExample")
 ```
 
-**Step 1:** A `postNetData` object is initialized containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency), and reference mRNA sequence annotations.   
+**Step 1:** A `postNetData` object containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency), and reference mRNA sequence annotations in initialized using the `postNetStart()` function.   
 ```{r gettingStartedInput, eval=TRUE, echo=TRUE}
 # Prepare custom gene lists and regulatory effect measurement:
 myGenes <- postNetExample$geneList
@@ -137,7 +137,7 @@ knitr::include_graphics("Figures/combined_UTR5_features.png")
 unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf","Figures/Example_UTR5_boxplot_lengthAnalysis.png","Figures/Example_UTR5_GC_content.png"))
 ```
 
-**Step 3:** changes in translation efficiency are modeled using stepwise regression to identify the collection of features that best explains the observed regulation. In this minimal example, a set of pre-calculated features is used including both *cis*-acting (enumerated mRNA features) and *trans*-acting (signatures of upstream regulatory pathways) factors. 
+**Step 3:** Changes in translation efficiency are modeled using the `featureIntegration` function which performs stepwise regression to identify the collection of features that best explains the observed regulation. In this minimal example, a set of pre-calculated features is used including both *cis*-acting (enumerated mRNA features) and *trans*-acting (signatures of upstream regulatory pathways) factors. 
 
 ```{r gettingStartedFeatureInt, eval=TRUE, echo=TRUE}
 # Prepare the list of pre-calculated features to be used in modelling (for example, the 'len' and 'content_UTR' variables defined in the previous step can be included) 
@@ -188,7 +188,7 @@ knitr::include_graphics("Figures/omnibus_lm_translationUp_translationDown_networ
 unlink(c("omnibus_lm_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "omnibus_lm_translationUp_translationDown_Down_individually.pdf","omnibus_lm_translationUp_translationDown_FinalModel.pdf","omnibus_lm_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf","omnibus_lm_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf","omnibus_lm_translationUp_translationDown_network.pdf","omnibus_lm_translationUp_translationDown_uORFs_ATG_strong_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_C_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_T_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_T_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_A_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_length_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_T_individually.pdf"))
 ```
 
-**Step 4:** Visualize the relationship between translation efficiency and different features that were identified in the modelling step as significantly contributing to the observed translational regulation. These visualizations are also useful for exploring the overlaps between different features within the same mRNAs.  
+**Step 4:** The `plotFeaturesMap()` function is used to visualize the relationship between translation efficiency and different features that were identified in the modelling step as significantly contributing to the observed translational regulation. These visualizations are also useful for exploring the overlaps between different features within the same mRNAs.  
 
 ```{r gettingStartedPlotFeautresMap, eval=TRUE, echo=TRUE}
 
@@ -331,11 +331,11 @@ ptn <- postNetStart(
 
 ```
 
-It is also possible to assemble reference sequence annotations from a FASTA file using `source = "createFromFasta"` in `postNetStart()`. This option requires that a FASTA file be provided using the `fastaFile` parameter, along with an additional file specifying the coordinates of the mRNA sequence regions (provided with the `posFile` parameter). This position file must tab delimited and have columns indicating the transcript id, 5'UTR length, end of the coding sequence, and the total transcript length (see example below). Optionally, a genomic GFF file can also be provided using the `genomic_gff_file` parameter, however, if not GFF is provided the latest version for the indicated species will be automatically downloaded from the RefSeq database.  
+For added flexibility in defining custom sequence regions, it is also possible to assemble reference sequence annotations from a FASTA file using `source = "createFromFasta"` in `postNetStart()`. This option requires that a FASTA file be provided using the `fastaFile` parameter, along with an additional file specifying the coordinates of the mRNA sequence regions (provided with the `posFile` parameter). This position file must tab delimited and have columns indicating the transcript id, 5'UTR length, end of the coding sequence, and the total transcript length (see example below). Optionally, a genomic GFF file can also be provided using the `genomic_gff_file` parameter, however, if not GFF is provided the latest version for the indicated species will be automatically downloaded from the RefSeq database.  
 
 ```{r RefSeqCreateFromFasta, eval=FALSE, echo=TRUE}
 
-# An example for the required format for the posFile parameter:
+# An example of the required format for the posFile parameter ("positions.txt"):
 # id	UTR5_len	cds_stop	total_length
 # NM_000014	70	4495	4610
 # NM_000015	70	943	1285
@@ -360,9 +360,31 @@ ptn <- postNetStart(
 
 ### Using custom sequence annotations
 
+Custom reference sequence annotations can also be used with the ´postNetStart()´ function and may be desirable in cases when working with data from species not currently supported by the options described above, or with annotations other than those in the NCBI RefSeq database. A pre-prepared reference sequence annotation file can be provided using the `customFile` parameter. This file must be tab delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq. 
+
+```{r RefSeqCustom, eval=FALSE, echo=TRUE}
+
+# An example of the required format for the customFile parameter ("customSequences.txt"):
+# id	geneID	UTR5_seq	CDS_seq	UTR3_seq
+# NM_000014	A2M	GGGACCAG...	ATGGGGAA...	AGACCACA...
+
+# Initialize a postNetData object with a custom reference sequence annotation file:
+ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   source = "custom",
+   species = NULL,
+   customFile = "customSequences.txt"
+ )
+
+```
+
+
 ### Adjusting sequence annotations
 
-### Selecting isoforms
+### Selecting transcript isoforms
 
 ## Setting up a postNet analysis using gene lists
 
@@ -454,7 +476,7 @@ ptn <- postNetStart(
 
 # Functional enrichment analyses with postNet
 
-## Slope filtering
+## Slope filtering with an anota2seq object
 
 ## Performing GSEA with a postNetData object
 
