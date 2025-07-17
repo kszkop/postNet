@@ -358,7 +358,7 @@ ptn <- postNetStart(
 ```
 
 
-### Using custom sequence annotations
+### Using custom reference sequence annotations
 
 Custom reference sequence annotations can also be used with the ´postNetStart()´ function and may be desirable in cases when working with data from species not currently supported by the options described above, or with annotations other than those in the NCBI RefSeq database. A pre-prepared reference sequence annotation file can be provided using the `customFile` parameter. This file must be tab delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq. 
 
@@ -383,6 +383,8 @@ ptn <- postNetStart(
 
 
 ### Adjusting sequence annotations
+
+In some cases
 
 ### Selecting transcript isoforms
 
