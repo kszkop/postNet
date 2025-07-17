@@ -242,20 +242,41 @@ These inputs are compiled at the start of the analysis by initializing a `postNe
 
 Reference sequence annotations corresponding to the 5'UTR, CDS, and 3'UTR regions of mRNAs, including in-built, custom, or retrieved directly from the NCBI RefSeq database [@OLeary2016]. Optionally, UTR sequences can also be adjusted if more precise sequences are available (e.g. from CAGE, QuantSeq, long-read sequencing, etc.)
 
+### Loading in-built sequence annotations
+
+### Retrieving sequence annotations from the NCBI RefSeq database
+
+### Using custom sequence annotations
+
+### Adjusting sequence annotations
+
+### Selecting isoforms
 
 <a name="mRNAfeatures"/>
 
 # Analysis of mRNA sequence features
 
+## Length of sequence regions
+
+## Nucleotide content
+
+## Folding energy
+
+## upstream open reading frames (uORFs)
+
+## Motif discovery using STREME
+
+## Motif enumeration
+
+## Codon and amino acid usage
 
 <a name="modelling"/>
 
-# Modelling post-transcriptional regulation 
+# Modelling and network analysis of post-transcriptional regulation 
 
+## Overview
 
-<a name="networkPred"/>
-
-# Network analysis and prediction
+## Selecting features for modelling
 
 
 <a name="UMAPvis"/>
@@ -263,9 +284,37 @@ Reference sequence annotations corresponding to the 5'UTR, CDS, and 3'UTR region
 # Visualize and explore relationships between mRNA features and regulatory effects 
 
 
+<a name="networkPred"/>
+
+# Predicting post-transcriptional regulation
+
+
 <a name="enrichmentAnalysis"/>
 
 # Functional enrichment analyses with postNet
+
+## Slope filtering
+
+## Performing GSEA with a postNetData object
+
+### Plotting GSEA results
+
+## GAGE analysis with a postNetData object
+
+## GO term analysis with a postNetData object
+
+### Plotting GO term analysis results
+
+## miRNA enrichment analysis with a postNetData object
+
+## Gene Signatures
+
+### Assessing gene signatures using the gene list workflow
+
+### Assessing signatures from the anota2seq object workflow
+
+### Generating gene signature heatmaps
+
 
 
 # References
