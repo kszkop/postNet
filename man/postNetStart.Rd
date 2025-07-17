@@ -117,7 +117,8 @@
          supported with the \code{species} \code{"human"} and \code{"mouse"}.}
      \item{\code{"custom"}}{Use a pre-prepared reference sequence annotation file provided with the \code{customFile}
          parameter. This option can be used when working with sequences from \code{species} not currently supported
-         by the options above, or with annotations other than those in the NCBI RefSeq database.}
+         by the options above, or with annotations other than those in the NCBI RefSeq database. The \code{customfile} provided must be tab delimited and contain the columns: 
+         transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq.}
    }
 }
   \item{version}{If \code{source} is \code{"load"}, specify the RefSeq release version that should be used for the reference sequence annotations. Available versions can be checked using the \code{\link[postNet]{checkAvailableVersions}}
