@@ -1583,16 +1583,21 @@ plotScatterInd <- function(set1, set2 = NULL, orgName, coloursIn, nameOut) {
   xlim_max <- roundNice(max(set[, 1]), direction = "up")
   ylim_min <- roundNice(min(set[, 2]), direction = "down")
   ylim_max <- roundNice(max(set[, 2]), direction = "up")
+  
+  is_categorical <- is.numeric(set[, 1]) && all(abs(unique(set[, 1]) - round(unique(set[, 1]))) < 1e-6) && length(unique(set[, 1])) <= 10
+  
 
-  if(is_binary(set[, 1])){
-    plot(jitter(set1[, 1], amount=0), set1[, 2], col = coloursIn[1], ylim = c(ylim_min, ylim_max), pch = 16, cex = 1, xlab = "", ylab = "", lwd = 1, bty = "n", font = 2, xaxt = "n")
-    axis(1, at = c(0, 1), labels = c("0", "1"), font = 2)
+  if(is_categorical(set[, 1])){
+    plot(jitter(set1[, 1], amount=0), set1[, 2], xlim = range(set[,1]), col = coloursIn[1], ylim = c(ylim_min, ylim_max), pch = 16, cex = 1, xlab = "", ylab = "", lwd = 1, bty = "n", font = 2, xaxt = "n")
+
+    axis(1, at = sort(unique(set[, 1])), labels = as.character(sort(unique(set[, 1]))), font = 2)
+
   } else {
     plot(set1[, 1], set1[, 2], col = coloursIn[1], xlim = c(xlim_min, xlim_max), ylim = c(ylim_min, ylim_max), pch = 16, cex = 1, xlab = "", ylab = "", lwd = 1, bty = "n", font = 2)
     
   }
   if (!is.null(set2)) {
-    if(is_binary(set[, 1])){
+    if(is_categorical(set[, 1])){
       points(jitter(set2[, 1], amount=0), set2[, 2], pch = 16, col = coloursIn[2])
     } else {
       points(set2[, 1], set2[, 2], pch = 16, col = coloursIn[2])
@@ -1639,8 +1644,32 @@ is_binary <- function(x) {
   }
 }
 
+is_categorical <- function(x, max_levels = 10) {
+  unique_values <- unique(x)
+  n_levels <- length(unique_values)
+  
+  if (is.factor(x) || is.character(x)) {
+    return(n_levels <= max_levels)
+  }
+  
+  if (is.numeric(x)) {
+    #
+    is_integer_like <- all(abs(unique_values - round(unique_values)) < 1e-6)
+    return(is_integer_like && n_levels <= max_levels)
+  }
+  
+  return(FALSE)
+}
+
+
+is_categorical <- function(x){
+  is.numeric(set[, 1]) && all(abs(unique(set[, 1]) - round(unique(set[, 1]))) < 1e-6) && length(unique(set[, 1])) <= 10
+  
+  
+  
+
 plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
-  if (!is.null(remExtreme) & !is_binary(colVec)) {
+  if (!is.null(remExtreme) & !is_categorical(colVec)) {
     minV <- quantile(colVec, remExtreme)
     maxV <- quantile(colVec, 1 - remExtreme)
 

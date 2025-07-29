@@ -5,6 +5,7 @@ plotFeaturesMap <- function(ptn,
                            remBinary = TRUE,
                            featCol = NULL,
                            scaled = FALSE,
+                           centered = TRUE,
                            remExtreme = NULL,
                            pdfName = NULL
                            ){
@@ -33,6 +34,9 @@ plotFeaturesMap <- function(ptn,
   }
   if (!check_logical(scaled)) {
     stop("'scaled' can only be TRUE or FALSE")
+  }
+  if (!check_logical(centered)) {
+    stop("'centered' can only be TRUE or FALSE")
   }
   if(!check_logical(remBinary)){
     stop("'remBinary' can only be TRUE or FALSE")
@@ -80,7 +84,8 @@ plotFeaturesMap <- function(ptn,
     featuresCluster <- featuresSel
   }
   if(isTRUE(scaled)){
-    featuresCluster <- scale(na.omit(featuresCluster), center=T)
+    #save <- featuresCluster
+    featuresCluster <- scale(na.omit(featuresCluster), center = centered, scale = scaled)
   } else {
     featuresCluster <- na.omit(featuresCluster)
   }
