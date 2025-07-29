@@ -1661,13 +1661,6 @@ is_categorical <- function(x, max_levels = 10) {
   return(FALSE)
 }
 
-
-is_categorical <- function(x){
-  is.numeric(set[, 1]) && all(abs(unique(set[, 1]) - round(unique(set[, 1]))) < 1e-6) && length(unique(set[, 1])) <= 10
-  
-  
-  
-
 plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
   if (!is.null(remExtreme) & !is_categorical(colVec)) {
     minV <- quantile(colVec, remExtreme)
