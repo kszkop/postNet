@@ -4,8 +4,8 @@ rfPred <- function(ptn,
                    predFeatures,
                    pdfName = NULL){
   check_ptn(ptn)
-  if(is.null(slot(ptn@analysis@featureIntegration,'rf'))){
-    stop(paste('Please run ', analysis_type, 'analysis first', sep=''))
+  if(is.null(ptn@analysis@featureIntegration$rf)){
+    stop('Please run random forest analysis first')
   }
   if (!check_number(comparison)) {
     stop("please provide correct comparison number. You can check them using ptn_check_comparisons(ptn, analysis_type='rf') ")
