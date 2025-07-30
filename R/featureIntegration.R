@@ -132,6 +132,9 @@ featureIntegration <- function(ptn,
       #
       bestSel <- names(lmOut@selectedFeatures)
       
+      nameOut <- ifelse(is.null(pdfName), 'lm_allData', paste(pdfName, 'lm_allData', sep='_'))
+      
+      
       for (feat in bestSel) {
         #
         featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
@@ -163,6 +166,8 @@ featureIntegration <- function(ptn,
         coloursTmp <- coloursTmp[compTmp]
       }
       #regTmp <- names(resOut)[compTmp]
+      nameOut <- ifelse(is.null(pdfName), paste('randomForest', paste(names(resOut)[compTmp], collapse = '_'), sep='_'), paste(pdfName, 'randomForest', paste(names(resOut)[compTmp], collapse = '_'), sep='_'))
+      
       dataTmpSel <- dataTmpReg
       dataTmpSel$reg <- NA
       for(j in 1:2) {
@@ -192,7 +197,7 @@ featureIntegration <- function(ptn,
       # selecct important once
       featComf <- row.names(Boruta::attStats(model1Imp))[which(as.character(Boruta::attStats(model1Imp)[, 6]) == "Confirmed")]
       #
-      pdf(paste("featureImportance.pdf", sep = "_"), width = 8, height = 8, useDingbats = F)
+      pdf(paste(nameOut, "featureImportance.pdf", sep = "_"), width = 8, height = 8, useDingbats = F)
       par(mar = c(10, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
       plot(model1Imp, las = 2, xlab = "", ylab = "", yaxt = "n", xaxt = "n", pch = 20)
       mtext(side = 1, line = 9, "Features", col = "black", font = 2, cex = 1.2)
@@ -221,7 +226,7 @@ featureIntegration <- function(ptn,
       varImpIn <- sort(randomForest::importance(model2)[, 3], decreasing = T)
       #names(varImpIn) <- namesDf$originalNames[match(names(varImpIn), namesDf$newNames)]
       #
-      pdf(paste("FinalModel.pdf", sep = "_"), width = 16, height = 8, useDingbats = F)
+      pdf(paste(nameOut,"FinalModel.pdf", sep = "_"), width = 16, height = 8, useDingbats = F)
       par(mfrow = c(1, 2), mar = c(9, 5, 10, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
       colDot <- rep("black", length(randomForest::importance(model2)[, 3]))
       #colDot[which(names(sort(randomForest::importance(model2)[, 3], decreasing = F)) %in% featComf)] <- "#B0F2BC"
@@ -255,7 +260,7 @@ featureIntegration <- function(ptn,
       text(0.8, 0.1, font = 2, cex = 1.7, paste("Specificity: ", round(caret::confusionMatrix(predValidc, ValidSet$reg)[[4]][2], 2), sep = ""))
       dev.off()
       
-      pdf('pred_rocr.pdf',width=8,height=8, useDingbats = F)
+      pdf(paste(nameOut,'pred_rocr.pdf', sep='_'),width=8,height=8, useDingbats = F)
       plot(predOut, main = paste("ROC Curve for Random Forest \n AUC: ", round(auc@y.values[[1]], 3), sep = ""), col = "firebrick1", lwd = 3, xlab = "", ylab = "", )
       abline(a = 0, b = 1, lwd = 2, lty = 2, col = "gray")
       
