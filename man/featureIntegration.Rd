@@ -40,17 +40,17 @@ featureIntegration(ptn,
 }
   \item{useCorel}{
 }
-  \item{covarFilt}{
+  \item{covarFilt}{Minimum threshold for covariance between features to be dispayed for the network plot. The default is 20.
 }
-  \item{NetModelSel}{
+  \item{NetModelSel}{Values for the variance explained for the network plot. The default is "Omnibus". Aternatively "Adjusted" or "Univariate" can be provided. 
 }
-  \item{comparisons}{
+  \item{comparisons}{If \code{regOnly = TRUE}, provide a list of numeric vectors specifying pairwise comparisons between gene sets defined in the \code{regulation} or \code{geneList} slots of the \code{postNetData} object. Use 0 to denote the background set. For example, \code{list(c(0,2), c(1,2))} compares gene set 2 to the background and gene set 1 to gene set 2. The default is \code{NULL}. If both  \code{regulation} and \code{geneList} are provided, \code{geneList} is appended to the end.
 }
   \item{fdrUni}{
 }
   \item{stepP}{
 }
-  \item{pdfName}{
+  \item{pdfName}{Name of the output pdf files.
 }
 }
 

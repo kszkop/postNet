@@ -8,9 +8,9 @@ rfPred <- function(ptn,
     stop("Please run random forest analysis first")
   }
   if (!check_number(comparison)) {
-    stop("please provide correct comparison number. You can check them using ptn_check_comparisons(ptn, analysis_type='rf') ")
+    stop("Please provide the correct comparison number. You can check them using ptn_check_comparisons(ptn, analysis_type='rf') ")
     if (length(comparison) != 1) {
-      stop("there can be only one comparison")
+      stop("There can be only one comparison")
     }
   }
   modelIn <- ptn_model(ptn, analysis_type = "rf", comparison = comparison, model = "finalModel")
