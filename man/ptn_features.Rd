@@ -61,5 +61,5 @@
                           
 # Retrieve a data.frame summary of the features used in modelling
  featureInput <- ptn_features(ptn)
- 
+ str(featureInput)
 }
