@@ -61,13 +61,35 @@ featureIntegration(ptn,
 \details{
 }
 
-\value{
+\value{The \code{featureIntegration} function returns an updated \code{postNetData} object with results compiled and stored in the \code{features} and \code{featureIntegration} slots.
+
+The \code{features} slot stores a \code{data.frame} with the features used as input for feature integration modelling, where rows correspond to genes, and columns correspond to features. The input feature \code{data.frame} can be retrieved using the \link[postNet]{ptn_features} S4 method.     
+
+The \code{codonSelection} slot stores a named list of the selected codons or AAs that were significantly enriched or depleted (according to the selected thresholds) in the specified comparisons. This list can be used as input for the \link[postNet]{codonCalc} function (see example below). The contents of the "codonSelection" slot can be accessed using the \link[postNet]{ptn_codonSelection} S4 method. 
+
+The \code{codonUsage} function also generates plots comparing the codon indexes described above between gene sets, a clustered heatmap of the Chi-square residuals for each codon between the gene sets of interest, and plots comparing the average codon count and frequency between the gene sets of interest (codons encoding the same amino acid are coloured and connected by lines).  
 }
 
 \references{
+If you use random forest analysis, please cite:
+
+Sing T, Sander O, Beerenwinkel N, Lengauer T (2005). “ROCR: visualizing classifier performance in R.” Bioinformatics, 21(20), 7881. http://rocr.bioinf.mpi-sb.mpg.de.
+
+Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R News, 2(3), 18-22. https://CRAN.R-project.org/doc/Rnews/. 
+
+Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Journal of Statistical Software, 36(11), 1–13. https://doi.org/10.18637/jss.v036.i11.
 }
 
 \seealso{
+\code{\link[Boruta]{Boruta}} \cr
+\code{\link[randomForest]{randomForest}} \cr
+\code{\link[ROCR]{ROCR}} \cr
+\code{\link[postNet]{rfPred}} \cr
+\code{\link[postNet]{plotFeaturesMap}} \cr
+\code{\link[postNet]{ptn_model}} \cr
+\code{\link[postNet]{ptn_features}} \cr
+\code{\link[postNet]{ptn_selectedFeatures}} \cr
+\code{\link[postNet]{ptn_networkGraph}} \cr
 }
 
 \examples{

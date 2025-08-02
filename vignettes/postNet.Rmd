@@ -151,12 +151,12 @@ groupColour = c('#834b62','#6699cc','#e9724c','#fff275')
 names(groupColour) <- c("UTR5","CDS", "UTR3","Pathway")
 
 # Run feature integration modelling using stepwise regression
-ptn <- featureIntegration(ptn=ptn, 
+ptn <- featureIntegration(ptn = ptn, 
                           features = features, 
-                          pdfName = 'omnibus', 
+                          pdfName = "omnibus", 
                           regOnly = T, 
                           allFeat = F,
-                          analysis_type ='lm',
+                          analysis_type = "lm",
                           covarFilt = 20,
                           comparisons = list(c(1,2)),
                           lmfeatGroup = group,
