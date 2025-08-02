@@ -52,7 +52,7 @@ featureIntegration(ptn,
 }
   \item{fdrUni}{If \code{analysis_type = "lm"}, provide a numeric value between 0 and 1 specifying the FDR threshold to select significant features in univariate analyses. When \code{allFeat = FALSE}, only the features passing this threshold will be included in the stepwise regression modelling. Default is \code{0.05}.  
 }
-  \item{stepP}{
+  \item{stepP}{If \code{analysis_type = "lm"}, provide a numeric value between 0 and 1 specifying the p-value threshold to determine if features should be retained in the omnibus model after each step of stepwise regression. Default is \code{0.05}.
 }
   \item{pdfName}{Name to be appended to output PDF files.
 }
