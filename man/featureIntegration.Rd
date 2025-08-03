@@ -3,9 +3,9 @@
 \title{Feature integration with post-transcriptional network modelling
 }
 
-\description{ The \code{featureIntegration} function is used to model changes in post-transcriptional regulation and identify cis and/or trans factors (features of mRNA molecules, signatures of upstream regulators, etc.) that can explain the observed regulation.  The method integrates mRNA features and signatures obtained in previous steps of the postNet workflow, and has several options for implementation:
+\description{ The \code{featureIntegration} function is used to model changes in post-transcriptional regulation and identify cis and/or trans factors (features of mRNA molecules, signatures of upstream regulators, etc.) that can explain the observed regulation.  The method integrates mRNA features and signatures obtained in previous steps of the postNet workflow (or from custom sources), and has several options for implementation:
     \itemize{
-      \item Stepwise linear regression modelling and network analysis
+      \item Stepwise linear regression modelling and network analysis. 
       \item Random Forest feature selection and classifcation
     }
   The resulting \code{postNetData} object is then passed to downstream functions in the \pkg{postNet}
