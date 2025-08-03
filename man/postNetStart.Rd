@@ -149,6 +149,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
   \item{keepAll}{When using adjusting UTR sequences with \code{adjObj} and \code{excl} is \code{FALSE}, the \code{keepAll} parameter determines how the custom UTR sequences are integrated into the existing annotation file for genes with multiple isoforms. If \code{TRUE}, the UTR sequences in the annotation file will be replaced with the custom sequences corresponding to the same transcript IDs. However, if there are multiple transcript IDs (isoforms) for the same gene ID, all isoforms will be retained, including transcript IDs where custom sequences were not available in \code{adjObj}. Note that unless the custom sequences are always the longest or shortest isoforms that can be selected using the \code{selection} parameter, when \code{keepAll} is \code{TRUE}, the custom sequences are not guaranteed to be the ones considered if a gene-level analysis is performed. If \code{FALSE}, transcript IDs (isoforms) corresponding to the same gene that are not found in the custom sequences provided in \code{adjObj} will be removed, such that only the custom UTR sequences will be available for genes with multiple isoforms. The default is \code{FALSE}.
 }
 }
+
 \details{
   By default, \code{postNetStart} will load or create reference sequence 
   annotations from RefSeq for \code{species}, assemble or load gene lists of 

@@ -384,9 +384,33 @@ ptn <- postNetStart(
 
 ### Adjusting sequence annotations
 
-In some cases
+[@Gandin2016]  \item{adjObj}{A named list of custom UTR sequences that will replace the existing UTR sequences in the annotation file. List elements must be named \code{"UTR5"} and/or \code{"UTR3"}, and elements should be a named character vector of UTR sequences where names are transcript IDs (for example, \code{NM_...}), and values are the new UTR sequences. This parameter is useful when more precise measurements of UTR sequences are available (for example, from CAGE or QuantSeq data).
+}
+  \item{region_adj}{Character vector specifying which UTR regions in your annotation should be adjusted by the provided
+\code{adjObj}. This parameter can be used to adjust both UTR regions (e.g., \code{c("UTR5","UTR3")}), or one at a time.
+}
+  \item{excl}{When providing custom UTR sequences with \code{adjObj}, sequences may not be available for all genes/isoforms included in the existing annotation file. This parameter determines whether to keep all genes/isoforms, or exclude those that are not included in \code{adjObj}. If \code{TRUE}, any transcript IDs present in the existing annotation file that are not present in \code{adjObj} will be removed. If \code{FALSE}, then the UTR sequences in the annotation file will be replaced with the custom sequences in \code{adjObj} when they are available, but for transcript IDs where a custom sequence is not available, the original sequence present in the annotation file will be retained and used in the analysis. The default is \code{FALSE}.
+}
+  \item{keepAll}{When using adjusting UTR sequences with \code{adjObj} and \code{excl} is \code{FALSE}, the \code{keepAll} parameter determines how the custom UTR sequences are integrated into the existing annotation file for genes with multiple isoforms. If \code{TRUE}, the UTR sequences in the annotation file will be replaced with the custom sequences corresponding to the same transcript IDs. However, if there are multiple transcript IDs (isoforms) for the same gene ID, all isoforms will be retained, including transcript IDs where custom sequences were not available in \code{adjObj}. Note that unless the custom sequences are always the longest or shortest isoforms that can be selected using the \code{selection} parameter, when \code{keepAll} is \code{TRUE}, the custom sequences are not guaranteed to be the ones considered if a gene-level analysis is performed. If \code{FALSE}, transcript IDs (isoforms) corresponding to the same gene that are not found in the custom sequences provided in \code{adjObj} will be removed, such that only the custom UTR sequences will be available for genes with multiple isoforms. The default is \code{FALSE}.
 
 ### Selecting transcript isoforms
+
+  \item{selection}{Specifies which mRNA isoform will be selected from the reference sequence annotation for use in analyses in cases when multiple isoforms are present for a given gene. This parameter can be one of:
+\describe{
+     \item{\code{"longest"}}{Selects the longest sequence isoform.}
+     \item{\code{"shortest"}}{Selects the shortest sequence isoform.}
+     \item{\code{"random"}}{(Default) Selects an isoform at random. Note that selecting the longest or
+     shortest isoforms for all genes may skew results for some analyses. For this reason, the default
+     selection is \code{"random"}. However, this may lead to slight differences in results if the \code{postNetStart} 
+     function is run multiple times. For cases where multiple analyses may be run using the same data, the \code{setSeed}
+     parameter can be used to ensure that random isoform selection is stable each time \code{postNetStart} is run.}
+     }
+}
+  \item{setSeed}{If \code{selection} is \code{"random"}, provide a single integer value to be used with \code{set.seed} 
+  to ensure that the random isoform selection is reproducible between different runs of the \code{postNetStart} function. 
+  Any integer can be provided (for example 123), however, the same value must be provided between different analyses for 
+  isoform selection to be reproducible. 
+}
 
 ## Setting up a postNet analysis using gene lists
 
@@ -479,6 +503,14 @@ In some cases
 # Functional enrichment analyses with postNet
 
 ## Slope filtering with an anota2seq object
+
+When performing GSEA, GAGE, or GO term analysis using the output of an \pkg{anota2seq} analysis, it is often necessary to filter the input 
+genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. 
+This is due to that the slopes fitted by the anota2seq APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, 
+impacting the analysis of changes in translation or translational buffering (or offsetting). Filtering out genes with these unrealistic slopes is especially important 
+for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering 
+on the analysis is likely to be more negligible. However, slope filtering is still recommended. Note that in high-quality data sets, usually 
+few genes will require slope filtering.  
 
 ## Performing GSEA with a postNetData object
 
