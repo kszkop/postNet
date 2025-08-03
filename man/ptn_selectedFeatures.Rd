@@ -24,7 +24,9 @@
   The selected features can also be quantified in other gene lists or datasets and used to predict regulation using random forest classification, implemented with the \link[postNet]{rfPred} function.  
 }
 
-\value{If \code{analysis_type = "lm"} a named numeric vector of the features selected by stepwise regression modelling will be returned. Numeric values correspond to the proportion of variance in the regulatory effect that could be explained by each feature (from either omnibus, or adjusted models). If \code{analysis_type = "rf"}, the selected features identified by \link[Boruta]{Boruta} and used in random forest classification will be returned, with values corresponding to feature importance calculated by \link[randomForest]{randomForest}.  
+\value{If \code{analysis_type = "lm"} a named numeric vector of the features selected by stepwise regression modelling will be returned. Selected features are those passing the significance defined using the \code{stepP} parameter of the \link[postNet]{featureIntegration} function.  Numeric values correspond to the proportion of variance in the regulatory effect explained by each feature (from either omnibus, or adjusted models). 
+
+If \code{analysis_type = "rf"}, the selected features identified by \link[Boruta]{Boruta} and used in random forest classification will be returned, with values corresponding to feature importance calculated by \link[randomForest]{randomForest}.  
 }
 
 \references{
