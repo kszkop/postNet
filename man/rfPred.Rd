@@ -7,19 +7,23 @@
 }
 
 \usage{
-rfPred(ptn, comparison, predGeneList, predFeatures, pdfName = NULL)
+rfPred(ptn, 
+      comparison, 
+      predGeneList, 
+      predFeatures, 
+      pdfName = NULL)
 }
 
 \arguments{
-  \item{ptn}{
+  \item{ptn}{A \linkS4class{postNetData} object.
 }
-  \item{comparison}{
+  \item{comparison}{An integer specifying which comparison to select results from. For example, \code{1} would select the first comparison specified in the \code{comparisons} parameter of the \link[postNet]{featureIntegration} function.
 }
   \item{predGeneList}{
 }
   \item{predFeatures}{
 }
-  \item{pdfName}{
+  \item{pdfName}{Name to be appended to output PDF files.
 }
 }
 
