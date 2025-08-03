@@ -20,7 +20,7 @@
 }
 
 \seealso{
-\link[postNet]{featureIntegration}
+\link[postNet]{featureIntegration} \cr
 \link[postNet]{signCalc}
 }
 
@@ -59,7 +59,7 @@
                           comparisons = list(c(1,2)),
                           NetModelSel = "omnibus")
                           
-# Retrieve a data.frame summary of the features used in modelling
+# Retrieve a data.frame summarzing the features for each gene used in modelling
  featureInput <- ptn_features(ptn)
  str(featureInput)
 }
