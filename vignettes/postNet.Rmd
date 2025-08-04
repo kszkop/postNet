@@ -360,7 +360,7 @@ ptn <- postNetStart(
 
 ### Using custom reference sequence annotations
 
-Custom reference sequence annotations can also be used with the ´postNetStart()´ function and may be desirable in cases when working with data from species not currently supported by the options described above, with annotations other than those in the NCBI RefSeq database, or if sequences have been experimentally determined (for example, using long read sequencing). A pre-prepared reference sequence annotation file can be provided using the `customFile` parameter. This file must be tab delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq. 
+Custom reference sequence annotations can also be used with the `postNetStart()` function and may be desirable in cases when working with data from species not currently supported by the options described above, with annotations other than those in the NCBI RefSeq database, or if sequences have been experimentally determined (for example, using long read sequencing). A pre-prepared reference sequence annotation file can be provided using the `customFile` parameter. This file must be tab delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq. 
 
 ```{r RefSeqCustom, eval=FALSE, echo=TRUE}
 
@@ -381,23 +381,10 @@ ptn <- postNetStart(
 
 ```
 
-
-### Adjusting sequence annotations
-
-The transcriptome is highly diverse, with mRNA isoform expression patterns varying across cell types [ref], and between normal and disease states [ref]. The sequences of mRNA molecules can also be dynamically regulated through processes such as alternative splicing [ref], altered transcription start site usage [ref], alternative polyadenylation [ref]. Analyses relating mRNA sequence features to post-transcriptional regulation will benefit from more precise sequence annotations if these are available. For example, 5'UTRs mapped by nanoCAGE sequencing were often different from database 5'UTRs annotations [@Gandin2016]. Although entirely custom sequence annotations can be supplied, as described above, numerous sequencing approaches are available to specifically map UTRs, such as CAGE/nanoCAGE [ref] and QuantSeq [ref]. For this reason, it is also possible to adjust only UTR sequences if more specific data is available for your experimental condition or system of interest.
-
-\item{adjObj}{A named list of custom UTR sequences that will replace the existing UTR sequences in the annotation file. List elements must be named \code{"UTR5"} and/or \code{"UTR3"}, and elements should be a named character vector of UTR sequences where names are transcript IDs (for example, \code{NM_...}), and values are the new UTR sequences. This parameter is useful when more precise measurements of UTR sequences are available (for example, from CAGE or QuantSeq data).
-}
-  \item{region_adj}{Character vector specifying which UTR regions in your annotation should be adjusted by the provided
-\code{adjObj}. This parameter can be used to adjust both UTR regions (e.g., \code{c("UTR5","UTR3")}), or one at a time.
-}
-  \item{excl}{When providing custom UTR sequences with \code{adjObj}, sequences may not be available for all genes/isoforms included in the existing annotation file. This parameter determines whether to keep all genes/isoforms, or exclude those that are not included in \code{adjObj}. If \code{TRUE}, any transcript IDs present in the existing annotation file that are not present in \code{adjObj} will be removed. If \code{FALSE}, then the UTR sequences in the annotation file will be replaced with the custom sequences in \code{adjObj} when they are available, but for transcript IDs where a custom sequence is not available, the original sequence present in the annotation file will be retained and used in the analysis. The default is \code{FALSE}.
-}
-  \item{keepAll}{When using adjusting UTR sequences with \code{adjObj} and \code{excl} is \code{FALSE}, the \code{keepAll} parameter determines how the custom UTR sequences are integrated into the existing annotation file for genes with multiple isoforms. If \code{TRUE}, the UTR sequences in the annotation file will be replaced with the custom sequences corresponding to the same transcript IDs. However, if there are multiple transcript IDs (isoforms) for the same gene ID, all isoforms will be retained, including transcript IDs where custom sequences were not available in \code{adjObj}. Note that unless the custom sequences are always the longest or shortest isoforms that can be selected using the \code{selection} parameter, when \code{keepAll} is \code{TRUE}, the custom sequences are not guaranteed to be the ones considered if a gene-level analysis is performed. If \code{FALSE}, transcript IDs (isoforms) corresponding to the same gene that are not found in the custom sequences provided in \code{adjObj} will be removed, such that only the custom UTR sequences will be available for genes with multiple isoforms. The default is \code{FALSE}.
-
 ### Selecting transcript isoforms
 
-  \item{selection}{Specifies which mRNA isoform will be selected from the reference sequence annotation for use in analyses in cases when multiple isoforms are present for a given gene. This parameter can be one of:
+Using default annotations, postNet will perform gene-level analyses. selection - Specifies which mRNA isoform will be selected from the reference sequence annotation for use in analyses in cases when multiple isoforms are present for a given gene. This parameter can be one of:
+
 \describe{
      \item{\code{"longest"}}{Selects the longest sequence isoform.}
      \item{\code{"shortest"}}{Selects the shortest sequence isoform.}
@@ -407,12 +394,22 @@ The transcriptome is highly diverse, with mRNA isoform expression patterns varyi
      function is run multiple times. For cases where multiple analyses may be run using the same data, the \code{setSeed}
      parameter can be used to ensure that random isoform selection is stable each time \code{postNetStart} is run.}
      }
-}
-  \item{setSeed}{If \code{selection} is \code{"random"}, provide a single integer value to be used with \code{set.seed} 
+
+  {setSeed} If \code{selection} is \code{"random"}, provide a single integer value to be used with \code{set.seed} 
   to ensure that the random isoform selection is reproducible between different runs of the \code{postNetStart} function. 
   Any integer can be provided (for example 123), however, the same value must be provided between different analyses for 
   isoform selection to be reproducible. 
-}
+
+ however transcript-level analyses can be performed by supplying custom sequence annotations as described above (I guess the stepwise regression using isoform-level analyses suffer from the same issue as anota2seq due to correlations between isoforms of the same genes?? Should probably discuss this a bit somewhere)
+ 
+### Adjusting UTR sequence annotations
+
+The transcriptome is highly diverse, with mRNA isoform expression patterns varying across cell types [ref], and between normal and disease states [ref]. The sequences of mRNA molecules can also be dynamically regulated through processes such as alternative splicing [ref], altered transcription start site usage [ref], alternative polyadenylation [ref]. Analyses relating mRNA sequence features to post-transcriptional regulation will benefit from more precise sequence annotations if these are available. For example, 5'UTRs mapped by nanoCAGE sequencing were often different from database 5'UTRs annotations [@Gandin2016]. Although entirely custom sequence annotations can be supplied, as described above, numerous sequencing approaches are available to specifically map UTRs, such as CAGE/nanoCAGE [ref] and QuantSeq [ref]. For this reason, it is also possible to adjust only UTR sequences if more specific data is available for your experimental condition or system of interest.
+
+Custom UTR sequences can be provided to replace existing UTRs in the annotation file using the `adjObj` and `region_adj` parameters of the `postNetStart()` function. A list of custom sequences must be provided, specifying which UTR region(s) should be replaced. If custom UTR sequences are available for some, but not all genes in the existing sequence annotation, whether genes without custom sequences are kept or discarded from the analysis can by controlled using the `excl` parameter. 
+
+
+keepAll. When using adjusting UTR sequences with \code{adjObj} and \code{excl} is \code{FALSE}, the \code{keepAll} parameter determines how the custom UTR sequences are integrated into the existing annotation file for genes with multiple isoforms. If \code{TRUE}, the UTR sequences in the annotation file will be replaced with the custom sequences corresponding to the same transcript IDs. However, if there are multiple transcript IDs (isoforms) for the same gene ID, all isoforms will be retained, including transcript IDs where custom sequences were not available in \code{adjObj}. Note that unless the custom sequences are always the longest or shortest isoforms that can be selected using the \code{selection} parameter, when \code{keepAll} is \code{TRUE}, the custom sequences are not guaranteed to be the ones considered if a gene-level analysis is performed. If \code{FALSE}, transcript IDs (isoforms) corresponding to the same gene that are not found in the custom sequences provided in \code{adjObj} will be removed, such that only the custom UTR sequences will be available for genes with multiple isoforms. The default is \code{FALSE}.
 
 ## Setting up a postNet analysis using gene lists
 
