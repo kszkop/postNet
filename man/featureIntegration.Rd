@@ -5,11 +5,16 @@
 
 \description{ The \code{featureIntegration} function is used to model changes in post-transcriptional regulation and identify cis and/or trans factors (features of mRNA molecules, signatures of upstream regulators, etc.) that can explain the observed regulation.  The method integrates mRNA features and signatures obtained in previous steps of the postNet workflow (or from custom sources), and has several options for implementation:
     \itemize{
-      \item Stepwise linear regression modelling and network analysis. 
+      \item Stepwise linear regression modelling and network analysis. This analysis is performed in three stages: 
+      \itemize{ 
+  \item \strong{Univariate}: First, univariate linear models identify significant associations between the regulatory effect and individual features.
+  
+  \item \strong{Stepwise regression}: Second, starting with the feature that best explained changes in the regulatory effect from univariate models, stepwise regression is performed to identify the set of features that best explains the regulatory effects. This step ranks features according to their importance, and reveals covariance between them. For example, regulation of particular mRNA may depend not only on the length of the 5'UTR, but also on the GC content, or the presence of a motif, etc.  
+  
+  \item \strong{Adjustment}: Finally, the covariance is removed from the omnibus model to provide the adjusted contribution of each feature. This step provides the percent of variance in the regulatory effect explained by a given variable, independent of all other variables.  
+  }
       \item Random Forest feature selection and classifcation
     }
-  The resulting \code{postNetData} object is then passed to downstream functions in the \pkg{postNet}
-  workflow, and stores analysis results.
 }
 
 \usage{
