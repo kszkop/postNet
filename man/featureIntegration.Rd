@@ -72,7 +72,18 @@ featureIntegration(ptn,
   
   \item \strong{Step 3}: Finally, the independent contribution of each feature identified in step 2 is determined. This is done by removing covariance from the omnibus model (that was previously assigned to the most influential feature in step 2) to provide the adjusted contribution of each feature. This step provides the percentage of variance in the regulatory effect explained by a given featuer, independent of all other features.  
   }
-  
+
+The results of stepwise regression modelling are summarized in a table of F-values from linear models. The feature explaining the greatest proportion of variance in the regulatory effect at each step is highlighted in green, while those removed from the model are marked in red. Features highlighted in orange indicate those where there was a substantial change in F-value following the addition of another feature to the model. Larger changes in F-value are indicative of a stronger relationship between features.    
+
+(either the omnibus, or adjusted models) can then be visualized in network plots. 
+
+
+Values correspond to F values from linear models. The feature explaining the largest proportion of changes in translation in each step is indicated in green and features removed because of their inability to significantly explain translation are indicated in red. In the lower right table, the percentage of translation explained in the final model from phase 2 (“dependent”) and phase 3 (“independent”) anota2seqUtils analyses are indicated. P-values for features from phase 2 analysis are also indicated. Finally, the proportion of changes in translation explained by the final model from phase 2 analysis is indicated.
+
+
+\strong{Random Forest feature selection and classifcation:}
+
+\strong{Feature inputs for modelling:}
 }
 
 \value{The \code{featureIntegration} function returns an updated \code{postNetData} object with results compiled and stored in the \code{features} and \code{featureIntegration} slots.
