@@ -36,11 +36,11 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
 }
 
 \seealso{
- \link[postNet]{featureIntegration} \cr
-  \link[postNet]{plotFeaturesMap} \cr
-  \link[postNet]{rfPred} \cr
-  \link[Boruta]{Boruta} \cr
-  \link[randomForest]{randomForest}
+\link[postNet]{featureIntegration} \cr
+\link[postNet]{plotFeaturesMap} \cr
+\link[postNet]{rfPred} \cr
+\link[Boruta]{Boruta} \cr
+\link[randomForest]{randomForest}
 }
 
 \examples{
