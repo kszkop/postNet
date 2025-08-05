@@ -34,9 +34,15 @@ rfPred(ptn,
 }
 
 \references{
+Sing T, Sander O, Beerenwinkel N, Lengauer T (2005). “ROCR: visualizing classifier performance in R.” Bioinformatics, 21(20), 7881. http://rocr.bioinf.mpi-sb.mpg.de.
+
+Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R News, 2(3), 18-22. https://CRAN.R-project.org/doc/Rnews/. 
 }
 
 \seealso{
+\code{\link[postNet]{featureIntegraion}} \cr
+\code{\link[randomForest]{randomForest}} \cr
+\code{\link[ROCR]{ROCR}}
 }
 
 \examples{
