@@ -383,24 +383,25 @@ ptn <- postNetStart(
 
 ### Selecting transcript isoforms
 
-Using default annotations, postNet will perform gene-level analyses. selection - Specifies which mRNA isoform will be selected from the reference sequence annotation for use in analyses in cases when multiple isoforms are present for a given gene. This parameter can be one of:
+Using sequence annotations provided with the package or built from the RefSeq database, by default, postNet will perform gene-level analyses. For genes with multiple mRNA isoforms, the `selection` parameter of the `postNetStart()` function can be used to specify which isoforms will be considered in analyses. Depending on the application, it may sometimes be of interest to consider the longest or shortest mRNA isoforms for each gene. However, selecting the extremes for all genes may skew the results for some types of analysis. By default, isoforms for each gene will be selected at random to prevent a systematic length bias. However, it is important to note that each time the `postNetStart()` function is run, different isoforms may be selected leading to slight variations in results. To ensure reproducibility of isoform selection between different runs of the `postNetStart()` function, it is necessary to use the `setSeed` parameter.  
 
-\describe{
-     \item{\code{"longest"}}{Selects the longest sequence isoform.}
-     \item{\code{"shortest"}}{Selects the shortest sequence isoform.}
-     \item{\code{"random"}}{(Default) Selects an isoform at random. Note that selecting the longest or
-     shortest isoforms for all genes may skew results for some analyses. For this reason, the default
-     selection is \code{"random"}. However, this may lead to slight differences in results if the \code{postNetStart} 
-     function is run multiple times. For cases where multiple analyses may be run using the same data, the \code{setSeed}
-     parameter can be used to ensure that random isoform selection is stable each time \code{postNetStart} is run.}
-     }
+It is also possible to perform transcript-level analyses with postNet by supplying custom sequence annotations as described above (I guess the featureIntegration using isoform-level data might suffer from the same issue as anota2seq due to correlations between isoforms of the same genes? Should probably discuss this a bit somewhere).
 
-  {setSeed} If \code{selection} is \code{"random"}, provide a single integer value to be used with \code{set.seed} 
-  to ensure that the random isoform selection is reproducible between different runs of the \code{postNetStart} function. 
-  Any integer can be provided (for example 123), however, the same value must be provided between different analyses for 
-  isoform selection to be reproducible. 
+```{r IsoformSel, eval=FALSE, echo=TRUE}
 
- however transcript-level analyses can be performed by supplying custom sequence annotations as described above (I guess the stepwise regression using isoform-level analyses suffer from the same issue as anota2seq due to correlations between isoforms of the same genes?? Should probably discuss this a bit somewhere)
+# Initialize a postNetData object with random, reproducible mRNA isoform selection:
+ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   source = "load",
+   species = NULL,
+   selection = "random",
+   setSeed = 123
+ )
+
+```
  
 ### Adjusting UTR sequence annotations
 
