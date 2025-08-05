@@ -74,7 +74,7 @@ featureIntegration(ptn,
   }
 
 The results of all three phases of the stepwise regression modelling are summarized in table outputs and visualized as network plots (described below)
-\href{../doc/postNet.html}{See Vignette for more details.}
+\href{../vignettes/postNet.html}{See Vignette for more details.}
 
 (either the omnibus, or adjusted models) can then be visualized in network plots. 
 
