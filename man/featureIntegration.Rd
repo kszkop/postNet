@@ -73,12 +73,7 @@ featureIntegration(ptn,
   \item \strong{Phase 3}: Finally, the independent contribution of each feature identified in phase 2 is determined. This is done by removing covariance from the omnibus model (that was previously assigned to the most influential feature in phase 2) to provide the adjusted contribution of each feature. This phase provides the percentage of variance in the regulatory effect explained by a given featuer, independent of all other features.  
   }
 
-The results of all three phases of the stepwise regression modelling are summarized in table outputs and visualized as network plots (described below)
-\href{../vignettes/postNet.html}{See Vignette for more details.}
-
-(either the omnibus, or adjusted models) can then be visualized in network plots. 
-
-
+The results of all three phases of the stepwise regression modelling are summarized in table outputs and visualized as network plots (described below).
 
 \strong{Random Forest feature selection and classifcation:}
 
@@ -90,6 +85,9 @@ The results of all three phases of the stepwise regression modelling are summari
 The \code{features} slot stores a \code{data.frame} with the features used as input for feature integration modelling, where rows correspond to genes, and columns correspond to features. The input feature \code{data.frame} can be retrieved using the \link[postNet]{ptn_features} S4 method.     
 
 The results of stepwise regression modelling are summarized in a table of F-values from linear models. The feature explaining the greatest proportion of variance in the regulatory effect at each step is highlighted in green, while those removed from the model due to inability to singificantly explain variance are marked in red. Features highlighted in orange indicate those where there was a substantial change in F-value following the addition of another feature to the model. Larger changes in F-value are indicative of a stronger relationship between features.   
+
+\href{../vignettes/postNet.html}{See Vignette for more details.}
+(either the omnibus, or adjusted models) 
 
 }
 
