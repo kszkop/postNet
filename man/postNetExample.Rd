@@ -66,7 +66,9 @@ List of 5
   .. .. ..$ : chr [1:8] "rnaSeq_Control_rep1" "rnaSeq_Control_rep2" "rnaSeq_Control_rep3" "rnaSeq_Control_rep4" ...
 }
 
-\details{
+\details{The example data provided with the postNet package is taken from a study of the effect of osmotic stress on mRNA translation. Immortalized human corneal epithelial cells (10.014O pRSV-T) were cultured under osmotic stress (500 mOsm, NaCl) for 1h, along with controls. The gene lists are detrived from an \link[anota2seq]{anota2seq} analysis of ribosome profiling and RNA-seq data to identify genes that were translationally activated or suppressed under osmotic stress. Both gene lists from the \code{anota2seq} analysis, as well as the \linkS4class{Anota2seqDataSet} object are provided to demonstrate both workflows in postNet.   
+
+A set of representative mRNA features was also enumerated in these translationally regulated genes, along with signatures of genes for which translation is know to be regulated downstream of mTOR and the integrated stress response (ISR). This set of features is used to illustrate the feature integration modelling and UMAP visualizations.  
 }
 
 \source{
