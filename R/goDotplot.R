@@ -89,6 +89,7 @@ goDotplot <- function(ptn,
         ggplot2::theme_bw() +
         ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = 'dashed', linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(),panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, 'cm')) +   
         ggplot2::xlab('-log10 FDR') +
+        ggplot2::scale_x_continuous(limits = c(0, NA)) +
         ggplot2::ylab(" ") 
       #+
       #ggplot2::ggtitle(paste(names(goIn)[i],sel, sep='_'))
