@@ -3,7 +3,7 @@
 \docType{data}
 \title{An example dataset for demonstrating the workflow of a postNet ananlysis
 }
-\description{
+\description{This object contains example data to run a postNet analysis, including lists of post-transcriptionally regulated and background genes, and log2 fold changes in translation efficiency between two treatment conditions. The same data is also provided as an \linkS4class{Anota2seqDataSet} object. Also included is a list of mRNA features enumerated in the current dataset along with signatures of mTOR and ISR-sensitive translational regulation for use in feature integration analyses. 
 }
 
 \usage{data("postNetExample")}
