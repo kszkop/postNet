@@ -70,9 +70,24 @@ List of 5
 }
 
 \source{
+Krokowski D, Jobava R, Szkop KJ, Chen CW, Fu X, Venus S, Guan BJ, Wu J, Gao Z, Banaszuk W, Tchorzewski M, Mu T, Ropelewski P, Merrick WC, Mao Y, Sevval AI, Miranda H, Qian SB, Manifava M, Ktistakis NT, Vourekas A, Jankowsky E, Topisirovic I, Larsson O, Hatzoglou M. Stress-induced perturbations in intracellular amino acids reprogram mRNA translation in osmoadaptation independently of the ISR. Cell Rep. 2022 Jul 19;40(3):111092. doi: 10.1016/j.celrep.2022.111092. PMID: 35858571; PMCID: PMC9491157.
+
+Data available at GEO: GSE200097. 
 }
 
 \references{
+Gene signatures of mTOR and ISR sensitive translation, as well as mRNAs with classical TOP motifs are from:
+
+Gandin V, Masvidal L, Cargnello M, Gyenis L, McLaughlan S, Cai Y, Tenkerian C, Morita M, Balanathan P, Jean-Jean O, Stambolic V, Trost M, Furic L, Larose L, Koromilas AE, Asano K, Litchfield D, Larsson O, Topisirovic I. mTORC1 and CK2 coordinate ternary and eIF4F complex assembly. Nat Commun. 2016 Apr 4;7:11127. doi: 10.1038/ncomms11127. PMID: 27040916; PMCID: PMC4822005.
+
+Cockman E, Anderson P, Ivanov P. TOP mRNPs: Molecular Mechanisms and Principles of Regulation. Biomolecules. 2020 Jun 27;10(7):969. 
+doi: 10.3390/biom10070969. PMID: 32605040; PMCID: PMC7407576.
+
+Guan BJ, van Hoef V, Jobava R, Elroy-Stein O, Valasek LS, Cargnello M, Gao XH, Krokowski D, Merrick WC, Kimball SR, Komar AA, Koromilas AE, 
+Wynshaw-Boris A, Topisirovic I, Larsson O, Hatzoglou M. A Unique ISR Program Determines Cellular Responses to Chronic Stress. Mol Cell. 
+2017 Dec 7;68(5):885-900.e6. doi: 10.1016/j.molcel.2017.11.007. PMID: 29220654; PMCID: PMC5730339.
+
+See \link[postNet]{humanSignatures} and \link[postNet]{mouseSignatures} for details. 
 }
 
 \examples{
