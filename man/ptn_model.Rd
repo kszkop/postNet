@@ -1,10 +1,10 @@
 \docType{methods}
 \name{ptn_model}
 \alias{ptn_model,postNetData-method}
-\title{Accessor for the models feature integration model slots of a \code{postNetData} object
+\title{Accessor for the feature integration model slots of a \code{postNetData} object
 }
 
-\description{
+\description{Retrieve the models resulting from both the stepwise linear regression and random forest implementations of \link[postNet]{featureIntegration} from a \code{postNetData} object.
 }
 
 \usage{
@@ -19,16 +19,17 @@
 }
   \item{analysis_type}{A string specifying the method of analysis used for \link[postNet]{featureIntegration} to retrieve the selected features from. The options are \code{"lm"} to retrieve features selected by stepwise linear regression, or \code{"rf"} for features selected using random forest-based analyses.
 }
-  \item{model}{
+  \item{model}{A string specifying the model the retrieve. If \code{analysis_type = "lm"}, the options are: \code{"univariateModel"}, \code{"stepwiseModel"}, or \code{"finalModel"}. If \code{analysis_type = "rf"}, the options are: \code{"preModel"}, \code{"borutaModel"}, or \code{"finalModel"}. 
 }
   \item{comparison}{An integer specifying which comparison to select results from. For example, \code{1} would select the first comparison specified in the \code{comparisons} parameter of the \link[postNet]{featureIntegration} function.
 }
 }
 
-\details{
-}
+\value{If \code{analysis_type = "lm"} and \code{model = "univariateModel"}, and object of class \code{postNetUnivariate} is returned with three slots containing the p-values, FDRs, and proportion of variance explained for each feature passing the significance threshold in univariate models. 
 
-\value{
+If \code{analysis_type = "lm"} and \code{model = "stepwiseModel"}, and object of class \code{postNetStepWise} is returned with two slots containing the linear models from each step of setpwise regression, and the F-value table storing the F-values for each feature at each step of stepwise regression.
+
+If \code{analysis_type = "lm"} and \code{model = "finalModel"}, and object of class \code{postNetFinalModel} is returned with three slots containing the the total variance explained by the final omnibus model, the final omnibus linear model, and a table summarizing the p-values and variance explained by each feature in the omnibus and adjusted models. 
 }
 
 \references{
@@ -79,6 +80,6 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
                           NetModelSel = "omnibus")
                           
 # Retrieve the omnibus model from stepwise regression analysis
- omnibusModel <- ptn_model(ptn, analysis_type = "lm", model = "omnibus", comparison = 1) 
- str(omnibusModel)
+ finalModel <- ptn_model(ptn, analysis_type = "lm", model = "finalModel", comparison = 1) 
+ str(finalModel)
 }

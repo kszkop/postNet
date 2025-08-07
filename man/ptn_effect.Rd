@@ -4,7 +4,7 @@
 \title{Accessor for the regulatory effect measurement from the "effect" slot of a \code{postNetData} object
 }
 
-\description{Retrieve the regulatory effect measurement from a \code{postNetData} object. If using \code{geneList}, the "effect" slot hold a user-provided named numeric vector corresponding to a custom regulation effect measurement. If using \code{ads}, the values in the "effect" slot will correspond to the selected \code{regulationGen} from \code{ads}. 
+\description{Retrieve the regulatory effect measurement from a \code{postNetData} object. If using \code{geneList}, the "effect" slot holds a user-provided named numeric vector corresponding to a custom regulation effect measurement. If using \code{ads}, the values in the "effect" slot will correspond to the selected \code{regulationGen} from \code{ads}. 
 }
 
 \usage{
