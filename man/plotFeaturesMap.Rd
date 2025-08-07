@@ -50,10 +50,6 @@ plotFeaturesMap(ptn,
 The \code{plotFeaturesMap} function also returns an updated \code{postNetData} object with a data.frame of UMAP coordinates stored in the \code{featuresMap} slot. 
 }
 
-\references{
-
-}
-
 \seealso{
 \code{\link[umap]{umap}} \cr
 \code{\link[postNet]{featureIntegration}}
