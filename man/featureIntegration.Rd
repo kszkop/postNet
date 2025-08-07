@@ -165,7 +165,6 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
                           features = features, 
                           pdfName = "Example", 
                           regOnly = TRUE, 
-                          allFeat = FALSE, 
                           analysis_type ="rf",
                           comparisons = list(c(1,2)))
                           
