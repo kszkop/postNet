@@ -70,7 +70,7 @@ featureIntegration(ptn,
   
   \item \strong{Phase 2}: Second, starting with the feature that best explained changes in the regulatory effect from univariate models, stepwise regression is performed, adding features to the model in an iterative fashion, keeping covariance assigned to the most influential feature (a rank-based greedy model). In each step, the best performing model (the feature with the strongest association with the regulatory effect) is retained and features that fail to explain additional variance are discarded. The resulting omnibus model represents the smallest set of features that can explain the greatest proportion of variance in the regulatory effect. This step ranks features according to their importance, and reveals dependence between them. For example, regulation may depend partially on the length of the 5'UTR, but also on the GC content, or the presence of a motif, etc.  
   
-  \item \strong{Phase 3}: Finally, the independent contribution of each feature identified in phase 2 is determined. This is done by removing covariance from the omnibus model (that was previously assigned to the most influential feature in phase 2) to provide the adjusted contribution of each feature. This phase provides the percentage of variance in the regulatory effect explained by a given featuer, independent of all other features.  
+  \item \strong{Phase 3}: Finally, the independent contribution of each feature identified in phase 2 is determined. This is done by removing covariance from the omnibus model (that was previously assigned to the most influential feature in phase 2) to provide the adjusted contribution of each feature. This phase provides the percentage of variance in the regulatory effect explained by a given feature, independent of all other features.  
   }
 
 The results of all three phases of the stepwise regression modelling are summarized in table outputs and visualized as network plots (described below).
@@ -83,14 +83,11 @@ The results of all three phases of the stepwise regression modelling are summari
   \item \strong{Final modelling}: Next, modelling using \code{\link[randomForest]{randomForest}} is repeated using the set of selected features. The performance of the model is assessed using Receiver Operating Characteristic (ROC) curves (implemented with \code{\link[ROCR]{ROCR}}), and feature importance from the final model is reported as Mean Decreased Accuracy (see \code{\link[randomForest]{importance}} for details), where higher values indicate more important features.   
   }
 
+\strong{Feature inputs for modelling:} There is a lot of flexibility in providing features that can be included in modelling with \code{featureIntegration}. From the postNet workflow, the outputs of the \code{\link[postNet]{lengthAnalysis}}, \code{\link[postNet]{contentAnalysis}}, \code{\link[postNet]{uorfAnalysis}}, \code{\link[postNet]{foldingEnergyAnalysis}}, \code{\link[postNet]{contentMotifs}}, and \code{\link[postNet]{codonCalc}} functions can be supplied directly as features. Gene signatures, such as those included with the package (see \code{\link[postNet]{humanSignatures}} or \code{\link[postNet]{mouseSignatures}}) can also be converted to feature inputs using the \code{\link[postNet]{signCalc}} function. In addition, custom feature inputs can be supplied depending on the application and experimental question. 
+
+In general, features that can be included in modelling can be either numeric, or categorical. Numeric features can be both continuous (for example sequence region nucleotide content or length), or discrete (for example the number of uORFs in 5'UTRs). Categorical features can also be included by converting to binary variables. This is useful for evaluating gene signatures in relation to regulatory outcomes, but can also be applied in many scenarios where mRNA can be divided into two classes (for example those with, or without a certain property, etc.). It is also possible to supply categorical features with a directionality. For example, a feature that can be increased, decreased, or unchanged could be coded as 1, -1, or 0 for each gene to be included in modelling.    
 
 
-
-
-
-
-
-\strong{Feature inputs for modelling:}
 }
 
 \value{The \code{featureIntegration} function returns an updated \code{postNetData} object with results compiled and stored in the \code{features} and \code{featureIntegration} slots.
