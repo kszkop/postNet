@@ -30,6 +30,12 @@
 If \code{analysis_type = "lm"} and \code{model = "stepwiseModel"}, and object of class \code{postNetStepWise} is returned with two slots containing the linear models from each step of setpwise regression, and the F-value table storing the F-values for each feature at each step of stepwise regression.
 
 If \code{analysis_type = "lm"} and \code{model = "finalModel"}, and object of class \code{postNetFinalModel} is returned with three slots containing the the total variance explained by the final omnibus model, the final omnibus linear model, and a table summarizing the p-values and variance explained by each feature in the omnibus and adjusted models. 
+
+If \code{analysis_type = "rf"} and \code{model = "preModel"}, and object of class \code{randomForest} is returned for the pre-model using all features. See \link[randomForest]{randomForest} for full description of the output object.
+
+If \code{analysis_type = "rf"} and \code{model = "borutaModel"}, and object of class \code{Boruta} is returned with the results of feature selection. See \link[Boruta]{Boruta} for full description of the output object.
+
+If \code{analysis_type = "rf"} and \code{model = "finalModel"}, and object of class \code{randomForest} is returned for the final model using the selected features. See \link[randomForest]{randomForest} for full description of the output object.
 }
 
 \references{
