@@ -75,7 +75,20 @@ featureIntegration(ptn,
 
 The results of all three phases of the stepwise regression modelling are summarized in table outputs and visualized as network plots (described below).
 
-\strong{Random Forest feature selection and classifcation:}
+\strong{Random Forest feature selection and classifcation:} \code{featureIntegration} can also apply Breiman's random forest algorithm (implemented in the \code{\link[randomForest]{randomForest}} package) to classify genes according to their regulation, and identify features associated with regulatory classes (for example, translationally activated or suppressed genes). This implementation is carried out in two steps: 
+
+ \itemize{ 
+  \item \strong{Pre-modelling and feature selection}: Genes are first divided into training (70\%) and validation (30\%) sets. Modelling is performed and importance is calculated for all features included in the input. Feature selection is then performed using \code{\link[Boruta]{Boruta}} to identify all input features relevant to model performance. 
+  
+  \item \strong{Final modelling}: Next, modelling using \code{\link[randomForest]{randomForest}} is repeated using the set of selected features. The performance of the model is assessed using Receiver Operating Characteristic (ROC) curves (implemented with \code{\link[ROCR]{ROCR}}), and feature importance from the final model is reported as Mean Decreased Accuracy (see \code{\link[randomForest]{importance}} for details), where higher values indicate more important features.   
+  }
+
+
+
+
+
+
+
 
 \strong{Feature inputs for modelling:}
 }
