@@ -83,22 +83,24 @@ The results of all three phases of the stepwise regression modelling are summari
   \item \strong{Final modelling}: Next, modelling using \code{\link[randomForest]{randomForest}} is repeated using the set of selected features. The performance of the model is assessed using Receiver Operating Characteristic (ROC) curves (implemented with \code{\link[ROCR]{ROCR}}), and feature importance from the final model is reported as Mean Decreased Accuracy (see \code{\link[randomForest]{importance}} for details), where higher values indicate more important features.   
   }
 
-\strong{Feature inputs for modelling:} There is a lot of flexibility in providing features that can be included in modelling with \code{featureIntegration}. From the postNet workflow, the outputs of the \code{\link[postNet]{lengthAnalysis}}, \code{\link[postNet]{contentAnalysis}}, \code{\link[postNet]{uorfAnalysis}}, \code{\link[postNet]{foldingEnergyAnalysis}}, \code{\link[postNet]{contentMotifs}}, and \code{\link[postNet]{codonCalc}} functions can be supplied directly as features. Gene signatures, such as those included with the package (see \code{\link[postNet]{humanSignatures}} or \code{\link[postNet]{mouseSignatures}}) can also be converted to feature inputs using the \code{\link[postNet]{signCalc}} function. In addition, custom feature inputs can be supplied depending on the application and experimental question. 
+\strong{Feature inputs for modelling:} Many different types of features can be included in modelling with \code{featureIntegration}. From the postNet workflow, the outputs of the \code{\link[postNet]{lengthAnalysis}}, \code{\link[postNet]{contentAnalysis}}, \code{\link[postNet]{uorfAnalysis}}, \code{\link[postNet]{foldingEnergyAnalysis}}, \code{\link[postNet]{contentMotifs}}, and \code{\link[postNet]{codonCalc}} functions can be supplied directly as features. Gene signatures, such as those included with the package (see \code{\link[postNet]{humanSignatures}} or \code{\link[postNet]{mouseSignatures}}) can also be converted to feature inputs using the \code{\link[postNet]{signCalc}} function. In addition, custom feature inputs can be supplied depending on the application and research question.
 
-In general, features that can be included in modelling can be either numeric, or categorical. Numeric features can be both continuous (for example sequence region nucleotide content or length), or discrete (for example the number of uORFs in 5'UTRs). Categorical features can also be included by converting to binary variables. This is useful for evaluating gene signatures in relation to regulatory outcomes, but can also be applied in many scenarios where mRNA can be divided into two classes (for example those with, or without a certain property, etc.). It is also possible to supply categorical features with a directionality. For example, a feature that can be increased, decreased, or unchanged could be coded as 1, -1, or 0 for each gene to be included in modelling.    
+In general, features that can be included in modelling can be either numeric, or categorical. Numeric features can be both continuous (for example, sequence region nucleotide content or length), or discrete (for example, the number of uORFs in 5'UTRs). Categorical features can also be included by converting to binary variables. This is useful for evaluating gene signatures in relation to regulatory outcomes, but can also be applied in many scenarios where mRNA can be divided into two classes (for example those with, or without a certain property, etc.). It is also possible to supply categorical features with a directionality. For example, a feature that can be increased, decreased, or unchanged could be coded as 1, -1, or 0 for each gene to be included in modelling.    
 
 Careful considation should be given when selecting the catalogue of features to include in modelling. For example, highly, or perfectly correlated variables cannot be supplied together in the same model. This can be relevant when examining the percentage of nucleotide content for each base, since the content of G and C may often be highly correlated, and the sum of A, T, G, and C will add to 100\%. In instances where features are too highly correlated, and warning message will be displayed and one of the correlated features must be removed from the input.  In addition, when enumerating some features such as codon composition or folding energy, these values can be corrected for the length of the sequence region. However, it would then not be advisable to also include the sequence region length as a separate feature in the modelling. Please see the postNet vignette for more in-depth examples and discussion on the selection of features and interpretation of results.  
 }
 
 \value{The \code{featureIntegration} function returns an updated \code{postNetData} object with results compiled and stored in the \code{features} and \code{featureIntegration} slots.
 
-The \code{features} slot stores a \code{data.frame} with the features used as input for feature integration modelling, where rows correspond to genes, and columns correspond to features. The input feature \code{data.frame} can be retrieved using the \link[postNet]{ptn_features} S4 method.     
+The \code{features} slot stores a \code{data.frame} with the features used as input for feature integration modelling, where rows correspond to genes, and columns correspond to features. The input feature \code{data.frame} can be retrieved using the \link[postNet]{ptn_features} S4 method.   
 
-The results of stepwise regression modelling are summarized in a table of F-values from linear models. The feature explaining the greatest proportion of variance in the regulatory effect at each step is highlighted in green, while those removed from the model due to inability to singificantly explain variance are marked in red. Features highlighted in orange indicate those where there was a substantial change in F-value following the addition of another feature to the model. Larger changes in F-value are indicative of a stronger relationship between features.   
+The stepwise regression implementation of \code{featureIntegration} will store results for each comparison in the \code{lm} slot. This includes the results of univariate and stepwise regression modelling, and the final omnibus and adjusted models. Modelling results can be retrieved using the \link[postNet]{ptn_model} S4 method. The features selected as significant in the omnibus model are listed in the \code{selectedFeatures} slot, along with the proportion of variance in the regulatory effect explained by each feature (either in omnibus, or adjusted models depending on the selection in the \code{NetModelSel} parameter). Selected features can be retrieved using the \link[postNet]{ptn_selectedFeatures} S4 method. Finally, the network analysis results are stored as an \link[igraph]{igraph} object, and can be retrieved using the \link[postNet]{ptn_networkGraph} S4 method. 
 
-\href{../vignettes/postNet.html}{See Vignette for more details.}
-(either the omnibus, or adjusted models) 
+The resulting network plot is output as a PDF. Modelling is summarized in a PDF file with a table displaying results for features significant in univariate models, a table of F-values from linear models in stepwise regression, and a table summarizing features in the final omnibus and adjusted models. Optionally, if \code{useCorel = TRUE}, a table of Pearson's correlation coefficients between features will also be displayed. For F-value tables, the feature explaining the greatest proportion of variance in the regulatory effect at each step is highlighted in green, while those removed from the model due to inability to singificantly explain variance are marked in red. Features highlighted in orange indicate those where there was a substantial change in F-value following the addition of another feature to the model. Larger changes in F-value are indicative of a stronger relationship between features. For more details please refer to the postNet vignette.    
 
+The random forest implementation of \code{featureIntegration} will store results for each comparison in the \code{rf} slot. The pre-model, feature selection, and final model are stored as objects of class \code{\link[randomForest]{randomForest}} and \code{\link[Boruta]{Boruta}}. The selected features selected are listed in the \code{selectedFeatures} slot, along with their importance (Mean Decrease Accuracy) from the final model. Feature importance calculated by \code{\link[Boruta]{Boruta}} is plotted is output as a PDF file. PDF files are also output with ROC curves for the final model, and the importance of selected features.  
+
+Both implementations of \code{featureIntegration} output PDF files with plots for each individual feature identified in final stepwise regression or random forest models, with Pearson's correlation coefficient between the feature and regulatory effect displayed.  
 }
 
 \references{
@@ -124,4 +126,47 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
 }
 
 \examples{
+
+# load and create example data:
+ data(postNetExample)
+
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+# Initialize the postNetData object with custom gene lists:
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   source = "load", 
+   species = "human"
+ )
+ 
+# Prepare the list of pre-calculated features to be used in feature integration modelling 
+ myFeatures <- postNetExample$features
+ str(features)
+
+# Run feature integration modelling using stepwise regression
+ ptn <- featureIntegration(ptn = ptn, 
+                          features = myFeatures, 
+                          pdfName = "Example", 
+                          regOnly = TRUE, 
+                          allFeat = FALSE,
+                          analysis_type = "lm",
+                          covarFilt = 20,
+                          comparisons = list(c(1,2)),
+                          NetModelSel = "omnibus")
+                          
+# Run feature integration modelling using random forest classification
+ ptn <- featureIntegration(ptn = ptn, 
+                          features = features, 
+                          pdfName = "Example", 
+                          regOnly = TRUE, 
+                          allFeat = FALSE, 
+                          analysis_type ="rf",
+                          comparisons = list(c(1,2)))
+                          
 }
