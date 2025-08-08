@@ -21,7 +21,7 @@
 }
   \item{model}{A string specifying the model the retrieve. If \code{analysis_type = "lm"}, the options are: \code{"univariateModel"}, \code{"stepwiseModel"}, or \code{"finalModel"}. If \code{analysis_type = "rf"}, the options are: \code{"preModel"}, \code{"borutaModel"}, or \code{"finalModel"}. 
 }
-  \item{comparison}{An integer specifying which comparison to select results from. For example, \code{1} would select the first comparison specified in the \code{comparisons} parameter of the \link[postNet]{featureIntegration} function.
+  \item{comparison}{An integer specifying which comparison to select the model from. For example, \code{1} would select the first comparison specified in the \code{comparisons} parameter of the \link[postNet]{featureIntegration} function.
 }
 }
 
