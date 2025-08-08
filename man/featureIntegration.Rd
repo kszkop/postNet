@@ -162,7 +162,7 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
                           
 # Run feature integration modelling using random forest classification
  ptn <- featureIntegration(ptn = ptn, 
-                          features = features, 
+                          features = myFeatures, 
                           pdfName = "Example", 
                           regOnly = TRUE, 
                           analysis_type ="rf",

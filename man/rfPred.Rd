@@ -1,6 +1,6 @@
 \name{rfPred}
 \alias{rfPred}
-\title{Predict post-transcriptional regulation using pre-built random forest models 
+\title{Predict post-transcriptional regulation using trained random forest models 
 }
 
 \description{Aftering identifying features associated with changes in post-transcriptional regulation and training a random forest classification model using the \code{\link[postNet]{featureIntegration}} function, the \code{rfPred} function can then be used to apply this model to predict post-transcriptional regulation in new gene lists or datasets based on the same set of features. In this way, it is possible to evaluate how well a set of features identified as being associated with post-transcriptional regulation in one context can explain regulation observed in another context.   
@@ -19,7 +19,7 @@ rfPred(ptn,
 }
   \item{comparison}{An integer specifying which comparison to select the model from. For example, \code{1} would select the first comparison specified in the \code{comparisons} parameter of the \link[postNet]{featureIntegration} function.
 }
-  \item{predGeneList}{A named list of character vectors corresponding to the new gene lists for which regulation will be predicted. The list must have the same number of gene lists as classes in the predictive model trained on the original data. For example, if the random forest model from \code{\link[postNet]{featureIntegration}} was trained to classify genes into activated and suppressed categories, then the input list of genes to make predictions on should correspond to the same categories in the new dataset. Ensure that the gene IDs provided match those in the reference sequence annotations.  
+  \item{predGeneList}{A named list of character vectors corresponding to the new gene lists for which regulation will be predicted. The list must have two gene lists corresponding to the same classes in the predictive model trained on the original data. For example, if the random forest model from \code{\link[postNet]{featureIntegration}} was trained to classify genes into activated and suppressed categories, then the input list of genes to make predictions on should correspond to the same categories in the new dataset. Ensure that the gene IDs provided match those in the reference sequence annotations.  
 }
   \item{predFeatures}{A named list of numeric vectors corresponding to features that will be used with the model trained on the original data to predict regulatory effects in the new data. Each vector element in the list must have names corresponding to gene IDs. These features must be enumerated in the new gene lists or dataset that is being predicted on, and must include the same features used in the final random forest model trained on the original dataset.   
 }
@@ -46,4 +46,53 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
 }
 
 \examples{
+# load and create example data:
+ data(postNetExample)
+
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+# Initialize the postNetData object with custom gene lists:
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   source = "load", 
+   species = "human"
+ )
+ 
+# Prepare the list of pre-calculated features to be used in feature integration modelling 
+ myFeatures <- postNetExample$features
+ str(features)
+                          
+# Run feature integration modelling using random forest classification to selected features and 
+# generate the final model that will be used to predict regulation in a new gene list.
+ ptn <- featureIntegration(ptn = ptn, 
+                          features = myFeatures, 
+                          pdfName = "Example", 
+                          regOnly = TRUE, 
+                          analysis_type ="rf",
+                          comparisons = list(c(1,2)))
+
+# Simulate a new gene list by randomly sampling genes from the background. 
+ newGenes <- sample(postNetExample$background, size = 1000)
+ newGeneList <- list(translationUp = newGenes[1:500], translationDown = newGenes[501:1000]) 
+ 
+# Select the features that were used to train the final random forest model in the original dataset.
+ predFeatureNames <- names(ptn_selectedFeatures(ptn, 
+                                                analysis_type = "rf", 
+                                                comparison = 1))
+  
+# Prepare the predictive features. In this case the same list of input features will be used to predict as the new gene lists are taken from the same dataset the model was trained on. However, usually the input for the rfPred function would be taken from a postNetData object from a separate analysis on a distinct dataset.
+
+ newFeatures <- features[predFeatureNames] 
+ 
+ ptn <- rfPred(ptn = ptn, 
+              comparison = 1, 
+              predGeneList = newGeneList, 
+              predFeatures = newFeatures, 
+              pdf= "Example" )
 }
