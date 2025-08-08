@@ -147,7 +147,7 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
  
 # Prepare the list of pre-calculated features to be used in feature integration modelling 
  myFeatures <- postNetExample$features
- str(features)
+ str(myFeatures)
 
 # Run feature integration modelling using stepwise regression
  ptn <- featureIntegration(ptn = ptn, 

@@ -65,8 +65,8 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
  )
  
 # Prepare the list of pre-calculated features to be used in feature integration modelling 
- myFeatures <- postNetExample$features
- str(features)
+ myFeatures <- postNetExample$features[1:13]
+ str(myFeatures)
                           
 # Run feature integration modelling using random forest classification to selected features and 
 # generate the final model that will be used to predict regulation in a new gene list.
@@ -88,7 +88,7 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
   
 # Prepare the predictive features. In this case the same list of input features will be used to predict as the new gene lists are taken from the same dataset the model was trained on. However, usually the input for the rfPred function would be taken from a postNetData object from a separate analysis on a distinct dataset.
 
- newFeatures <- features[predFeatureNames] 
+ newFeatures <- myFeatures[predFeatureNames] 
  
  ptn <- rfPred(ptn = ptn, 
               comparison = 1, 
