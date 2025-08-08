@@ -34,7 +34,7 @@ In the first phase of postNet modelling, each candidate feature is evaluated sep
 
 # Workflow 
 
-PostNet was designed to be highly flexible in order to accommodate a variety of inputs and biological contexts. A postNet analysis can consists of the following steps: 
+PostNet was designed to accommodate a variety of inputs and biological contexts. A postNet analysis can consists of the following steps: 
 
 1) Initialize a `postNetData` object with the `postNetStart()` function, containing curated reference mRNA sequences, gene sets of interest to be compared, and a regulatory effect measurement that will be used in downstream analyses. See [Setting up a postNet analysis](#settingUp) for details.
 2) Identify and quantify mRNA sequence features, and compare them between gene sets of interest. See [Analysis of mRNA sequence features](#mRNAfeatures) for details.
@@ -240,9 +240,11 @@ These inputs are compiled at the start of the analysis by initializing a `postNe
 
 ## Reference sequence annotations
 
-Reference sequence annotations are divided according to different regions of mRNA molecules (5'UTR, CDS, and 3'UTR) to allow regions to be compared separately. The `source` parameter of the `postNetStart()` function allows the user to select from several in-built sequence annotations provided with the package, retrieve sequence annotations directly from the NCBI RefSeq database [@OLeary2016], or provide custom sequence annotations. Optionally, UTR sequences can also be adjusted if more precise sequences are available, for example those experimentally determined using approaches like CAGE, QuantSeq, or long-read sequencing, etc.
+Reference sequence annotations in postNet are divided according to different regions of mRNA molecules (5'UTR, CDS, and 3'UTR) to allow regions to be compared separately. The `source` parameter of the `postNetStart()` function allows the user to select from several in-built sequence annotations provided with the package, retrieve sequence annotations directly from the NCBI RefSeq database [@OLeary2016], or provide custom sequence annotations. Optionally, UTR sequences can also be adjusted if more precise sequences are available, for example those experimentally determined using approaches like CAGE, QuantSeq, or long-read sequencing, etc.
 
 It is highly recommended to use reference sequence annotations that correspond to those that were used in generating the input gene lists. For example, if RNA sequencing reads were counted using Ensembl gene/transcript annotations, these may not always correspond well to the sequences defined by RefSeq annotations, even if identifiers have been converted to be compatible. When running `postNetStart()`, a warning message describing differences in gene identifiers between the input gene lists and the reference sequence annotations will be printed to the console. Minor differences may be acceptable depending on the application. However, larger differences may warrant either reprocessing of input data, or selecting a more compatible reference sequence annotation before proceeding with the analysis.
+
+The transcriptome is highly diverse, with mRNA isoform expression patterns varying across cell types [ref], and between normal and disease states [ref]. The sequences of mRNA molecules can also be dynamically regulated through processes such as alternative splicing [ref], altered transcription start site usage [ref], and alternative polyadenylation [ref]. Analyses relating mRNA sequence features to post-transcriptional regulation will benefit from more precise sequence annotations if these are available.
 
 ### Loading in-built reference sequence annotations
 
@@ -331,7 +333,7 @@ ptn <- postNetStart(
 
 ```
 
-For added flexibility in defining custom sequence regions, it is also possible to assemble reference sequence annotations from a FASTA file using `source = "createFromFasta"` in `postNetStart()`. This option requires that a FASTA file be provided using the `fastaFile` parameter, along with an additional file specifying the coordinates of the mRNA sequence regions (provided with the `posFile` parameter). This position file must tab delimited and have columns indicating the transcript id, 5'UTR length, end of the coding sequence, and the total transcript length (see example below). Optionally, a genomic GFF file can also be provided using the `genomic_gff_file` parameter, however, if not GFF is provided the latest version for the indicated species will be automatically downloaded from the RefSeq database.  
+For added flexibility in defining sequence regions, it is also possible to assemble reference sequence annotations from a FASTA file using `source = "createFromFasta"` in `postNetStart()`. This option requires that a FASTA file be provided using the `fastaFile` parameter, along with an additional file specifying the coordinates of the mRNA sequence regions (provided with the `posFile` parameter). This position file must tab delimited and have columns indicating the transcript id, 5'UTR length, end of the coding sequence, and the total transcript length (see example below). Optionally, a genomic GFF file can also be provided using the `genomic_gff_file` parameter, however, if not GFF is provided the latest version for the indicated species will be automatically downloaded from the RefSeq database.  
 
 ```{r RefSeqCreateFromFasta, eval=FALSE, echo=TRUE}
 
@@ -385,7 +387,7 @@ ptn <- postNetStart(
 
 Using sequence annotations provided with the package or built from the RefSeq database, by default, postNet will perform gene-level analyses. For genes with multiple mRNA isoforms, the `selection` parameter of the `postNetStart()` function can be used to specify which isoforms will be considered in analyses. Depending on the application, it may sometimes be of interest to consider the longest or shortest mRNA isoforms for each gene. However, selecting the extremes for all genes may skew the results for some types of analysis. By default, isoforms for each gene will be selected at random to prevent a systematic length bias. However, it is important to note that each time the `postNetStart()` function is run, different isoforms may be selected leading to slight variations in results. To ensure reproducibility of isoform selection between different runs of the `postNetStart()` function, it is necessary to use the `setSeed` parameter.  
 
-It is also possible to perform transcript-level analyses with postNet by supplying custom sequence annotations as described above (I guess the featureIntegration using isoform-level data might suffer from the same issue as anota2seq due to correlations between isoforms of the same genes? Should probably discuss this a bit somewhere).
+It is also possible to perform transcript-level analyses with postNet by supplying custom sequence annotations as described above (I guess the featureIntegration using isoform-level data might suffer from the same issue as anota2seq due to correlations between isoforms of the same genes? Should probably mention this somewhere).
 
 ```{r IsoformSel, eval=FALSE, echo=TRUE}
 
@@ -396,7 +398,7 @@ ptn <- postNetStart(
    customBg = myBg,
    effectMeasure = myEffect,
    source = "load",
-   species = NULL,
+   species = "human",
    selection = "random",
    setSeed = 123
  )
@@ -405,13 +407,45 @@ ptn <- postNetStart(
  
 ### Adjusting UTR sequence annotations
 
-The transcriptome is highly diverse, with mRNA isoform expression patterns varying across cell types [ref], and between normal and disease states [ref]. The sequences of mRNA molecules can also be dynamically regulated through processes such as alternative splicing [ref], altered transcription start site usage [ref], alternative polyadenylation [ref]. Analyses relating mRNA sequence features to post-transcriptional regulation will benefit from more precise sequence annotations if these are available. For example, 5'UTRs mapped by nanoCAGE sequencing were often different from database 5'UTRs annotations [@Gandin2016]. Although entirely custom sequence annotations can be supplied, as described above, numerous sequencing approaches are available to specifically map UTRs, such as CAGE/nanoCAGE [ref] and QuantSeq [ref]. For this reason, it is also possible to adjust only UTR sequences if more specific data is available for your experimental condition or system of interest.
+Although entirely custom sequence annotations can be supplied, as described above, numerous sequencing approaches are available to specifically map UTRs, such as CAGE/nanoCAGE [ref] and QuantSeq [ref]. For this reason, it is also possible to adjust only UTR sequences if more specific data is available for your experimental condition or model of interest.
 
-Custom UTR sequences can be provided to replace existing UTRs in the annotation file using the `adjObj` and `region_adj` parameters of the `postNetStart()` function. A list of custom sequences must be provided, specifying which UTR region(s) should be replaced. If custom UTR sequences are available for some, but not all genes in the existing sequence annotation, whether genes without custom sequences are kept or discarded from the analysis can by controlled using the `excl` parameter. 
+Custom UTR sequences can be provided to replace UTRs in an existing annotation file using the `adjObj` and `region_adj` parameters of the `postNetStart()` function. A list of custom sequences must be provided, specifying which UTR region(s) should be replaced. If custom UTR sequences are available for some, but not all genes in the existing sequence annotation, whether genes and isoforms without custom sequences are kept or discarded from the analysis can by controlled using the `excl` parameter. The `keepAll` parameter can also be used to control how custom UTR isoform sequences are stored for genes with multiple isoforms.        
 
+```{r AdjObj, eval=TRUE, echo=TRUE}
 
-keepAll. When using adjusting UTR sequences with \code{adjObj} and \code{excl} is \code{FALSE}, the \code{keepAll} parameter determines how the custom UTR sequences are integrated into the existing annotation file for genes with multiple isoforms. If \code{TRUE}, the UTR sequences in the annotation file will be replaced with the custom sequences corresponding to the same transcript IDs. However, if there are multiple transcript IDs (isoforms) for the same gene ID, all isoforms will be retained, including transcript IDs where custom sequences were not available in \code{adjObj}. Note that unless the custom sequences are always the longest or shortest isoforms that can be selected using the \code{selection} parameter, when \code{keepAll} is \code{TRUE}, the custom sequences are not guaranteed to be the ones considered if a gene-level analysis is performed. If \code{FALSE}, transcript IDs (isoforms) corresponding to the same gene that are not found in the custom sequences provided in \code{adjObj} will be removed, such that only the custom UTR sequences will be available for genes with multiple isoforms. The default is \code{FALSE}.
+# Create the adjObj list with custom 5'UTR sequences to replace those in the loaded annotation file
+myUTR5seqs <- ptn_sequences(ptn, "UTR5")
+str(myUTR5seqs)
+myIDd <- ptn_id(ptn, "UTR5")
+str(myIDd)
+names(myUTR5seqs) <- myIDd
+customUTR5s <-  list(UTR5 = myUTR5seqs)
+str(customUTR5s)
 
+```
+ 
+```{r AdjustUTRs, eval=FALSE, echo=TRUE}
+
+# Initialize a postNetData object with custom 5'UTR sequences, replacing the 5'UTR sequences
+# in the loaded annotation file with custom ones where available, and discarding all isoforms 
+# without custom sequences. Genes with no custom sequence will retain all isoforms from the original annotation:
+ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   source = "load",
+   species = "human",
+   selection = "random",
+   setSeed = 123,
+   adjObj = customUTR5s,
+   region_adj = "UTR5",
+   excl = FALSE,
+   keepAll = FALSE
+ )
+
+```
+ 
 ## Setting up a postNet analysis using gene lists
 
 ## Setting up a postNet analysis using an anota2seq object
@@ -500,17 +534,50 @@ keepAll. When using adjusting UTR sequences with \code{adjObj} and \code{excl} i
 
 <a name="enrichmentAnalysis"/>
 
-# Functional enrichment analyses with postNet
+# Functional enrichment and threshold-independent signature analyses with postNet
 
 ## Slope filtering with an anota2seq object
 
-When performing GSEA, GAGE, or GO term analysis using the output of an \pkg{anota2seq} analysis, it is often necessary to filter the input 
-genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. 
-This is due to that the slopes fitted by the anota2seq APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, 
-impacting the analysis of changes in translation or translational buffering (or offsetting). Filtering out genes with these unrealistic slopes is especially important 
-for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering 
-on the analysis is likely to be more negligible. However, slope filtering is still recommended. Note that in high-quality data sets, usually 
-few genes will require slope filtering.  
+When performing GSEA, GAGE, or GO term analysis using the output of an `anota2seq` analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is due to that the slopes fitted by the anota2seq APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering (or offsetting). Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended. The `slopeFilt` function identifies these genes with unrealistic slopes, allowing them to be removed from downstream analyses. Note that in high-quality data sets few genes will require slope filtering, but filtering thresholds can be adjusted with the `minSlope` and `maxSlope` parameters. 
+
+```{r slopeFilt, eval=TRUE, echo=TRUE}
+
+# Initialize Anota2seqDataSet (see anota2seq vignette for details)
+library(anota2seq)
+ ads <- anota2seq::anota2seqDataSetFromMatrix(
+    dataP = postNetExample$ads_data$dataP,
+    dataT = postNetExample$ads_data$dataT,
+    phenoVec = postNetExample$ads_data$phenoVec,
+    batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
+    dataType = "RNAseq",
+    normalize = FALSE)
+    
+# Run an anota2seq analysis:
+# Note that the quality control and residual outlier testing are not 
+# performed to limit the running time of this example. For full details 
+# on running an analysis please see the anota2seq vignette and help manual.
+ ads <- anota2seqRun(ads,
+    performQC = FALSE, 
+    performROT = FALSE, 
+    useProgBar = FALSE)
+
+# Get the genes to be filtered out of downstream enrichment analyses 
+# using the buffering regulatory mode:
+ filtOutGenes <- slopeFilt(ads,
+                  regulationGen = "buffering",
+                  contrastSel = 1)
+                
+```
+
+```{r slopeFiltrm, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("ANOTA2SEQ_rvm_fit_for_all_contrasts_group.jpg"))
+```
+
+The output of the slopeFilt function can be directly supplied to downstream enrichment analysis functions using the `genesSlopeFiltOut` parameter.  
+```{r slopeFiltStr, eval=TRUE, echo=TRUE}
+str(filtOutGenes)
+```
+ 
 
 ## Performing GSEA with a postNetData object
 
