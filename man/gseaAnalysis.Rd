@@ -124,10 +124,11 @@ inSet <- list(Set1 = set1, Set2 = set2)
 # Run GSEA on custom gene sets:
  ptn <- gseaAnalysis(ptn = ptn,
                     geneSet = inSet,
-                    name = 'example')
+                    name = "Example")
 
-# Extract the signficant enrichment results from the postNetData object:
- gseaOut <- ptn_GSEA(ptn, threshold=0.05)
+# Extract the significant enrichment results from the postNetData object:
+ gseaOut <- ptn_GSEA(ptn, 
+                    threshold = 0.05)
  str(gseaOut)
  
 # Plot GSEA results:
@@ -145,7 +146,7 @@ inSet <- list(Set1 = set1, Set2 = set2)
  str(version)
 
 # Retrieve the MSigDB data for "human":
- msigdbOut <- msigdb::getMsigdb(org = 'hs', id = 'SYM', version = version)
+ msigdbOut <- msigdb::getMsigdb(org = "hs", id = "SYM", version = version)
 
 # Check the available collections or subcollections:
  msigdb::listCollections(msigdbOut)
@@ -165,11 +166,11 @@ inSet <- list(Set1 = set1, Set2 = set2)
 
 # Run GSEA on the C5 collection with GO:BP and specific terms:
  ptn <- gseaAnalysis(ptn = ptn,
-                    collection = 'c5',
-                    subcollection = 'GO:BP',
-                    subsetNames = c('GOBP_CELL-CELL_SIGNALING_BY_WNT',
-                    'GOBP_ENDOCYTOSIS'),
-                    name = 'c5_example')
+                    collection = "c5",
+                    subcollection = "GO:BP",
+                    subsetNames = c("GOBP_CELL-CELL_SIGNALING_BY_WNT",
+                    "GOBP_ENDOCYTOSIS"),
+                    name = "c5_Example")
 
 # ------------------------------------------------------------------
 # Example 3: Running GSEA requiring anota2seq analysis slope filtering

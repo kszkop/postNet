@@ -190,7 +190,7 @@ unlink(c("omnibus_lm_translationUp_translationDown_Cockman_etal_2020_classicTOP_
 
 **Step 4:** The `plotFeaturesMap()` function is used to visualize the relationship between translation efficiency and different features that were identified in the modelling step as significantly contributing to the observed translational regulation. These visualizations are also useful for exploring the overlaps between different features within the same mRNAs.  
 
-```{r gettingStartedPlotFeautresMap, eval=TRUE, echo=TRUE}
+```{r gettingStartedPlotFeaturesMap, eval=TRUE, echo=TRUE}
 
 ptn <- plotFeaturesMap(ptn,
                 regOnly = TRUE,
@@ -206,7 +206,7 @@ ptn <- plotFeaturesMap(ptn,
 
 ```
 
-```{r gettingStartedPlotFeautresMapPDFconvert, eval=TRUE, echo=FALSE}
+```{r gettingStartedPlotFeaturesMapPDFconvert, eval=TRUE, echo=FALSE}
 # Convert to PNG
 library(magick)
 image_read_pdf("Example_UTR5_SCSCGS_featureUMAP.pdf", density = 300) %>%
@@ -215,7 +215,7 @@ image_read_pdf("Example_UTR5_SCSCGS_featureUMAP.pdf", density = 300) %>%
 
 ```
 
-```{r gettingStartedPlotFeautresMapPNG, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) clustered according to features identified in the omnibus model (left), with mRNAs containing SCSCGS motifs in the 5'UTR coloured (right)."}
+```{r gettingStartedPlotFeaturesMapPNG, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) clustered according to features identified in the omnibus model (left), with mRNAs containing SCSCGS motifs in the 5´UTR coloured (right)."}
 knitr::include_graphics("Figures/Example_UTR5_SCSCGS_featureUMAP.png")
 
 ```
@@ -230,13 +230,110 @@ This example provided an overview of a minimal postNet workflow. Full details of
 
 # Setting up a postNet analysis
 
-The basic workflow of a postNet analysis aims to explain the post-transcriptional regulatory fate of mRNA based on their repertoire of *cis*-acting sequence features and/or interactions with *trans*-acting factors.  Three basic inputs are required to run a postNet analysis:
+The basic workflow of a postNet analysis aims to explain the post-transcriptional regulatory fate of mRNA based on their repertoire of *cis*-acting sequence features and/or interactions with *trans*-acting factors. Three basic inputs are required to run a postNet analysis:
 
 1) Reference sequence annotations that will be used to identify and/or enumerate regulatory features.
 2) Gene sets of interest that undergo post-transcriptional regulation.
 3) A regulatory effect measurement, for example the log2 fold change in translation efficiency between a experimental and control condition.
 
-These inputs are compiled at the start of the analysis by initializing a `postNetData` object using the `postNetStart()` function. This class of object serves as the container for storing inputs and most outputs generated during the analysis, and is designated by `ptn` in the example code provided here. The following sections describe the different options and customizations available, along with examples illustrating how to set up a postNet analysis.
+These inputs are compiled at the start of the analysis by initializing a `postNetData` object using the `postNetStart()` function. This class of object serves as the container for storing inputs and some outputs generated during the analysis, and is designated by `ptn` in the example code provided here. The following sections describe the different options and customizations available, along with examples illustrating how to set up a postNet analysis.
+
+## Initializing a postNetData object using gene lists
+
+The most flexible implementation of postNet allows gene lists of interest and regulatory effect measurements to be supplied from custom sources. A `postNetData` object is initialized using the `geneList`, `effectMeasure`, and `customBg` parameters. The gene sets provided with `geneList` can be compared in downstream statistical analyses. A custom background can also be provided to `customBg` that will be used for statistical comparisons against the gene sets of interest. Note that the background should correspond to the set of genes or transcripts that was quantified (i.e., all genes used as input in the analysis that generated the regulatory effect measurement `effectMeasure`). For example, all genes in a given data set passing expression/reproducibility thresholds. If no custom background is provided, the background will be set as all genes IDs present in `geneList`. Although optional, it is strongly recommended to carefully consider that the appropriate background is used.
+
+  \item{geneList}{If \pkg{anota2seq} was not used, instead of providing \code{ads}, gene sets of interest can be provided as a named list of one or more character vectors. Each list element should be a set of genes (For example, \code{list(set1=c("GeneA","GeneB"), set2=c("GeneC","GeneD"))}). Ensure that the gene IDs provided match those in the reference sequence annotations.  
+}
+  \item{geneListcolours}{If using \code{geneList}, provide a character vector of colors to be used for plotting. This must have the same length as \code{geneList}. If using \code{ads}, the colours for each regulatory mode from \pkg{anota2seq} will be used automatically. 
+}
+  \item{customBg}{If using \code{geneList}, optionally provide a character vector of gene/transcript IDs corresponding to the custom background. This background will be used for statistical comparisons against the gene sets of interest provided in \code{geneList}. Note that the background should correspond to the set of genes or transcripts that was quantified (i.e., all genes used as input in the analysis that generated the regulatory effect measurement [\code{effectMeasure}]). For example, all genes in a given data set passing expression/reproducibility thresholds. Note that all genes in \code{geneList} must be found in \code{customBg}. If \code{customBg} is \code{NULL}, the background will be set as all genes IDs present in the provided \code{geneList}. Although optional, it is strongly recommended to carefully consider that the appropriate background is used. If using \code{ads}, the appropriate background is automatically retrieved from the \code{Anota2seqDataSet} object, and \code{customBg} should be \code{NULL}. 
+}
+  \item{effectMeasure}{If using \code{geneList}, provide a numeric vector corresponding to a custom regulation effect measurement. For example, fold changes in mRNA expression or translation efficiency (although any continuous numeric variable could theoretically be used). The elements of the vector should be named with the gene/transcript IDs in a format corresponding to those provided in the \code{geneList}. This parameter should not be provided when using \code{ads}, as the regulation effect measurement will be retrieved from the \code{Anota2seqDataSet} using the \code{regulationGen} parameter. 
+}
+
+```{r postNetStartGeneList, eval=TRUE, echo=TRUE}
+
+# Genes of interest should be provided in a named list.
+ myGenes <- postNetExample$geneList
+ str(myGenes)
+ 
+# All gene IDs in the list should be present in the background.
+ myBg <- postNetExample$background
+ str(myBg)
+ 
+# The regulation effect measurement must be named with the same gene IDs
+# present in the background (or the gene list if no custom background is provided).
+ myEffect <- postNetExample$effect
+ str(myEffect)
+
+# Initialize the postNetData object with custom gene lists:
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+
+```
+
+
+## Initializing a postNetData object using an anota2seq object
+
+  \item{regulation}{If using \code{ads}, provide a character vector of regulatory modes to retrieve from the \code{Anota2seqDataSet} object. Valid options include any individual selection, or combination of: \code{"translationUp"}, \code{"translationDown"}, \code{"translatedmRNAUp"}, \code{"translatedmRNADown"}, \code{"bufferingmRNAUp"}, \code{"bufferingmRNADown"}, \code{"mRNAAbundanceUp"}, \code{"mRNAAbundanceDown"}, \code{"totalmRNAUp"}, \code{"totalmRNADown"}. Please see the \pkg{anota2seq} vignette for additional details on regulatory modes.}
+  \item{contrast}{If using \code{ads}, provide a numeric vector specifying which \pkg{anota2seq} contrast each element in \code{regulation} should be selected from. For example, \code{c(1,1,2)} selects the first two regulatory modes provided in \code{regulation} from contrast 1, and the third mode from contrast 2. This vector must always be the same length as the input for \code{regulation}, even if the \code{Anota2seqDataSet} has only one contrast. For more details on contrasts, please see the \pkg{anota2seq} vignette.
+}
+  \item{regulationGen}{If using \code{ads}, select the "general" regulation effect measurement that will be taken from the \code{ads} object. These values will be used in the downstream feature integration where the mRNA features (and/or other input signatures) quantified in the specified gene sets (\code{regulation}) will be used to explain changes in the regulatory effect measurement (i.e. translation efficiency, etc.) with the \code{\link[postNet]{featureIntegration}} function. This parameter can be \strong{one} of: \code{"translation"}, \code{"buffering"}, \code{"mRNAAbundance"}, \code{"translatedmRNA"}, or \code{"totalmRNA"}.
+}
+  \item{contrastSel}{If using \code{ads}, select the \pkg{anota2seq} contrast where the "general" regulation effect measurement corresponding to \code{regulationGen} should be extracted from. This must be a single numeric value. 
+
+If using \code{ads}, the appropriate background is automatically retrieved from the \code{Anota2seqDataSet} object, and \code{customBg} should be \code{NULL}. 
+
+```{r GetAds, eval=TRUE, echo=TRUE}
+
+library(anota2seq)
+
+# Initialize Anota2seqDataSet using example data (see anota2seq vignette for details)
+ ads <- anota2seq::anota2seqDataSetFromMatrix(
+    dataP = postNetExample$ads_data$dataP,
+    dataT = postNetExample$ads_data$dataT,
+    phenoVec = postNetExample$ads_data$phenoVec,
+    batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
+    dataType = "RNAseq",
+    normalize = FALSE)
+    
+# Run an anota2seq analysis:
+# Note that the quality control and residual outlier testing are not 
+# performed to limit the running time of this example. For full details 
+# on running an analysis please see the anota2seq vignette and help manual.
+ ads <- anota2seqRun(ads,
+    performQC = FALSE, 
+    performROT = FALSE, 
+    useProgBar = FALSE)
+```
+
+This postNet analysis will allow identification of mRNA features and comparison between translationally activated and suppressed genes specified by the regulatory modes selected with the `regulation` parameter. Feature integration analysis will model changes in translation efficiency, specified by `regulationGen`.
+
+```{r postNetStartAds, eval=TRUE, echo=TRUE}
+
+# Initialize the postNetData object:
+  ptn_withAds <- postNetStart(
+      ads = ads,
+      regulation = c("translationUp","translationDown"),
+      contrast = c(1,1),
+      regulationGen = "translation",
+      contrastSel = 1,
+      selection = "random",
+      setSeed = 123,   # ensures reproducibility of random isoform selection
+      source = "load",
+      species = "human"
+    )
+  
+```
+
 
 ## Reference sequence annotations
 
@@ -244,17 +341,13 @@ Reference sequence annotations in postNet are divided according to different reg
 
 It is highly recommended to use reference sequence annotations that correspond to those that were used in generating the input gene lists. For example, if RNA sequencing reads were counted using Ensembl gene/transcript annotations, these may not always correspond well to the sequences defined by RefSeq annotations, even if identifiers have been converted to be compatible. When running `postNetStart()`, a warning message describing differences in gene identifiers between the input gene lists and the reference sequence annotations will be printed to the console. Minor differences may be acceptable depending on the application. However, larger differences may warrant either reprocessing of input data, or selecting a more compatible reference sequence annotation before proceeding with the analysis.
 
-The transcriptome is highly diverse, with mRNA isoform expression patterns varying across cell types [ref], and between normal and disease states [ref]. The sequences of mRNA molecules can also be dynamically regulated through processes such as alternative splicing [ref], altered transcription start site usage [ref], and alternative polyadenylation [ref]. Analyses relating mRNA sequence features to post-transcriptional regulation will benefit from more precise sequence annotations if these are available.
-
 ### Loading in-built reference sequence annotations
 
-By default, `source = "load"` meaning `postNetStart()` will load one of the in-built reference sequence annotations provided with the package. This option is available when `species = "human"` or `"mouse"`, and several several versions can be chosen from with the `version` parameter. All in-built annotations provided with the package are based on different releases of NCBI RefSeq GRCh38 (human) and GCRm39 (mouse) genome assemblies and corresponding transcript annotations.     
+By default, `source = "load"` meaning `postNetStart()` will load one of the in-built reference sequence annotations provided with the package. This option is available when `species = "human"` or `"mouse"`, and several versions can be chosen from with the `version` parameter. All in-built annotations are based on different releases of NCBI RefSeq GRCh38 (human) and GCRm39 (mouse) genome assemblies and corresponding transcript annotations.     
 
 It is possible to check which RefSeq release versions have in-built annotations available within the package using the `checkAvailableVersions()` function.
 
 ```{r RefSeqCheckVersions, eval=TRUE, echo=TRUE}
-
-library(postNet)
 
 # List RefSeq release versions of available annotations in the package
 checkAvailableVersions(species = "human")
@@ -266,9 +359,7 @@ A `postNetData` object can then be initialized using the in-built reference sequ
 
 ```{r RefSeqLoad, eval=FALSE, echo=TRUE}
 
-data("postNetExample")
-
-# Prepare custom gene lists and regulatory effect measurement:
+# Prepare custom gene lists and regulatory effect measurement using example data:
 myGenes <- postNetExample$geneList
 myBg <- postNetExample$background
 myEffect <- postNetExample$effect
@@ -313,9 +404,9 @@ Alternatively, two additional off-line methods are available to construct refere
 
 #  The required RefSeq annotation files downloaded from the NCBI database will 
 #  have the following naming:
-#  - "_rna.gbff.gz"
-#  - "_rna.fa.gz"
-#  - "_genomic.gff.gz"
+#  - "example_rna.gbff.gz"
+#  - "example_rna.fa.gz"
+#  - "example_genomic.gff.gz"
 
 # Initialize a postNetData object creating a new RefSeq reference sequence annotation 
 # from source files:
@@ -326,9 +417,9 @@ ptn <- postNetStart(
    effectMeasure = myEffect,
    source = "createFromSourceFiles",
    species = "human",
-   rna_gbff_file = "_rna.gbff.gz",
-   rna_fa_file = "_rna.fa.gz",
-   genomic_gff_file = "_genomic.gff.gz"
+   rna_gbff_file = "example_rna.gbff.gz",
+   rna_fa_file = "example_rna.fa.gz",
+   genomic_gff_file = "example_genomic.gff.gz"
  )
 
 ```
@@ -362,7 +453,9 @@ ptn <- postNetStart(
 
 ### Using custom reference sequence annotations
 
-Custom reference sequence annotations can also be used with the `postNetStart()` function and may be desirable in cases when working with data from species not currently supported by the options described above, with annotations other than those in the NCBI RefSeq database, or if sequences have been experimentally determined (for example, using long read sequencing). A pre-prepared reference sequence annotation file can be provided using the `customFile` parameter. This file must be tab delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq. 
+The transcriptome is highly diverse, with mRNA isoform expression patterns varying across cell types [ref], and between normal and disease states [ref]. The sequences of mRNA molecules can also be dynamically regulated through processes such as alternative splicing [ref], altered transcription start site usage [ref], and alternative polyadenylation [ref]. Analyses relating mRNA sequence features to post-transcriptional regulation will benefit from more precise sequence annotations if these are available.
+
+Custom reference sequence annotations can be used with the `postNetStart()` function and may be desirable in cases when working with data from species not currently supported by the options described above, with annotations other than those in the NCBI RefSeq database, or if sequences have been experimentally determined. A pre-prepared reference sequence annotation file can be provided using the `customFile` parameter. This file must be tab delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq. 
 
 ```{r RefSeqCustom, eval=FALSE, echo=TRUE}
 
@@ -407,17 +500,15 @@ ptn <- postNetStart(
  
 ### Adjusting UTR sequence annotations
 
-Although entirely custom sequence annotations can be supplied, as described above, numerous sequencing approaches are available to specifically map UTRs, such as CAGE/nanoCAGE [ref] and QuantSeq [ref]. For this reason, it is also possible to adjust only UTR sequences if more specific data is available for your experimental condition or model of interest.
+Numerous sequencing approaches are available to specifically map UTRs, such as CAGE/nanoCAGE [ref] and QuantSeq [ref]. For this reason, it is also possible to adjust only UTR sequences if more specific data is available for your experimental condition or model of interest.
 
-Custom UTR sequences can be provided to replace UTRs in an existing annotation file using the `adjObj` and `region_adj` parameters of the `postNetStart()` function. A list of custom sequences must be provided, specifying which UTR region(s) should be replaced. If custom UTR sequences are available for some, but not all genes in the existing sequence annotation, whether genes and isoforms without custom sequences are kept or discarded from the analysis can by controlled using the `excl` parameter. The `keepAll` parameter can also be used to control how custom UTR isoform sequences are stored for genes with multiple isoforms.        
+Custom UTR sequences will replace UTRs in an existing annotation file when using the `adjObj` and `region_adj` parameters of the `postNetStart()` function. A list of custom sequences must be provided, specifying which UTR region(s) should be replaced. If custom UTR sequences are available for some, but not all genes in the existing sequence annotation, whether genes and isoforms without custom sequences are kept or discarded from the analysis can by controlled using the `excl` parameter. The `keepAll` parameter can also be used to control how custom UTR isoform sequences are stored for genes with multiple isoforms.        
 
 ```{r AdjObj, eval=TRUE, echo=TRUE}
 
 # Create the adjObj list with custom 5'UTR sequences to replace those in the loaded annotation file
 myUTR5seqs <- ptn_sequences(ptn, "UTR5")
-str(myUTR5seqs)
 myIDd <- ptn_id(ptn, "UTR5")
-str(myIDd)
 names(myUTR5seqs) <- myIDd
 customUTR5s <-  list(UTR5 = myUTR5seqs)
 str(customUTR5s)
@@ -446,11 +537,7 @@ ptn <- postNetStart(
 
 ```
  
-## Setting up a postNet analysis using gene lists
-
-## Setting up a postNet analysis using an anota2seq object
-
-
+ 
 <a name="mRNAfeatures"/>
 
 # Analysis of mRNA sequence features
@@ -544,25 +631,6 @@ When performing GSEA, GAGE, or GO term analysis using the output of an `anota2se
 
 ```{r slopeFilt, eval=TRUE, echo=TRUE}
 
-# Initialize Anota2seqDataSet (see anota2seq vignette for details)
-library(anota2seq)
- ads <- anota2seq::anota2seqDataSetFromMatrix(
-    dataP = postNetExample$ads_data$dataP,
-    dataT = postNetExample$ads_data$dataT,
-    phenoVec = postNetExample$ads_data$phenoVec,
-    batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
-    dataType = "RNAseq",
-    normalize = FALSE)
-    
-# Run an anota2seq analysis:
-# Note that the quality control and residual outlier testing are not 
-# performed to limit the running time of this example. For full details 
-# on running an analysis please see the anota2seq vignette and help manual.
- ads <- anota2seqRun(ads,
-    performQC = FALSE, 
-    performROT = FALSE, 
-    useProgBar = FALSE)
-
 # Get the genes to be filtered out of downstream enrichment analyses 
 # using the buffering regulatory mode:
  filtOutGenes <- slopeFilt(ads,
@@ -581,8 +649,68 @@ str(filtOutGenes)
 ```
  
 ## Performing GSEA with a postNetData object
+A. Subramanian
+Mootha, V.
+
+MSigDB
+```{r GSEAmsigDB, eval=FALSE, echo=TRUE}
+
+# If using a GSEA collection from MSigDB, check the available versions:
+ version <- msigdb::getMsigdbVersions()
+ str(version)
+ 
+# Retrieve the MSigDB data for "human":
+ msigdbOut <- msigdb::getMsigdb(org = "hs", id = "SYM", version = version)
+
+# Check the available collections or subcollections:
+ msigdb::listCollections(msigdbOut)
+ msigdb::listSubCollections(msigdbOut)
+ 
+# Run GSEA on the C5 collection with GO:BP and specific terms:
+ ptn <- gseaAnalysis(ptn = ptn,
+                    collection = "c5",
+                    subcollection = "GO:BP",
+                    subsetNames = c("GOBP_CELL-CELL_SIGNALING_BY_WNT",
+                    "GOBP_ENDOCYTOSIS"),
+                    name = "c5_Example")
+
+```
+
+In addition to the collections in MSigDB, GSEA can also be run using custom gene sets using the `geneSet` parameter.
+```{r GSEAcustom, eval=FALSE, echo=TRUE}
+
+# Create example custom gene sets for GSEA:
+set1 <- sample(myGenes[[1]], 100)
+set2 <- sample(myGenes[[2]], 100)
+inSet <- list(Set1 = set1, Set2 = set2)
+
+# Run GSEA on custom gene sets:
+ ptn <- gseaAnalysis(ptn = ptn,
+                    geneSet = inSet,
+                    name = 'Example')
+
+# Extract the significant enrichment results from the postNetData object:
+ gseaOut <- ptn_GSEA(ptn, 
+                     threshold = 0.05)
+ 
+ # Plot GSEA results:
+ gseaPlot(ptn = ptn,
+          termNames = gseaOut$Term[1])
+```
 
 ### Plotting GSEA results
+
+```{r GSEAplotting, eval=FALSE, echo=TRUE}
+
+# Extract the significant enrichment results from the postNetData object:
+ gseaOut <- ptn_GSEA(ptn, 
+                     threshold = 0.05)
+ 
+ # Plot GSEA results:
+ gseaPlot(ptn = ptn,
+          termNames = gseaOut$Term[1])
+```
+
 
 ## GAGE analysis with a postNetData object
 
