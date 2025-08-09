@@ -536,6 +536,8 @@ ptn <- postNetStart(
 
 # Functional enrichment and threshold-independent signature analyses with postNet
 
+In addition to tools for identifying and enumerating sequence features of mRNA and modeling networks of post-transcriptional regulation, postNet can also be used to perform enrichment analyses including implementations of GSEA, GAGE, and GO term analysis to provide functional insights into gene sets of interest. It is also possible to examine the regulation of gene signatures in your dataset in a threshold-independent manner, providing insights into possible mechanisms explaining observed regulation and allowing comparisons between datasets.  
+
 ## Slope filtering with an anota2seq object
 
 When performing GSEA, GAGE, or GO term analysis using the output of an `anota2seq` analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is due to that the slopes fitted by the anota2seq APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering (or offsetting). Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended. The `slopeFilt` function identifies these genes with unrealistic slopes, allowing them to be removed from downstream analyses. Note that in high-quality data sets few genes will require slope filtering, but filtering thresholds can be adjusted with the `minSlope` and `maxSlope` parameters. 
@@ -578,7 +580,6 @@ The output of the slopeFilt function can be directly supplied to downstream enri
 str(filtOutGenes)
 ```
  
-
 ## Performing GSEA with a postNetData object
 
 ### Plotting GSEA results
