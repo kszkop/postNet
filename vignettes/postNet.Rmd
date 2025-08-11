@@ -237,7 +237,7 @@ The basic workflow of a postNet analysis aims to explain the post-transcriptiona
 
 These inputs are compiled at the start of the analysis by initializing a `postNetData` object using the `postNetStart()` function. This class of object serves as the container for storing inputs and some outputs generated during the analysis, and is designated by `ptn` in the example code provided here. The following sections describe the different options and customizations available, along with examples illustrating how to set up a postNet analysis.
 
-Throughout this vignette, we will use example data provided with the package to illustrate the implementation of different analyses. These data are published in the study by X et al. [ref], where changes in translation efficiency were measured using ribosome profiling and RNA-seq in immortalized human corneal epithelial cells responding osmotic stress (500 mOsm, NaCl) for 1 h, along with controls. Genes that were translationally activated or suppressed under osmotic stress were identified using the anota2seq algorithm [ref].
+Throughout this vignette, we will use example data provided with the package to illustrate the implementation of different analyses. These data are published in the study by Krokowski et al. [@Krokowski2022], where changes in translation efficiency were measured using ribosome profiling and RNA-seq in immortalized human corneal epithelial cells responding osmotic stress (500 mOsm, NaCl) for 1 h, along with controls. Genes that were translationally activated or suppressed under osmotic stress were identified using the anota2seq algorithm [ref].
 
 ## Initializing a postNetData object using gene lists
 
@@ -247,7 +247,7 @@ Depending on the aim of the analysis, different inputs can be provided. In the c
 
 For each gene provided as part of a gene set of interest or background set, you must provide a regulatory effect measurement. As postNet is designed for examining post-transcriptional regulation, this would typically be the log2 fold changes in mRNA translation efficiency or expression between two conditions. However, other continuous numeric variables representing a change between two conditions could also be used, allowing a high degree of flexibility in potential applications. 
 
-Below is an example illustrating the set-up of a postNet analysis to that will allow identification of mRNA features and statistical comparisons between sets of translationally activated and suppressed genes, as well as modelling and network analysis to identify features associated with changes in translational regulation and their interdependence.  
+The example below illustrates the set-up of a postNet analysis allowing identification of mRNA features and statistical comparisons between sets of translationally activated and suppressed genes, as well as modelling and network analysis to identify features associated with changes in translational regulation and their interdependence.  
 
 ```{r postNetStartGeneList, eval=TRUE, echo=TRUE}
 
@@ -284,20 +284,20 @@ Below is an example illustrating the set-up of a postNet analysis to that will a
 
 ## Initializing a postNetData object using an anota2seq object
 
-  \item{regulation}{If using \code{ads}, provide a character vector of regulatory modes to retrieve from the \code{Anota2seqDataSet} object. Valid options include any individual selection, or combination of: \code{"translationUp"}, \code{"translationDown"}, \code{"translatedmRNAUp"}, \code{"translatedmRNADown"}, \code{"bufferingmRNAUp"}, \code{"bufferingmRNADown"}, \code{"mRNAAbundanceUp"}, \code{"mRNAAbundanceDown"}, \code{"totalmRNAUp"}, \code{"totalmRNADown"}. Please see the \pkg{anota2seq} vignette for additional details on regulatory modes.}
-  \item{contrast}{If using \code{ads}, provide a numeric vector specifying which \pkg{anota2seq} contrast each element in \code{regulation} should be selected from. For example, \code{c(1,1,2)} selects the first two regulatory modes provided in \code{regulation} from contrast 1, and the third mode from contrast 2. This vector must always be the same length as the input for \code{regulation}, even if the \code{Anota2seqDataSet} has only one contrast. For more details on contrasts, please see the \pkg{anota2seq} vignette.
-}
-  \item{regulationGen}{If using \code{ads}, select the "general" regulation effect measurement that will be taken from the \code{ads} object. These values will be used in the downstream feature integration where the mRNA features (and/or other input signatures) quantified in the specified gene sets (\code{regulation}) will be used to explain changes in the regulatory effect measurement (i.e. translation efficiency, etc.) with the \code{\link[postNet]{featureIntegration}} function. This parameter can be \strong{one} of: \code{"translation"}, \code{"buffering"}, \code{"mRNAAbundance"}, \code{"translatedmRNA"}, or \code{"totalmRNA"}.
-}
-  \item{contrastSel}{If using \code{ads}, select the \pkg{anota2seq} contrast where the "general" regulation effect measurement corresponding to \code{regulationGen} should be extracted from. This must be a single numeric value. 
+A `postNetData` object can also be constructed directly downstream of running an analysis using the [Anota2seq](https://bioconductor.org/packages/anota2seq) package to identify differentially translated genes. Here, the  `postNetStart()` function will be used with the `ads`, `regulation`, `contrast`, `regulationGen`, and `contrastSel` parameters to initialize the `postNetData` object.  
+ 
+*Anota2seq* can be applied using data from both polysome and ribosome profiling techniques, and categorizes genes into three different regulatory modes: 
+1) Abundance, where changes in mRNA levels can be explained by transcription or mRNA stability.
+2) Translation, where polysome-association is altered without a change in total mRNA level (this mode is expected to alter protein levels).
+3) Buffering/translational offsetting, where polysome-association is maintained while total mRNA level changes (this mode is not expected to alter protein levels).
 
-If using \code{ads}, the appropriate background is automatically retrieved from the \code{Anota2seqDataSet} object, and \code{customBg} should be \code{NULL}.
+To initialize the `postNetData` object, an `Anota2seqDataSet` can be provided using the `ads` parameter of `postNetStart()`. The `regulation` parameter allows the user to select which sets of regulated genes identified using *anota2seq* will be used in statistical comparisons and downstream modelling and network analysis. In addition to the three regulatory modes listed above, where changes in both total and translated mRNA are taken into account, it is also possible to examine differences in total and translated mRNA independently. Gene sets can be selected from multiple contrasts in *anota2seq* specified with the `contrast` parameter (see the [anota2seq vignette](https://bioconductor.org/packages/release/bioc/vignettes/anota2seq/inst/doc/anota2seq.pdf) for more details).    
 
-If using \code{ads}, the colours for each regulatory mode from \pkg{anota2seq} will be used automatically. 
-}
-This parameter should not be provided when using \code{ads}, as the regulation effect measurement will be retrieved from the \code{Anota2seqDataSet} using the \code{regulationGen} parameter. 
-}
+The regulatory effect measurement is taken directly from the `Anota2seqDataSet` object, and is specified by the `regulationGen` parameter. *Anto2seq* calculates sets of fold changes for each gene, in each regulatory mode. Although gene sets from all regulatory modes and contrasts can be selected for statistical comparisons, only one "general" regulatory effect measurement can be supplied (i.e., fold changes in translation efficiency, *or* buffering, etc.), so consideration should be given to downstream modelling where the mRNA features (and/or other input signatures) quantified in the gene sets specified by `regulation` will be used to explain changes in the regulatory effect measurement specified by `regulationGen`. Similarly to the gene sets, the regulatory effect measurement can be selected from any contrast from the *anota2seq* analysis using the `contrastSel` parameter.        
 
+When an `Anota2seqDataSet` is supplied, the appropriate background gene set, and colours for each gene list will be automatically retrieved.  
+
+The example below illustrates the set-up of a postNet analysis using the output of *anota2seq*, `ads`.  
 ```{r GetAds, eval=TRUE, echo=TRUE, results = 'hide'}
 
 library(anota2seq)
@@ -325,15 +325,15 @@ library(anota2seq)
 unlink(c("ANOTA2SEQ_rvm_fit_for_all_contrasts_group.jpg"))
 ```
 
-This postNet analysis will allow identification of mRNA features and comparison between translationally activated and suppressed genes specified by the regulatory modes selected with the `regulation` parameter. Feature integration analysis will model changes in translation efficiency, specified by `regulationGen`.
+This postNet analysis will allow identification of mRNA features and comparison between translationally activated and suppressed genes, as well as buffered (total mRNA up and down) genes from contrast 1, specified with the `regulation` and `constrast` parameters. Feature integration modelling and network analysis will model the fold changes in translation efficiency from contrast 1, specified by `regulationGen` and `contrastSel` parameters. Note that in this example, if the buffering gene sets are included in modelling comparisons, the regulatory effect measurement values for these genes will be the fold changes in translation efficiency.   
 
 ```{r postNetStartAds, eval=TRUE, echo=TRUE, results = 'hide'}
 
 # Initialize the postNetData object:
   ptn_withAds <- postNetStart(
       ads = ads,
-      regulation = c("translationUp","translationDown"),
-      contrast = c(1,1),
+      regulation = c("translationUp","translationDown","bufferingmRNAUp","bufferingmRNADown"),
+      contrast = c(1,1,1,1),
       regulationGen = "translation",
       contrastSel = 1,
       selection = "random",
