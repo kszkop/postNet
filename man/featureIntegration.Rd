@@ -41,7 +41,7 @@ featureIntegration(ptn,
 }
   \item{analysis_type}{A string specifying the method for the analysis. The options are \code{"lm"} to perform stepwise linear regression modelling, or \code{"rf"} to perform a random forest-based analysis. 
 }
-  \item{regOnly}{Logical specifying whether modelling should be performed using only regulated genes (i.e., those included in \code{geneList}), or with all genes in the dataset. If \code{regOnly = TRUE}, only regulated genes will be used, if \code{regOnly = FALSE}, all genes will be considered. Default is \code{TRUE}. 
+  \item{regOnly}{If \code{analysis_type = "lm"}, provide a logical specifying whether modelling should be performed using only regulated genes (i.e., those included in \code{geneList}), or with all genes in the dataset. If \code{regOnly = TRUE}, only regulated genes will be used, if \code{regOnly = FALSE}, all genes will be considered. Default is \code{TRUE}. 
 }
   \item{allFeat}{If \code{analysis_type = "lm"}, provide a logical specifying which input features should be including in the stepwise linear regression modelling. If \code{allFeat = TRUE}, all input features will be included, if \code{FALSE}, only features passing the FDR threshold specified with \code{fdrUni} in univariate models will be included. Default is \code{FALSE}.
 }
@@ -100,7 +100,7 @@ The resulting network plot is output as a PDF. Modelling is summarized in a PDF 
 
 The random forest implementation of \code{featureIntegration} will store results for each comparison in the \code{rf} slot. The pre-model, feature selection, and final model are stored as objects of class \code{\link[randomForest]{randomForest}} and \code{\link[Boruta]{Boruta}}. The selected features selected are listed in the \code{selectedFeatures} slot, along with their importance (Mean Decrease Accuracy) from the final model. Feature importance calculated by \code{\link[Boruta]{Boruta}} is plotted is output as a PDF file. PDF files are also output with ROC curves for the final model, and the importance of selected features.  
 
-Both implementations of \code{featureIntegration} output PDF files with sactterplots for each individual feature identified in final stepwise regression or random forest models, with Pearson's correlation coefficient between the feature and regulatory effect displayed. Loess regression??  
+Both implementations of \code{featureIntegration} output PDF files with sactterplots for each individual feature identified in final stepwise regression or random forest models, with Pearson's correlation coefficient between the feature and regulatory effect (two-sided test). The linear trend line, and cubic smoothing spline (allowing assessment of linearity) are displayed.  
 }
 
 \references{
@@ -164,7 +164,6 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
                           pdfName = "Example", 
-                          regOnly = TRUE, 
                           analysis_type ="rf",
                           comparisons = list(c(1,2)))
                           

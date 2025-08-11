@@ -52,7 +52,7 @@ library(postNet)
 data("postNetExample")
 ```
 
-**Step 1:** A `postNetData` object containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency), and reference mRNA sequence annotations in initialized using the `postNetStart()` function.   
+**Step 1:** A `postNetData` object containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency derived from ribosome profiling and RNAseq comparing cells responding to osmotic stress against controls [ref]), and reference mRNA sequence annotations in initialized using the `postNetStart()` function.   
 ```{r gettingStartedInput, eval=TRUE, echo=TRUE}
 # Prepare custom gene lists and regulatory effect measurement:
 myGenes <- postNetExample$geneList
@@ -214,7 +214,7 @@ image_read_pdf("Example_UTR5_SCSCGS_featureUMAP.pdf", density = 300) %>%
 
 ```
 
-```{r gettingStartedPlotFeaturesMapPNG, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) clustered according to features identified in the omnibus model (left), with mRNAs containing SCSCGS motifs in the 5´UTR coloured (right)."}
+```{r gettingStartedPlotFeaturesMapPNG, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) generated based on features identified in the omnibus model (left), with mRNAs containing SCSCGS motifs in the 5´UTR coloured (right)."}
 knitr::include_graphics("Figures/Example_UTR5_SCSCGS_featureUMAP.png")
 
 ```
@@ -237,17 +237,17 @@ The basic workflow of a postNet analysis aims to explain the post-transcriptiona
 
 These inputs are compiled at the start of the analysis by initializing a `postNetData` object using the `postNetStart()` function. This class of object serves as the container for storing inputs and some outputs generated during the analysis, and is designated by `ptn` in the example code provided here. The following sections describe the different options and customizations available, along with examples illustrating how to set up a postNet analysis.
 
+Throughout this vignette, we will use example data provided with the package to illustrate the implementation of different analyses. These data are published in the study by X et al. [ref], where changes in translation efficiency were measured using ribosome profiling and RNA-seq in immortalized human corneal epithelial cells responding osmotic stress (500 mOsm, NaCl) for 1 h, along with controls. Genes that were translationally activated or suppressed under osmotic stress were identified using the anota2seq algorithm [ref].
+
 ## Initializing a postNetData object using gene lists
 
-The most flexible implementation of postNet allows gene lists of interest and regulatory effect measurements to be supplied from custom sources. Here, the  `postNetStart()` function will be used with the `geneList`, `geneListcolours`, `effectMeasure`, and `customBg` parameters to initialize the `postNetData` object.    
+The most flexible implementation of postNet allows gene lists of interest and regulatory effect measurements to be supplied from custom sources. Here, the  `postNetStart()` function will be used with the `geneList`, `geneListcolours`, `customBg`, and `effectMeasure` parameters to initialize the `postNetData` object.    
 
-Depending on the aim of the analysis, different inputs can be provided. In the case where the goal is simply to enumerate sequence features in genes of interest without statistical comparisons, `geneList` can be a single list of gene IDs with no background gene set. To perform statistical comparisons, one or more sets of genes of interest must be provided, either with or without a custom background gene set (`customBg` parameter). Although optional, it is strongly recommended to carefully consider that the appropriate background is used. Typically, this would be all genes in the given data set passing expression and/or reproducibility thresholds.
+Depending on the aim of the analysis, different inputs can be provided. In the case where the goal is simply to enumerate sequence features in genes of interest without statistical comparisons, `geneList` can be a single list of gene IDs with no background gene set. To perform statistical comparisons, one or more gene sets of interest must be provided, either with or without a custom background gene set (`customBg` parameter). Although optional, it is strongly recommended to carefully consider that the appropriate background is used. Typically, this would be all genes in the given data set passing expression and/or reproducibility thresholds. When providing custom gene lists, it is also required to specify colours (`geneListcolours` parameter) that will be used in visualizations generated at various steps of the analysis.
 
-  \item{geneListcolours}{If using \code{geneList}, provide a character vector of colors to be used for plotting. This must have the same length as \code{geneList}. If using \code{ads}, the colours for each regulatory mode from \pkg{anota2seq} will be used automatically. 
-}
- 
-  \item{effectMeasure}{If using \code{geneList}, provide a numeric vector corresponding to a custom regulation effect measurement. For example, fold changes in mRNA expression or translation efficiency (although any continuous numeric variable could theoretically be used). The elements of the vector should be named with the gene/transcript IDs in a format corresponding to those provided in the \code{geneList}. This parameter should not be provided when using \code{ads}, as the regulation effect measurement will be retrieved from the \code{Anota2seqDataSet} using the \code{regulationGen} parameter. 
-}
+For each gene provided as part of a gene set of interest or background set, you must provide a regulatory effect measurement. As postNet is designed for examining post-transcriptional regulation, this would typically be the log2 fold changes in mRNA translation efficiency or expression between two conditions. However, other continuous numeric variables representing a change between two conditions could also be used, allowing a high degree of flexibility in potential applications. 
+
+Below is an example illustrating the set-up of a postNet analysis to that will allow identification of mRNA features and statistical comparisons between sets of translationally activated and suppressed genes, as well as modelling and network analysis to identify features associated with changes in translational regulation and their interdependence.  
 
 ```{r postNetStartGeneList, eval=TRUE, echo=TRUE}
 
@@ -291,7 +291,12 @@ Depending on the aim of the analysis, different inputs can be provided. In the c
 }
   \item{contrastSel}{If using \code{ads}, select the \pkg{anota2seq} contrast where the "general" regulation effect measurement corresponding to \code{regulationGen} should be extracted from. This must be a single numeric value. 
 
-If using \code{ads}, the appropriate background is automatically retrieved from the \code{Anota2seqDataSet} object, and \code{customBg} should be \code{NULL}. 
+If using \code{ads}, the appropriate background is automatically retrieved from the \code{Anota2seqDataSet} object, and \code{customBg} should be \code{NULL}.
+
+If using \code{ads}, the colours for each regulatory mode from \pkg{anota2seq} will be used automatically. 
+}
+This parameter should not be provided when using \code{ads}, as the regulation effect measurement will be retrieved from the \code{Anota2seqDataSet} using the \code{regulationGen} parameter. 
+}
 
 ```{r GetAds, eval=TRUE, echo=TRUE, results = 'hide'}
 

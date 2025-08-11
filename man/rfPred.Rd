@@ -73,7 +73,6 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
                           pdfName = "Example", 
-                          regOnly = TRUE, 
                           analysis_type ="rf",
                           comparisons = list(c(1,2)))
 
