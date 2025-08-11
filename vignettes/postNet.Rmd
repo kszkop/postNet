@@ -291,7 +291,7 @@ A `postNetData` object can also be constructed directly downstream of running an
 2) Translation, where polysome-association is altered without a change in total mRNA level (this mode is expected to alter protein levels).
 3) Buffering/translational offsetting, where polysome-association is maintained while total mRNA level changes (this mode is not expected to alter protein levels).
 
-To initialize the `postNetData` object, an `Anota2seqDataSet` can be provided using the `ads` parameter of `postNetStart()`. The `regulation` parameter allows the user to select which sets of regulated genes identified using *anota2seq* will be used in statistical comparisons and downstream modelling and network analysis. In addition to the three regulatory modes listed above, where changes in both total and translated mRNA are taken into account, it is also possible to examine differences in total and translated mRNA independently. Gene sets can be selected from multiple contrasts in *anota2seq* specified with the `contrast` parameter (see the [anota2seq vignette](https://bioconductor.org/packages/release/bioc/vignettes/anota2seq/inst/doc/anota2seq.pdf) for more details).    
+An `Anota2seqDataSet` can be provided using the `ads` parameter of `postNetStart()`. The `regulation` parameter allows the user to select which sets of regulated genes identified using *anota2seq* will be used in statistical comparisons and downstream feature integration modelling and network analysis. In addition to the three regulatory modes listed above, where changes in both total and translated mRNA are taken into account, it is also possible to examine differences in total and translated mRNA independently. Gene sets can be selected from multiple contrasts in *anota2seq* specified with the `contrast` parameter (see the [anota2seq vignette](https://bioconductor.org/packages/release/bioc/vignettes/anota2seq/inst/doc/anota2seq.pdf) for more details).    
 
 The regulatory effect measurement is taken directly from the `Anota2seqDataSet` object, and is specified by the `regulationGen` parameter. *Anto2seq* calculates sets of fold changes for each gene, in each regulatory mode. Although gene sets from all regulatory modes and contrasts can be selected for statistical comparisons, only one "general" regulatory effect measurement can be supplied (i.e., fold changes in translation efficiency, *or* buffering, etc.), so consideration should be given to downstream modelling where the mRNA features (and/or other input signatures) quantified in the gene sets specified by `regulation` will be used to explain changes in the regulatory effect measurement specified by `regulationGen`. Similarly to the gene sets, the regulatory effect measurement can be selected from any contrast from the *anota2seq* analysis using the `contrastSel` parameter.        
 
@@ -325,7 +325,7 @@ library(anota2seq)
 unlink(c("ANOTA2SEQ_rvm_fit_for_all_contrasts_group.jpg"))
 ```
 
-This postNet analysis will allow identification of mRNA features and comparison between translationally activated and suppressed genes, as well as buffered (total mRNA up and down) genes from contrast 1, specified with the `regulation` and `constrast` parameters. Feature integration modelling and network analysis will model the fold changes in translation efficiency from contrast 1, specified by `regulationGen` and `contrastSel` parameters. Note that in this example, if the buffering gene sets are included in modelling comparisons, the regulatory effect measurement values for these genes will be the fold changes in translation efficiency.   
+This postNet analysis will allow identification of mRNA features and comparison between translationally activated and suppressed genes, as well as buffered (total mRNA up and down) genes from contrast 1. Feature integration and network analysis will model the fold changes in translation efficiency from contrast 1. Note that in this example, if the buffering gene sets are included in modelling comparisons, the regulatory effect measurement values for these genes will be the fold changes in translation efficiency.   
 
 ```{r postNetStartAds, eval=TRUE, echo=TRUE, results = 'hide'}
 
@@ -343,7 +343,6 @@ This postNet analysis will allow identification of mRNA features and comparison 
     )
   
 ```
-
 
 ## Reference sequence annotations
 
@@ -386,7 +385,6 @@ ptn <- postNetStart(
  )
 
 ```
-
 
 ### Retrieving or constructing reference sequence annotations from the NCBI RefSeq database
 
@@ -459,7 +457,6 @@ ptn <- postNetStart(
  )
 
 ```
-
 
 ### Using custom reference sequence annotations
 
