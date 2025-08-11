@@ -549,7 +549,97 @@ ptn <- postNetStart(
 
 # Analysis of mRNA sequence features
 
+*PostNet* includes a variety of tools for identifying and enumerating sequence features of mRNA. The outputs of these analyses can then be compiled into catalogues of *cis*-acting regulatory features used to model changes in post-transcriptional regulation and dissect networks of interactions between features.
+
+<a name="comparisons"/>
+
+For all tools described in the following section, in addition cataloging sequence features, it is also possible to perform statistical comparisons between different sets of mRNA. Where possible, this is done by providing the `comparisons` parameter, where the input is a list of numeric vectors specifying the pairwise comparisons to be made between gene sets defined by `geneList` (if using custom inputs), or `regulation` (if using the results of an *anota2seq* analysis) parameters in the `postNetStart()` function. Comparisons can be made between gene sets of interest, and between gene sets and the background set, which is always denoted by 0. For example, `list(c(1,2), c(0,1), c(0,2))` would produce three sets of statistics for the comparisons between gene sets 1 and 2, and each for against the background set. 
+
 ## Length of sequence regions
+
+```{r lengthAnalysisBoxplot, eval=TRUE, echo=TRUE}
+
+# Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between
+# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes
+ len <- lengthAnalysis(ptn = ptn, 
+                      region = c("UTR5","CDS","UTR3"), 
+                      comparisons = list(c(0,1),c(0,2),c(1,2)),
+                      plotOut = TRUE,
+                      plotType = 'boxplot',
+                      pdfName = "Example")
+                      
+ str(len)
+
+```
+
+```{r lengthAnalysisViolin, eval=TRUE, echo=FALSE}
+
+# Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between
+# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes
+ len <- lengthAnalysis(ptn = ptn, 
+                      region = c("UTR5"), 
+                      comparisons = list(c(0,1),c(0,2),c(1,2)),
+                      plotOut = TRUE,
+                      plotType = 'violin',
+                      pdfName = "Example")
+                      
+
+```
+ 
+```{r lengthAnalysisEcdf, eval=TRUE, echo=FALSE}
+
+# Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between
+# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes
+ len <- lengthAnalysis(ptn = ptn, 
+                      region = c("UTR5"), 
+                      comparisons = list(c(0,1),c(0,2),c(1,2)),
+                      plotOut = TRUE,
+                      plotType = 'ecdf',
+                      pdfName = "Example")
+                      
+```
+
+```{r lengthAnalysisPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_UTR5_boxplot_lengthAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
+
+image_read_pdf("Example_UTR5_violin_lengthAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR5_violin_lengthAnalysis.png")
+
+image_read_pdf("Example_UTR5_ecdf_lengthAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR5_ecdf_lengthAnalysis.png")
+
+# Read each image
+img1 <- image_read("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
+img2 <- image_read("Figures/Example_UTR5_violin_lengthAnalysis.png")
+img3 <- image_read("Figures/Example_UTR5_ecdf_lengthAnalysis.png")
+
+# Append them horizontally
+combined <- image_append(c(img1, img2, img3), stack = FALSE)
+
+# Save combined image at high resolution
+image_write(combined, path = "Figures/combined_length.png")
+
+
+```
+
+```{r lengthAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Differences in 5'UTR length. Statistical comparisons are made between translationally activated, suppressed, and background gene sets.  Visualizations can be generated as either boxplots, violinplots, or ecdfs."}
+knitr::include_graphics("Figures/combined_length.png")
+
+```
+
+```{r lengthAnalysisHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR3_boxplot_lengthAnalysis.pdf", "Example_CDS_boxplot_lengthAnalysis.pdf",
+         "Example_UTR5_violin_lengthAnalysis.pdf", "Example_UTR5_ecdf_lengthAnalysis.pdf",
+         "Figures/Example_UTR5_boxplot_lengthAnalysis.png", "Figures/Example_UTR5_violin_lengthAnalysis.png",
+         "Figures/Example_UTR5_ecdf_lengthAnalysis.png"))
+```
+
+
 
 ## Nucleotide content
 
