@@ -734,6 +734,72 @@ content_UTR5_last15 <- contentAnalysis(ptn = ptn,
 
 ## Folding energy
 
+Nucleotide content, particularly GC content, is also strongly associated with the post-transcriptional fate of mRNAs [ref]. For each gene, the `contentAnalysis()` function computes and returns a list of the percentage of nucleotide content of each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
+
+Smaller values of Gibbs free energy (Δ*G*) indicate more stable structures, while larger values indicate less stable, more flexible mRNA molecules. 
+
+The `contentIn` parameter is used to specify one or more nucleotide(s) or nucleotide combinations to quantify. These can be any selection or combination of A, T, G, or C. For example `c("GC")` to obtain the combined percentage of G and C, or `c("G", "C")` to obtain the individual percentages. Within the coding sequence, it may also of interest to calculate nulceotide content at specific codon positions, for example the GC content at the 3rd codon position ("GC3") is often used as an indicator of codon bias [ref]. For this reason, when the input for the `region` parameter includes `"CDS"`, nucleotide content at specific codon positions can also be quantified by supplying the nucleotide or combination of nucleotides, along with the codon position to be examined (1, 2, or 3). For example, `c("GC3")` calculates percentage of GC content in the third codon position, while `c("A12")` would provide the percentage of A content in the first and second codon positions.   
+
+The example below will compute a list (`GC_content`) of the percentage of GC content for each gene and sequence region, and produce three PDF files with violin plots and statistics comparing the length of each sequence region between gene sets and background. 
+
+[@Zuker2003]
+
+```{r foldingEnergyBoxplot, eval=TRUE, echo=TRUE}
+
+# Compare the folding energy of the 5'UTR for each gene between translationUp genes vs. background, 
+# translationDown genes vs. background, and translationUp vs. translationDown genes. 
+ FE <- foldingEnergyAnalysis(ptn = ptn,
+                               region=c("UTR5","CDS","UTR3"),
+                               comparisons = list(c(0,1),c(0,2),c(1,2)),
+                               residFE = FALSE, 
+                               plotType = "boxplot",
+                               sourceFE = "load",
+                               plotOut = TRUE,
+                               pdfName = "Example")
+ str(FE)
+
+```
+
+```{r foldingEnergyPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_UTR5_boxplot_foldEnergyAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR5_boxplot_foldEnergyAnalysis.png")
+
+image_read_pdf("Example_UTR3_boxplot_foldEnergyAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR3_boxplot_foldEnergyAnalysis.png")
+
+image_read_pdf("Example_CDS_boxplot_foldEnergyAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_CDS_boxplot_foldEnergyAnalysis.png")
+
+# Read each image
+img1 <- image_read("Figures/Example_UTR5_boxplot_foldEnergyAnalysis.png")
+img2 <- image_read("Figures/Example_UTR3_boxplot_foldEnergyAnalysis.png")
+img3 <- image_read("Figures/Example_CDS_boxplot_foldEnergyAnalysis.png")
+
+# Append them horizontally
+combined <- image_append(c(img1, img2, img3), stack = FALSE)
+
+# Save combined image at high resolution
+image_write(combined, path = "Figures/combined_FE.png")
+
+
+```
+
+```{r foldingEnergyPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Box plots visualizing differences in the folding energy of mRNA sequence regions between different gene sets. 5'UTR (right), 3'UTR (middle), CDS (left). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can be also generated as either violin plots, or eCDFs"}
+knitr::include_graphics("Figures/combined_FE.png")
+
+```
+
+```{r foldingEnergyHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_UTR5_boxplot_foldEnergyAnalysis.pdf", "Example_UTR3_boxplot_foldEnergyAnalysis.pdf", "Example_CDS_boxplot_foldEnergyAnalysis.pdf",
+         "Figures/Example_UTR5_boxplot_foldEnergyAnalysis.png", "Figures/Example_UTR3_boxplot_foldEnergyAnalysis.png",
+         "Figures/Example_CDS_boxplot_foldEnergyAnalysis.png"))
+```
+
+
 ## upstream open reading frames (uORFs)
 
 ## Motif discovery using STREME
