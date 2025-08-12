@@ -549,74 +549,61 @@ ptn <- postNetStart(
 
 # Analysis of mRNA sequence features
 
-*PostNet* includes a variety of tools for identifying and enumerating sequence features of mRNA. The outputs of these analyses can then be compiled into catalogues of *cis*-acting regulatory features used to model changes in post-transcriptional regulation and dissect networks of interactions between features.
+*PostNet* includes a variety of tools for identifying and enumerating sequence features of mRNA. These tools can be used for stand-alone analyses to visualize and perform statistical comparisons of mRNA features between sets of regulated genes (described below). However, the outputs of these tools can also be compiled into per-gene catalogues of *cis*-acting regulatory features and used with the `featureIntegration()` function to model changes in post-transcriptional regulation, and dissect networks of interactions between features.
+
+## Statistical comparisons, selecting sequence sub-regions, and plotting options
 
 <a name="comparisons"/>
 
-For all tools described in the following section, in addition cataloging sequence features, it is also possible to perform statistical comparisons between different sets of mRNA. Where possible, this is done by providing the `comparisons` parameter, where the input is a list of numeric vectors specifying the pairwise comparisons to be made between gene sets defined by `geneList` (if using custom inputs), or `regulation` (if using the results of an *anota2seq* analysis) parameters in the `postNetStart()` function. Comparisons can be made between gene sets of interest, and between gene sets and the background set, which is always denoted by 0. For example, `list(c(1,2), c(0,1), c(0,2))` would produce three sets of statistics for the comparisons between gene sets 1 and 2, and each for against the background set. 
+For the tools described in the following sections, where possible, statistical analyses are performed by providing the `comparisons` parameter, where the input is a list of numeric vectors specifying the pairwise comparisons to be made between gene sets defined by `geneList` (if using custom inputs), or `regulation` (if using the results of an *anota2seq* analysis) parameters in the `postNetStart()` function. Comparisons can be made between gene sets of interest, and between gene sets and the background set, which is always denoted by 0. For example, `list(c(1,2), c(0,1), c(0,2))` would produce three sets of statistics for the comparisons between gene sets 1 and 2, and each for against the background set. Unless otherwise described, significant differences in enumerated mRNA features between pairs of gene sets are evaluated using two-sided Wilcoxon rank sum tests.
+
+<a name="subregions"/>
+
+Some regulatory sequence features of mRNA are highly positional, such as 5'terminal oligopyrimidine (TOP) motifs [ref], or codon "ramp" sequences [ref]. Therefore, for some tools described below, users may wish to search for and/or enumerate mRNA sequence features within more specific sequence sub-regions. This can be accomplished using the `subregion`, and `subregionSel` parameters. The `subregion` parameter takes an integer indicating the number of nucleotides to include or exclude from either the start of the sequence region if positive, or the end if negative. For example, `subregion = 50` denotes the first 50 nucleotides of the sequence region(s) specified by the `region` parameter (5'UTR, CDS, or 3'UTR), while `subregion = -50`, denotes the last 50 nucleotides of the sequence region(s). A logical is then supplied to `subregionSel`, allowing the user to either examine only this selected sub-region, or to exclude it from the analysis. 
+
+<a name="plottingOpts"/>
+
+In most cases, three options for visualizations are available with the `plotType` parameter, including box plots, violin plots, and empirical cumulative distribution functions (eCDFs). If the `plotType` selected is *ecdf*, then differences between distributions at the 25th, 50th, and 75th percentiles will also be reported.     
 
 ## Length of sequence regions
 
+The length of different mRNA sequence regions can have important implications for post-transcriptional regulation [ref]. For each gene, the `lengthAnalysis()` function computes and returns a list of the log2 length of each mRNA sequence region specified by the `region` parameter. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
+
+The example below will compute a list (`len`) of the log2 length for each gene and sequence region, and produce three PDF files with eCDFs and statistics comparing the length of each sequence region between gene sets and background.   
 ```{r lengthAnalysisBoxplot, eval=TRUE, echo=TRUE}
 
 # Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between
-# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes
+# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. 
+# translationDown genes
  len <- lengthAnalysis(ptn = ptn, 
                       region = c("UTR5","CDS","UTR3"), 
                       comparisons = list(c(0,1),c(0,2),c(1,2)),
                       plotOut = TRUE,
-                      plotType = 'boxplot',
+                      plotType = 'ecdf',
                       pdfName = "Example")
                       
  str(len)
 
 ```
 
-```{r lengthAnalysisViolin, eval=TRUE, echo=FALSE}
-
-# Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between
-# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes
- len <- lengthAnalysis(ptn = ptn, 
-                      region = c("UTR5"), 
-                      comparisons = list(c(0,1),c(0,2),c(1,2)),
-                      plotOut = TRUE,
-                      plotType = 'violin',
-                      pdfName = "Example")
-                      
-
-```
- 
-```{r lengthAnalysisEcdf, eval=TRUE, echo=FALSE}
-
-# Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between
-# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes
- len <- lengthAnalysis(ptn = ptn, 
-                      region = c("UTR5"), 
-                      comparisons = list(c(0,1),c(0,2),c(1,2)),
-                      plotOut = TRUE,
-                      plotType = 'ecdf',
-                      pdfName = "Example")
-                      
-```
-
 ```{r lengthAnalysisPDFconvert, eval=TRUE, echo=FALSE}
 # Convert to PNG
-image_read_pdf("Example_UTR5_boxplot_lengthAnalysis.pdf", density = 300) %>%
-  image_resize("3000x") %>%
-  image_write("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
-
-image_read_pdf("Example_UTR5_violin_lengthAnalysis.pdf", density = 300) %>%
-  image_resize("3000x") %>%
-  image_write("Figures/Example_UTR5_violin_lengthAnalysis.png")
-
 image_read_pdf("Example_UTR5_ecdf_lengthAnalysis.pdf", density = 300) %>%
   image_resize("3000x") %>%
   image_write("Figures/Example_UTR5_ecdf_lengthAnalysis.png")
 
+image_read_pdf("Example_UTR3_ecdf_lengthAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR3_ecdf_lengthAnalysis.png")
+
+image_read_pdf("Example_CDS_ecdf_lengthAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_CDS_ecdf_lengthAnalysis.png")
+
 # Read each image
-img1 <- image_read("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
-img2 <- image_read("Figures/Example_UTR5_violin_lengthAnalysis.png")
-img3 <- image_read("Figures/Example_UTR5_ecdf_lengthAnalysis.png")
+img1 <- image_read("Figures/Example_UTR5_ecdf_lengthAnalysis.png")
+img2 <- image_read("Figures/Example_UTR3_ecdf_lengthAnalysis.png")
+img3 <- image_read("Figures/Example_CDS_ecdf_lengthAnalysis.png")
 
 # Append them horizontally
 combined <- image_append(c(img1, img2, img3), stack = FALSE)
@@ -627,21 +614,78 @@ image_write(combined, path = "Figures/combined_length.png")
 
 ```
 
-```{r lengthAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Differences in 5'UTR length. Statistical comparisons are made between translationally activated, suppressed, and background gene sets.  Visualizations can be generated as either boxplots, violinplots, or ecdfs."}
+```{r lengthAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in Log2(Length) of mRNA sequence regions between different gene sets. 5'UTR (right), 3'UTR (middle), CDS (left). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can be also generated as either box plots, violin plots"}
 knitr::include_graphics("Figures/combined_length.png")
 
 ```
 
 ```{r lengthAnalysisHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
-unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR3_boxplot_lengthAnalysis.pdf", "Example_CDS_boxplot_lengthAnalysis.pdf",
-         "Example_UTR5_violin_lengthAnalysis.pdf", "Example_UTR5_ecdf_lengthAnalysis.pdf",
-         "Figures/Example_UTR5_boxplot_lengthAnalysis.png", "Figures/Example_UTR5_violin_lengthAnalysis.png",
-         "Figures/Example_UTR5_ecdf_lengthAnalysis.png"))
+unlink(c("Example_UTR5_ecdf_lengthAnalysis.pdf", "Example_UTR3_ecdf_lengthAnalysis.pdf", "Example_CDS_ecdf_lengthAnalysis.pdf",
+         "Figures/Example_UTR5_ecdf_lengthAnalysis.png", "Figures/Example_UTR3_ecdf_lengthAnalysis.png",
+         "Figures/Example_CDS_ecdf_lengthAnalysis.png"))
 ```
 
-
-
 ## Nucleotide content
+
+Nucleotide content, particularly GC content, is also strongly associated with the post-transcriptional fate of mRNAs [ref]. For each gene, the `contentAnalysis()` function computes and returns a list of percentage of nucleotide content of each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
+
+ \item{contentIn}{A character vector specifying one or more nucleotide(s) or nucleotide combinations to quantify. These can be any selection or combination of A, T, G, or C. For example \code{c("GC")}, or \code{c("G", "A")}. When \code{region} includes \code{"CDS"}, nucleotide content at specific codon positions can also be quantified. For example, \code{c("GC3")} calculates GC content in the third codon position, and \code{c("A12")} calculates the percentage of A content in the first and second codon positions. 
+
+The example below will compute a list (`len`) of the log2 length for each gene and sequence region, and produce three PDF files with eCDFs and statistics comparing the length of each sequence region between gene sets and background.   
+```{r lengthAnalysisBoxplot, eval=TRUE, echo=TRUE}
+
+# Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between
+# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. 
+# translationDown genes
+ len <- lengthAnalysis(ptn = ptn, 
+                      region = c("UTR5","CDS","UTR3"), 
+                      comparisons = list(c(0,1),c(0,2),c(1,2)),
+                      plotOut = TRUE,
+                      plotType = 'ecdf',
+                      pdfName = "Example")
+                      
+ str(len)
+
+```
+
+```{r lengthAnalysisPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_UTR5_ecdf_lengthAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR5_ecdf_lengthAnalysis.png")
+
+image_read_pdf("Example_UTR3_ecdf_lengthAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR3_ecdf_lengthAnalysis.png")
+
+image_read_pdf("Example_CDS_ecdf_lengthAnalysis.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_CDS_ecdf_lengthAnalysis.png")
+
+# Read each image
+img1 <- image_read("Figures/Example_UTR5_ecdf_lengthAnalysis.png")
+img2 <- image_read("Figures/Example_UTR3_ecdf_lengthAnalysis.png")
+img3 <- image_read("Figures/Example_CDS_ecdf_lengthAnalysis.png")
+
+# Append them horizontally
+combined <- image_append(c(img1, img2, img3), stack = FALSE)
+
+# Save combined image at high resolution
+image_write(combined, path = "Figures/combined_length.png")
+
+
+```
+
+```{r lengthAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in Log2(Length) of mRNA sequence regions between different gene sets. 5'UTR (right), 3'UTR (middle), CDS (left). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can be also generated as either box plots, violin plots"}
+knitr::include_graphics("Figures/combined_length.png")
+
+```
+
+```{r lengthAnalysisHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_UTR5_ecdf_lengthAnalysis.pdf", "Example_UTR3_ecdf_lengthAnalysis.pdf", "Example_CDS_ecdf_lengthAnalysis.pdf",
+         "Figures/Example_UTR5_ecdf_lengthAnalysis.png", "Figures/Example_UTR3_ecdf_lengthAnalysis.png",
+         "Figures/Example_CDS_ecdf_lengthAnalysis.png"))
+```
 
 ## Folding energy
 
