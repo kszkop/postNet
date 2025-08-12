@@ -874,7 +874,6 @@ knitr::include_graphics("Figures/Example_uORFs_strong.png")
 unlink(c("Example_uORFs_strong.pdf"))
 ```
 
-
 ## Motif discovery using STREME
 
 ## Motif enumeration
