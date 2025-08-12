@@ -732,7 +732,6 @@ content_UTR5_last15 <- contentAnalysis(ptn = ptn,
                       
 ```
 
-
 ## Folding energy
 
 ## upstream open reading frames (uORFs)
