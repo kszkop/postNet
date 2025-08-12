@@ -81,7 +81,7 @@ plots with statistical comparisons between gene sets of interest when \code{unit
  )
  
 
-# Identify uORFs with the cannonical start code in a strong Kozak context, fully contained within 5'UTRs, 
+# Identify uORFs with canonical start codons in a strong Kozak context, fully contained within 5'UTRs, 
 # and compare between translationUp vs. translationDown genes
 
  uORFs <- uorfAnalysis(ptn = ptn,

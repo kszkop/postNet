@@ -41,7 +41,7 @@ foldingEnergyAnalysis(ptn,
 
 \details{Pre-calculated folding energies supplied with the package are currently available for human and mouse RefSeq releases "rel_109.20201120", and "rel_109.20200923". These values were calculated for all sequence regions using the mfold algorithm, available here: \url{https://www.unafold.org/}.
 
-If the output folding energies will be used in downstream analysis with \link[postNet]{featureIntegration}, consideration should be given to the \code{residFE} argument. If the length of the sequence regions will be included in the \code{featureIntegration} model, it is not recommended to correct the folding energies to the sequence length. However, if length will not be included in \code{featureIntegration}, the correction can be performed.   
+If the output folding energies will be used in downstream analysis with \link[postNet]{featureIntegration}, consideration should be given to the \code{residFE} argument. If the length of the sequence regions will be included in the \code{featureIntegration} model, it is not recommended to correct the folding energies for the sequence length. However, if length will not be included in \code{featureIntegration}, the correction can be performed.   
 }
 
 \value{The output will be a named list of vectors corresponding to each sequence region, with the folding energy for each gene. This list can be used as input for the downstream \link[postNet]{featureIntegration} analysis. The \code{foldingEnergyAnalysis} function can also return PDF files of output plots with statistical comparisons between gene sets of interest, or against background.

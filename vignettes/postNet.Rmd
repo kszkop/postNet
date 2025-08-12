@@ -485,7 +485,7 @@ ptn <- postNetStart(
 
 ### Selecting transcript isoforms
 
-Using sequence annotations provided with the package or built from the RefSeq database, by default, postNet will perform gene-level analyses. For genes with multiple mRNA isoforms, the `selection` parameter of the `postNetStart()` function can be used to specify which isoforms will be considered in analyses. Depending on the application, it may sometimes be of interest to consider the longest or shortest mRNA isoforms for each gene. However, selecting the extremes for all genes may skew the results for some types of analysis. By default, isoforms for each gene will be selected at random to prevent a systematic length bias. However, it is important to note that each time the `postNetStart()` function is run, different isoforms may be selected leading to slight variations in results. To ensure reproducibility of isoform selection between different runs of the `postNetStart()` function, it is necessary to use the `setSeed` parameter.  
+Using sequence annotations provided with the package or built from the RefSeq database, postNet will perform gene-level analyses. For genes with multiple mRNA isoforms, the `selection` parameter of the `postNetStart()` function can be used to specify which isoforms will be considered in analyses. Depending on the application, it may sometimes be of interest to consider the longest or shortest mRNA isoforms for each gene. However, selecting the extremes for all genes may skew the results for some types of analysis. By default, isoforms for each gene will be selected at random to prevent a systematic length bias. However, it is important to note that each time the `postNetStart()` function is run, different isoforms may be selected leading to slight variations in results. To ensure reproducibility of isoform selection between different runs of the `postNetStart()` function, it is necessary to use the `setSeed` parameter.  
 
 It is also possible to perform transcript-level analyses with postNet by supplying custom sequence annotations as described above (I guess the featureIntegration using isoform-level data might suffer from the same issue as anota2seq due to correlations between isoforms of the same genes? Should probably mention this somewhere).
 
@@ -627,11 +627,11 @@ unlink(c("Example_UTR5_ecdf_lengthAnalysis.pdf", "Example_UTR3_ecdf_lengthAnalys
 
 ## Nucleotide content
 
-Nucleotide content, particularly GC content, is also strongly associated with the post-transcriptional fate of mRNAs [ref]. For each gene, the `contentAnalysis()` function computes and returns a list of the percentage of nucleotide content of each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
+Nucleotide content is strongly associated with the post-transcriptional fate of mRNAs [ref]. For each gene, the `contentAnalysis()` function computes and returns a list of the percentage of nucleotide content of each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
 
 The `contentIn` parameter is used to specify one or more nucleotide(s) or nucleotide combinations to quantify. These can be any selection or combination of A, T, G, or C. For example `c("GC")` to obtain the combined percentage of G and C, or `c("G", "C")` to obtain the individual percentages. Within the coding sequence, it may also of interest to calculate nulceotide content at specific codon positions, for example the GC content at the 3rd codon position ("GC3") is often used as an indicator of codon bias [ref]. For this reason, when the input for the `region` parameter includes `"CDS"`, nucleotide content at specific codon positions can also be quantified by supplying the nucleotide or combination of nucleotides, along with the codon position to be examined (1, 2, or 3). For example, `c("GC3")` calculates percentage of GC content in the third codon position, while `c("A12")` would provide the percentage of A content in the first and second codon positions.   
 
-The example below will compute a list (`GC_content`) of the percentage of GC content for each gene and sequence region, and produce three PDF files with violin plots and statistics comparing the length of each sequence region between gene sets and background.   
+The example below will compute a list (`GC_content`) of the percentage of GC content for each gene and sequence region, and produce three PDF files with violin plots and statistics comparing the GC content of each sequence region between gene sets and background.   
 ```{r contentAnalysisGCviolin, eval=TRUE, echo=TRUE}
 
 # Calculate the GC of each sequence region for each gene, and compare between
@@ -734,20 +734,19 @@ content_UTR5_last15 <- contentAnalysis(ptn = ptn,
 
 ## Folding energy
 
-Nucleotide content, particularly GC content, is also strongly associated with the post-transcriptional fate of mRNAs [ref]. For each gene, the `contentAnalysis()` function computes and returns a list of the percentage of nucleotide content of each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
+The folding energy of mRNA molecules is an indication of the thermodynamic stability of higher-order structures, and has implications for post-transcriptional regulation, including impacts on translation efficiency, co-translational protein folding, and mRNA stability and localization [refs]. For each gene, the `foldingEnergyAnalysis()` function returns a list of free energy measurements for each mRNA sequence region specified by the `region` parameter. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
 
-Smaller values of Gibbs free energy (Δ*G*) indicate more stable structures, while larger values indicate less stable, more flexible mRNA molecules. 
+The `foldingEnergyAnalysis()` function does not perform folding energy calculations for sequences, but allows comparisons between gene sets of interest using pre-calculated values. The source of these values is specified using the `sourceFE` parameter, where pre-calculated values provided with the package can either be loaded, or custom values can be supplied using the `customFileFE` parameter. Pre-calculated folding energies supplied with the package are currently available for human and mouse RefSeq releases "rel_109.20201120", and "rel_109.20200923". These values were calculated for all sequence regions using the mfold algorithm [@Zuker2003], available [here](https://www.unafold.org/). Mfold reports the Gibbs free energy (Δ*G*) for the most probable RNA structures, where lower values indicate more stable structures and larger ones indicate less stable, more flexible mRNA molecules.  
 
-The `contentIn` parameter is used to specify one or more nucleotide(s) or nucleotide combinations to quantify. These can be any selection or combination of A, T, G, or C. For example `c("GC")` to obtain the combined percentage of G and C, or `c("G", "C")` to obtain the individual percentages. Within the coding sequence, it may also of interest to calculate nulceotide content at specific codon positions, for example the GC content at the 3rd codon position ("GC3") is often used as an indicator of codon bias [ref]. For this reason, when the input for the `region` parameter includes `"CDS"`, nucleotide content at specific codon positions can also be quantified by supplying the nucleotide or combination of nucleotides, along with the codon position to be examined (1, 2, or 3). For example, `c("GC3")` calculates percentage of GC content in the third codon position, while `c("A12")` would provide the percentage of A content in the first and second codon positions.   
+To use custom free energy values with the `customFileFE` parameter, the user must supply a TAB delimited file with three columns corresponding to: transcript ID, folding energy, and length of the sequence region. Note that folding energies for different sequence regions (e.g. 5'UTR and 3'UTR) must be provided separately.
 
-The example below will compute a list (`GC_content`) of the percentage of GC content for each gene and sequence region, and produce three PDF files with violin plots and statistics comparing the length of each sequence region between gene sets and background. 
+The `residFE` parameter also offers the option of correcting the the folding energies for the length of the sequences, which may sometimes be desireable to facilitate comparisons between gene sets. Here, instead of Δ*G*, the values returned are the residuals from the linear model: FE ~ log2(sequence region length). Note that if folding energies will be used in downstream modelling analysis with `featureIntegration()`, consideration should be given to the `residFE` parameter. If the length of the sequence regions will also be included in modelling, it is not recommended to correct the folding energies for the sequence length.
 
-[@Zuker2003]
-
+The example below will compute a list (`FE`) of the folding energies for each gene and sequence region, and produce three PDF files with violin plots and statistics comparing the folding energy of each sequence region between gene sets and background. 
 ```{r foldingEnergyBoxplot, eval=TRUE, echo=TRUE}
 
-# Compare the folding energy of the 5'UTR for each gene between translationUp genes vs. background, 
-# translationDown genes vs. background, and translationUp vs. translationDown genes. 
+# Compare the folding energy of the 5'UTR, 3'UTR and CDS for each gene between translationUp 
+# genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes. 
  FE <- foldingEnergyAnalysis(ptn = ptn,
                                region=c("UTR5","CDS","UTR3"),
                                comparisons = list(c(0,1),c(0,2),c(1,2)),
@@ -757,7 +756,6 @@ The example below will compute a list (`GC_content`) of the percentage of GC con
                                plotOut = TRUE,
                                pdfName = "Example")
  str(FE)
-
 ```
 
 ```{r foldingEnergyPDFconvert, eval=TRUE, echo=FALSE}
@@ -799,8 +797,83 @@ unlink(c("Example_UTR5_boxplot_foldEnergyAnalysis.pdf", "Example_UTR3_boxplot_fo
          "Figures/Example_CDS_boxplot_foldEnergyAnalysis.png"))
 ```
 
+In the example code below, a custom file with pre-calculated folding energies is provided for 5'UTR sequences.
+```{r foldingEnergyCustom, eval=FALSE, echo=TRUE}
 
-## upstream open reading frames (uORFs)
+# An example of the required format for the customFile parameter ("custom_UTR5FE.txt"):
+# id	fold_energy	length
+# NM_018117	-16.3	34
+# NM_001025603	-36.84	162
+# NM_001003891	-28.4	81
+# NM_021107	-120.14	350
+
+# Compare the folding energy of the 5'UTR for each gene between translationUp genes vs. background, 
+# translationDown genes vs. background, and translationUp vs. translationDown genes. 
+ customFE <- foldingEnergyAnalysis(ptn = ptn,
+                               region = c("UTR5"),
+                               comparisons = list(c(0,1),c(0,2),c(1,2)),
+                               residFE = FALSE, 
+                               plotType = 'violin',
+                               sourceFE = "custom",
+                               customFileFE = "~/Path/To/CustomFile/custom_UTR5FE.txt",
+                               plotOut = TRUE,
+                               pdfName = 'Example_customFE')
+ 
+```
+
+## Upstream open reading frames
+
+Upstream open reading frames (uORFs) are common regulatory elements found in the 5'UTRs of many transcripts, imparting context-dependent post-transcriptional regulatory effects [ref]. For each gene, the `uorfAnalysis()` function returns either the number, or the coordinates of the positions of uORFs in the 5'UTR. [Statistical comparisons](#comparisons) can be generated using the parameters described above. 
+
+By default, the `uorfAnalysis()` function will search for uORFs with canonical start codons ("AUG") in a strong Kozak context. However, it is also possible to identify uORFs with non-canonical start codons using the `startCodon` parameter, and to specify the Kozak context of the using the `KozakContext` parameter, where:
+
+1) `"strong"` = [AG][ATGC][ATGC] [Start codon] G
+2) `"adequate1"` = [AG][ATGC][ATGC] [Start codon] [ATC]
+3) `"adequate2"` = [TC][ATGC][ATGC] [Start codon] G
+4) `"weak"` = [TC][ATGC][ATGC] [Start codon] [ATC]
+5) `"any"` = [ATGC][ATGC][ATGC [Start codon] [ATGC]
+
+Note that if `KozakContext = "any"`, the nucleotide context of the start codon is not considered. 
+
+Some uORFs are completely contained within the 5'UTR, as is the case for the uORF found in the transcript CHOP (DDIT3). However, in other cases the start codon for the uORF may be in the 5'UTR, but the stop codon may be found downstream of the start codon of the main ORF, as for ATF4 [ref]. Using the `onlyUTR5` parameter, it is possible to specifically identify uORFs completely contained in 5'UTRs, instead of all uORFs. 
+
+Finally, in addition to quantifying the number of uORFs for a given transcript, it is also often of interest to know the positions in the sequence where the uORFs occur. The `unitOut` parameter can be used to specify whether the number, or coordinates (nucleotide position of the start and stop codons) of the detected uORFs will be returned. 
+
+The example below will compute a list (`uORFs`) of the number of uORFs with canonical start codons in a strong Kozak context for each gene, and produce a PDF file with a bar plot and statistics comparing between gene sets and background.   
+```{r uorfAnalysis, eval=TRUE, echo=TRUE}
+
+# Identify all uORFs with canonical start codons in a strong Kozak context (including
+# those not fully contained within 5'UTRs, and compare between translationUp vs. translationDown genes
+
+ uORFs <- uorfAnalysis(ptn = ptn,
+                      comparisons = list(c(1,2)),
+                      startCodon = "ATG",
+                      KozakContext = c("strong"),
+                      onlyUTR5 = FALSE,
+                      unitOut = "number",
+                      plotOut = TRUE,
+                      pdfName = 'Example')
+                      
+ str(uORFs)
+```
+
+```{r uorfAnalysisPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_uORFs_strong.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_uORFs_strong.png")
+
+```
+
+```{r uorfAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Bar plot visualizing differences in the proportion of transcripts containing uORFs with canonical start codons in a strong Kozak context between different gene sets. Statistical comparisons are made between translationally activated (blue), and suppressed (red) gene sets."}
+knitr::include_graphics("Figures/Example_uORFs_strong.png")
+
+```
+
+```{r fuorfAnalysisHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_uORFs_strong.pdf"))
+```
+
 
 ## Motif discovery using STREME
 
