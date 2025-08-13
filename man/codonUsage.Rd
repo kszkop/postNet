@@ -3,7 +3,7 @@
 \title{Perform differential codon or amino acid usage analysis between gene sets
 }
 
-\description{The \code{codonUsage} function performs differential codon or amino acid (AA) usage analysis. The analysis identifies single (or multiple, e.g. dicodons) codons enriched or depleted between different gene sets of interest. Codon usage indexes are also compared between gene sets of interest, and differences in average counts and frequencies are visualized as scatterplots and heatmaps. 
+\description{The \code{codonUsage} function performs differential codon or amino acid (AA) usage analysis. The analysis enumerates single (or multiple, e.g. dicodons) codons or amino acids, and identifies those that are enriched or depleted between different gene sets of interest. Codon usage indexes can also compared between gene sets of interest, and differences in average counts and frequencies are visualized as scatterplots and heatmaps.
 }
 
 \usage{

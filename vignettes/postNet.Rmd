@@ -972,6 +972,47 @@ unlink(c("Example_UTR5_SCSCGS_content.pdf"))
 
 ## Codon and amino acid usage
 
+PostNet includes functionality for examining and comparing codon usage across gene sets, implemented with the `codonUsage()`, and `codonCalc()` functions. In this workflow, the `codonUsage()` function is first used to enumerate single (or multiple, e.g. dicodons) codons or amino acids usage, and identifies those that are enriched or depleted between different gene sets of interest. Codon usage indexes can also compared between gene sets of interest, and differences in average counts and frequencies are visualized as scatterplots and heatmaps. 
+
+It is also possible to select more specific sequence [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) between gene sets can be specified using the parameters described above.
+
+In the first step of the analysis, for each gene set comparison, a Chi-square test is applied to assess significant differences in codon or AA usage. Then, for significant codons or AAs, the odds ratio for each desired comparison pair is calculated and plotted against the frequency. The codons or AAs of interest with differential usage between gene sets are usually identified as those with a high/low odds ratio and high frequency. Codons or AAs of interest can then be further assessed using the \link[postNet]{codonCalc} function (see example below). 
+
+Several codon indexes are also compared between gene sets of interest, including the CAI (codon adaptation index), CBI (Codon Bias Index), FOP (frequency of optimal codons), L_aa (Number of amino acids in protein), and tAI (tRNA adaptation index).
+
+
+\value{The \code{codonUsage} function returns an updated \code{postNetData} object with results compiled and stored in the \code{codons} slot as an S4 object of class \code{postNetCodons}. 
+
+The \code{codonAnalysis} slot provides a summary of calculations for all codons for each gene, and stores an S4 object of class \code{postNetCodonsAll} with the following slots: \code{geneID}, \code{codon}, \code{AA}, \code{count}, \code{frequency}, \code{AACountPerGene}, and \code{relative_frequency}. Here, frequency corresponds to the number of codons relative to all codons in the gene, and relative_frequency corresponds to the number of codons relative to all synonymous codons in the gene. The contents of the "codonAnalysis" slot can be accessed using the \link[postNet]{ptn_codonAnalysis} S4 method.     
+
+The \code{codonSelection} slot stores a named list of the selected codons or AAs that were significantly enriched or depleted (according to the selected thresholds) in the specified comparisons. This list can be used as input for the \link[postNet]{codonCalc} function (see example below). The contents of the "codonSelection" slot can be accessed using the \link[postNet]{ptn_codonSelection} S4 method. 
+
+The \code{codonUsage} function also generates plots comparing the codon indexes described above between gene sets, a clustered heatmap of the Chi-square residuals for each codon between the gene sets of interest, and plots comparing the average codon count and frequency between the gene sets of interest (codons encoding the same amino acid are coloured and connected by lines).  
+
+
+  \item{annotType}{A string specifying the reference coding sequences to be used for the analysis. The options are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"ptnCDS"} (the CDS reference sequence annotations already stored in the \code{postNetData} object). The default is \code{"ccds"}. 
+  }
+  \item{sourceSeq}{A string specifying the source of \code{annotType}. This parameter is only required if \code{annotType = "ccds"}. The options are: \code{"create"} to automatically prepare reference sequences from ccds database, or \code{"load"} to load pre-prepared sequences for selected species. The default is "load". 
+  }
+  \item{analysis}{A string specifying the type of the analysis to perform. The options are \code{"codon"}, or \code{"AA"} to assess amino acid usage. The default is \code{"codon"}. 
+  }
+  \item{codonN}{An integer specifying the number of codon combinations to count. For example, \code{codonN = 1} will count each individual codon, while \code{codonN = 2}  will count di-codons, and so on. Note that this option is only available for \code{analysis = "codon"} and that when \code{codonN} > 1, odds ratios will not be calculated and additional codon usage indexes and plots will not be generated. The default is \code{1}. 
+  }
+  \item{pAdj}{A numeric value specifying the adjusted p-value threshold for selecting significant Chi-square test results. The default is \code{0.01}. 
+  }
+  \item{rem5}{Logical specifying whether codons with fewer than five counts should be filtered out from the contingency table (counts of codons by gene set) before performing the Chi-square test. The default is \code{TRUE}. 
+  }
+  \item{plotHeatmap}{Logical specifying whether to plot a heatmap of the standardized residuals for each codon from the Chi-square test. The default is \code{TRUE}. 
+  }
+  \item{thresOddsUp}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting codons or AAs in the enriched set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of enriched codons with the highest odds ratios will be selected. The default is \code{0.3}.
+  }
+  \item{thresFreqUp}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting codons or AAs in the enriched set. For example, \code{thresFreqUp = 0.3} indicates that the top 30\% of the most frequently occurring enriched codons are selected. This metric is combined with \code{thresOddsUp} to select the most frequent codons with the highest odds ratio. The default is \code{0.3}.  
+  }
+  \item{thresOddsDown}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting codons or AAs in the depleted set. For example, \code{thresOddsDown = 0.3} indicates that the top 30\% of depleted codons with the lowest odds ratios will be selected. The default is \code{0.3}.
+  }
+  \item{thresFreqDown}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting codons or AAs in the depleted set. For example, \code{thresFreqDown = 0.3} indicates that the top 30\% of the most frequently occurring depleted codons are selected. This metric is combined with \code{thresOddsDown} to select the most frequent codons with the lowest odds ratio. The default is \code{0.3}.
+  }
+
 ### Selecting enriched or depleted codons or amino acids
 
 ### Enumerating codons or amino acids 
