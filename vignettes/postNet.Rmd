@@ -241,6 +241,8 @@ Throughout this vignette, we will use example data provided with the package to 
 
 ## Initializing a postNetData object using gene lists
 
+<a name="geneLists"/>
+
 The most flexible implementation of postNet allows gene lists of interest and regulatory effect measurements to be supplied from custom sources. Here, the  `postNetStart()` function will be used with the `geneList`, `geneListcolours`, `customBg`, and `effectMeasure` parameters to initialize the `postNetData` object.    
 
 Depending on the aim of the analysis, different inputs can be provided. In the case where the goal is simply to enumerate sequence features in genes of interest without statistical comparisons, `geneList` can be a single list of gene IDs with no background gene set. To perform statistical comparisons, one or more gene sets of interest must be provided, either with or without a custom background gene set (`customBg` parameter). Although optional, it is strongly recommended to carefully consider that the appropriate background is used. Typically, this would be all genes in the given data set passing expression and/or reproducibility thresholds. When providing custom gene lists, it is also required to specify colours (`geneListcolours` parameter) that will be used in visualizations generated at various steps of the analysis.
@@ -283,6 +285,8 @@ The example below illustrates the set-up of a postNet analysis allowing identifi
 ```
 
 ## Initializing a postNetData object using an anota2seq object
+
+<a name="anota2seq"/>
 
 A `postNetData` object can also be constructed directly downstream of running an analysis using the [Anota2seq](https://bioconductor.org/packages/anota2seq) package to identify differentially translated genes. Here, the  `postNetStart()` function will be used with the `ads`, `regulation`, `contrast`, `regulationGen`, and `contrastSel` parameters to initialize the `postNetData` object.  
  
@@ -627,7 +631,7 @@ unlink(c("Example_UTR5_ecdf_lengthAnalysis.pdf", "Example_UTR3_ecdf_lengthAnalys
 
 ## Nucleotide content
 
-Nucleotide content is strongly associated with the post-transcriptional fate of mRNAs [ref]. For each gene, the `contentAnalysis()` function computes and returns a list of the percentage of nucleotide content of each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
+Nucleotide content is strongly associated with the post-transcriptional fate of mRNAs [ref]. For each gene, the `contentAnalysis()` function computes and returns a list of the percentage of nucleotide content of each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific sequence [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
 
 The `contentIn` parameter is used to specify one or more nucleotide(s) or nucleotide combinations to quantify. These can be any selection or combination of A, T, G, or C. For example `c("GC")` to obtain the combined percentage of G and C, or `c("G", "C")` to obtain the individual percentages. Within the coding sequence, it may also of interest to calculate nulceotide content at specific codon positions, for example the GC content at the 3rd codon position ("GC3") is often used as an indicator of codon bias [ref]. For this reason, when the input for the `region` parameter includes `"CDS"`, nucleotide content at specific codon positions can also be quantified by supplying the nucleotide or combination of nucleotides, along with the codon position to be examined (1, 2, or 3). For example, `c("GC3")` calculates percentage of GC content in the third codon position, while `c("A12")` would provide the percentage of A content in the first and second codon positions.   
 
@@ -876,27 +880,36 @@ unlink(c("Example_uORFs_strong.pdf"))
 
 ## Motif discovery using STREME
 
-*De novo* motif discovery in postNet is implemented using [STREME](https://meme-suite.org/meme/doc/streme.html) [@Bailey2021] from the [MEME-Suite](https://meme-suite.org/) [@Bailey2015] to identify ungapped motifs (recurring, fixed-length patterns) that are enriched in the selected sequence region(s) of gene sets of interest relative to control sequences (background). It is also possible to select more specific [sub-regions](#subregions) to either examine or exclude from the analysis.
+*De novo* motif discovery in postNet is carried out using the `motifAnalysis()` function, which implements [STREME](https://meme-suite.org/meme/doc/streme.html) [@Bailey2021] from the [MEME-Suite](https://meme-suite.org/) [@Bailey2015] to identify ungapped motifs (recurring, fixed-length patterns) that are enriched in the selected sequence region(s) of gene sets of interest relative to control sequences (background). It is also possible to select more specific sequence [sub-regions](#subregions) to either examine or exclude from the analysis.
 
-The `motifAnalysis()` function applies the `runStreme()` function from the [memes package](https://bioconductor.org/packages/release/bioc/html/memes.html) [@Nystrom2021]. This requires that the MEME Suite software tools be installed locally, and the path to the executables must be provided (`memePath` parameter). The MEME Suite can be downloaded [here](https://meme-suite.org/meme/doc/download.html) following the [installation guide](https://meme-suite.org/meme/doc/install.html?man_type=web). 
+The `motifAnalysis()` function applies `runStreme()` from the [memes package](https://bioconductor.org/packages/release/bioc/html/memes.html) [@Nystrom2021]. This requires that the MEME Suite software tools be installed locally, and the path to the executables must be provided (`memePath` parameter). The MEME Suite can be downloaded [here](https://meme-suite.org/meme/doc/download.html) following the [installation guide](https://meme-suite.org/meme/doc/install.html?man_type=web). It is possible to specify the minimum width (in nucleotides) and the enrichment p-value threshold for selecting motifs using the `minwidth` and `stremeThreshold` parameters. If custom reference sequence annotations have been used, the sequence type (RNA, DNA, protein) can also be adjusted with the `seqType` parameter. It is important to note that when using postNet with a custom [gene list](#geneLists), if no background is provided, postNet defines the background as all genes in the gene list. In the scenario where only one gene set is provided in the list, it is not advisable to use `motifAnalysis()` to identify enriched motifs, as the input and background will be the same.     
 
-The results of the \code{motifAnalysis} function are stored in the `postNetData` object with results compiled into an S4 object of class \code{postNetMotifs} and stored in the "motifs" slot. Within the motif slot, results for each sequence region are provided as lists. The "motifSelection" list element corresponds to a character vector of identified motifs in the gene sets of interest that have enrichment p-values below the threshold set with the \code{stremeThreshold} parameter. Additional list elements are provided for each gene set of interest with the selected results with further information about the motifs in \link[universalmotif]{universalmotif} format. 
+The `motifAnalysis()` function returns an updated `postNetData` object where results are stored in the "motifs" slot. Identified motifs can be enumerated in transcripts and included in downstream modelling with `featureIntegration()` by using the `contentMotifs()` function. All results, including the list of significantly enriched motifs can be extracted using the `ptn_motifSelection()` and `ptn_motifgeneList()` functions.   
 
-Motifs identified using \code{motifAnalysis} can be quantified and included in downstream \link[postNet]{featureIntegration} using the \link[postNet]{contentMotifs} function. Significantly enriched motifs can be extracted using the S4 method \link[postNet]{ptn_motifSelection} function, and \link[universalmotif]{universalmotif} results for each gene set included in \code{geneList} can be retrieved using the \link[postNet]{ptn_motifgeneList} function.   
+**Note**: If you use `motifAnalysis()` in your work, please appropriately cite the memes R package, The MEME Suite, and the STREME tool. Licensing The MEME Suite is free for non-profit use. However, for-profit users should contact OIC-MEMESuite@ucsd.edu and purchase a license. See http://meme-suite.org/doc/copyright.html for details
 
-If you use the \code{motifAnalysis} function in your analysis, please appropriately cite The MEME Suite and the STREME tool publications provided below. Licensing The MEME Suite is free for non-profit use. However, for-profit users should contact OIC-MEMESuite@ucsd.edu and purchase a license. See \url{http://meme-suite.org/doc/copyright.html} for details
+In the example below, *de novo* motifs enriched in translationally activated and suppressed gene sets compared to background will be identified for all sequence regions. Motifs passing an enrichment p-value threshold of 0.05 will be extracted, along with the full motif analysis results for the translationally activated gene set.
+```{r motifAnalysis, eval=FALSE, echo=TRUE}
 
-  \item{stremeThreshold}{A numeric value specifying the enrichment p-value threshold for motif selection. 
-  The default is 0.05. 
-  }
-  \item{minwidth}{A numeric value specifying the minimal width (in nucleotides) of the motif. The default is 6.
-  }
-  \item{memePath}{The path to the STREME executables in "meme/bin". Note that the MEME-Suite must be installed. 
-  }
-  \item{seqType}{A string specifying the type of sequence being provided to search for motifs. The options are,
-  \code{"dna"}, \code{"rna"}, or \code{"protein"}. The default is \code{"dna"}.
-  }
+# Note that as users must provide the path to the MEME Suite executables. An example of
+# how to run this function is provided below, and can be updated with the correct memePath argument. 
 
+ ptn <- motifAnalysis(ptn = ptn, 
+                     stremeThreshold = 0.05,
+                     minwidth = 6,
+                     memePath = "/meme/bin", 
+                     region = c('UTR5','CDS','UTR3'))
+
+# Extract the significantly enriched motifs:
+ denovo_UTR5motifs <- ptn_motifSelection(ptn = ptn,
+                                region = 'UTR5')
+                                
+# Extract full motif results from one gene set of interest:                                
+ denovo_UTR5motifs_TransUp <- ptn_motifSelection(ptn = ptn,
+                                      region = 'UTR5',
+                                      geneList = 'translationUp')
+                                
+```
 
 
 ## Motif enumeration

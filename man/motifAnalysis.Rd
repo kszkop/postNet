@@ -73,7 +73,7 @@ Nystrom SL, McKay DJ (2021). “Memes: A motif analysis environment in R using t
 }
 
 \examples{
-# Note that as users must provide the path to the MEME Suite executables, it is not possile to
+# Note that as users must provide the path to the MEME Suite executables, it is not possible to
 # create a fully executable example as this path will vary depending on many factors. An example of
 # how to run this function is provided below, and can be updated with the correct memePath argument. 
 
