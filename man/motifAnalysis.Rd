@@ -45,20 +45,22 @@ motifAnalysis(ptn,
   }
 }
 
-\value{The results returned by the \code{motifAnalysis} function are compiled into an S4 object of class \code{postNetMotifs} and stored in the "motifs" slot of the \code{postNetData} object. Within the motif slot, results for each sequence region are provided as lists. The "motifSelection" list element corresponds to a character vector of identified motifs in the gene sets of interest that have enrichment p-values below the threshold set with the \code{stremeThreshold} parameter. Additional list elements are provided for each gene set of interest with the selected results with further information about the motifs in \link[universalmotif]{universalmotif} format. 
+\value{The \code{motifAnalysis} function returns an updated \code{postNetData} object with results compiled into an S4 object of class \code{postNetMotifs} and stored in the "motifs" slot. Within the motif slot, results for each sequence region are provided as lists. The "motifSelection" list element corresponds to a character vector of identified motifs in the gene sets of interest that have enrichment p-values below the threshold set with the \code{stremeThreshold} parameter. Additional list elements are provided for each gene set of interest with the selected results with further information about the motifs in \link[universalmotif]{universalmotif} format. 
 }
 
 \details{The \code{motifAnalysis} function applies the \link[memes]{runStreme} function from the \link[memes]{memes} package. However, the MEME Suite software tools must also be installed locally, and the path to the executables must be provided. The MEME Suite can be downloaded here: \url{https://meme-suite.org/meme/doc/download.html}. Installation instructions can be found here: \url{https://meme-suite.org/meme/doc/install.html?man_type=web}. 
 
 Motifs identified using \code{motifAnalysis} can be quantified and included in downstream \link[postNet]{featureIntegration} using the \link[postNet]{contentMotifs} function. Significantly enriched motifs can be extracted using the S4 method \link[postNet]{ptn_motifSelection} function, and \link[universalmotif]{universalmotif} results for each gene set included in \code{geneList} can be retrieved using the \link[postNet]{ptn_motifgeneList} function.   
 
-If you use the \code{motifAnalysis} function in your analysis, please appropriately cite The MEME Suite and the STREME tool publications provided below. Licensing The MEME Suite is free for non-profit use. However, for-profit users should contact OIC-MEMESuite@ucsd.edu. See \url{http://meme-suite.org/doc/copyright.html} for details}
+If you use the \code{motifAnalysis} function in your analysis, please appropriately cite the memes R package, The MEME Suite, and the STREME tool publications provided below. Licensing The MEME Suite is free for non-profit use. However, for-profit users should contact OIC-MEMESuite@ucsd.edu and purchase a license. See \url{http://meme-suite.org/doc/copyright.html} for details}
 
 \references{
 
 Timothy L. Bailey, James Johnson, Charles E. Grant, William S. Noble, "The MEME Suite", Nucleic Acids Research, 43(W1):W39-W49, 2015.
 
 Timothy L. Bailey, "STREME: Accurate and versatile sequence motif discovery", Bioinformatics, 2021. https://doi.org/10.1093/bioinformatics/btab203
+
+Nystrom SL, McKay DJ (2021). “Memes: A motif analysis environment in R using tools from the MEME Suite.” PLOS Computational Biology, 17, 1-14. doi:10.1371/journal.pcbi.1008991, https://doi.org/10.1371/journal.pcbi.1008991. 
 }
 
 \seealso{
