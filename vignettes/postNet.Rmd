@@ -744,7 +744,7 @@ The `foldingEnergyAnalysis()` function does not perform folding energy calculati
 
 To use custom free energy values with the `customFileFE` parameter, the user must supply a TAB delimited file with three columns corresponding to: transcript ID, folding energy, and length of the sequence region. Note that folding energies for different sequence regions (e.g. 5'UTR and 3'UTR) must be provided separately.
 
-The `residFE` parameter also offers the option of correcting the the folding energies for the length of the sequences, which may sometimes be desireable to facilitate comparisons between gene sets. Here, instead of Δ*G*, the values returned are the residuals from the linear model: FE ~ log2(sequence region length). Note that if folding energies will be used in downstream modelling analysis with `featureIntegration()`, consideration should be given to the `residFE` parameter. If the length of the sequence regions will also be included in modelling, it is not recommended to correct the folding energies for the sequence length.
+The `residFE` parameter also offers the option of correcting the the folding energies for the length of the sequences, which may sometimes be desirable to facilitate comparisons between gene sets. Here, instead of Δ*G*, the values returned are the residuals from the linear model: FE ~ log2(sequence region length). Note that if folding energies will be used in downstream modelling analysis with `featureIntegration()`, consideration should be given to the `residFE` parameter. If the length of the sequence regions will also be included in modelling, it is not recommended to correct the folding energies for the sequence length.
 
 The example below will compute a list (`FE`) of the folding energies for each gene and sequence region, and produce three PDF files with violin plots and statistics comparing the folding energy of each sequence region between gene sets and background. 
 ```{r foldingEnergyBoxplot, eval=TRUE, echo=TRUE}
@@ -843,7 +843,7 @@ Some uORFs are completely contained within the 5'UTR, as is the case for the uOR
 
 Finally, in addition to quantifying the number of uORFs for a given transcript, it is also often of interest to know the positions in the sequence where the uORFs occur. The `unitOut` parameter can be used to specify whether the number, or coordinates (nucleotide position of the start and stop codons) of the detected uORFs will be returned. 
 
-The example below will compute a list (`uORFs`) of the number of uORFs with canonical start codons in a strong Kozak context for each gene, and produce a PDF file with a bar plot and statistics comparing between gene sets and background.   
+The example below will compute a list (`uORFs`) of the number of uORFs with canonical start codons in a strong Kozak context for each gene, and produce a PDF file with a bar plot and statistics comparing between gene sets.   
 ```{r uorfAnalysis, eval=TRUE, echo=TRUE}
 
 # Identify all uORFs with canonical start codons in a strong Kozak context (including
@@ -911,8 +911,64 @@ In the example below, *de novo* motifs enriched in translationally activated and
                                 
 ```
 
-
 ## Motif enumeration
+
+Sequence motifs can contribute to the structure and stability of RNA molecules, as well as mediate RNA-protein interactions [ref]. Numerous motifs play an important role in post-transcriptional regulation, including 5'TOP motifs, which render translation sensitive to regulation via mTOR [ref], and G-quadruplexes that can impact the translation and stability of the mRNAs where they occur [ref]. For each gene, the `contentMotifs()` function identifies user-supplied sequence motifs and returns a list of enumerations and/or positions for each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific sequence [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) between gene sets can be specified using the parameters described above.
+
+The `motifsIn` parameter is used to provide the motif sequences to be detected and enumerated. Ambiguities can be specified using [IUPAC codes](https://genome.ucsc.edu/goldenPath/help/iupac.html) or [ ] (bracket) annotations. The input motifs provided should match the type of reference sequences to be searched in your analysis, and be can specified using the `seqType` parameter. The `contentMotifs()` function can also implement [pqsfinder](https://bioconductor.org/packages/release/bioc/html/pqsfinder.html) to identify G-quadruplexes when `motifsIn = "G4"`, using the `min_score` to adjust the prediction threshold. If you use the "G4" option in your work, please cite Hon *et al*. [@Hon2017]. The [ATtRACT](https://attract.cnic.es/#) database, is a database of RNA binding proteins and associated motifs [@Giudice2016], and may also be useful for identifying motifs of interest and potential mechanisms of post-transcriptional regulation in your data. 
+
+It is also possible to identify overlapping, or non-overlapping motifs, as well as dictate spatial constraints between motifs using the `dist` parameter to dictate the minimum nucleotide distance between motifs. Similarly to `uorfAnalysis()`, it is also often of interest to know the positions in the sequence where the motifs occur, and the `unitOut` parameter can be used to specify whether the number, or coordinates (nucleotide position of the beginning and end of the motif) will be returned. 
+
+As for `foldingEnergyAnalysis()` the `resid` parameter of `contentMotifs()` offers the option of correcting the the number of motifs per transcript for the length of the sequences. Here, the values returned are the residuals from the linear model: number of motifs ~ log2(sequence region length). Note that if motifs will be used in downstream modelling analysis with `featureIntegration()`, and the length of the sequence regions will also be included in the same models, it is not recommended to correct the number of motifs for the sequence length.
+
+It is important to note that the `contentMotifs()` function uses a more strict method of sequence matching to count motifs than the MEME-Suite [@Bailey2015], and for this reason some motifs identified with `motifAnalysis()`, which implements STREME [@Bailey2021], may have divergent quantification between methods. Using a more stringent threshold with the `stremeThreshold` parameter of `motifAnalysis()` may remedy this. Alternatively, motifs identified with STREME can be counted using the [FIMO](https://meme-suite.org/meme/doc/fimo.html) [@Grant2011] tool provided with the MEME-Suite.
+
+The example below will compute a list (`UTR5_SCSCGS_num`) of the number of SCSCGS in the 5'UTR for each gene, and produce a PDF file with an eCDF plot and statistics comparing enrichment of the motif between gene sets. A second list (`UTR5_SCSCGS_pos`) will contain the coordinates of the positions of the motifs within the 5'UTR for each gene.    
+```{r contentMotifs, eval=TRUE, echo=TRUE}
+
+# Detect and quantify a given motif within 5'UTRs, and compare between translationUp vs. 
+# translationDown genes
+
+UTR5_SCSCGS_num <- contentMotifs(ptn = ptn, 
+                        motifsIn = "SCSCGS",
+                        region = c("UTR5"), 
+                        comparisons = list(c(1,2)),
+                        dist = 1,
+                        unitOut = "number",
+                        pdfName = "Example",
+                        plotOut = TRUE)
+                      
+ str(UTR5_SCSCGS_num)
+ 
+ # Now find the coordinates of positions where the motif occurs in 5'UTRs
+ 
+ UTR5_SCSCGS_pos <- contentMotifs(ptn = ptn, 
+                        motifsIn = "SCSCGS",
+                        region = c("UTR5"), 
+                        comparisons = list(c(1,2)),
+                        dist = 1,
+                        unitOut = "position")
+ 
+ str(UTR5_SCSCGS_pos$UTR5_SCSCGS[1:3])
+ 
+```
+
+```{r contentMotifsPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_UTR5_SCSCGS_content.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR5_SCSCGS_content.png")
+
+```
+
+```{r contentMotifsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in the presence of the SCSCGS motif in the 5'UTR of different gene sets. Statistical comparisons are made between translationally activated (blue) and suppressed (red) gene sets. Background genes are shown in grey."}
+knitr::include_graphics("Figures/Example_UTR5_SCSCGS_content.png")
+
+```
+
+```{r contentMotifsHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_UTR5_SCSCGS_content.pdf"))
+```
 
 ## Codon and amino acid usage
 
