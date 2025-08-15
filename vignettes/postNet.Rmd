@@ -239,7 +239,7 @@ These inputs are compiled at the start of the analysis by initializing a `postNe
 
 Throughout this vignette, we will use example data provided with the package to illustrate the implementation of different analyses. These data are published in the study by Krokowski et al. [@Krokowski2022], where changes in translation efficiency were measured using ribosome profiling and RNA-seq in immortalized human corneal epithelial cells responding osmotic stress (500 mOsm, NaCl) for 1 h, along with controls. Genes that were translationally activated or suppressed under osmotic stress were identified using the anota2seq algorithm [ref].
 
-## Initializing a postNetData object using gene lists
+## Initializing a postNetData object using custom gene lists
 
 <a name="geneLists"/>
 
@@ -284,7 +284,7 @@ The example below illustrates the set-up of a postNet analysis allowing identifi
 
 ```
 
-## Initializing a postNetData object using an anota2seq object
+## Initializing a postNetData object using an Anota2seqDataSet object
 
 <a name="anota2seq"/>
 
@@ -915,7 +915,7 @@ In the example below, *de novo* motifs enriched in translationally activated and
 
 Sequence motifs can contribute to the structure and stability of RNA molecules, as well as mediate RNA-protein interactions [ref]. Numerous motifs play an important role in post-transcriptional regulation, including 5'TOP motifs, which render translation sensitive to regulation via mTOR [ref], and G-quadruplexes that can impact the translation and stability of the mRNAs where they occur [ref]. For each gene, the `contentMotifs()` function identifies user-supplied sequence motifs and returns a list of enumerations and/or positions for each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific sequence [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) between gene sets can be specified using the parameters described above.
 
-The `motifsIn` parameter is used to provide the motif sequences to be detected and enumerated. Ambiguities can be specified using [IUPAC codes](https://genome.ucsc.edu/goldenPath/help/iupac.html) or [ ] (bracket) annotations. The input motifs provided should match the type of reference sequences to be searched in your analysis, and be can specified using the `seqType` parameter. The `contentMotifs()` function can also implement [pqsfinder](https://bioconductor.org/packages/release/bioc/html/pqsfinder.html) to identify G-quadruplexes when `motifsIn = "G4"`, using the `min_score` to adjust the prediction threshold. If you use the "G4" option in your work, please cite Hon *et al*. [@Hon2017]. The [ATtRACT](https://attract.cnic.es/#) database, is a database of RNA binding proteins and associated motifs [@Giudice2016], and may also be useful for identifying motifs of interest and potential mechanisms of post-transcriptional regulation in your data. 
+The `motifsIn` parameter is used to provide the motif sequences to be detected and enumerated. Ambiguities can be specified using [IUPAC codes](https://genome.ucsc.edu/goldenPath/help/iupac.html) or [ ] (bracket) annotations. The input motifs provided should match the type of reference sequences to be searched in your analysis (i.e., RNA, DNA, or protein), and be can specified using the `seqType` parameter. The `contentMotifs()` function can also implement [pqsfinder](https://bioconductor.org/packages/release/bioc/html/pqsfinder.html) to identify G-quadruplexes when `motifsIn = "G4"`, using the `min_score` to adjust the prediction threshold. If you use the "G4" option in your work, please cite Hon *et al*. [@Hon2017]. The [ATtRACT](https://attract.cnic.es/#) database, is a database of RNA binding proteins and associated motifs [@Giudice2016], and may also be useful for identifying motifs of interest and potential mechanisms of post-transcriptional regulation in your data. 
 
 It is also possible to identify overlapping, or non-overlapping motifs, as well as dictate spatial constraints between motifs using the `dist` parameter to dictate the minimum nucleotide distance between motifs. Similarly to `uorfAnalysis()`, it is also often of interest to know the positions in the sequence where the motifs occur, and the `unitOut` parameter can be used to specify whether the number, or coordinates (nucleotide position of the beginning and end of the motif) will be returned. 
 
@@ -972,50 +972,169 @@ unlink(c("Example_UTR5_SCSCGS_content.pdf"))
 
 ## Codon and amino acid usage
 
-PostNet includes functionality for examining and comparing codon usage across gene sets, implemented with the `codonUsage()`, and `codonCalc()` functions. In this workflow, the `codonUsage()` function is first used to enumerate single (or multiple, e.g. dicodons) codons or amino acids usage, and identifies those that are enriched or depleted between different gene sets of interest. Codon usage indexes can also compared between gene sets of interest, and differences in average counts and frequencies are visualized as scatterplots and heatmaps. 
+PostNet includes functionality for enumerating and comparing codon usage across gene sets, implemented with the `codonUsage()`, and `codonCalc()` functions. In this workflow, the `codonUsage()` function is first used to enumerate usage of single codons (or multiple, e.g. dicodons) or amino acids (AAs), and identify those that are enriched or depleted between different gene sets of interest. The `codonCalc()` function can then be applied to obtain the number or frequency of selected codons or AAs for each gene, and perform statistical comparisons between gene sets. The outputs of `codonCalc()` can be used as input features for modelling analyses using `featureIntegration()`. 
 
-It is also possible to select more specific sequence [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) between gene sets can be specified using the parameters described above.
+### Generating a codon and amino acid count and frequency table 
 
-In the first step of the analysis, for each gene set comparison, a Chi-square test is applied to assess significant differences in codon or AA usage. Then, for significant codons or AAs, the odds ratio for each desired comparison pair is calculated and plotted against the frequency. The codons or AAs of interest with differential usage between gene sets are usually identified as those with a high/low odds ratio and high frequency. Codons or AAs of interest can then be further assessed using the \link[postNet]{codonCalc} function (see example below). 
+The `codonUsage()` function can be used to enumerate either codon or AA usage, specified with the `analysis` parameter. Analyses can be performed using the coding region of reference sequence annotations stored in the `postNetData` object. Alternatively, coding sequences can be either automatically created from the [NCBI Consensus CDS database](https://www.ncbi.nlm.nih.gov/projects/CCDS/CcdsBrowse.cgi) or loaded using the `annotType` and `sourceSeq`parameters. It is also possible to enumerate multiple codon combinations, for example dicodons, using the `codonN` parameter. Similarly to `contentAnalysis()` and `contentMotifs()`, it is also possible to select more specific sequence [sub-regions](#subregions) for analysis, for example to specifically examine the codon "ramp" immediately downstream of the start codon [ref].  
 
-Several codon indexes are also compared between gene sets of interest, including the CAI (codon adaptation index), CBI (Codon Bias Index), FOP (frequency of optimal codons), L_aa (Number of amino acids in protein), and tAI (tRNA adaptation index).
+The example below demonstrates an implementation of `codonUsage()` generating a summary table of codon counts and frequencies for all genes. Note that "frequency" corresponds to the number of codons relative to all codons in the gene, while "relative frequency" corresponds to the number of codons relative to all synonymous codons in the gene. This table can then be retrieved using the `ptn_codonAnalysis()` function. In this case, [statistical comparisons](#comparisons) will be performed between translationally activated and suppressed gene sets. 
+```{r codonUsageTable, eval=TRUE, echo=TRUE}
+# Examine the composition of all genes:
 
+ ptn <- codonUsage(ptn = ptn, 
+          annotType = "ptnCDS", 
+          sourceSeq = "load", 
+          analysis = "codon", 
+          codonN = 1,
+          comparisons = list(c(1,2)))
 
-\value{The \code{codonUsage} function returns an updated \code{postNetData} object with results compiled and stored in the \code{codons} slot as an S4 object of class \code{postNetCodons}. 
+# Retrieve the codon usage summary table                     
+ codonUsageTable <- ptn_codonAnalysis(ptn)
+ str(codonUsageTable)
+ 
+```
 
-The \code{codonAnalysis} slot provides a summary of calculations for all codons for each gene, and stores an S4 object of class \code{postNetCodonsAll} with the following slots: \code{geneID}, \code{codon}, \code{AA}, \code{count}, \code{frequency}, \code{AACountPerGene}, and \code{relative_frequency}. Here, frequency corresponds to the number of codons relative to all codons in the gene, and relative_frequency corresponds to the number of codons relative to all synonymous codons in the gene. The contents of the "codonAnalysis" slot can be accessed using the \link[postNet]{ptn_codonAnalysis} S4 method.     
+In addition to the summary table, the example code above also generates plots comparing the average codon usage and frequency between the gene sets of interest specified by the `comparisons` parameter.
 
-The \code{codonSelection} slot stores a named list of the selected codons or AAs that were significantly enriched or depleted (according to the selected thresholds) in the specified comparisons. This list can be used as input for the \link[postNet]{codonCalc} function (see example below). The contents of the "codonSelection" slot can be accessed using the \link[postNet]{ptn_codonSelection} S4 method. 
+```{r codonUsagePlotsPDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("codon_translationUp_translationDown_codonUsage.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/codon_translationUp_translationDown_codonUsage.png")
 
-The \code{codonUsage} function also generates plots comparing the codon indexes described above between gene sets, a clustered heatmap of the Chi-square residuals for each codon between the gene sets of interest, and plots comparing the average codon count and frequency between the gene sets of interest (codons encoding the same amino acid are coloured and connected by lines).  
+image_read_pdf("codon_translationUp_translationDown_averageFreq.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/codon_translationUp_translationDown_averageFreq.png")
 
+# Read each image
+img1 <- image_read("Figures/codon_translationUp_translationDown_codonUsage.png")
+img2 <- image_read("Figures/codon_translationUp_translationDown_averageFreq.png")
 
-  \item{annotType}{A string specifying the reference coding sequences to be used for the analysis. The options are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"ptnCDS"} (the CDS reference sequence annotations already stored in the \code{postNetData} object). The default is \code{"ccds"}. 
-  }
-  \item{sourceSeq}{A string specifying the source of \code{annotType}. This parameter is only required if \code{annotType = "ccds"}. The options are: \code{"create"} to automatically prepare reference sequences from ccds database, or \code{"load"} to load pre-prepared sequences for selected species. The default is "load". 
-  }
-  \item{analysis}{A string specifying the type of the analysis to perform. The options are \code{"codon"}, or \code{"AA"} to assess amino acid usage. The default is \code{"codon"}. 
-  }
-  \item{codonN}{An integer specifying the number of codon combinations to count. For example, \code{codonN = 1} will count each individual codon, while \code{codonN = 2}  will count di-codons, and so on. Note that this option is only available for \code{analysis = "codon"} and that when \code{codonN} > 1, odds ratios will not be calculated and additional codon usage indexes and plots will not be generated. The default is \code{1}. 
-  }
-  \item{pAdj}{A numeric value specifying the adjusted p-value threshold for selecting significant Chi-square test results. The default is \code{0.01}. 
-  }
-  \item{rem5}{Logical specifying whether codons with fewer than five counts should be filtered out from the contingency table (counts of codons by gene set) before performing the Chi-square test. The default is \code{TRUE}. 
-  }
-  \item{plotHeatmap}{Logical specifying whether to plot a heatmap of the standardized residuals for each codon from the Chi-square test. The default is \code{TRUE}. 
-  }
-  \item{thresOddsUp}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting codons or AAs in the enriched set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of enriched codons with the highest odds ratios will be selected. The default is \code{0.3}.
-  }
-  \item{thresFreqUp}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting codons or AAs in the enriched set. For example, \code{thresFreqUp = 0.3} indicates that the top 30\% of the most frequently occurring enriched codons are selected. This metric is combined with \code{thresOddsUp} to select the most frequent codons with the highest odds ratio. The default is \code{0.3}.  
-  }
-  \item{thresOddsDown}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting codons or AAs in the depleted set. For example, \code{thresOddsDown = 0.3} indicates that the top 30\% of depleted codons with the lowest odds ratios will be selected. The default is \code{0.3}.
-  }
-  \item{thresFreqDown}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting codons or AAs in the depleted set. For example, \code{thresFreqDown = 0.3} indicates that the top 30\% of the most frequently occurring depleted codons are selected. This metric is combined with \code{thresOddsDown} to select the most frequent codons with the lowest odds ratio. The default is \code{0.3}.
-  }
+# Append them horizontally
+combined <- image_append(c(img1, img2), stack = FALSE)
+
+# Save combined image at high resolution
+image_write(combined, path = "Figures/combined_codon_plots.png")
+
+```
+
+```{r codonUsagePlotsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Scatter plots comparing average codon usage and frequency between gene sets of interest. Codons encoding the same amino acid are coloured and connected by lines."}
+knitr::include_graphics("Figures/combined_codon_plots.png")
+
+```
+
+```{r codonUsagePlotsHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("codon_translationUp_translationDown_codonUsage.pdf", "codon_translationUp_translationDown_averageFreq.pdf",
+         "Figures/codon_translationUp_translationDown_codonUsage.png", "Figures/codon_translationUp_translationDown_averageFreq.png"))
+```
+
+### Codon usage indexes
+
+The `codonUsage()` function also computes several codon indexes and performs statistical comparisons between gene sets of interest. These include the CAI (codon adaptation index)[ref], CBI (Codon Bias Index)[ref], FOP (frequency of optimal codons)[ref], L_aa (Number of AAs in protein)[ref], and tAI (tRNA adaptation index)[ref]. The type of [Visualizations](#plottingOpts) generated can be controlled as described above, using the `plotType_index` parameter. 
+
+Below are several examples produced by the example code above.
+
+```{r codonUsageIndexPDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("codonCAI_index.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/codonCAI_index.png")
+
+image_read_pdf("codonCBI_index.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/codonCBI_index.png")
+
+image_read_pdf("codonFop_index.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/codonFop_index.png")
+
+# Read each image
+img1 <- image_read("Figures/codonCAI_index.png")
+img2 <- image_read("Figures/codonCBI_index.png")
+img3 <- image_read("Figures/codonFop_index.png")
+
+# Append them horizontally
+combined <- image_append(c(img1, img2, img3), stack = FALSE)
+
+# Save combined image at high resolution
+image_write(combined, path = "Figures/combined_indexes.png")
+
+```
+
+```{r codonUsageIndexPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Vioin plots of several codon usage indexes calculated by the codonUsage() function. Shown are several examples including CAI (left), CBI (middle), and Fop (right). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can be also generated as either box plots, or eCDFs"}
+knitr::include_graphics("Figures/combined_indexes.png")
+
+```
+
+```{r codonUsageIndexHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("codonCAI_index.pdf", "codonCBI_index.pdf", "codonFop_index.pdf","codonGC3s_index.pdf","codonL_aa_index.pdf","codontAI_index.pdf",
+         "Figures/codonCAI_index.png", "Figures/codonCBI_index.png",
+         "Figures/codonFop_index.png"))
+```
 
 ### Selecting enriched or depleted codons or amino acids
 
-### Enumerating codons or amino acids 
+The `codonUsage()` function can also be used to identify enriched or depleted codons or AAs between gene sets of interest. In the first step of the analysis, for each gene set comparison, a Chi-square test is applied to assess significant differences in codon or AA usage. To visualize the results of this test, a clustered heatmap of the standardized Chi-square residuals for each codon or AA between the gene sets of interest can be produced using the `plotHeatmap` parameter. Then, for codons or AAs passing significance thresholds (specified using the `pAdj` parameter), the odds ratio for each desired comparison pair is calculated and plotted against the frequency. Codons or AAs of interest with differential usage between gene sets are usually identified as those with a high or low odds ratio, and high frequency. These thresholds can be defined using the `thresOddsUp`, `thresFreqUp`, `thresOddsDown` and `thresFreqDown` parameters.
+
+In the example below, enriched and depleted codons will be identified between translationally activated and suppressed gene sets using. These are defined as those with and adjusted p-value less than 0.01 in a Chi-square test, and are within the top 30\% or enrichment or depletion based on odds ratios and average frequencies.  
+```{r codonUsageSelected, eval=FALSE, echo=TRUE}
+
+# Identify enriched and depleted codons between
+# translationally activated and suppressed genes
+
+ codonUsage(ptn = ptn, 
+          annotType = "ptnCDS", 
+          sourceSeq = "load", 
+          analysis = "codon", 
+          codonN = 1, 
+          pAdj = 0.01, 
+          plotHeatmap = TRUE, 
+          thresOddsUp = 0.3, 
+          thresFreqUp = 0.3, 
+          thresOddsDown = 0.3, 
+          thresFreqDown = 0.3, 
+          comparisons = list(c(1,2)), 
+          pdfName = 'Example')
+ 
+```
+
+```{r codonUsageSelectedPDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("codon_translationUp_translationDown_heatmap.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/codon_translationUp_translationDown_heatmap.png")
+
+image_read_pdf("codontranslationUp_translationDowncodon_oddratio_vs_freq.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/codontranslationUp_translationDowncodon_oddratio_vs_freq.png")
+
+# Read each image
+img1 <- image_read("Figures/codon_translationUp_translationDown_heatmap.png")
+img2 <- image_read("Figures/codontranslationUp_translationDowncodon_oddratio_vs_freq.png")
+
+# Append them horizontally
+combined <- image_append(c(img1, img2), stack = FALSE)
+
+# Save combined image at high resolution
+image_write(combined, path = "Figures/combined_codonSelection.png")
+
+```
+
+```{r codonUsageSelectedPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Visualizations of differential codon usage between different gene sets of interest. A clustered heatmap of standardized residuals for each codon from a Chi-square test (left), and a plot of the log2 odds ratio for each codon between translationally activated and suppressed gene sets, vs. the average codon frequency. Those passing thresholds for enrichment or depletion between gene sets are highlighted in red and blue, respectively."}
+knitr::include_graphics("Figures/combined_codonSelection.png")
+
+```
+
+```{r codonUsageSelectedHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("codon_translationUp_translationDown_heatmap.pdf", "codontranslationUp_translationDowncodon_oddratio_vs_freq.pdf",
+         "Figures/codon_translationUp_translationDown_heatmap.png", "Figures/codontranslationUp_translationDowncodon_oddratio_vs_freq.png"))
+```
+
+
+### Enumerating selected codons or amino acids 
+
+The \code{codonSelection} slot stores a named list of the selected codons or AAs that were significantly enriched or depleted (according to the selected thresholds) in the specified comparisons. This list can be used as input for the \link[postNet]{codonCalc} function (see example below). The contents of the "codonSelection" slot can be accessed using the \link[postNet]{ptn_codonSelection} S4 method. 
 
 <a name="modelling"/>
 

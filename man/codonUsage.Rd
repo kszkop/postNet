@@ -63,9 +63,9 @@ codonUsage(ptn,
   }
 }
 
-\details{In the first step of the analysis, for each gene set comparison, a Chi-square test is applied to assess significant differences in codon or AA usage. Then, for significant codons or AAs, the odds ratio for each desired comparison pair is calculated and plotted against the frequency. The codons or AAs of interest with differential usage between gene sets are usually identified as those with a high/low odds ratio and high frequency. Codons or AAs of interest can then be further assessed using the \link[postNet]{codonCalc} function (see example below). 
+\details{In the first step of the analysis, for each gene set comparison, a Chi-square test is applied to assess significant differences in codon or AA usage. Then, for codons or AAs passing significance thresholds, the odds ratio for each desired comparison pair is calculated and plotted against the frequency. The codons or AAs of interest with differential usage between gene sets are usually identified as those with a high/low odds ratio and high frequency. Codons or AAs of interest can then be further assessed using the \link[postNet]{codonCalc} function (see example below). 
 
-Several codon indexes are also compared between gene sets of interest, including the CAI (codon adaptation index), CBI (Codon Bias Index), FOP (frequency of optimal codons), L_aa (Number of amino acids in protein), and tAI (tRNA adaptation index).
+Several codon indexes are also compared between gene sets of interest, including the CAI (codon adaptation index), CBI (Codon Bias Index), FOP (frequency of optimal codons), L_aa (Number of amino acids in protein), tAI (tRNA adaptation index), and GC3 (GC content of the third codon position).
 }
 
 \value{The \code{codonUsage} function returns an updated \code{postNetData} object with results compiled and stored in the \code{codons} slot as an S4 object of class \code{postNetCodons}. 
