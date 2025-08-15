@@ -1077,7 +1077,7 @@ unlink(c("codonCAI_index.pdf", "codonCBI_index.pdf", "codonFop_index.pdf","codon
 
 The `codonUsage()` function can also be used to identify enriched or depleted codons or AAs between gene sets of interest. In the first step of the analysis, for each gene set comparison, a Chi-square test is applied to assess significant differences in codon or AA usage. To visualize the results of this test, a clustered heatmap of the standardized Chi-square residuals for each codon or AA between the gene sets of interest can be produced using the `plotHeatmap` parameter. Then, for codons or AAs passing significance thresholds (specified using the `pAdj` parameter), the odds ratio for each desired comparison pair is calculated and plotted against the frequency. Codons or AAs of interest with differential usage between gene sets are usually identified as those with a high or low odds ratio, and high frequency. These thresholds can be defined using the `thresOddsUp`, `thresFreqUp`, `thresOddsDown` and `thresFreqDown` parameters.
 
-In the example below, enriched and depleted codons will be identified between translationally activated and suppressed gene sets using. These are defined as those with and adjusted p-value less than 0.01 in a Chi-square test, and are within the top 30\% or enrichment or depletion based on odds ratios and average frequencies.  
+In the example below, enriched and depleted codons will be identified between translationally activated and suppressed gene sets. These are defined as those with and adjusted p-value less than 0.01 in a Chi-square test, and are within the top 30\% or enrichment or depletion based on odds ratios and average frequencies.  
 ```{r codonUsageSelected, eval=FALSE, echo=TRUE}
 
 # Identify enriched and depleted codons between
@@ -1131,10 +1131,67 @@ unlink(c("codon_translationUp_translationDown_heatmap.pdf", "codontranslationUp_
          "Figures/codon_translationUp_translationDown_heatmap.png", "Figures/codontranslationUp_translationDowncodon_oddratio_vs_freq.png"))
 ```
 
-
 ### Enumerating selected codons or amino acids 
 
-The \code{codonSelection} slot stores a named list of the selected codons or AAs that were significantly enriched or depleted (according to the selected thresholds) in the specified comparisons. This list can be used as input for the \link[postNet]{codonCalc} function (see example below). The contents of the "codonSelection" slot can be accessed using the \link[postNet]{ptn_codonSelection} S4 method. 
+After identifying codons or AAs with differential usage between gene sets using the `codonUsage()` function, these can be enumerated across genes using the `codonSelection()` function for use in modelling using `featureIntegration()`. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can also be generated using the parameters described above.
+
+Codons or AAs to examine are specified using the `featSel` parameter, and the output can be calculated as either the number of occurrences per gene, or the frequency (the count per gene relative to all other codons or AAs in the gene) specified by the `unit` parameter. 
+
+In the example below, codons identified as enriched or depleted between genes sets based on Chi-square and odds ratio analyses are enumerated for each gene, and these are compared between translationally activated and suppressed gene sets.  
+```{r codonCalc, eval=TRUE, echo=TRUE}
+
+# Select codons of interest with high frequency, and the highest and lowest odds ratios
+# between translationally activated and suppressed genes 
+ 
+ codons <- ptn_codonSelection(ptn, 
+                              comparison = 1)
+
+ codons
+ 
+# Calculate and plot eCDFs of codon frequencies, and compare between gene sets
+
+ codonCounts  <- codonCalc(ptn = ptn,
+                          analysis = "codon", 
+                          featsel = codons,
+                          unit = "freq", 
+                          comparisons = list(c(1,2)),
+                          plotType = "ecdf")
+                      
+ str(codonCounts)
+
+```
+
+```{r codonCalcPDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("features_Down_codonCalc.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/features_Down_codonCalc.png")
+
+image_read_pdf("features_Up_codonCalc.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/features_Up_codonCalc.png")
+
+# Read each image
+img1 <- image_read("Figures/features_Up_codonCalc.png")
+img2 <- image_read("Figures/features_Down_codonCalc.png")
+
+# Append them horizontally
+combined <- image_append(c(img1, img2), stack = FALSE)
+
+# Save combined image at high resolution
+image_write(combined, path = "Figures/combined_codonCalc.png")
+
+```
+
+```{r codonCalcPNG, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in the frequency of enriched (left) and depleted (right) codons between gene sets. Statistical comparisons are made between translationally activated (blue), suppressed (red) gene sets, with background shown in grey. Visualizations can be also generated as either box plots, or violin plots."}
+knitr::include_graphics("Figures/combined_codonCalc.png")
+
+```
+
+```{r codonCalcHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("features_Down_codonCalc.pdf", "features_Up_codonCalc.pdf",
+         "Figures/features_Down_codonCalc.png", "Figures/features_Up_codonCalc.png"))
+```
 
 <a name="modelling"/>
 
@@ -1201,7 +1258,7 @@ The \code{codonSelection} slot stores a named list of the selected codons or AAs
 
 In addition to tools for identifying and enumerating sequence features of mRNA and modeling networks of post-transcriptional regulation, postNet can also be used to perform enrichment analyses including implementations of GSEA, GAGE, and GO term analysis to provide functional insights into gene sets of interest. It is also possible to examine the regulation of gene signatures in your dataset in a threshold-independent manner, providing insights into possible mechanisms explaining observed regulation and allowing comparisons between datasets.  
 
-## Slope filtering with an anota2seq object
+## Slope filtering when using an Anota2seqDataSet object
 
 When performing GSEA, GAGE, or GO term analysis using the output of an `anota2seq` analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is due to that the slopes fitted by the anota2seq APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering (or offsetting). Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended. The `slopeFilt` function identifies these genes with unrealistic slopes, allowing them to be removed from downstream analyses. Note that in high-quality data sets few genes will require slope filtering, but filtering thresholds can be adjusted with the `minSlope` and `maxSlope` parameters. 
 
