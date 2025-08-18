@@ -3,7 +3,7 @@
 \title{Perform Gene Set Enrichment Analysis (GSEA) with a \code{postNetData} object 
 }
 
-\description{The \code{gseaAnalysis} function implements the \link[fgsea]{fgsea} package to perform Gene Set Enrichment Analysis using the gene sets associated with the regulatory effect measurement contained in a \code{postNetData} object. These gene sets are specified by the \code{regulationGen}, or \code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
+\description{The \code{gseaAnalysis} function implements the \link[fgsea]{fgsea} package to perform Gene Set Enrichment Analysis using the genes sets associated with the regulatory effect measurement contained in a \code{postNetData} object. These gene sets are specified by the \code{regulationGen}, or \code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
 }
 
 \usage{
@@ -79,6 +79,8 @@ If you use the \code{gseaAnalysis} function in your analysis, please cite: \cr
 A. Subramanian, P. Tamayo, V.K. Mootha, S. Mukherjee, B.L. Ebert, M.A. Gillette, A. Paulovich, S.L. Pomeroy, T.R. Golub, E.S. Lander, & J.P. Mesirov. Gene set enrichment analysis: A knowledge-based approach for interpreting genome-wide expression profiles, Proc. Natl. Acad. Sci. U.S.A. 102 (43) 15545-15550, (2005). \cr
 
 Mootha, V., Lindgren, C., Eriksson, KF. et al. PGC-1α-responsive genes involved in oxidative phosphorylation are coordinately downregulated in human diabetes. Nat Genet 34, 267–273 (2003). 
+
+Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment analysis.” bioRxiv. doi:10.1101/060012, http://biorxiv.org/content/early/2016/06/20/060012. 
 }
 
 \seealso{

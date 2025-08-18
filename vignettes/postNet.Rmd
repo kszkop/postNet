@@ -919,7 +919,7 @@ The `motifsIn` parameter is used to provide the motif sequences to be detected a
 
 It is also possible to identify overlapping, or non-overlapping motifs, as well as dictate spatial constraints between motifs using the `dist` parameter to dictate the minimum nucleotide distance between motifs. Similarly to `uorfAnalysis()`, it is also often of interest to know the positions in the sequence where the motifs occur, and the `unitOut` parameter can be used to specify whether the number, or coordinates (nucleotide position of the beginning and end of the motif) will be returned. 
 
-As for `foldingEnergyAnalysis()` the `resid` parameter of `contentMotifs()` offers the option of correcting the the number of motifs per transcript for the length of the sequences. Here, the values returned are the residuals from the linear model: number of motifs ~ log2(sequence region length). Note that if motifs will be used in downstream modelling analysis with `featureIntegration()`, and the length of the sequence regions will also be included in the same models, it is not recommended to correct the number of motifs for the sequence length.
+As for `foldingEnergyAnalysis()` the `resid` parameter of `contentMotifs()` offers the option of correcting the the number of motifs per transcript for the length of the sequences (as longer sequences have more opportunity to contain motifs). Here, the values returned are the residuals from the linear model: number of motifs ~ log2(sequence region length). Note that if motifs will be used in downstream modelling analysis with `featureIntegration()`, and the length of the sequence regions will also be included in the same models, it is not recommended to correct the number of motifs for the sequence length.
 
 It is important to note that the `contentMotifs()` function uses a more strict method of sequence matching to count motifs than the MEME-Suite [@Bailey2015], and for this reason some motifs identified with `motifAnalysis()`, which implements STREME [@Bailey2021], may have divergent quantification between methods. Using a more stringent threshold with the `stremeThreshold` parameter of `motifAnalysis()` may remedy this. Alternatively, motifs identified with STREME can be counted using the [FIMO](https://meme-suite.org/meme/doc/fimo.html) [@Grant2011] tool provided with the MEME-Suite.
 
@@ -1077,7 +1077,7 @@ unlink(c("codonCAI_index.pdf", "codonCBI_index.pdf", "codonFop_index.pdf","codon
 
 The `codonUsage()` function can also be used to identify enriched or depleted codons or AAs between gene sets of interest. In the first step of the analysis, for each gene set comparison, a Chi-square test is applied to assess significant differences in codon or AA usage. To visualize the results of this test, a clustered heatmap of the standardized Chi-square residuals for each codon or AA between the gene sets of interest can be produced using the `plotHeatmap` parameter. Then, for codons or AAs passing significance thresholds (specified using the `pAdj` parameter), the odds ratio for each desired comparison pair is calculated and plotted against the frequency. Codons or AAs of interest with differential usage between gene sets are usually identified as those with a high or low odds ratio, and high frequency. These thresholds can be defined using the `thresOddsUp`, `thresFreqUp`, `thresOddsDown` and `thresFreqDown` parameters.
 
-In the example below, enriched and depleted codons will be identified between translationally activated and suppressed gene sets. These are defined as those with and adjusted p-value less than 0.01 in a Chi-square test, and are within the top 30\% or enrichment or depletion based on odds ratios and average frequencies.  
+In the example below, enriched and depleted codons will be identified between translationally activated and suppressed gene sets. These are defined as those with and adjusted p-value less than 0.01 in a Chi-square test, and are within the top 30\% of enrichment or depletion based on odds ratios and average frequencies.  
 ```{r codonUsageSelected, eval=FALSE, echo=TRUE}
 
 # Identify enriched and depleted codons between
@@ -1251,7 +1251,6 @@ unlink(c("features_Down_codonCalc.pdf", "features_Up_codonCalc.pdf",
 
 ## Predicting regulation in a new data set 
 
-
 <a name="enrichmentAnalysis"/>
 
 # Functional enrichment and threshold-independent signature analyses with postNet
@@ -1259,6 +1258,8 @@ unlink(c("features_Down_codonCalc.pdf", "features_Up_codonCalc.pdf",
 In addition to tools for identifying and enumerating sequence features of mRNA and modeling networks of post-transcriptional regulation, postNet can also be used to perform enrichment analyses including implementations of GSEA, GAGE, and GO term analysis to provide functional insights into gene sets of interest. It is also possible to examine the regulation of gene signatures in your dataset in a threshold-independent manner, providing insights into possible mechanisms explaining observed regulation and allowing comparisons between datasets.  
 
 ## Slope filtering when using an Anota2seqDataSet object
+
+<a name="slopeFiltering"/>
 
 When performing GSEA, GAGE, or GO term analysis using the output of an `anota2seq` analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is due to that the slopes fitted by the anota2seq APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering (or offsetting). Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended. The `slopeFilt` function identifies these genes with unrealistic slopes, allowing them to be removed from downstream analyses. Note that in high-quality data sets few genes will require slope filtering, but filtering thresholds can be adjusted with the `minSlope` and `maxSlope` parameters. 
 
@@ -1272,14 +1273,26 @@ When performing GSEA, GAGE, or GO term analysis using the output of an `anota2se
                 
 ```
 
-The output of the slopeFilt function can be directly supplied to downstream enrichment analysis functions using the `genesSlopeFiltOut` parameter.  
+The output of the `slopeFilt()` function can be directly supplied to downstream enrichment analysis functions using the `genesSlopeFiltOut` parameter.  
+
 ```{r slopeFiltStr, eval=TRUE, echo=TRUE}
 str(filtOutGenes)
 ```
  
 ## Performing GSEA with a postNetData object
-A. Subramanian
-Mootha, V.
+
+PostNet performs Gene Set Enrichment Analysis (GSEA)[refs] by implementing the [fgsea]{https://bioconductor.org/packages/release/bioc/html/fgsea.html} package [ref].   
+
+
+  \item{collection}{A character vector selecting the MSigDB collection of interest, for example:  \code{'c8'}, or \code{'h'}. Although possible, it is not recommended to run all collections in the same analysis. Available options for collections can be found at \url{https://www.gsea-msigdb.org/gsea/msigdb/index.jsp}, or by using the \pkg{msigdb} package (see example below). Currently, collections are only available for human and mouse. 
+  }
+  \item{subcollection}{Optionally, provide a character vector selecting the MSigDB subcollection of interest. For example: \code{"GO:BP"}, or \code{"CP:REACTOME"}. Available options for subcollections can be found at \url{https://www.gsea-msigdb.org/gsea/msigdb/index.jsp}, or by using the \pkg{msigdb} package (see example below). Default is \code{NULL}. 
+  }
+  \item{subsetNames}{Optionally, provide a character vector specifying specific terms to use for GSEA by providing the names of the pathways. For example: \code{c("GOBP_RIBOSOME_BIOGENESIS","GOBP_CAP_DEPENDENT_TRANSLATION_INITIATION")}. Default is \code{NULL}. 
+  }
+  \item{geneSet}{Optionally,instead using a GSEA collection, provide named list of character vectors with custom gene signatures to be used in GSEA. Default is \code{NULL}.
+  }
+
 
 MSigDB
 ```{r GSEAmsigDB, eval=FALSE, echo=TRUE}
