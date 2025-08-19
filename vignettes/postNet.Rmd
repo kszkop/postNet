@@ -1341,7 +1341,7 @@ Generally Applicable Gene-set Enrichement (GAGE) analysis can also be performed 
 
 The results of the analysis can be retrieved using the `ptn_GAGE` function. As GAGE uses a two-directional test, the directionality of the results ("greater", "less") can be specified with the `direction` parameter.  
  
- 
+The example code below performs GAGE analysis using the "CC" GO term category, and extracts terms that are significantly associated with increase
 ```{r GAGEanalysis, eval=FALSE, echo=TRUE}
 
 # Run GAGE:
