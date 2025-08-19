@@ -94,7 +94,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
  gageOut <- ptn_GAGE(ptn = ptn,
                     category = "CC",
                     direction = "greater", 
-                    threshold = 1)
+                    threshold = 1) # This will return the complete results. For only significant results the threshold should be lowered. 
  str(gageOut)
           
 \dontrun{
