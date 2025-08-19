@@ -1337,14 +1337,11 @@ GSEA results can be extracted from the `postNetData` object and plotted using th
 
 ## GAGE analysis with a postNetData object
 
-Generally Applicable Gene-set Enrichement (GAGE) analysis can also be performed using the regulatory effect measurement contained in a `postNetData` object. The `gageAnalysis()` function implements the [gage](gage) package [ref], and can be used with the 'BP', 'MF', or 'CC' Gene Ontology categories, and well as with 'KEGG' pathways. These are specified using the `category` parameter.  
+Generally Applicable Gene-set Enrichement (GAGE) analysis can also be performed using the regulatory effect measurement contained in a `postNetData` object. The `gageAnalysis()` function implements the [gage](gage) package [ref], and can be used with the "BP", "MF", or "CC" Gene Ontology categories, and well as with 'KEGG' pathways. These are specified using the `category` parameter.  
 
-  \item{category}{A character vector specifying one or more gene ontology categories to be included in the analysis. The options are \code{'BP'}, \code{'CC'}, \code{'MF'}, and \code{'KEGG'}. For example, \code{category = c('BP','MF')}.
+The results of the analysis can be retrieved using the `ptn_GAGE` function. As GAGE uses a two-directional test, the directionality of the results ("greater", "less") can be specified with the `direction` parameter.  
  
-   \item{direction}{A character indicating the directionality of regulation of the gene sets. Can be either
-  \code{"greater"}, or \code{"less"}.
-  }
-  
+ 
 ```{r GAGEanalysis, eval=FALSE, echo=TRUE}
 
 # Run GAGE:
