@@ -553,7 +553,7 @@ ptn <- postNetStart(
 
 # Analysis of mRNA sequence features
 
-*PostNet* includes a variety of tools for identifying and enumerating sequence features of mRNA. These tools can be used for stand-alone analyses to visualize and perform statistical comparisons of mRNA features between sets of regulated genes (described below). However, the outputs of these tools can also be compiled into per-gene catalogues of *cis*-acting regulatory features and used with the `featureIntegration()` function to model changes in post-transcriptional regulation, and dissect networks of interactions between features.
+*PostNet* includes a variety of tools for identifying and enumerating sequence features of mRNA. These tools can be used for stand-alone analyses to visualize and perform statistical comparisons of mRNA features between sets of regulated genes (described below). However, the outputs of these tools can also be compiled into per-gene catalogs of *cis*-acting regulatory features and used with the `featureIntegration()` function to model changes in post-transcriptional regulation, and dissect networks of interactions between features.
 
 ## Statistical comparisons, selecting sequence sub-regions, and plotting options
 
