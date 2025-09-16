@@ -1281,7 +1281,7 @@ str(filtOutGenes)
  
 ## Performing GSEA with a postNetData object
 
-PostNet performs Gene Set Enrichment Analysis (GSEA)[refs] using `gseaAnalysis()` function and the genes sets and regulatory effect measurement contained in a `postNetData` object. The analysis implements the [fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html) package[ref], and can be applied using gene sets from The Molecular Signatures Database [msigdb](https://www.gsea-msigdb.org/gsea/index.jsp) [ref]. Gene expression signatures to be considered in the analysis can be selected from MSigDB using the `collection`, and `subcollection` parameters, and specific gene sets can be specified using `subsetNames`. 
+PostNet performs Gene Set Enrichment Analysis (GSEA)[refs] using `gseaAnalysis()` function and the genes sets and regulatory effect measurement contained in a `postNetData` object. The analysis implements the [fgsea](https://bioconductor.org/packages/release/bioc/html/fgsea.html) package[ref], and can be applied using gene sets from The Molecular Signatures Database [msigdb](https://www.gsea-msigdb.org/gsea/index.jsp) [ref]. Gene expression signatures to be considered in the analysis can be selected from MSigDB using the `collection`, and `subcollection` parameters, and specific gene sets can be specified using `subsetNames`. These can be further  
 
 The code below provides an example of how to run GSEA analysis on genes ranked according to log2 fold changes in translation efficiency, using specific gene set terms from the MSigDB. If you are using the results of an `anota2seq` analysis, it would also be necessary to perform #slopeFlitering, and supply the output using the `genesSlopeFiltOut` in both the `gseaAnalysis()` and `gseaPlot()` functions.  
 ```{r GSEAmsigDB, eval=FALSE, echo=TRUE}
@@ -1309,7 +1309,7 @@ The code below provides an example of how to run GSEA analysis on genes ranked a
 ```
 
 In addition to the collections in MSigDB, GSEA can also be run using custom gene sets using the `geneSet` parameter.
-```{r GSEAcustom, eval=FALSE, echo=TRUE}
+```{r GSEAcustom, eval=TRUE, echo=TRUE}
 
 # Create example custom gene sets for GSEA:
 set1 <- sample(myGenes[[1]], 100)
@@ -1324,7 +1324,7 @@ inSet <- list(Set1 = set1, Set2 = set2)
 ```
 
 GSEA results can be extracted from the `postNetData` object and plotted using the `ptn_GSEA()` and `gseaPlot` functions.  
-```{r GSEAplotting, eval=FALSE, echo=TRUE}
+```{r GSEAplotting, eval=TRUE, echo=TRUE}
 
 # Extract the significant enrichment results from the postNetData object:
  gseaOut <- ptn_GSEA(ptn, 
@@ -1335,31 +1335,89 @@ GSEA results can be extracted from the `postNetData` object and plotted using th
           termNames = gseaOut$Term[1])
 ```
 
+```{r GSEAplottingPDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("gsea_Set1.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/gsea_Set1.png")
+
+```
+
+```{r GSEAplottingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A plot visualizing GSEA results for the enrichment of the gene Set1 in the example dataset."}
+knitr::include_graphics("Figures/gsea_Set1.png")
+
+```
+
+```{r GSEAplottingHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("gsea_Set1.pdf"))
+```
+
 ## GAGE analysis with a postNetData object
 
-Generally Applicable Gene-set Enrichement (GAGE) analysis can also be performed using the regulatory effect measurement contained in a `postNetData` object. The `gageAnalysis()` function implements the [gage](gage) package [ref], and can be used with the "BP", "MF", or "CC" Gene Ontology categories, and well as with 'KEGG' pathways. These are specified using the `category` parameter.  
+Generally Applicable Gene-set Enrichment (GAGE) analysis can also be performed using the regulatory effect measurement contained in a `postNetData` object. The `gageAnalysis()` function implements the [gage](gage) package [ref], and can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, and well as with 'KEGG' pathways. These are specified using the `category` parameter.  
 
 The results of the analysis can be retrieved using the `ptn_GAGE` function. As GAGE uses a two-directional test, the directionality of the results ("greater", "less") can be specified with the `direction` parameter.  
  
-The example code below performs GAGE analysis using the "CC" GO term category, and extracts terms that are significantly associated with increased log2 fold changes in translation efficiency. 
+The example code below performs GAGE analysis using the "MF" GO term category, and extracts terms that are significantly associated with increased log2 fold changes in translation efficiency. 
 ```{r GAGEanalysis, eval=FALSE, echo=TRUE}
 
 # Run GAGE:
  ptn <- gageAnalysis(ptn,
-                    category = "CC")
+                    category = "MF")
 
 # Extract the significant enrichment results from the postNetData object:
  gageOut <- ptn_GAGE(ptn = ptn,
-                    category = "CC",
+                    category = "MF",
                     direction = "greater", 
                     threshold = 0.05)
  
 ```
 
-
-
-
 ## GO term analysis with a postNetData object
+
+Gene Ontology (GO) terms enrichment analysis can be performed using the gene lists of interest in a `postNetData` object. The `goAnalysis()` function implements [clusterProfiler](clusterProfiler) [ref], and similarly to GAGE analysis can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, and well as with 'KEGG' pathways, specified using the `category` parameter.  
+
+The results of the analysis can be retrieved using the `ptn_GAGE` function. As GAGE uses a two-directional test, the directionality of the results ("greater", "less") can be specified with the `direction` parameter.     
+
+The \code{goAnalysis} function implements \link[clusterProfiler]{clusterProfiler} to perform Gene Ontology 
+enrichment analysis using the gene sets of interest associated with the regulatory effect measurement defined within \code{postNetData} object.
+}
+
+After running GO term analysis, the results can be retrieved from the \code{postNetData} object using the S4 method \link[postNet]{ptn_GO} function. Results can also be visualized using the \link[postNet]{goDotplot} function. 
+
+Note that if using results from an \pkg{anota2seq} analysis, it is strongly recommended to first apply filtering using the \link[postNet]{slopeFilt} function to exclude genes with unrealistic regression slopes.
+
+Generally Applicable Gene-set Enrichment (GAGE) analysis can also be performed using the regulatory effect measurement contained in a `postNetData` object. The `gageAnalysis()` function implements the [gage](gage) package [ref], and can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, and well as with 'KEGG' pathways. These are specified using the `category` parameter.  
+
+The results of the analysis can be retrieved using the `ptn_GAGE` function. As GAGE uses a two-directional test, the directionality of the results ("greater", "less") can be specified with the `direction` parameter.  
+ 
+The example code below performs GAGE analysis using the "MF" GO term category, and extracts terms that are significantly associated with increased log2 fold changes in translation efficiency. 
+
+
+```{r GOanalysis, eval=FALSE, echo=TRUE}
+
+# Run GO term analysis using a postNetData object:
+ ptn <- goAnalysis(ptn = ptn, 
+                  category = c("BP","KEGG"),
+                  name = "Example")
+
+# Extract the significant enrichment results for Biological Process:
+ goOut <- ptn_GO(ptn, 
+                 category = "BP", 
+                 geneList = 'translationUp', 
+                 threshold = 0.05)
+ str(goOut)
+ 
+# Plot GO term analysis results:
+ goDotplot(ptn = ptn, 
+          category = "BP", 
+          nCategories = 50, 
+          pool = T, 
+          size = "geneRatio", 
+          pdfName = "example")
+ 
+```
+
 
 ### Plotting GO term analysis results
 
@@ -1372,7 +1430,5 @@ The example code below performs GAGE analysis using the "CC" GO term category, a
 ### Assessing signatures from the anota2seq object workflow
 
 ### Generating gene signature heatmaps
-
-
 
 # References
