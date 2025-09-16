@@ -1375,51 +1375,51 @@ The example code below performs GAGE analysis using the "MF" GO term category, a
 
 ## GO term analysis with a postNetData object
 
-Gene Ontology (GO) terms enrichment analysis can also be performed using the gene lists of interest in a `postNetData` object. The `goAnalysis()` function implements [clusterProfiler](clusterProfiler) [ref], and similarly to GAGE analysis can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, and with 'KEGG' pathways specified using the `category` parameter, with optional filtered using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included.   
+Gene Ontology (GO) terms enrichment analysis can also be performed using the gene lists of interest in a `postNetData` object. The `goAnalysis()` function implements [clusterProfiler](clusterProfiler) [ref], and similarly to GAGE analysis can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, and with 'KEGG' pathways specified using the `category` parameter, with optional filtering using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included. In addition, enriched terms can be filtered according to FDR threshold, and for the number of genes in the gene sets of interested that are included in the term using the `FDR` and `counts` parameters, respectively.  
 
-The results of the analysis can be retrieved using the `ptn_GO` function. As GAGE uses a two-directional test, the directionality of the results ("greater", "less") can be specified with the `direction` parameter.     
-
-The \code{goAnalysis} function implements \link[clusterProfiler]{clusterProfiler} to perform Gene Ontology 
-enrichment analysis using the gene sets of interest associated with the regulatory effect measurement defined within \code{postNetData} object.
-}
-
-After running GO term analysis, the results can be retrieved from the \code{postNetData} object using the S4 method \link[postNet]{ptn_GO} function. Results can also be visualized using the \link[postNet]{goDotplot} function. 
-
-Note that if using results from an \pkg{anota2seq} analysis, it is strongly recommended to first apply filtering using the \link[postNet]{slopeFilt} function to exclude genes with unrealistic regression slopes.
-
-Generally Applicable Gene-set Enrichment (GAGE) analysis can also be performed using the regulatory effect measurement contained in a `postNetData` object. The `gageAnalysis()` function implements the [gage](gage) package [ref], and can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, and well as with 'KEGG' pathways. These are specified using the `category` parameter.  
-
-The results of the analysis can be retrieved using the `ptn_GAGE` function. As GAGE uses a two-directional test, the directionality of the results ("greater", "less") can be specified with the `direction` parameter.  
- 
-The example code below performs GAGE analysis using the "MF" GO term category, and extracts terms that are significantly associated with increased log2 fold changes in translation efficiency. 
-
-
-```{r GOanalysis, eval=FALSE, echo=TRUE}
+The example code below performs GO term enrichment analysis using the "BF" GO term category, and "KEGG" pathways. Note that if you are using the results of an `anota2seq` analysis, it would also be necessary to perform #slopeFlitering, and supply the output using the `genesSlopeFiltOut` in the `GOanalysis()` function.  
+```{r GOanalysis, eval=TRUE, echo=TRUE}
 
 # Run GO term analysis using a postNetData object:
  ptn <- goAnalysis(ptn = ptn, 
-                  category = c("BP","KEGG"),
+                  category = c("BP"), # Note that multiple terms can be run simultaneously
                   name = "Example")
+
+```
+
+The results of the analysis can be retrieved using the `ptn_GO` function and visualized using the `goDotplot`function. The `pool` parameter of the `goDotplot`function controls if separate plots will be generated for each gene list of interest, or whether results for all gene lists will be pooled into a single plot. It is also possible to specify which terms will be plotted using the `termSel` parameter. Finally, the metric used to determine the size of the dot for each enriched term can be controlled using the `size` parameter to reflect either the number of genes that were included in the enriched term, or the ratio of genes included to total number of genes in the term.     
+```{r GOplotting, eval=TRUE, echo=TRUE}
 
 # Extract the significant enrichment results for Biological Process:
  goOut <- ptn_GO(ptn, 
                  category = "BP", 
                  geneList = 'translationUp', 
                  threshold = 0.05)
- str(goOut)
- 
+
 # Plot GO term analysis results:
  goDotplot(ptn = ptn, 
           category = "BP", 
-          nCategories = 50, 
           pool = T, 
           size = "geneRatio", 
-          pdfName = "example")
- 
+          pdfName = "Example")
 ```
 
+```{r GOplottingPDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_pooled_GOdotplot_BP.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_pooled_GOdotplot_BP.png")
 
-### Plotting GO term analysis results
+```
+
+```{r GOplottingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A plot visualizing GSEA results for the enrichment of the gene Set1 in the example dataset."}
+knitr::include_graphics("Figures/Example_pooled_GOdotplot_BP.png")
+
+```
+
+```{r GOplottingHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_pooled_GOdotplot_BP.pdf","Example_GO_BP.xlsx"))
+```
 
 ## miRNA enrichment analysis with a postNetData object
 
