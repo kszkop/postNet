@@ -1354,7 +1354,7 @@ unlink(c("gsea_Set1.pdf","Example_gseaAnalysis.txt"))
 
 ## GAGE analysis with a postNetData object
 
-Generally Applicable Gene-set Enrichment (GAGE) analysis can also be performed using the regulatory effect measurement contained in a `postNetData` object. The `gageAnalysis()` function implements the [gage](gage) package [ref], and can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, and well as with 'KEGG' pathways. These are specified using the `category` parameter. Similarly to GSEA, terms/pathways can filtered using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included.      
+Generally Applicable Gene-set Enrichment (GAGE) analysis can also be performed using the regulatory effect measurement contained in a `postNetData` object. The `gageAnalysis()` function implements the [gage](gage) package [ref], and can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, and well as with 'KEGG' pathways. These are specified using the `category` parameter. Similarly to GSEA, terms/pathways can be filtered using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included.      
 
 The results of the analysis can be retrieved using the `ptn_GAGE` function. As GAGE uses a two-directional test, the directionality of the results ("greater", "less") can be specified with the `direction` parameter.  
  
@@ -1372,6 +1372,58 @@ The example code below performs GAGE analysis using the "MF" GO term category, a
                     threshold = 0.05)
  
 ```
+
+## microRNA enrichment analysis with a postNetData object
+
+Within postNet, GAGE can also be applied to identify enrichments in microRNA (miRNA) targets in regulated gene sets of interest. This is done using the `miRNAanalysis` function which implements the `gage` package and uses miRNA target information from the [Target Scan database](https://www.targetscan.org). Note that this approach does not identify or predict miRNA binding sites in mRNA sequences, but rather assesses whether gene sets of interest may be regulated by particular miRNAs. 
+
+To perform the analysis, it is necessary to download a miRNA target prediction file from the the [Target Scan database](https://www.targetscan.org). This file must contain the headings 'Cumulative weighted context++ score', 'Aggregate PCT', 'Gene Symbol', and 'Representative miRNA'. Importantly, predictions for multiple species are contained within the file, so it is essential to subset to retain information for only the desired species prior to running the analysis. Once downloaded and subset, this file is supplied using the `miRNATargetScanFile` parameter.    
+
+Prior to running GAGE analysis, miRNA-mRNA targeting predictions should be filtered to retain high-confidence predictions, or adjusted depending on the biological question. This filtering is performed using by specifying threshold in the cumulative weighted context++ score (CWCS) using the `contextScore` parameter, and/or the Aggregate PCT using the `Pct` parameter. The CWCS provides a measurement of the efficacy of predicted miRNA targeting, where larger negative values indicate more repression in response to a miRNA [ref: Agarwal et al., 2015, Grimson et al., 2007]. This metric is useful as it captures all types of interactions and can be used in cases where miRNA are not highly conserved across species. The Aggregate PCT is a measurement of how well conserved the predicted miRNA-mRNA targeting is across species [Agarwal et al., 2015, Friedman et al., 2009]. Values closer to 1 indicate a greater probability of evolutionary conservation due to maintenance of miRNA targeting (i.e., biological function). Depending on the biological question, filtering can be performed on one or both of these metrics (see the Target Scan [FAQ](https://www.targetscan.org/faqs.html) for further details regarding target prediction).   
+
+After the appropriate filtering has been applied, \link[gage]{gage} is implemented to identify enrichments in miRNAs predicted to target genes in gene sets of interest based on ranked genes (ranked by the regulatory effect measurement). Similarly to GSEA and GAGE analyses, sets of miRNA target predictions can be filtered using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included.
+
+The example code below performs GAGE miRNA target enrichment analysis using human mRNA-miRNA target predictions. Target predictions are filtered according to both the CWCS and the Aggregate PCT in this example, but these may vary depending on what the user is interested in. Note that if you are using the results of an `anota2seq` analysis, it would also be necessary to perform #slopeFlitering, and supply the output using the `genesSlopeFiltOut` in the `miRNAanalysis()` function.   
+```{r miRNAanalysis, eval=FALSE, echo=TRUE}
+
+# An example of the required format for the input for miRNATargetScanFile parameter ("miRNA_predictions_hsa.txt"):
+
+# Transcript.ID	Gene.Symbol	miRNA.family	Species.ID	Total.num.conserved.sites	Number.of.conserved.8mer.sites	Number.of.conserved.7mer.m8.sites	Number.of.conserved.7mer.1a.sites	Total.num.nonconserved.sites	Number.of.nonconserved.8mer.sites	Number.of.nonconserved.7mer.m8.sites Number.of.nonconserved.7mer.1a.sites	Number.of.6mer.sites	Representative.miRNA	Total.context...score	Cumulative.weighted.context...score	Aggregate.PCT	Predicted.occupancy...low.miRNA	Predicted.occupancy...high.miRNA	Predicted.occupancy...transfected.miRNA
+# ENST00000055682.6	KIAA2022	UGGCACU	9606	3	0	0	3	0	0	0	0	0	hsa-miR-183-5p.2	-0.604	-0.604	1	0.0807	0.5089	1.8669
+# ENST00000207157.3	TBX15	UGGCACU	9606	1	1	0	0	0	0	0	0	1	hsa-miR-183-5p.2	-0.589	-0.552	1	0.1287	0.5218	0.8900
+# ENST00000215832.6	MAPK1	ACAGUAC	9606	2	0	1	1	3	0	2	1	3	hsa-miR-101-3p.1	-0.509	-0.279	1	0.0244	0.1671	0.8723
+
+# Note that this target prediction file has been filtered to include only human miRNA ('hsa')
+
+# Run GAGE miRNA target enrichment analysis:
+  ptn <- miRNAanalysis(ptn,
+                     genesSlopeFiltOut = filtOutGenes, 
+                     miRNATargetScanFile = 'miRNA_predictions_hsa.txt',
+                     contextScore = -0.2,
+                     Pct = 0.7)
+
+```
+
+After running the analysis, the results can be retrieved using either the `ptn_miRNA_analysis`, or `ptn_miRNA_to_gene` functions. 
+
+The `ptn_miRNA_analysis` function will return the results of the GAGE analysis. When interpreting the results, note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear in the results table labelled "greater" can be interpreted as those miRNA that may be downregulated or otherwise not active in the experimental condition. Likewise, enrichments in miRNA predicted to target genes that are downregulated that appear in the results table labelled "less" can be interpreted as those miRNA that may be upregulated or active in the experimental condition.  
+
+The `ptn_miRNA_to_gene` function will return the lists of genes that are predicted to be targeted by the miRNA passing the filtering threshold set by `contextScore` and `Pct` parameters. These may be desirable if you plan to include specific miRNA in modelling analyses using the `featureIntegration` function. These gene lists can be converted to signatures using the `signCal` function and be included as features in the models. 
+```{r miRNAanalysisResults, eval=FALSE, echo=TRUE}
+
+# Extract the significant miRNA target enrichment results from the postNetData object:
+ miRNAout <- ptn_miRNA_analysis(ptn = ptn,
+                    direction = "less", 
+                    threshold = 0.05)
+                    
+# Extract the lists of genes for miRNA that were found to have targets significantly
+# enriched in the downregulated gene set of interest:
+
+ miRNAtargets <- ptn_miRNA_to_gene(ptn = ptn,
+                    miRNAs = c('hsa-miR-138-5p','hsa-miR-182-5p'))
+ 
+```
+
 
 ## GO term analysis with a postNetData object
 
@@ -1412,7 +1464,7 @@ image_read_pdf("Example_pooled_GOdotplot_BP.pdf", density = 300) %>%
 
 ```
 
-```{r GOplottingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A plot visualizing GSEA results for the enrichment of the gene Set1 in the example dataset."}
+```{r GOplottingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A dot plot visualizing GO term enrichment analysis results."}
 knitr::include_graphics("Figures/Example_pooled_GOdotplot_BP.png")
 
 ```
@@ -1421,14 +1473,54 @@ knitr::include_graphics("Figures/Example_pooled_GOdotplot_BP.png")
 unlink(c("Example_pooled_GOdotplot_BP.pdf","Example_GO_BP.xlsx"))
 ```
 
-## miRNA enrichment analysis with a postNetData object
+## Analysis of gene signatures using eCDFs
 
-## Threshold-independent analysis of gene signatures
+In addition to the various forms of gene set enrichment analysis described above, postNet also provides functionality for assessing the regulation of gene signatures using empirical cumulative distribution functions (eCDFs). This approach allows visualizations of changes in the regulatory effect measurement (often log2 fold changes). ECDFs for genes belonging to the gene signatures of interest are compared to those for all other genes 
+(background). Differences in the regulatory effect measurement distributions are calculated at the quantiles, and significant directional shifts in the distributions for gene signature versus background are identified using a Wilcoxon rank-sum test.
 
-### Assessing gene signatures using the gene list workflow
+Gene signature analysis in postNet can be implemented in two ways depending on if you are using custom gene lists and regulatory effect measurements, or if your analysis is based on the output of `anota2seq`. These are described below.
 
-### Assessing signatures from the anota2seq object workflow
+Using both approaches, gene signatures are supplied as a list using the `signatureList` parameter. It is possible to assess multiple signatures at the same time, and it is important to note that the background gene set is automatically determined based on the gene signatures provided. When there is no overlap between genes in the signatures, the background set is determined to be all genes not included in any signature (i.e., mutually exclusive signatures are provided, they will be compared to the same background gene set). However, when there is overlap between the genes in the signatures provided, the background set is determined separately for each gene signature (i.e., overlapping signatures will each be compared to separate backgrounds). For example, you may be interested in examining how the sets of upregulated and downregulated genes taken from a particular study or condition behave in your data set. In this case, the gene signatures will be mutually exclusive as a gene cannot be both up and downregulated, so the background is created such that the comparison will be between "regulated" vs. "unregulated" genes. In another example, you may wish to compare two signatures of mTOR-activated genes taken from different studies. As the signatures come from the same condition they will likely overlap considerably, and therefore a separate set of background genes will be created for each signature. Consideration should be given to what is the appropriate background gene set when deciding whether gene signatures should be compared together, or individually.
 
-### Generating gene signature heatmaps
+Several gene signatures relevant to post-transcriptional regulation are included with the package.
+
+### Assessing gene signature regulation using the gene list workflow
+
+When starting from custom gene lists and regulatory effect measurement the regulation of gene signatures can be assessed using the `plotSignatures` function. All signatures supplied to the `signatureList` parameter will be included on the same plot, where the background gene set is indicated in grey.
+
+```{r plotSignatures, eval=TRUE, echo=TRUE}
+
+# load signature data:
+ data('humanSignatures')
+ 
+# Examine the regulation of mTOR-sensitive transcripts in the results of the anota2seq analysis 
+ plotSignatures(ptn = ptn,
+                               signatureList = humanSignatures[c('Gandin_etal_2016_mTOR_transUp','Gandin_etal_2016_mTOR_transDown')],
+                               signature_colours = c('red','blue'), 
+                               xlim = c(-3,3), 
+                               tableCex = 1,
+                               pdfName = 'mTORsignatures')
+```
+
+```{r plotSignaturesPDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("mTORsignatures.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/mTORsignatures.pdf")
+
+```
+
+```{r plotSignaturesPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A plot visualizing GSEA results for the enrichment of the gene Set1 in the example dataset."}
+knitr::include_graphics("Figures/mTORsignatures.pdf")
+
+```
+
+```{r plotSignaturesHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("mTORsignatures.pdf"))
+```
+
+### Assessing gene signature regulation from the anota2seq object workflow
+
+### Generating gene signature regulation heatmaps
 
 # References

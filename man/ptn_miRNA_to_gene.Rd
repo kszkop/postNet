@@ -66,7 +66,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
                      miRNATargetScanFile = 'miRNA_predictions_hsa.txt',
                      contextScore = -0.2)
 
-# Extract the signficant enrichment results from the postNetData object:
+# Extract the significant enrichment results from the postNetData object:
  miRNAtargets <- ptn_miRNA_to_gene(ptn = ptn,
                     miRNAs = c('hsa-miR-138-5p','hsa-miR-182-5p'))
  str(miRNAtargets)

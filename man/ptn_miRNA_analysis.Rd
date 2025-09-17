@@ -23,7 +23,7 @@
   }
 }
 
-\details{Note that note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear in the results table labelled "greater" can be interpretted as those miRNA that may be dwonregulated or otherwise not active in the experimental condition. Likewise, enrichments in miRNA predicted to target genes that are downregulated that appear in the results table labelled "less" can be interpretted as those miRNA that may be upregulated or active in the experimental condition. 
+\details{Note that note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear in the results table labelled "greater" can be interpreted as those miRNA that may be downregulated or otherwise not active in the experimental condition. Likewise, enrichments in miRNA predicted to target genes that are downregulated that appear in the results table labelled "less" can be interpreted as those miRNA that may be upregulated or active in the experimental condition. 
 }
 
 \value{The value returned by the \code{ptn_miRNA_analysis} function is a data.frame with the following columns (see the \link[gage]{gage} package for full details):
@@ -84,7 +84,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
                      miRNATargetScanFile = 'miRNA_predictions_hsa.txt',
                      contextScore = -0.2)
 
-# Extract the signficant enrichment results from the postNetData object:
+# Extract the significant enrichment results from the postNetData object:
  miRNAout <- ptn_miRNA_analysis(ptn = ptn,
                     direction = "less", 
                     threshold = 1)

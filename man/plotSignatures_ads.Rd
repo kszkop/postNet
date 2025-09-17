@@ -55,7 +55,7 @@ plotSignatures_ads(ads,
 
 \details{Gene signatures of interest are visualized in a scatterplot of log2 fold changes in polysome-associated and total mRNA. The empirical 
 cumulative distribution functions (ECDFs) of log2 fold changes in polysome-associated mRNA, total mRNA, translation, and buffering (offsetting) 
-are also plotted independently. Fold change ECDFs for genes belonging to the signatures of interest are compare to those for all other genes 
+are also plotted independently. Fold change ECDFs for genes belonging to the signatures of interest are compared to those for all other genes 
 (background). Differences in the fold change distributions are calculated at the quantiles. Significant directional shifts in the ECDFs for gene 
 signature versus background are identified using a Wilcoxon rank-sum test.
 }
@@ -98,7 +98,8 @@ signature versus background are identified using a Wilcoxon rank-sum test.
 plotSignatures_ads(ads = ads,
                                contrast = 1,
                                dataName = "Osmosis_1h",
-                               signatureList = humanSignatures[c('Gandin_etal_2016_mTOR_transUp','Gandin_etal_2016_mTOR_transDown')],
+                               signatureList = humanSignatures[c('Gandin_etal_2016_mTOR_transUp',
+                                                                'Gandin_etal_2016_mTOR_transDown')],
                                generalName = "mTOR-sensitive translation",
                                signature_colours = c('red','blue'), 
                                xlim = c(-3,3), 

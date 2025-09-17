@@ -3,7 +3,7 @@
 \title{Analysis of regulation of gene signatures in a \code{postNetData} object
 }
 
-\description{
+\description{The \code{plotSignatures} function assesses changes in the regulation of known gene signatures in the data set of interest contained in a \code{postNetData} object. Outputs include statistical analyses and visualizations of signature regulation. 
 }
 
 \usage{
@@ -34,10 +34,8 @@ plotSignatures(ptn,
   }
 }
 
-\details{Gene signatures of interest are visualized as using empirical cumulative distribution functions (ECDFs) of log2 fold changes in the regulatory effect
-measurement in a \code{postNetData} object. ECDFs for genes belonging to the signatures of interest are compare to those for all other genes 
-(background). Differences in the regulatory effect measurement distributions are calculated at the quantiles. Significant directional shifts in the ECDFs for gene 
-signature versus background are identified using a Wilcoxon rank-sum test.
+\details{Gene signatures of interest are visualized using empirical cumulative distribution functions (ECDFs) of the regulatory effect measurement in a \code{postNetData} object (often log2 fold changes). ECDFs for genes belonging to the signatures of interest are compared to those for all other genes 
+(background). Differences in the regulatory effect measurement distributions are calculated at the quantiles. Significant directional shifts in the ECDFs for gene signature versus background are identified using a Wilcoxon rank-sum test.
 }
 
 \value{No value is returned. Graphical outputs are generated as PDF files. 

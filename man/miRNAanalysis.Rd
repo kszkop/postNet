@@ -56,27 +56,20 @@ miRNAanalysis(ptn,
 In order to limit the analysis to high-confidence targeting predictions, filtering can be performed using one, or both of these metrics. Subsequently, \link[gage]{gage}
 is applied to identify enrichments in miRNAs predicted to target gene sets of interest based on ranked genes (ranked by the regulatory effect measurement).
 
-Depending on the biological question, it is important to considering which thresholds to use to filter target predictions. Context scores provide a prediction of targeting
-efficiency, whereas Pct is an estimate of the probability that the miRNA-mRNA targeting interaction is evolutionarily conserved suggesting important biological function. 
-See \url{https://www.targetscan.org/faqs.html} for further details regarding target prediction. 
+Depending on the biological question, it is important to consider which thresholds to use to filter target predictions. Context scores provide a prediction of targeting efficiency, whereas Pct is an estimate of the probability that the miRNA-mRNA targeting interaction is evolutionarily conserved suggesting important biological function. See \url{https://www.targetscan.org/faqs.html} for further details regarding target prediction. 
 
-Note that note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear
+Note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear
 in the results table labelled "greater" can be interpretted as those miRNA that may be dwonregulated or otherwise not active in the experimental condition. Likewise, 
 enrichments in miRNA predicted to target genes that are downregulated that appear in the results table labelled "less" can be interpretted as those miRNA that may be
 upregulated or active in the experimental condition. 
 
-After running GAGE miRNA target enrichment analysis, the results can be retrieved from the \code{postNetData} object
-using the S4 method \link[postNet]{ptn_miRNA_analysis} function. To include specific miRNA in downstream \link[postNet]{featureIntegration}
-analysis, lists of genes targeted by particular miRNA can be retrieved using the S4 method \link[postNet]{ptn_miRNA_to_gene} function. These
-gene lists can then be included as signatures in the models. 
+After running GAGE miRNA target enrichment analysis, the results can be retrieved from the \code{postNetData} object using the S4 method \link[postNet]{ptn_miRNA_analysis} function. To include specific miRNA in downstream \link[postNet]{featureIntegration} analysis, lists of genes targeted by particular miRNA can be retrieved using the S4 method \link[postNet]{ptn_miRNA_to_gene} function. These gene lists can then be included as signatures in the models. 
 
-Note that if the results of an \pkg{anota2seq} analysis are being used for GAGE miRNA target enrichment analysis, it is strongly
-recommended to first perform filtering using the \link[postNet]{slopeFilt} function.
+Note that if the results of an \pkg{anota2seq} analysis are being used for GAGE miRNA target enrichment analysis, it is strongly recommended to first perform filtering using the \link[postNet]{slopeFilt} function.
 }
 
 \value{The results returned by the \code{miRNAanalysis} function are compiled into an S4 object of class \code{postNetmiRNA} and stored in the "miRNA" slot of the 
-\code{postNetData} object.  The "miRNA_analysis" slot stores a named list with three elements ("greater", "less" and "stats"). As described in the \link[gage]{gage} package,
-The "stats" element contains the test statistics. The "greater" and "less" elements are data.frames with the results of a two-directional test, each having the 
+\code{postNetData} object.  The "miRNA_analysis" slot stores a named list with three elements ("greater", "less" and "stats"). As described in the \link[gage]{gage} package, the "stats" element contains the test statistics. The "greater" and "less" elements are data.frames with the results of a two-directional test, each having the 
 following columns:
 
  \itemize{ 
