@@ -7,7 +7,7 @@ checkAvailableVersions <- function(species) {
 
   # Check if the input species is a valid species name
   if (!species %in% curr_tmp) {
-    stop("Invalid species name. Pre-prepared annotation files for that species are not currently included. Please use a valid species name.")
+    stop("Invalid species name. Pre-prepared annotation files for your species are not currently included. Currently included species are human, or mouse.")
   } else {
     # Create the directory path for the specified species
     species_dir <- file.path(base_dir, species)
