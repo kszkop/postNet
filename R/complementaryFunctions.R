@@ -159,13 +159,13 @@ adjustSeq <- function(annot,
     check_adjObj(adjObj)
     valid_regions <- c("UTR5", "UTR3")
     if (is.null(region_adj) | !all(region_adj %in% valid_regions)) {
-      stop("'region_adj' has to be provided and can be only: 'UTR5','UTR3'. It should also match named entries in the list adjObj ")
+      stop("Please provide the 'region_adj', which can be 'UTR5' and/or 'UTR3'. It should also match the names of the entries in the list 'adjObj'.")
     }
     if (!check_logical(excl)) {
-      stop("'excl' can only be only be logical: TRUE of FALSE ")
+      stop("The input for 'excl' must be logical: TRUE or FALSE.")
     }
     if (!check_logical(keepAll)) {
-      stop("'keepAll' can only be only be logical: TRUE of FALSE ")
+      stop("The input for 'keepAll' must be logical: TRUE or FALSE.")
     }
   }
   annotTmp <- annot
@@ -174,11 +174,12 @@ adjustSeq <- function(annot,
     adjObj_temp <- adjObj[[reg]]
 
     if (is.null(adjObj_temp)) {
-      stop("The one or more regions specified in 'region_adj' do not match those provided in the 'adjObj' list. Please ensure the names of 'adjObj' are 'UTR5' and/or 'UTR3', and correspond to 'region_adj'.")
+      stop("One or more regions specified in 'region_adj' do not match those provided in the 'adjObj' list. Please ensure the names of 'adjObj' \
+           are 'UTR5' and/or 'UTR3', and correspond to 'region_adj'.")
     }
 
     if (length(which(names(adjObj_temp) %in% annotTmp$id)) == 0) {
-      stop("It looks like transcript IDs provided in 'adjObj' do not match with transcript IDs in the existing annotation.")
+      stop("The transcript IDs provided in 'adjObj' do not match the transcript IDs in the existing annotation.")
     }
     adjObj_temp <- adjObj_temp[names(adjObj_temp) %in% annotTmp$id]
     #
@@ -190,7 +191,7 @@ adjustSeq <- function(annot,
     # adjObj_temp <- adjObj_temp[!names(adjObj_temp) %in% toRemove]
     #
     if (length(adjObj_temp) == 0) {
-      stop("None of the entries in the adjustment vector are present in the existing annotation.")
+      stop("None of the entries in the sequence adjustment vector are present in the existing annotation.")
     }
     #
     annotTmp[match(names(adjObj_temp), annotTmp$id), ifelse(reg == "UTR5", "UTR5_seq", "UTR3_seq")] <- adjObj_temp
@@ -247,7 +248,8 @@ getBg <- function(ads = NULL, customBg = NULL, geneList = NULL) {
       if (!is.null(geneList)) {
         tmpDiff <- setdiff(as.character(unlist(geneList)), bgOut)
         if (length(tmpDiff) > 0) {
-          stop("There are genes in the geneList that are not in custom bg")
+          stop("There are genes in the 'geneList' that are not present in 'customBg'. Please ensure that the custom background includes all genes \
+          in your input gene list.")
         }
       }
     } else {
@@ -301,7 +303,7 @@ effectSel <- function(ads, regulationGen, contrastSel, effectMeasure) {
     effM <- scOut[, grepl(paste(regTmp, "apvEff", sep = "."), colnames(scOut))]
     names(effM) <- scOut$identifier
   } else {
-    stop("Please provide anota2seq object or custom effect measure to be explained by provided features")
+    stop("Please provide either an anota2seq object or a custom regulatory effect measurement (for example, log2 fold changes).")
   }
   return(effM)
 }
@@ -477,7 +479,7 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
       addStats(comparisons, plotType = "ecdf", resOut, colOut)
     }
   } else {
-    stop("Please provide correct 'plotType'")
+    stop("Please provide a valid input for 'plotType'. The options are 'boxplot', 'violin', or 'ecdf'.")
   }
 }
 
@@ -793,7 +795,7 @@ roundNice <- function(x, nice = c(1, 2, 4, 5, 6, 8, 10), direction) {
   } else if (direction == "down") {
     result <- 10^floor(log10(x_abs)) * nice[[tail(which(x_abs >= 10^floor(log10(x_abs)) * nice), 1)]]
   } else {
-    stop("wrong input for rounding function")
+    stop("The wrong input is provided for the rounding function.")
   }
 
   return(sign_x * result)
@@ -886,7 +888,7 @@ convertSymbolToEntrezID <- function(geneList,
   # if some element of the list have become empty (empty gene signature) because none of the symbols have an entrezid
 
   if (length(geneListEntrezID) == 0) {
-    stop("None of the provided gene symbols could be converted to entrezid. Please check the gene identifiers")
+    stop("None of the provided gene symbols could be converted to entrezid. Please check the gene identifiers.")
   }
 
   return(geneListEntrezID)
@@ -911,7 +913,7 @@ convertEntrezIDToSymbol <- function(entrezIDList,
   # if some element of the list have become empty (empty gene signature) because none of the symbols have an entrezid
 
   if (length(geneList) == 0) {
-    stop("None of the provided entrezIDs could be converted to symbols. Please check the identifiers")
+    stop("None of the provided entrezIDs could be converted to gene symbols. Please check the identifiers.")
   }
 
   return(geneList)
@@ -964,7 +966,7 @@ getDup <- function(numIn, tol = 1e-8) {
 printDup <- function(dupIn) {
   for (i in seq_along(dupIn)) {
     namesMerged <- paste(names(dupIn[[i]]), collapse = " and ")
-    messageOut <- paste("These elements are too corelated to each other: ", namesMerged)
+    messageOut <- paste("The following features are too highly corelated to each other (see help manual and vignette for details): ", namesMerged)
     print(messageOut)
   }
 }
@@ -1080,7 +1082,7 @@ prepFeatures <- function(ptn,
                          features) {
   check_ptn(ptn)
   if (!is_valid_named_list(features)) {
-    stop("features should be a named list of numeric vectors only")
+    stop("The input for 'features' should be a named list of only numeric vectors.")
   }
   # effM <- ptn_eff(ptn)
   # if(!is_numeric_vector(ptn_eff(ptn))){
@@ -1097,7 +1099,7 @@ prepFeatures <- function(ptn,
   colnames(tmpDf) <- featureNames
 
   datOut <- na.omit(tmpDf)
-  message(paste(nrow(tmpDf) - nrow(datOut), "genes removed because of NAs", sep = " "))
+  message(paste(nrow(tmpDf) - nrow(datOut), "Genes removed because of NAs", sep = " "))
 
   ptn@features <- datOut
   return(ptn)
@@ -1118,15 +1120,15 @@ colourAssign <- function(group, colours = NULL) {
   } else {
     coloursMap <- colours
   }
-  
+
   #
   colourAssigned <- coloursMap[as.character(group)]
-  
+
   return(colourAssigned)
 }
 
 
-runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, coloursIn, lmfeatGroup, lmfeatGroupColour = NULL, fdrUni, stepP){
+runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetModelSel, coloursIn, lmfeatGroup, lmfeatGroupColour = NULL, fdrUni, stepP) {
   #
   fval <- list()
   pval <- list()
@@ -1158,7 +1160,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
 
   if (!isTRUE(allFeat) & length(presel) > 0) {
     if (ncol(dataIn) + 1 == length(presel)) {
-      stop("None of the features passed univariate threshold")
+      stop("None of the features passed the selected significance threshold in univariate analyses.")
     }
     dataIn <- dataIn[, -presel]
     models <- models[-presel]
@@ -1173,7 +1175,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     names(fvalTmp) <- getOrgNames(names(fvalTmp), namesDf)
     dupTmp <- getDup(fvalTmp)
     printDup(dupTmp)
-    stop("Two of the input features are almost perfectly correlated. Only one of the correlated features should be included")
+    stop("Two of the input features are almost perfectly correlated. Only one of the correlated features should be included modelling.")
   }
   fval[[1]] <- fvalTmp
 
@@ -1216,7 +1218,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
       names(fvalTmp) <- getOrgNames(names(fvalTmp), namesDf)
       dupTmp <- getDup(fvalTmp)
       printDup(dupTmp)
-      stop("Two of the input features are almost perfectly correlated. Only one of the correlated features should be included")
+      stop("Two of the input features are almost perfectly correlated. Only one of the correlated features should be included in modelling.")
     }
     #
     pvalTmp <- sapply(models2, function(x) x[nrow(x) - 1, 5])
@@ -1276,8 +1278,8 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   colours[which(tmp_pval > stepP)] <- "#B14D8E"
   # colours <- colours[apply(colours, 1, function(x) any(x != "white")), ]
   linkIn[which(abs(linkIn) < covarFilt)] <- NA
-  if(all(is.na(linkIn))){
-    message("None of the feature associations passed the 'covarFilt' threshold")
+  if (all(is.na(linkIn))) {
+    message("None of the associations between features passed the threshold set by 'covarFilt'.")
   }
   row.names(linkIn) <- row.names(tmp_fval)
   #
@@ -1376,7 +1378,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   linkOut <- linkOut[, c(2, 3, 1)]
 
   #
-  if (isTRUE(useCorel) & nrow(linkOut)>0) {
+  if (isTRUE(useCorel) & nrow(linkOut) > 0) {
     for (i in 1:nrow(linkOut)) {
       f1tmp <- linkOut[i, ]$from
       f2tmp <- linkOut[i, ]$to
@@ -1570,7 +1572,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
 
 
 plotScatterInd <- function(set1, set2 = NULL, orgName, coloursIn, nameOut) {
-  pdf(paste(nameOut, orgName, "individually.pdf", sep = "_"), width = ifelse(is_binary(set1[, 1]), 6,8), height = 8, useDingbats = F)
+  pdf(paste(nameOut, orgName, "individually.pdf", sep = "_"), width = ifelse(is_binary(set1[, 1]), 6, 8), height = 8, useDingbats = F)
   par(mar = c(9, 5, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.7, cex.main = 1.7, cex.lab = 1.3)
   #
   if (is.null(set2)) {
@@ -1583,22 +1585,20 @@ plotScatterInd <- function(set1, set2 = NULL, orgName, coloursIn, nameOut) {
   xlim_max <- roundNice(max(set[, 1]), direction = "up")
   ylim_min <- roundNice(min(set[, 2]), direction = "down")
   ylim_max <- roundNice(max(set[, 2]), direction = "up")
-  
-  is_categorical <- is.numeric(set[, 1]) && all(abs(unique(set[, 1]) - round(unique(set[, 1]))) < 1e-6) && length(unique(set[, 1])) <= 10
-  
 
-  if(is_categorical(set[, 1])){
-    plot(jitter(set1[, 1], amount=0), set1[, 2], xlim = range(set[,1]), col = coloursIn[1], ylim = c(ylim_min, ylim_max), pch = 16, cex = 1, xlab = "", ylab = "", lwd = 1, bty = "n", font = 2, xaxt = "n")
+  is_categorical <- is.numeric(set[, 1]) && all(abs(unique(set[, 1]) - round(unique(set[, 1]))) < 1e-6) && length(unique(set[, 1])) <= 10
+
+
+  if (is_categorical(set[, 1])) {
+    plot(jitter(set1[, 1], amount = 0), set1[, 2], xlim = range(set[, 1]), col = coloursIn[1], ylim = c(ylim_min, ylim_max), pch = 16, cex = 1, xlab = "", ylab = "", lwd = 1, bty = "n", font = 2, xaxt = "n")
 
     axis(1, at = sort(unique(set[, 1])), labels = as.character(sort(unique(set[, 1]))), font = 2)
-
   } else {
     plot(set1[, 1], set1[, 2], col = coloursIn[1], xlim = c(xlim_min, xlim_max), ylim = c(ylim_min, ylim_max), pch = 16, cex = 1, xlab = "", ylab = "", lwd = 1, bty = "n", font = 2)
-    
   }
   if (!is.null(set2)) {
-    if(is_categorical(set[, 1])){
-      points(jitter(set2[, 1], amount=0), set2[, 2], pch = 16, col = coloursIn[2])
+    if (is_categorical(set[, 1])) {
+      points(jitter(set2[, 1], amount = 0), set2[, 2], pch = 16, col = coloursIn[2])
     } else {
       points(set2[, 1], set2[, 2], pch = 16, col = coloursIn[2])
     }
@@ -1610,7 +1610,7 @@ plotScatterInd <- function(set1, set2 = NULL, orgName, coloursIn, nameOut) {
   mtext(side = 1, line = 4, orgName, col = "black", font = 2, cex = 1.7, at = (xlim_min + xlim_max) / 2)
   # axis(side = 1, seq(xlim_min, xlim_max, ifelse((xlim_max - xlim_min) / 5 >= 0, roundUpNice((xlim_max - xlim_min) / 5), -roundUpNice(abs((xlim_max - xlim_min) / 5)))), font = 2, lwd = 2)
   #
-  if(!is_binary(set[, 1])){
+  if (!is_binary(set[, 1])) {
     if (length(unique(set[, 1])) > 2 & IQR(set[, 1]) > 0) {
       f1 <- predict(smooth.spline(set[, 2] ~ set[, 1]))
       lines(f1$x[which(f1$x > xlim_min & f1$x < xlim_max)], f1$y[which(f1$x > xlim_min & f1$x < xlim_max)], col = "#AFBADC", lwd = 4, lend = 2)
@@ -1647,17 +1647,17 @@ is_binary <- function(x) {
 is_categorical <- function(x, max_levels = 10) {
   unique_values <- unique(x)
   n_levels <- length(unique_values)
-  
+
   if (is.factor(x) || is.character(x)) {
     return(n_levels <= max_levels)
   }
-  
+
   if (is.numeric(x)) {
     #
     is_integer_like <- all(abs(unique_values - round(unique_values)) < 1e-6)
     return(is_integer_like && n_levels <= max_levels)
   }
-  
+
   return(FALSE)
 }
 
@@ -1670,12 +1670,14 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
   } else {
     fMap$colVecColour <- colVec
   }
-  if(!is_binary(colVec)){
+  if (!is_binary(colVec)) {
     colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = UMAP1, y = UMAP2, color = colVecColour)) +
       ggplot2::geom_point(size = 2) +
-      ggplot2::scale_color_gradient2(low = "#4575b4", mid = "grey95", high = "#d73027", 
-                                     midpoint = median(fMap$colVecColour, na.rm = TRUE)) +
-      ggplot2::labs(title = name,  x = "UMAP 1", y = "UMAP 2", color = name) +
+      ggplot2::scale_color_gradient2(
+        low = "#4575b4", mid = "grey95", high = "#d73027",
+        midpoint = median(fMap$colVecColour, na.rm = TRUE)
+      ) +
+      ggplot2::labs(title = name, x = "UMAP 1", y = "UMAP 2", color = name) +
       ggplot2::theme_minimal() +
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "none")
@@ -1696,7 +1698,7 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
     colVecPlot <- ggplot2::ggplot(fMap, ggplot2::aes(x = UMAP1, y = UMAP2, color = factor(colVecColour))) +
       ggplot2::geom_point(size = 2) +
       ggplot2::scale_color_manual(values = c("0" = "grey75", "1" = "#d73027")) +
-      ggplot2::labs(title =  name,  x = "UMAP 1", y = "UMAP 2", color = name) +
+      ggplot2::labs(title = name, x = "UMAP 1", y = "UMAP 2", color = name) +
       ggplot2::theme_minimal() +
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "none")

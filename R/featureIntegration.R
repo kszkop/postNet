@@ -17,29 +17,30 @@ featureIntegration <- function(ptn,
   check_features(features)
   if (!is.null(comparisons)) {
     if (!check_comparisons(comparisons)) {
-      stop("'comparisons' must be a list of numeric vectors specifying paired gene set comparisons. Example: list(c(0,2),c(0,1)), where 0 is always denotes the background gene set.")
+      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \
+           denotes the background gene set.")
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 && is.null(ptn_background(ptn))) {
-      stop(" 0 always denotes the background gene set, but no background is provided in the postNetData object.")
+      stop("0 always denotes the background, but no background has been provided.")
     }
   }
   check_analysis_type(analysis_type)
   if (!check_logical(regOnly)) {
-    stop("'regOnly' can only be TRUE or FALSE")
+    stop("The input for 'regOnly' must be logical: TRUE or FALSE.")
   }
   if (analysis_type == "lm") {
     if (!check_logical(allFeat)) {
-      stop("'allFeat' can only be TRUE or FALSE")
+      stop("The input for 'allFeat' must be logical: TRUE or FALSE.")
     }
     if (!check_logical(useCorel)) {
-      stop("'useCorel' can only be TRUE or FALSE")
+      stop("The input for 'useCorel' must be logical: TRUE or FALSE.")
     }
     if (!check_number(covarFilt)) {
-      stop("'covarFilt' can only be a numerical value")
+      stop("The input for 'covarFilt' must be a positive numeric value.")
     }
     if (!is_valid_NetModelSel(NetModelSel)) {
-      stop("'NetModelSel' cannot be NULL and must be one of: 'omnibus', or  'adjusted'")
+      stop("The input for 'NetModelSel' cannot be NULL and must be either: 'omnibus', or  'adjusted'.")
     }
   }
   if (analysis_type == "rf") {
@@ -172,7 +173,7 @@ featureIntegration <- function(ptn,
       dataTmpSel$reg <- NA
       for (j in 1:2) {
         if (length(compTmp) != 2) {
-          stop("There is something wrong with comparisons")
+          stop("There is something wrong with comparisons. Please check that your input for 'comparisons' conforms to the example in the help manual.")
         }
         cTmp <- names(resOut[[compTmp[j]]])
         regTmp <- c("A", "B")
@@ -301,7 +302,7 @@ featureIntegration <- function(ptn,
     # fiOut@rf <- compOut
     ptn@analysis@featureIntegration[["rf"]] <- compOut
   } else {
-    stop("Please provide correct type: lm for linear regression or rf for random forest")
+    stop("Please provide correct input for 'analysis_type'. Choose either 'lm' for linear regression or 'rf' for random forest.")
   }
   return(ptn)
 }

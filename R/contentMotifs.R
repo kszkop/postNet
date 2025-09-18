@@ -7,61 +7,61 @@ contentMotifs <- function(ptn,
                           resid = FALSE,
                           region,
                           subregion = NULL,
-                          subregionSel=NULL,
+                          subregionSel = NULL,
                           comparisons = NULL,
                           pdfName = NULL,
                           plotOut = TRUE) {
-  
   #
   check_ptn(ptn)
   check_region(region)
 
-  if(!check_logical(plotOut)){
-    stop("'plotOut' can only be only be logical: TRUE of FALSE ")
-  } 
-  
-  if(!is.null(comparisons)){
-    if(!check_comparisons(comparisons)){
-      stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
+  if (!check_logical(plotOut)) {
+    stop("The input for 'plotOut' must be logical: TRUE or FALSE.")
+  }
+
+  if (!is.null(comparisons)) {
+    if (!check_comparisons(comparisons)) {
+      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \
+           denotes the background gene set.")
     }
     #
-    if(length(which(unique(unlist(comparisons))==0))>0 && is.null(ptn_background(ptn))){
-      stop(" 0 is always a background, but no background provided")
+    if (length(which(unique(unlist(comparisons)) == 0)) > 0 && is.null(ptn_background(ptn))) {
+      stop("0 always denotes the background, but no background has been provided.")
     }
   }
-  
-  if(!is.null(subregion) && (!is.numeric(subregion) || !length(subregion)==1)){
-    stop("'subregion' must be a numeric and just number")
+
+  if (!is.null(subregion) && (!is.numeric(subregion) || !length(subregion) == 1)) {
+    stop("The input for 'subregion' must be an integer.")
   }
   if (!is.null(subregionSel) && !subregionSel %in% c("select", "exclude")) {
-    stop("'subregionSel' must be a character and only 'select' or 'exclude'")
-  } 
-  if(!check_number(dist)){
-    stop("please provide numeric minimal distance between motifs")
+    stop("The input for 'subregionSel' must be either 'select' or 'exclude'.")
   }
-  if(!isUnitOut(unitOut)){
-    stop("'unitOut' must be one from these: 'numeric' or 'position'")
+  if (!check_number(dist)) {
+    stop("For 'dist', please provide a numeric value specifying the minimal distance between motifs.")
   }
-  if(!check_logical(resid)){
-      stop("'resid', i.e whether the values should be normalised for the length, can only be only be logical: TRUE of FALSE ")
+  if (!isUnitOut(unitOut)) {
+    stop("The input for 'unitOut' must be either 'numeric' or 'position'.")
   }
-  if(!is_valid_seq_type(seqType)){
-    stop("'seqType' sequence type must be selected from one of these: 'dna', 'rna' or 'protein' ")
-  } 
-  if(!is_motifs(motifsIn)){
-    stop("'motifsIn' should be not null character vector of sequence motifs ")
-  } 
+  if (!check_logical(resid)) {
+    stop("The input for 'resid' (specifying whether the values should be normalised for the sequence length) must be logical: TRUE of FALSE.")
+  }
+  if (!is_valid_seq_type(seqType)) {
+    stop("The input for 'seqType' must be either 'dna', 'rna', or 'protein'.")
+  }
+  if (!is_motifs(motifsIn)) {
+    stop("The input for 'motifsIn' should be a character vector of sequence motifs to be detected and quantified. Ambiguities can be \
+    specified using  IUPAC codes or [ ] (bracket) annotations. Optionally, G-quadruplexes can be specified as 'G4'.")
+  }
   #
   motifFinalRegion <- list()
-  for(reg in region){
-    
-    seqTmp <- ptn_sequences(ptn,region=reg)
-    names(seqTmp) <- ptn_geneID(ptn, region=reg)
+  for (reg in region) {
+    seqTmp <- ptn_sequences(ptn, region = reg)
+    names(seqTmp) <- ptn_geneID(ptn, region = reg)
 
     #
     if (tolower(seqType) == "protein") {
-      if(!is_by_3(seqTmp)){
-        stop(" Not all sequences provided are multipliers of 3 so cannot be translated into proteins ")
+      if (!is_by_3(seqTmp)) {
+        stop("Not all sequences provided can be divided into codons (are multiples of 3) so cannot be translated into protein sequences.")
       }
       proseqtmp <- sapply(seqTmp, function(x) seqinr::c2s(seqinr::translate(seqinr::s2c(x))))
       seqTmp <- proseqtmp
@@ -70,8 +70,8 @@ contentMotifs <- function(ptn,
     if (!is.null(subregion)) {
       #
       subSeq <- sapply(seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel))
-      if(length(which(is.na(subSeq)))>0){
-        message('For some of the sequences the selected subregion is longer than the sequence region and these sequences will be removed')
+      if (length(which(is.na(subSeq))) > 0) {
+        message("For some sequences, the selected subregion is longer than the sequence region. These sequences will be removed from the analysis.")
       }
       seqTmp <- subSeq
     }
@@ -81,9 +81,9 @@ contentMotifs <- function(ptn,
     for (i in 1:length(motifsIn)) {
       motif <- motifsIn[i]
       #
-      if (motif == "G4" & !tolower(seqType)=='protein') {
-        if(!check_number(min_score)){
-          stop("please provide numeric minimal score for g-quadruplexes selection")
+      if (motif == "G4" & !tolower(seqType) == "protein") {
+        if (!check_number(min_score)) {
+          stop("Please provide a numeric value specifying the minimal score for G-quadruplexes selection ('min_score' parameter).")
         }
         motifOutTmp <- sapply(seqTmp, calc_g4, min_score = min_score, unit = unitOut)
       } else {
@@ -97,13 +97,13 @@ contentMotifs <- function(ptn,
         #
         motifOutTmp <- lapply(seqTmp, function(x) calc_motif(x, motifIn = motifTmp, dist = dist, unit = unitOut))
 
-        if(unitOut == "number"){
+        if (unitOut == "number") {
           motifOutTmp <- unlist(motifOutTmp)
-        } 
-      } 
+        }
+      }
       #
-      if(tolower(unitOut) == 'number'){
-        if(length(which(motifOutTmp>0))){
+      if (tolower(unitOut) == "number") {
+        if (length(which(motifOutTmp > 0))) {
           if (isTRUE(resid)) {
             #
             lenTmp <- sapply(seqTmp, function(x) length(seqinr::s2c(x)))
@@ -113,34 +113,34 @@ contentMotifs <- function(ptn,
             motifOut <- motifOutTmp
           }
           names(motifOut) <- names(seqTmp)
-      
+
           if (tolower(unitOut) == "number" & isTRUE(plotOut)) {
             nameTmp <- ifelse(is.null(pdfName), paste(reg, motif, "content.pdf", sep = "_"), paste(pdfName, reg, motif, "content.pdf", sep = "_"))
             nameOut <- nameTmp
             #
             resOut <- resQuant(qvec = motifOut, ptn = ptn)
-        
+
             colOut <- colPlot(ptn)
             # Plot
             pdf(nameOut, width = 8, height = 8, useDingbats = F)
             ylabel <- paste(reg, motif, sep = "_")
-            plotPostNet(resOut, colOut, comparisons, ylabel = ylabel , plotType = 'ecdf')
+            plotPostNet(resOut, colOut, comparisons, ylabel = ylabel, plotType = "ecdf")
             dev.off()
           }
           motifsFinal[[paste(reg, motif, sep = "_")]] <- motifOut
         } else {
-          message(paste(motifTmp, 'does not have any sites', sep=' '))
+          message(paste(motifTmp, "does not have any sites", sep = " "))
         }
       } else {
-        if(!any(sapply(motifOutTmp, function(x) !all(is.na(x))))){
-          message(paste(motifTmp, 'does not have any sites', sep=' '))
+        if (!any(sapply(motifOutTmp, function(x) !all(is.na(x))))) {
+          message(paste(motifTmp, "does not have any sites", sep = " "))
         } else {
           motifsFinal[[paste(reg, motif, sep = "_")]] <- motifOutTmp
         }
       }
     }
     #
-    motifFinalRegion <-  append(motifFinalRegion,motifsFinal)
+    motifFinalRegion <- append(motifFinalRegion, motifsFinal)
   }
   return(motifFinalRegion)
 }

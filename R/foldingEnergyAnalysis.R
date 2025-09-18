@@ -13,37 +13,38 @@ foldingEnergyAnalysis <- function(ptn,
   checkSourceFE(sourceFE)
 
   if (!check_logical(plotOut)) {
-    stop("'plotOut' can only be only be logical: TRUE of FALSE ")
+    stop("The input for 'plotOut' must be logical: TRUE or FALSE.")
   }
   if (isTRUE(plotOut)) {
     if (!is.null(plotType)) {
       check_plotType(plotType)
     } else {
-      stop("Please provide 'plotType' to select option for plotting, from: 'boxplot','violin ,'ecdf'. ")
+      stop("Please provide an input for 'plotType'. The options are: 'boxplot', 'violin', or 'ecdf'.")
     }
   }
 
   if (!is.null(comparisons)) {
     if (!check_comparisons(comparisons)) {
-      stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
+      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \
+           denotes the background gene set.")
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 && is.null(ptn_background(ptn))) {
-      stop(" 0 is always a background, but no background provided")
+      stop("0 always denotes the background, but no background has been provided.")
     }
   }
   if (!check_logical(residFE)) {
-    stop("'residFE', i.e whether the values should be normalised for the length, can only be only be logical: TRUE of FALSE ")
+    stop("The input for 'residFE' (specifying whether the values should be normalised for the sequence length) must be logical: TRUE of FALSE.")
   }
   #
   if (sourceFE == "custom") {
     if (is.null(customFileFE)) {
-      stop("Please provide a custom file.")
+      stop("Please provide a custom file with folding energies.")
     }
   }
   if (sourceFE == "load") {
     if (!is_valid_species(species)) {
-      stop("Please specify a species, at the moment only 'human' or 'mouse' are available).")
+      stop("Please provide an input for 'species'. Currently 'human' or 'mouse' are available.")
     }
   }
   if (sourceFE == "custom") {
@@ -59,7 +60,7 @@ foldingEnergyAnalysis <- function(ptn,
     if (isTRUE(plotOut)) {
       resOut <- resQuant(qvec = feOutTmp, ptn = ptn)
       if (length(resOut) == 0) {
-        stop("There are no regulated genes. Check the input or run without indicating regulation and comparisons")
+        stop("There are no regulated genes in your input. Please check the input or run without indicating 'regulation' and 'comparisons'.")
       }
       colOut <- colPlot(ptn)
       # Plot
@@ -71,7 +72,7 @@ foldingEnergyAnalysis <- function(ptn,
   } else if (sourceFE == "load") {
     #
     if (is.null(region)) {
-      stop("Please provide region")
+      stop("Please provide an input for 'region'.")
     }
     check_region(region)
     #
@@ -80,7 +81,8 @@ foldingEnergyAnalysis <- function(ptn,
     currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "postNet"))
 
     if (!species %in% currTmp) {
-      stop("This option is only  available for species: human and mouse at the moment. Please use option createFromFile")
+      stop("The 'load' option for 'sourceFE' is currently only available for human and mouse. Custom folding energies can be provided by specifying the \
+           'custom' option, and using the 'customFileFE' parameter.")
     }
     #
     for (reg in region) {
@@ -98,7 +100,7 @@ foldingEnergyAnalysis <- function(ptn,
       if (isTRUE(plotOut)) {
         resOut <- resQuant(qvec = feOutTmp, ptn = ptn)
         if (length(resOut) == 0) {
-          stop("There are no regulated genes. Check the input or run without indicating regulation and comparisons")
+          stop("There are no regulated genes in your input. Please check the input or run without indicating 'regulation' and 'comparisons'.")
         }
         colOut <- colPlot(ptn)
         # Plot
@@ -110,7 +112,7 @@ foldingEnergyAnalysis <- function(ptn,
     }
     return(feOut)
   } else {
-    stop("No correct option for source file provided")
+    stop("The selection of the folding energy source file is not valid. Please check the inputs and refer to the help manual for details.")
   }
 }
 

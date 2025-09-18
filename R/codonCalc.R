@@ -92,7 +92,7 @@ codonCalc <- function(ptn,
       #
       resOut <- resQuant(qvec = codonCalcOutTmp, ptn = ptn)
       if (length(resOut) == 0) {
-        stop("There are no regulated genes in your input. Check the input or run without indicating regulation and comparisons.")
+        stop("There are no regulated genes in your input. Please check the input or run without indicating 'regulation' and 'comparisons'.")
       }
       colOut <- colPlot(ptn)
       pdf(nameOut, width = 8, height = 8, useDingbats = F)

@@ -25,7 +25,7 @@ contentMotifs(ptn,
 \arguments{
   \item{ptn}{A \linkS4class{postNetData} object.
   }
-  \item{motifsIn}{A character vector specifying the motif sequences to be detected and quantified. Ambiguities can be specified using IUPAC codes or [ ] (bracket) annotations. Motifs discovered with \link[postNet]{motifAnalysis} can be retrieved using \link[postNet]{ptn_motifSelection} and used. Optionally, g-quadruplexes can be specified as "G4".
+  \item{motifsIn}{A character vector specifying the motif sequences to be detected and quantified. Ambiguities can be specified using IUPAC codes or [ ] (bracket) annotations. Motifs discovered with \link[postNet]{motifAnalysis} can be retrieved using \link[postNet]{ptn_motifSelection} and used. Optionally, G-quadruplexes can be specified as "G4".
   }
   \item{seqType}{A string specifying the type of sequence being provided to search for motifs. The options are \code{"dna"}, \code{"rna"}, or \code{"protein"}. The default is \code{"dna"}.
   }
