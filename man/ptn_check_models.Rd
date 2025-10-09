@@ -1,75 +1,63 @@
 \name{ptn_check_models}
 \alias{ptn_check_models}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-A Capitalized Title (ideally limited to 65 characters)
+\title{Accessor for the feature integration model comparisons in a \code{postNetData} object
 }
-\description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+
+\description{Retrieve the comparisons used for the models resulting from both the stepwise linear regression and random forest implementations of \link[postNet]{featureIntegration} from a \code{postNetData} object.
 }
+
 \usage{
 ptn_check_models(ptn, analysis_type)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
-  \item{ptn}{
-%%     ~~Describe \code{ptn} here~~
+  \item{ptn}{A \linkS4class{postNetData} object.
 }
-  \item{analysis_type}{
-%%     ~~Describe \code{analysis_type} here~~
+  \item{analysis_type}{A string specifying the method of analysis used for \link[postNet]{featureIntegration} to retrieve the selected features from. The options are \code{"lm"} to retrieve features selected by stepwise linear regression, or \code{"rf"} for features selected using random forest-based analyses.
 }
-}
-\details{
-%%  ~~ If necessary, more details than the description above ~~
-}
-\value{
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
-}
-\references{
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
 }
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
+\value{Returns a character string specifying the comparisons that were used in modeling. For example "translationUp_c1_translationDown_c1" indicates the gene sets that were compared, and from which anota2seq contrast they were selected from (e.g. c1 = contrast 1).
+}
 
 \seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
+\link[postNet]{featureIntegration} \cr
+\link[postNet]{ptn_model}
 }
-\examples{
-##---- Should be DIRECTLY executable !! ----
-##-- ==>  Define data, use random,
-##--	or standard data sets, see data().
 
-## The function is currently defined as
-function (ptn, analysis_type) 
-{
-    check_ptn(ptn)
-    check_analysis_type(analysis_type)
-    tmpIn <- slot(ptn@analysis@featureIntegration, analysis_type)
-    if (is.null(tmpIn)) {
-        stop(paste("Please run ", analysis_type, "analysis first", 
-            sep = ""))
-    }
-    else {
-        print(names(tmpIn))
-    }
-  }
+\examples{# load and create example data:
+ data(postNetExample)
+
+ myGenes <- postNetExample$geneList
+ myBg <- postNetExample$background
+ myEffect <- postNetExample$effect
+
+# Initialize the postNetData object with custom gene lists:
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   source = "load", 
+   species = "human"
+ )
+ 
+# Prepare the list of pre-calculated features to be used in feature integration modelling 
+ myFeatures <- postNetExample$features
+ str(features)
+
+# Run feature integration modelling using stepwise regression
+ ptn <- featureIntegration(ptn = ptn, 
+                          features = myFeatures, 
+                          pdfName = "omnibus", 
+                          regOnly = T, 
+                          allFeat = F,
+                          analysis_type = "lm",
+                          covarFilt = 20,
+                          comparisons = list(c(1,2)),
+                          NetModelSel = "omnibus")
+                          
+# Retrieve the contrasts that were used in modelling
+  ptn_check_models(ptn, analysis_type = "lm") 
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-% \keyword{ ~kwd1 }
-% \keyword{ ~kwd2 }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.

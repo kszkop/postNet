@@ -120,6 +120,7 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
 \code{\link[postNet]{rfPred}} \cr
 \code{\link[postNet]{plotFeaturesMap}} \cr
 \code{\link[postNet]{ptn_model}} \cr
+\code{\link[postNet]{ptn_check_models}} \cr
 \code{\link[postNet]{ptn_features}} \cr
 \code{\link[postNet]{ptn_selectedFeatures}} \cr
 \code{\link[postNet]{ptn_networkGraph}} \cr
