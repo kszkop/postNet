@@ -1464,7 +1464,7 @@ image_read_pdf("Example_pooled_GOdotplot_BP.pdf", density = 300) %>%
 
 ```
 
-```{r GOplottingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A dot plot visualizing GO term enrichment analysis results."}
+```{r GOplottingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A dot plot visualizing GO term enrichment analysis results. Dot size corresponds to the ratio of genes included, to the total number of genes in the term."}
 knitr::include_graphics("Figures/Example_pooled_GOdotplot_BP.png")
 
 ```
@@ -1482,7 +1482,7 @@ Gene signature analysis in postNet can be implemented in two ways depending on i
 
 Using both approaches, gene signatures are supplied as a list using the `signatureList` parameter. It is possible to assess multiple signatures at the same time, and it is important to note that the background gene set is automatically determined based on the gene signatures provided. When there is no overlap between genes in the signatures, the background set is determined to be all genes not included in any signature (i.e., mutually exclusive signatures will be compared to the same background gene set). However, when there is overlap between the genes in the signatures provided, the background set is determined separately for each signature (i.e., overlapping signatures will each be compared to separate backgrounds). For example, you may be interested in examining how the sets of upregulated and downregulated genes taken from a particular study or condition behave in your data set. In this case, the gene signatures will be mutually exclusive as a gene cannot be both up and downregulated, so the background is created such that the comparison will be between "regulated" vs. "unregulated" genes. In another example, you may wish to compare two signatures of mTOR-activated genes taken from different studies. As the signatures come from the same condition they will likely overlap considerably, and therefore a separate set of background genes will be created for each signature. Consideration should be given to what is the appropriate background gene set when deciding whether gene signatures should be compared together, or individually.
 
-Several gene signatures relevant to post-transcriptional regulation are included with the package.
+Several gene signatures relevant to post-transcriptional regulation are included with the package for both human and mouse.
 
 ### Assessing gene signature regulation using the gene list workflow
 
@@ -1491,10 +1491,10 @@ When starting from custom gene lists and regulatory effect measurement the regul
 The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by mTOR signalling. 
 ```{r plotSignatures, eval=FALSE, echo=TRUE}
 
-# load signature data:
+# load human signature data:
  data('humanSignatures')
  
-# Examine the regulation of mTOR-sensitive transcripts in the results of the anota2seq analysis 
+# Examine the regulation of mTOR-sensitive transcripts 
  plotSignatures(ptn = ptn,
                                signatureList = humanSignatures[c("Gandin_etal_2016_mTOR_transUp",
                                                                  "Gandin_etal_2016_mTOR_transDown")],
@@ -1512,7 +1512,7 @@ image_read_pdf("mTORsignatures.pdf", density = 300) %>%
 
 ```
 
-```{r plotSignaturesPNG, eval=FALSE, echo=FALSE, fig.wide = TRUE, fig.cap="A plot visualizing GSEA results for the enrichment of the gene Set1 in the example dataset."}
+```{r plotSignaturesPNG, eval=FALSE, echo=FALSE, fig.wide = TRUE, fig.cap=""}
 knitr::include_graphics("Figures/mTORsignatures.pdf")
 
 ```
@@ -1523,13 +1523,12 @@ unlink(c("mTORsignatures.pdf"))
 
 ### Assessing gene signature regulation from the anota2seq object workflow
 
-
-When starting from from the results of an `anota2seq` analysis, gene signatures can be assessed using the `plotSignatures_ads` function. The key difference from the custom gene list workflow is that instead of providing the `postNetData` object, the `anota2seqDataSet` object (the `ads` parameter) must be provided instead. Four eCDFs will be generated examining the distribution of log2 fold changes in total mRNA, polysome-associated mRNA, translation, and buffering (also known as offsetting) for each gene signature provided. In addition to eCDFs, a scatter plot of total mRNA vs. polysome-associated mRNA will also be generated, with the genes corresponding to the signatures provided coloured. 
+When starting from from the results of an `anota2seq` analysis, gene signatures can be assessed using the `plotSignatures_ads` function. The key difference from the custom gene list workflow is that instead of providing the `postNetData` object, the `anota2seqDataSet` object (the `ads` parameter) must be provided instead. Four eCDFs will be generated examining the distribution of log2 fold changes in total mRNA, polysome-associated mRNA (or ribosome-protected fragments; RPFs), translation, and buffering (also known as offsetting) for each gene signature provided. In addition to eCDFs, a scatter plot of total mRNA versus polysome-associated mRNA will also be generated, with the genes corresponding to the signatures provided coloured. 
 
 The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by activation of the integrated stress response with thapsigargin.  
 ```{r plotSignatures_ads, eval=TRUE, echo=TRUE, results='hide'}
 
-# Examine the regulation of mRNAs with TOP motifs in the results of an anota2seq analysis :
+# Examine the regulation of ISR-sensitive transcripts in the results of an anota2seq analysis:
 plotSignatures_ads(ads = ads,
                                contrast = 1,
                                dataName = "Osmosis_1h",
@@ -1553,7 +1552,7 @@ image_read_pdf("Example_ISRsignatures_data_Osmosis_1h_signature_ISR_activated.pd
 
 ```
 
-```{r plotSignatures_adsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A plot visualizing GSEA results for the enrichment of the gene Set1 in the example dataset."}
+```{r plotSignatures_adsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Scatterplot of total vs. translated mRNA from an example anota2seq analysis with the location of genes belonging to signatures of interest colored (left panel). Subsequent panels show the eCDFs of log2 fold changes in translation and buffering regulatory modes, as well as for translated and total mRNA for the signatures of interest. Grey curves indicate the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates and increase compared to background, while shift to the left indicates a decrease."}
 knitr::include_graphics("Figures/Example_ISRsignatures_data_Osmosis_1h_signature_ISR.png")
 
 ```
@@ -1564,11 +1563,35 @@ unlink(c("Example_ISRsignatures_data_Osmosis_1h_signature_ISR_activated.pdf"))
 
 ### Generating gene signature regulation heatmaps
 
-Finally, it is also possible to generate a heatmap comparing the regulation of multiple gene signatures in your data set of interest using the `signaturesHeatmap` function. 
+Finally, it is also possible to generate a heatmap comparing the regulation of multiple gene signatures in your data set of interest using the `signaturesHeatmap` function. The values displayed in the heatmap are specified using the `unit` parameter, and can either be based on significance or the magnitude of the regulation for each given gene signature. For significance, the values display in the heatmap are obtained from a two-sided Wilcoxon Rank Sum test comparing the regulatory effect measurement values for the gene signature of interest against the background. P-values are corrected for multiple testing using the Benjamini & Hochberg method, and the -log10(FDR) value is multiplied by either 1 or -1 corresponding to up- or down-regulation of the gene signature compared to background, respectively. For magnitude, the values displayed in the heatmap are obtained by taking the difference between the eCDFs of the regulatory effect measurements for the gene signature and the background, at the percentile specified.
 
-a The \code{signaturesHeatmap} function produces a heatmap of the regulation of gene signatures of interest in a 
-\code{postNetData} object. Regulation of a gene signature of interest in the data set can be evaluated using the FDR of a Wilcoxon
-Rank Sum test comparing the regulatory effect measurement for the gene signature against the background. Alternatively, the difference
-in the regulatory effect measurement for the genes in the signature compared to background can also be visualized at percentiles.  
+The example code below will examine the regulation of all gene signatures included with the package, based on the significance and directionality of the regulation.  
+```{r plotSignaturesHeatmap, eval=TRUE, echo=TRUE, results='hide'}
+
+# Examine the regulation of all gene signatures:
+signaturesHeatmap(ptn,
+                  signatureList = humanSignatures,
+                  unit = 'FDR',
+                  pdfName = "ExampleSignatures")
+
+
+```
+
+```{r plotSignaturesHeatmap_PDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("ExampleSignatures_heatmap.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/ExampleSignatures_heatmap.png")
+
+```
+
+```{r plotSignaturesHeatmap_PNG, echo=FALSE, fig.wide = TRUE, fig.cap="A heatmap of -log10(FDRs) for regulation of various gene signatures in the example dataset. Colours indicate the directionality of regulation."}
+knitr::include_graphics("Figures/ExampleSignatures_heatmap.png")
+
+```
+
+```{r ExampleSignatureHeatmap_Hide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("ExampleSignatures_heatmap.pdf"))
+```
 
 # References
