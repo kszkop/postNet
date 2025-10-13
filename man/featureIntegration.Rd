@@ -5,7 +5,7 @@
 
 \description{The \code{featureIntegration} function is used to model changes in post-transcriptional regulation and identify cis and/or trans factors (features of mRNA molecules, signatures of upstream regulators, etc.) that can explain the observed regulatory effects. The method integrates mRNA features and signatures obtained in previous steps of the postNet workflow (or from custom sources), and has several options for implementation, including:
     \itemize{
-      \item Stepwise linear regression modelling and network analysis. This analysis uses hierarchical multiple regression to identify features explaining changes in the regulatory effect, rank them according to their importance, and reveals independent and combinatorial effects (for example, co-occurrance of regulatory features in the same mRNA molecules). The results of this analysis can be visualized using network plots showing the association of features to regulatory effects, and the relationships between features.  
+      \item Stepwise linear regression modelling and network analysis. This analysis uses hierarchical multiple regression to identify features explaining changes in the regulatory effect, rank them according to their importance, and reveals independent and combinatorial effects (for example, co-occurrence of regulatory features in the same mRNA molecules). The results of this analysis can be visualized using network plots showing the association of features to regulatory effects, and the relationships between features.  
      
       \item Random Forest feature selection and classifcation. This analysis implements Random Forest classification using \code{\link[randomForest]{randomForest}}. Feature selection is performed using \code{\link[Boruta]{Boruta}} to identify the set of features that best classify genes according to their regulation. The Random Forest model can then also be used to predict regulation for other gene lists or datasets using the \code{\link[postNet]{rfPred}} function.     
     }
@@ -61,7 +61,7 @@ featureIntegration(ptn,
 }
 }
 
-\details{The \code{featureIntegration} analysis assesses whether a catalogue of cis and/or trans regulatory features appear to modulate the observed post-transcriptional regulation. Details of the implementations and considerations for feature inputs are described below.
+\details{The \code{featureIntegration} analysis assesses whether a catalog of cis and/or trans regulatory features appear to modulate the observed post-transcriptional regulation. Details of the implementations and considerations for feature inputs are described below.
 
 \strong{Stepwise linear regression modelling and network analysis:} \code{featureIntegration} uses stepwise linear regressions to model changes in post-transcriptional regulation across subsets of mRNAs and assesses the contribution of each feature included in the modelling in a hierarchical manner. This allows features to be ranked according to their ability to explain changes in the observed regulatory effect. Due to the hierarchical approach, identification of both distinct (independent), and overlapping (covarying) associations between features and regulatory effects is possible. \code{featureIntegration} with stepwise linear regression is performed in three phases:
 

@@ -693,20 +693,24 @@ unlink(c("Example_UTR5_GC_content.pdf", "Example_UTR3_GC_content.pdf", "Example_
          "Figures/Example_CDS_GC_content.png"))
 ```
 
-In addition to calculating the percentage of GC content for each gene and sequence region, the code below will also return the GC content at the third codon position (GC3) for the coding sequence.  
-```{r contentAnalysisGC3, eval=FALSE, echo=TRUE}
+In addition to calculating the percentage of GC content for each gene and sequence region (as above), the code below will return the GC content at the third codon position (GC3) for the coding sequence.  
+```{r contentAnalysisGC3, eval=TRUE, echo=TRUE}
 
 # Calculate the GC of each sequence region for each gene, as well as the GC3 content of
 # the coding region and compare between translationUp genes vs. background, translationDown 
 # genes vs. background, and translationUp vs. translationDown genes
- GC_GC3_content <- contentAnalysis(ptn = ptn, 
-                           region = c("UTR5","CDS","UTR3"),
+ GC3_content <- contentAnalysis(ptn = ptn, 
+                           region = c("CDS"),
                            comparisons = list(c(0,1),c(0,2),c(1,2)), 
-                           contentIn = c("GC","GC3"),
+                           contentIn = c("GC3"),
                            plotOut = TRUE,
                            plotType = "violin",
-                           pdfName = "Example_GC_GC3")
+                           pdfName = "Example")
                       
+```
+
+```{r contentAnalysisGC3Hide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_CDS_GC3_content.pdf"))
 ```
 
 Finally, the code below provides and example of how the `subregion` and `subregionSel` parameters can be used to quantify the percentage of G content in the first and last 15 nucleotides of the 5'UTR 
@@ -1247,29 +1251,72 @@ In the example code below, a list of input features for modelling is compiled us
 ```{r createFeaturesList, eval=TRUE, echo=TRUE}
 
 # Compile a list of features:
- myFeatureList <- list(len, GC_GC3_content[c(1,3,4)],FE, uORFs, UTR5_SCSCGS_num, codonCounts, signatureFeatures)
+ myFeatureList <- c(len, GC_content[c(1,3)], GC3_content, FE, uORFs, UTR5_SCSCGS_num, codonCounts, signatureFeatures)
 
 # Check that the elements of the list are named:
  names(myFeatureList)
 
 ```
 
-
 ## Post-transcriptional network modelling with stepwise linear regression
 
-### Overview
+After compiling an appropriate list of features, it is now possible to implement the `featureIntegration()` function to model the observed post-transcriptional regulation. The following sections will describe modelling using stepwise linear regression and network analysis. This analysis uses hierarchical multiple regression to identify features explaining changes in the regulatory effect, rank them according to their importance, and reveals independent and combinatorial effects (for example, co-occurrence of regulatory features in the same mRNA molecules). The results of this analysis can be visualized using network plots showing the association of features to regulatory effects, and the relationships between features. Stepwise linear regression modelling is carried out in three phases to generate univariate, omnibus, and adjusted models (described below). 
+
+```{r runLM, eval=TRUE, echo=FALSE}
+
+# Run feature integration modelling using stepwise regression
+ ptn <- featureIntegration(ptn = ptn, 
+                          features = myFeatureList, 
+                          pdfName = "Example", 
+                          regOnly = TRUE, 
+                          allFeat = FALSE,
+                          analysis_type = "lm",
+                          covarFilt = 20,
+                          comparisons = list(c(1,2)),
+                          NetModelSel = "omnibus")
+
+```
 
 ### Univariate models
+
+Phase 1}: First, each candidate feature is evaluated separately in univariate linear models to identify significant associations between the regulatory effect and individual features.
 
 ### Omnibus model
 
 ### Adjusted model
+
+### Running stepwise linear regression analysis
+
+Stepwise regression modelling and network analysis are specified in the `featureIntegration()` function by setting the `analysis_type` parameter to `lm`. The regulatory effect measurement is then modelled using the input features in three phases to generate univariate, omnibus, and adjusted models (described below). In the first phase, univariate models are used to assess the association of each feature to the regulatory effect measurement.   
+
+
+  \item{regOnly}{If \code{analysis_type = "lm"}, provide a logical specifying whether modelling should be performed using only regulated genes (i.e., those included in \code{geneList}), or with all genes in the dataset. If \code{regOnly = TRUE}, only regulated genes will be used, if \code{regOnly = FALSE}, all genes will be considered. Default is \code{TRUE}. 
+}
+  \item{allFeat}{If \code{analysis_type = "lm"}, provide a logical specifying which input features should be including in the stepwise linear regression modelling. If \code{allFeat = TRUE}, all input features will be included, if \code{FALSE}, only features passing the FDR threshold specified with \code{fdrUni} in univariate models will be included. Default is \code{FALSE}.
+}
+  \item{useCorel}{If \code{analysis_type = "lm"}, provide a logical specifying if substantial correlations between features should be displayed as edges in network plots and coefficients be returned along with the final model. If \code{TRUE}, Pearson's correlation coefficients will be calculated between associated features, allowing visualization of how features co-vary in network plots. A threshold for the strength of association between features in order for correlation coefficients to be calculated must be provided using the \code{covarFilt} parameter. If \code{FALSE}, edges in metwork plots will instead represent the magnitude of the change in F-value for a given feature between sequential steps of stepwise regression to display the strength of associations between features, and no correlation coefficients will be calculated. Default is \code{TRUE}.    
+}
+  \item{covarFilt}{If \code{analysis_type = "lm"}, provide an integer specifying the minimum threshold for the change in F-value between sequential steps of stepwise regression to display the strength of associations between features in network graphs. Larger changes in F-values upon addition of a new feature to the model are indicative of a stronger association between features. Default is \code{20}, indicating that edges between feature nodes in network plots will be displayed between features where there was a change of 20 or more in the F-value for one feature upon addition of the other to the model. Note that this parameter is only applied to network analysis and not F-table visualizations.   
+}
+  \item{NetModelSel}{If \code{analysis_type = "lm"}, provide a string specifying how the variance explained should be displayed in the network plot. If \code{NetModelSel = "omnibus"}, the total variance explained by the omnibus model (the smallest model to explain the greated proportion of variance) will be displayed. The size of each node (representing features) is proportional to the variance explained, where covariance is assigned to the most influential feature (a rank-based greedy model). If \code{NetModelSel = "adjusted"}, the covariance will be eliminated and the values displayed will reflect the adjusted total variance explained, and the independent contribution of each feature. Default is \code{"omnibus"}. 
+}
+  \item{comparisons}{If \code{regOnly = TRUE}, provide a list of numeric vectors specifying pairwise comparisons between gene sets defined in the \code{regulation} or \code{geneList} slots of the \code{postNetData} object. Use 0 to denote the background set. For example, \code{list(c(0,2), c(1,2))} compares gene set 2 to the background and gene set 1 to gene set 2. The default is \code{NULL}. If both  \code{regulation} and \code{geneList} are provided, \code{geneList} is appended to the end so numbering will continue sequentially.
+}
+  \item{fdrUni}{If \code{analysis_type = "lm"}, provide a numeric value between 0 and 1 specifying the FDR threshold to select significant features in univariate analyses. When \code{allFeat = FALSE}, only the features passing this threshold will be included in the stepwise regression modelling. Default is \code{0.05}.  
+}
+  \item{stepP}{If \code{analysis_type = "lm"}, provide a numeric value between 0 and 1 specifying the p-value threshold to determine if features should be retained in the omnibus model after each step of stepwise regression. Default is \code{0.05}.
+}
+  \item{pdfName}{Name to be appended to output PDF files.
+}
+}
 
 ### Understanding covariance and feature correlations
 
 ### Network visualizations
 
 ### Feature visualizations
+
+After running the `featureIntegration()` function, the input features used in modelling will be stored in the `postNetData` object as a `data.frame` where rows correspond to genes, and columns correspond to features. This can be retrieved using the `ptn_features()` function. 
 
 ## Post-transcriptional network modelling with random forest classification
 
