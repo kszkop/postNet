@@ -553,7 +553,8 @@ ptn <- postNetStart(
 
 # Analysis of mRNA sequence features
 
-*PostNet* includes a variety of tools for identifying and enumerating sequence features of mRNA. These tools can be used for stand-alone analyses to visualize and perform statistical comparisons of mRNA features between sets of regulated genes (described below). However, the outputs of these tools can also be compiled into per-gene catalogs of *cis*-acting regulatory features and used with the `featureIntegration()` function to model changes in post-transcriptional regulation, and dissect networks of interactions between features.
+*PostNet* includes a variety of tools for identifying
+and enumerating sequence features of mRNA. These tools can be used for stand-alone analyses to visualize and perform statistical comparisons of mRNA features between sets of regulated genes (described below). However, the outputs of these tools can also be compiled into per-gene catalogs of *cis*-acting regulatory features and used with the `featureIntegration()` function to model changes in post-transcriptional regulation, and dissect networks of interactions between features.
 
 ## Statistical comparisons, selecting sequence sub-regions, and plotting options
 
@@ -1195,17 +1196,44 @@ unlink(c("features_Down_codonCalc.pdf", "features_Up_codonCalc.pdf",
 
 <a name="modelling"/>
 
-# Modelling and network analysis of post-transcriptional regulation 
+# Modelling and network analysis of post-transcriptional regulation
+
+The `featureIntegration()` function is used to model changes in post-transcriptional regulation and identify cis and/or trans factors (features of mRNA molecules, signatures of upstream regulators, etc.) that can explain the observed regulatory effects. The method integrates mRNA features and signatures obtained in previous steps of the postNet workflow (or from custom sources), and has several options for implementation, including stepwise linear regression modelling and network analysis, and Random Forest feature selection and classification. These topics and considerations for use will be discussed in the following sections. 
 
 ## Selecting features for modelling
 
+Many different types of features can be included in modelling with the `featureIntegration()` function. The input features must be provided as a list summarizing the properties of each gene, that will be used to explain the observed changes in regulation (using stepwise regression model), or to predict the regulatory outcome for a given gene (using a Random Forest classifier). Prior to modelling, careful consideration should be given to the features that are included in the models. These considerations will largely depend on the individual data sets being examined and on the biological questions being addressed. However, some general advice to keep in mind is outlined here. 
+
 ### *Cis*-acting features
+
+Most analyses of post-transcriptional regulation using postNet will likely be interested in identifying sequence-encoded features of mRNA molecules that may be responsible for mediating selective regulation (*cis*-acting elements). From the postNet workflow, the outputs of the `lengthAnalysis()`, `contentAnalysis()`, `uorfAnalysis()`, `foldingEnergyAnalysis()`, `contentMotifs()`, and `codonCalc()` functions generate per-gene summary values that can be directly supplied as features in modelling. In addition to the features that can be enumerated using postNet, additional *cis*-acting features could be included from custom sources, or based on experimental measurements. For example, the length of the poly-A tail, the presence of RNA modifications such as m6A, or measurements of RNA stability or structures.  
 
 ### *Trans*-acting features
 
-### Creating the feature list
+In addition to *cis*-acting features, it is also possible to include features describing upstream regulators (*trans*-acting features). These can be gene signatures of known regulation downstream of particular pathways or factors, for example genes translationally activated or suppressed by an inhibitor treatment or knock down of an RNA binding protein. Including such gene signatures in modelling can server several hypothesis-generating purposes. For example, when examining post-transcriptional regulation in a complex physiological condition, including signatures of upstream regulators may help to identify factors or pathways that maybe modulated in that condition. For example, including known signatures of translational regulation when modelling the translatome under hypoxia confirmed that suppression of mTOR signalling and activation of the ISR play key roles in the observed translational control, and suggested the potential involvement of other factors such as DAP5 that were not previously appreciated [REF]. In addition, including *trans*-acting feature signatures can also allow assessment of the relationship between upstream regulators and sequence-encoded features. For example, stepwise regression modelling can identify covariance between features. If a *cis*-acting sequence feature co-varies substantially with an upstream signalling pathway (meaning the element is present in the same genes regulated by this pathway), one may hypothesize that this sequence element could be involved in mediating the observed post-transcriptional regulation exerted by that pathway. Several example gene signatures, including mTOR and ISR-sensitive translation, are included with the package.    
 
-### Highly correlated variables 
+### Creating custom features
+
+In general, features that can be included in modelling can be either numeric, or categorical. Numeric features can be both continuous (for example, sequence region nucleotide content or length), or discrete (for example, the number of uORFs in 5'UTRs). Categorical features can also be included by converting to binary variables. This is useful for evaluating gene signatures in relation to regulatory outcomes, but can also be applied in many scenarios where mRNA can be divided into two classes (for example those with a certain property would be coded as 1, while those without would be coded as 0, etc.). It is also possible to supply categorical features with a directionality. For example, a feature that can be increased, decreased, or unchanged could be coded as 1, -1, or 0 for each gene to be included in modelling. 
+
+Any gene signature constituting a list of genes, including those provided with the package (stored in the `humanSignatures` and `mouseSignatures` objects) can be converted to feature inputs compatible with modelling using the `signCalc()` function. In the example code below, signatures of mTOR and ISR-sensitive translation, as well as mRNAs known to contain classical TOP motifs will be converted into binary variables that can be used as feature inputs in `featureIntegration` modelling.
+```{r signCalc, eval=TRUE, echo=TRUE}
+
+# load the signatures provided with the package:
+ data('humanSignatures')
+ str(humanSignatures)
+
+# Convert the gene signatures to a binary format for featureIntegration:
+ signatureFeatures <- signCalc(ptn = ptn, signatures = humanSignatures)
+ str(signatureFeatures)
+
+```
+
+### Highly correlated variables and general features 
+
+Careful consideration should be given when selecting the catalog of features to include in modelling. For example, highly, or perfectly correlated variables cannot be supplied together in the same model. This can be relevant when examining the percentage of nucleotide content for each base, since the content of G and C may often be highly correlated, and the sum of A, T, G, and C will add to 100\%. In instances where features are too highly correlated, and warning message will be displayed and one of the correlated features must be removed from the input.  In addition, when enumerating some features such as codon composition or folding energy, these values can be corrected for the length of the sequence region. However, it would then not be advisable to also include the sequence region length as a separate feature in the modelling. Please see the postNet vignette for more in-depth examples and discussion on the selection of features and interpretation of results.
+
+### Creating the feature list
 
 ## Post-transcriptional network modelling with stepwise linear regression
 
