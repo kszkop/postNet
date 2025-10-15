@@ -1485,6 +1485,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     igraph::V(net)$Group <- as.vector(lmfeatGroup[match(igraph::V(net)$name, names(lmfeatGroup))])
     #
     for (i in unique(igraph::V(net)$Group)) {
+      print(i)
       GroupV <- which(igraph::V(net)$Group == i)
       net <- igraph::add_edges(net, combn(GroupV, 2), attr = list(weight = 5))
     }

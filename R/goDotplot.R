@@ -156,6 +156,7 @@ goDotplot <- function(ptn,
             ggplot2::geom_point(color = colOut[names(goIn)[i]]) +
             #  ggplot2::scale_color_manual(values = colOut[names(goIn)[i]]) +
             ggplot2::theme_bw() +
+<<<<<<< Updated upstream
             ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = "dashed", linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(), panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, "cm")) +
             ggplot2::xlab("-log10 FDR") +
             ggplot2::scale_size_continuous(
@@ -164,6 +165,15 @@ goDotplot <- function(ptn,
               limits = size_limits,
               range = c(2, 8)
             ) +
+=======
+            ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = 'dashed', linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(),panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, 'cm')) +   
+            ggplot2::xlab('-log10 FDR') +
+            ggplot2::scale_x_continuous(limits = c(0, NA)) +
+            ggplot2::scale_size_continuous(name = size,
+                                           breaks = size_breaks,
+                                           limits = size_limits,
+                                           range = c(2, 8)) + 
+>>>>>>> Stashed changes
             ggplot2::ylab(" ") +
             ggplot2::ggtitle(paste(names(goIn)[i], sel, sep = "_"))
           print(pOut)
