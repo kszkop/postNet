@@ -9,9 +9,11 @@
 \usage{
 plotSignatures(ptn, 
               signatureList, 
-              signature_colours = NULL, 
+              signature_colours = NULL,
+              dataName, 
+              generalName,
               xlim = c(-2, 2), 
-              tableCex = 1, 
+              tableCex = 0.7, 
               pdfName = NULL)
 }
 
@@ -22,8 +24,11 @@ plotSignatures(ptn,
   signatures of translational regulation are provided with the package for both human and mouse. These can be retrieved using the
   \link[postNet]{retrieveSignatures} function.
   }
-  \item{signature_colours}{An optional character vector specifying colours for plotting each signature. Note that \code{signature_colours} must be the same length as
-  \code{signatureList}. The default is \code{NULL}. 
+  \item{signature_colours}{An optional character vector specifying colours for plotting each signature. Note that \code{signature_colours} must be the same length as \code{signatureList}. The default is \code{NULL}. 
+  }
+  \item{dataName}{A character string specifying a name for the data set in which the gene signature(s) will be examined. This name will be appended to the name of the PDF file generated. 
+  }
+   \item{generalName}{A character string specifying a name for the signatures that will be examined. This name will be appended to the name of the PDF file generated. 
   }
   \item{xlim}{A numeric vector specifying the x-axis limits for the ecdf plots. Default is \code{c(-2,2)}.
   }
@@ -73,6 +78,8 @@ plotSignatures(ptn,
  plotSignatures(ptn = ptn,
                                signatureList = humanSignatures[c('Gandin_etal_2016_mTOR_transUp','Gandin_etal_2016_mTOR_transDown')],
                                signature_colours = c('red','blue'), 
+                               dataName = "Example_data",
+                               generalName = "mTOR_sensitive_translation",
                                xlim = c(-3,3), 
                                tableCex = 1,
                                pdfName = 'mTORsignatures')

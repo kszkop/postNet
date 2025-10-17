@@ -1260,7 +1260,7 @@ In phase 2, starting with the feature that best explained changes in the regulat
 knitr::include_graphics("Figures/stepwise_regression.png")
 ```
 
-In the output table above, the F-statistics are summarized at each step, where features are iteratively added to the model. The table is coloured according to a "stop-light" system, where cells marked in green indicate features that were significant and included in the final omnibus model. Cells marked in red/purple indicate features that did not improve the ability to explain additional variance in the regulatory effect measurement, and were therefore discarded from the model. For example, after the addition of CDS GC3 in step 2, the set of codons identified as enriched ("Codons_up") is dropped from the model (the F-statistic decreases from more than 204.6 to 1.3). Finally, cells marked in orange indicate a substantial change in the F-statistic for a given feature when another feature is added to the model, indicating a relationship between features. For example, we can see a relationship between the 5'UTR SCSCGS motif and 5'UTR length, as the F-statistic for the motif decreased by ~88.5% (from 132.5 to 15.2) between steps 3 and 4 when 5'UTR length was added to the model. These relationships can be explored in detail in the resulting network analyses, with correlations, and using UMAP visualizations (all described below). 
+In the output table above, the F-statistics are summarized at each step, where features are iteratively added to the model. The table is coloured according to a "stop-light" system, where cells marked in green indicate features that were significant and included in the final omnibus model. Cells marked in red/purple indicate features that did not improve the ability to explain additional variance in the regulatory effect measurement, and were therefore discarded from the model. For example, after the addition of CDS GC3 in step 2, the set of codons identified as enriched ("Codons_up") is dropped from the model (the F-statistic decreases from more than 204.6 to 1.3) as it is not able to significantly explain additional variance in the regulatory effect. Finally, cells marked in orange indicate a substantial change in the F-statistic for a given feature when another feature is added to the model, indicating a relationship between features. For example, we can see a relationship between the 5'UTR SCSCGS motif and 5'UTR length, as the F-statistic for the motif decreased by ~88.5% (from 132.5 to 15.2) between steps 3 and 4 when 5'UTR length was added to the model. These relationships can be explored in detail in the resulting network analyses, with correlations, and using UMAP visualizations (all described below). 
 
 The features included in the final omnibus model are summarized in an output table:
 
@@ -1297,7 +1297,7 @@ In the example code below the three phases of the forward stepwise regression mo
 
 ```
 
-The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "FinalModel" will contain the summary tables shown above in Figures 13-15. Using the code below, it is possible the retrieve the full results from each phase of modelling, as well as the set of features that were selected in the omnibus model that significantly explain changes in the regulatory effect. Furthermore, if multiple modelling using multiple pairwise was performed, you can check which modelling results are available.  
+The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "FinalModel" will contain the summary tables shown above in Figures 13-15. Using the code below, it is possible the retrieve the full results from each phase of modelling using the `ptn_model()` function, as well as the set of features that were selected in the omnibus model that significantly explain changes in the regulatory effect with `ptn_selectedFeatures()`. Furthermore, if modelling using multiple pairwise comparisons was performed, you can check which modelling results are available using the `ptn_check_models()` function. See the example code below:  
 
 ```{r retrieveLM, eval=TRUE, echo=TRUE}
 
@@ -1315,10 +1315,6 @@ The results of the modelling will be stored in the `postNetData` object, and a s
  str(univariateModel)
 
 ```
-
-
-
-
 
 The other PDF files produced will contain the network visualization of the features included in the modelling   
 
@@ -1607,7 +1603,7 @@ Several gene signatures relevant to post-transcriptional regulation are included
 When starting from custom gene lists and regulatory effect measurement the regulation of gene signatures can be assessed using the `plotSignatures` function. All signatures supplied to the `signatureList` parameter will be included on the same plot, where the background gene set is indicated in grey.
 
 The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by mTOR signalling. 
-```{r plotSignatures, eval=FALSE, echo=TRUE}
+```{r plotSignatures, eval=TRUE, echo=TRUE}
 
 # load human signature data:
  data('humanSignatures')
@@ -1622,20 +1618,20 @@ The example code below will load the set of signatures included with the package
                                pdfName = "Example_mTORsignatures")
 ```
 
-```{r plotSignaturesPDF, eval=FALSE, echo=FALSE}
+```{r plotSignaturesPDF, eval=TRUE, echo=FALSE}
 # Convert to PNG
 image_read_pdf("mTORsignatures.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/mTORsignatures.pdf")
+  image_write("Figures/mTORsignatures.png")
 
 ```
 
-```{r plotSignaturesPNG, eval=FALSE, echo=FALSE, fig.wide = TRUE, fig.cap=""}
-knitr::include_graphics("Figures/mTORsignatures.pdf")
+```{r plotSignaturesPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap=""}
+knitr::include_graphics("Figures/mTORsignatures.png")
 
 ```
 
-```{r plotSignaturesHide, eval=FALSE, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+```{r plotSignaturesHide, eval=TRUE, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("mTORsignatures.pdf"))
 ```
 
