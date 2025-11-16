@@ -127,7 +127,7 @@ featureIntegration <- function(ptn,
       # fiOut@comparisons <- 'allData'
       #
       coloursTmp <- c("salmon", "skyblue")
-      lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt = covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn = coloursTmp, lmfeatGroup = lmfeatGroup, lmfeatGroupColour = lmfeatGroupColourOut)
+      lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt = covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn = coloursTmp, lmfeatGroup = lmfeatGroup, lmfeatGroupColour = lmfeatGroupColourOut,fdrUni = fdrUni, stepP = stepP)
       # fiOut@lm[['allData']] <- lmOut
       compOut <- lmOut
       #
