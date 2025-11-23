@@ -219,11 +219,43 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 \examples{
 
 # -----------------------------------------------------------------------
-# Example 1: Using an anota2seq object with built-in RefSeq annotations
+# Example 1: Using custom gene lists and background
 # -----------------------------------------------------------------------
 
 # load example data:
  data(postNetExample)
+ 
+# Genes of interest should be provided in a named list.
+ myGenes <- postNetExample$geneList
+ str(myGenes)
+ 
+# All gene IDs in the list should be present in the background.
+ myBg <- postNetExample$background
+ str(myBg)
+ 
+# The regulation effect measurement must be named with the same gene IDs
+# present in the background (or the gene list if no custom background is provided).
+ myEffect <- postNetExample$effect
+ str(myEffect)
+
+# Initialize the postNetData object with custom gene lists:
+ ptn <- postNetStart(
+   geneList = myGenes,
+   geneListcolours = c("#7FB7BE","#DB7F67"),
+   customBg = myBg,
+   effectMeasure = myEffect,
+   selection = "random",
+   setSeed = 123,
+   source = "load", 
+   species = "human"
+ )
+
+# -----------------------------------------------------------------------
+# Example 2: Using an anota2seq object with built-in RefSeq annotations
+# -----------------------------------------------------------------------
+
+# Instead of using gene sets of interest, the results of an anota2seq analysis
+# can also be provided. 
 
 # Initialize Anota2seqDataSet (see anota2seq vignette for details)
  ads <- anota2seq::anota2seqDataSetFromMatrix(
@@ -263,39 +295,8 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
       species = "human"
     )
 
-# -----------------------------------------------------------------------
-# Example 2: Using custom gene lists and background
-# -----------------------------------------------------------------------
-
-# Instead of using the results of an anota2seq analysis, gene sets of interest
-# and custom background can also be provided, along with a regulation effect measurement. 
-
-# Genes of interest should be provided in a named list.
- myGenes <- postNetExample$geneList
- str(myGenes)
- 
-# All gene IDs in the list should be present in the background.
- myBg <- postNetExample$background
- str(myBg)
- 
-# The regulation effect measurement must be named with the same gene IDs
-# present in the background (or the gene list if no custom background is provided).
- myEffect <- postNetExample$effect
- str(myEffect)
-
-# Initialize the postNetData object with custom gene lists:
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
-
 \dontrun{
+
 # -----------------------------------------------------------------------
 # Example 3: Creating annotation from local RefSeq files
 # -----------------------------------------------------------------------
