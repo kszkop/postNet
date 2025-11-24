@@ -223,10 +223,10 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 # -----------------------------------------------------------------------
 
 # load example data:
- data(postNetExample)
+ postNetExample <- postNetParcel::postNetExample
  
 # Genes of interest should be provided in a named list.
- myGenes <- postNetExample$dataIn$geneList
+ myGenes <- postNetExample$geneList
  str(myGenes)
  
 # All gene IDs in the list should be present in the background.
