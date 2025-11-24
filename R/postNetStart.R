@@ -256,7 +256,7 @@ postNetStart <- function(ads = NULL,
       stop("Please specify a species, at the moment only 'human' or 'mouse' are available).")
     }
     # List existing species
-    currTmp <- list.files(system.file("extdata/annotation/refseq", package = "postNet"))
+    currTmp <- list.files(system.file("extdata/annotation/refseq", package = "postNetParcel"))
 
     if (!species %in% currTmp) {
       stop("This option is currently only available for species 'human' and 'mouse'. Please use the options 'custom' and 'customFile' to provide annotations for other species.")
@@ -269,10 +269,10 @@ postNetStart <- function(ads = NULL,
       version <- version[grep(versionInd, version)]
     }
     if (species == "human") {
-      outDB <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), "humanDB.txt.gz", package = "postNet"), stringsAsFactors = FALSE)
+      outDB <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), "humanDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
     }
     if (species == "mouse") {
-      outDB <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), "mouseDB.txt.gz", package = "postNet"), stringsAsFactors = FALSE)
+      outDB <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), "mouseDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
     }
   } else if (source == "custom") {
     outDB <- read.delim(customFile, stringsAsFactors = FALSE)

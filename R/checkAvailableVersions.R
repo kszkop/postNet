@@ -1,6 +1,6 @@
 checkAvailableVersions <- function(species) {
   # Define the base directory for annotation files
-  base_dir <- system.file("extdata/annotation/refseq", package = "postNet")
+  base_dir <- system.file("extdata/annotation/refseq", package = "postNetParcel")
 
   # List existing species
   curr_tmp <- list.files(base_dir)
