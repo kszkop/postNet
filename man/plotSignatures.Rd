@@ -53,35 +53,18 @@ plotSignatures(ptn,
 
 \examples{
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ ptn <- postNetExample$ptn
  
 # load signature data:
- data('humanSignatures')
+ signatures <- get_signatures("human")
  
 # Examine the regulation of mTOR-sensitive transcripts in the results of the anota2seq analysis 
  plotSignatures(ptn = ptn,
-                               signatureList = humanSignatures[c('Gandin_etal_2016_mTOR_transUp','Gandin_etal_2016_mTOR_transDown')],
-                               signature_colours = c('red','blue'), 
-                               dataName = "Example_data",
-                               generalName = "mTOR_sensitive_translation",
-                               xlim = c(-3,3), 
-                               tableCex = 1,
-                               pdfName = 'mTORsignatures')
-
+                signatureList = signatures[c('Gandin_etal_2016_mTOR_transUp','Gandin_etal_2016_mTOR_transDown')],
+                signature_colours = c('red','blue'), 
+                dataName = "Example_data",
+                generalName = "mTOR_sensitive_translation",
+                xlim = c(-3,3), 
+                tableCex = 1,
+                pdfName = 'mTORsignatures')
 }

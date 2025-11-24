@@ -346,7 +346,7 @@ addStats <- function(comparisons, plotType, resOut, coloursOut) {
       compTmp <- comparisons[[j]]
     }
     # stats
-    pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
+    pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], exact = FALSE, alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
     #
     if (plotType == "boxplot" | plotType == "violin") {
       # yposTmp <- #range(as.numeric(unlist(resOut)))[2]#ifelse(range(as.numeric(unlist(resOut)))[2] <= 1, 1.1,range(as.numeric(unlist(resOut)))[2]+ j*1)

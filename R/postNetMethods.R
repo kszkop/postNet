@@ -383,3 +383,16 @@ ptn_networkGraph <- function(ptn, comparison){
   return(tmpOut)
 }
 
+get_signatures <- function(species){
+  if (!is_valid_species(species)) {
+    stop("Please specify a species, at the moment only 'human' or 'mouse' are available).")
+  }
+  # List existing species
+  currTmp <- list.files(system.file("extdata/signatures", package = "postNetParcel"))
+  
+  if (!species %in% currTmp) {
+    stop("This option is currently only available for species 'human' and 'mouse'. Please use the options 'custom' and 'customFile' to provide annotations for other species.")
+  }
+
+  signatures <- readRDS(system.file(paste("extdata/signatures", species, sep = "/"), paste(species,"Signatures.rds",sep=''), package = "postNetParcel"))
+}

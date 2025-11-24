@@ -76,25 +76,7 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
 \examples{
 
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- translationUp <- postNetExample$geneList[[1]][1:100]
- translationDown <- postNetExample$geneList[[2]][1:100]
- myGenes <- list(translationUp = translationUp, translationDown = translationDown)
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ ptn <- postNetExample$ptn
  
 # ------------------------------------------------------------------
 # Example 1: Detect and quantify a given motif within 5'UTRs
