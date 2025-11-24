@@ -226,7 +226,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
  data(postNetExample)
  
 # Genes of interest should be provided in a named list.
- myGenes <- postNetExample$geneList
+ myGenes <- postNetExample$dataIn$geneList
  str(myGenes)
  
 # All gene IDs in the list should be present in the background.
