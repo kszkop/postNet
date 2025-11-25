@@ -29,7 +29,7 @@ codonUsage(ptn,
 \arguments{
   \item{ptn}{A \linkS4class{postNetData} object.
   }
-  \item{annotType}{A string specifying the reference coding sequences to be used for the analysis. The options are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"ptnCDS"} (the CDS reference sequence annotations already stored in the \code{postNetData} object). The default is \code{"ccds"}. 
+  \item{annotType}{A string specifying the reference coding sequences to be used for the analysis. The options are: \code{"ccds"} (the NCBI Consensus CDS database), or \code{"ptnCDS"} (the CDS reference sequence annotations already stored in the \code{postNetData} object). The default is \code{"ptnCDS"}. 
   }
   \item{sourceSeq}{A string specifying the source of \code{annotType}. This parameter is only required if \code{annotType = "ccds"}. The options are: \code{"create"} to automatically prepare reference sequences from ccds database, or \code{"load"} to load pre-prepared sequences for selected species. The default is "load". 
   }
@@ -101,23 +101,7 @@ dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: 
 
 \examples{
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ ptn <- postNetExample$ptn
  
 # Run codon usage analysis of single codons
  ptn <- codonUsage(ptn = ptn, 

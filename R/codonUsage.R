@@ -1,5 +1,5 @@
 codonUsage <- function(ptn,
-                       annotType = NULL,
+                       annotType = 'ptnCDS',
                        sourceSeq = "load",
                        analysis,
                        codonN = 1,

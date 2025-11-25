@@ -67,31 +67,16 @@ signaturesHeatmap <- function(ptn,
   } else {
     tableFinal[,1] <- percOut
   }
-  if(unit=='FDR'){
-    if(max(abs(c(min(as.vector(tableFinal)),max(as.vector(tableFinal)))))>10){
-      breaks <- seq(-10,10,length.out=20)
-    } else {
-      breaks <- seq(min(as.vector(tableFinal)),max(as.vector(tableFinal)), length.out=25)
-    }
-    keyL <- paste('-log10',unit,sep=' ')
-  } else {
-    breaks <- seq(-max(abs(min(as.vector(tableFinal))),abs(max(as.vector(tableFinal)))),max(abs(min(as.vector(tableFinal))),abs(max(as.vector(tableFinal)))), length.out=25)
-    keyL <- unit
-  }
-  
-  breaks <- sort(unique(c(breaks,0)))
-  if (length(breaks) %% 2 == 0) {
-    breaks <- c(breaks, max(breaks) + 1e-6)
-  }
-  len <- length(breaks) - 1
-  
+
+  breaks <- seq(-max(abs(min(as.vector(tableFinal))),abs(max(as.vector(tableFinal)))),max(abs(min(as.vector(tableFinal))),abs(max(as.vector(tableFinal)))), length.out=51)
+  keyL <- ifelse(unit=='FDR', paste('-log10',unit,sep=' '), unit)
+
+  colTmp <- grDevices::colorRampPalette(c("blue", "white", "red"))(50)
+    
   if(length(compOut)==1){
     tableFinal <- cbind(tableFinal,rep(0,nrow(tableFinal)))
   }
-  
-  colTmp <- rev(colorRampPalette(RColorBrewer::brewer.pal(name="RdBu",n=11))(len))
-  colTmp[(len + 1) / 2] <- "#FFFFFF"
-  
+
   pdf(ifelse(is.null(pdfName),'heatmap.pdf', paste(pdfName,'heatmap.pdf',sep='_')),width= 8,height=8, useDingbats = F)
   par(mar=c(10,5,5,10),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=0.9, cex.main=0.7,cex.lab=0.9)
 
