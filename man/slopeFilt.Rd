@@ -57,7 +57,7 @@ slopeFilt(ads,
 \examples{
 
 # load example data:
- data(postNetExample)
+ postNetExample <- postNetParcel::postNetExample
 
 # Initialize Anota2seqDataSet (see anota2seq vignette for details)
  ads <- anota2seq::anota2seqDataSetFromMatrix(
@@ -72,7 +72,7 @@ slopeFilt(ads,
 # Note that the quality control and residual outlier testing are not 
 # performed to limit the running time of this example. For full details 
 # on running an analysis please see the anota2seq vignette and help manual.
- ads <- anota2seqRun(ads,
+ ads <- anota2seq::anota2seqRun(ads,
     performQC = FALSE, 
     performROT = FALSE, 
     useProgBar = FALSE)
@@ -81,9 +81,7 @@ slopeFilt(ads,
 # using the buffering regulatory mode:
  filtOutGenes <- slopeFilt(ads,
                   regulationGen = "buffering",
-                  contrastSel = 1,
-                  minSlope = NULL,
-                  maxSlope = NULL)
+                  contrastSel = 1)
                   
   str(filtOutGenes)
     

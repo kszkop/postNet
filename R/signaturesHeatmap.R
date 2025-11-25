@@ -23,51 +23,50 @@ signaturesHeatmap <- function(ptn,
   regData <- data.frame(geneSymb = names(effIn))
   regData$effIn <- as.numeric(effIn)
     
-    ##calculate metric for each signature
-    percOut <- as.numeric()
-    if(unit=='FDR'){
-      fdrOut <- as.numeric()
-    }
-    for(sign in 1:length(signatureList)){
-      regData[,3] <- 'bkg'
-      regData[,3][regData$geneSymb %in% signatureList[[sign]]] <- names(signatureList)[sign]
-      colnames(regData)[3] <- 'signature'
+  ##calculate metric for each signature
+  percOut <- as.numeric()
+  if(unit=='FDR'){
+    fdrOut <- as.numeric()
+  }
+  for(sign in 1:length(signatureList)){
+    regData[,3] <- 'bkg'
+    regData[,3][regData$geneSymb %in% signatureList[[sign]]] <- names(signatureList)[sign]
+    colnames(regData)[3] <- 'signature'
       
-      #
-      tmpBg <- sort(as.numeric(regData[regData$signature=='bkg',]$effIn))
-      ecdfBg <- 1:length(tmpBg)/length(tmpBg)
-      if(unit=='FDR'){
-        percentileBG <- tmpBg[which(ecdfBg >= 0.5)[1]]
-      } else {
-        percentileBG <- tmpBg[which(ecdfBg >= as.numeric(gsub('p','0.',unit)))[1]]
-      }
-      tmpSign <- sort(as.numeric(regData[regData$signature==names(signatureList)[sign],]$effIn))
-      ecdfSign <- 1:length(tmpSign)/length(tmpSign)
-      if(unit=='FDR'){
-        percentileSign <- tmpSign[which(ecdfSign >= 0.5)[1]]
-      } else {
-        percentileSign <- tmpSign[which(ecdfSign >= as.numeric(gsub('p','0.',unit)))[1]]
-      }
-      percentileDiff <- percentileSign - percentileBG
-      percOut[sign] <- percentileDiff
-
-      if(unit=='FDR'){
-        #wilcox test
-        pval <- as.numeric(wilcox.test(as.numeric(regData[regData$signature==names(signatureList)[sign],]$effIn),as.numeric(regData[regData$signature=='bkg',]$effIn),alternative='two.sided')[3])
-        if(pval == 0){
-          pval <- 1e-300
-        }
-        fdrOut[sign] <- pval
-      }
-    }
+    #
+    tmpBg <- sort(as.numeric(regData[regData$signature=='bkg',]$effIn))
+    ecdfBg <- 1:length(tmpBg)/length(tmpBg)
     if(unit=='FDR'){
-      adjFDR <- -log10(p.adjust(fdrOut))
-      fdrDirec <- ifelse(percOut>=0, adjFDR*1,adjFDR*-1)
-      tableFinal[,1] <- fdrDirec
+      percentileBG <- tmpBg[which(ecdfBg >= 0.5)[1]]
     } else {
-      tableFinal[,1] <- percOut
+      percentileBG <- tmpBg[which(ecdfBg >= as.numeric(gsub('p','0.',unit)))[1]]
     }
+    tmpSign <- sort(as.numeric(regData[regData$signature==names(signatureList)[sign],]$effIn))
+    ecdfSign <- 1:length(tmpSign)/length(tmpSign)
+    if(unit=='FDR'){
+      percentileSign <- tmpSign[which(ecdfSign >= 0.5)[1]]
+    } else {
+      percentileSign <- tmpSign[which(ecdfSign >= as.numeric(gsub('p','0.',unit)))[1]]
+    }
+    percentileDiff <- percentileSign - percentileBG
+    percOut[sign] <- percentileDiff
 
+    if(unit=='FDR'){
+      #wilcox test
+      pval <- as.numeric(wilcox.test(as.numeric(regData[regData$signature==names(signatureList)[sign],]$effIn),as.numeric(regData[regData$signature=='bkg',]$effIn),exact=FALSE, alternative='two.sided')[3])
+      if(pval == 0){
+        pval <- 1e-300
+      }
+      fdrOut[sign] <- pval
+    }
+  }
+  if(unit=='FDR'){
+    adjFDR <- -log10(p.adjust(fdrOut))
+    fdrDirec <- ifelse(percOut>=0, adjFDR*1,adjFDR*-1)
+    tableFinal[,1] <- fdrDirec
+  } else {
+    tableFinal[,1] <- percOut
+  }
   if(unit=='FDR'){
     if(max(abs(c(min(as.vector(tableFinal)),max(as.vector(tableFinal)))))>10){
       breaks <- seq(-10,10,length.out=20)
@@ -81,7 +80,10 @@ signaturesHeatmap <- function(ptn,
   }
   
   breaks <- sort(unique(c(breaks,0)))
-  len <- length(breaks) -1 
+  if (length(breaks) %% 2 == 0) {
+    breaks <- c(breaks, max(breaks) + 1e-6)
+  }
+  len <- length(breaks) - 1
   
   if(length(compOut)==1){
     tableFinal <- cbind(tableFinal,rep(0,nrow(tableFinal)))
