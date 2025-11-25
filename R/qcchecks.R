@@ -283,7 +283,7 @@ check_input <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_
 }
 
 is_annotType <- function(annotType) {
-  valid_types <- c('ccds', 'ptnCDS')
+  valid_types <- c('ccds', 'ptncds')
   
   if (!is.null(annotType) && tolower(annotType) %in% valid_types) {
     return(TRUE)
