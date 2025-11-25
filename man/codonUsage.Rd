@@ -15,10 +15,10 @@ codonUsage(ptn,
           pAdj = 0.01, 
           rem5 = TRUE, 
           plotHeatmap = TRUE, 
-          thresOddsUp = 0.3, 
-          thresFreqUp = 0.3, 
-          thresOddsDown = 0.3, 
-          thresFreqDown = 0.3, 
+          thresOddsUp = 0.25, 
+          thresFreqUp = 0.25, 
+          thresOddsDown = 0.25, 
+          thresFreqDown = 0.25, 
           subregion = NULL, 
           subregionSel = NULL, 
           comparisons, 
@@ -43,13 +43,13 @@ codonUsage(ptn,
   }
   \item{plotHeatmap}{Logical specifying whether to plot a heatmap of the standardized residuals for each codon from the Chi-square test. The default is \code{TRUE}. 
   }
-  \item{thresOddsUp}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting codons or AAs in the enriched set. For example, \code{thresOddsUp = 0.3} indicates that the top 30\% of enriched codons with the highest odds ratios will be selected. The default is \code{0.3}.
+  \item{thresOddsUp}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting codons or AAs in the enriched set. For example, \code{thresOddsUp = 0.25} indicates that the top 25\% of enriched codons with the highest odds ratios will be selected. The default is \code{0.25}.
   }
-  \item{thresFreqUp}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting codons or AAs in the enriched set. For example, \code{thresFreqUp = 0.3} indicates that the top 30\% of the most frequently occurring enriched codons are selected. This metric is combined with \code{thresOddsUp} to select the most frequent codons with the highest odds ratio. The default is \code{0.3}.  
+  \item{thresFreqUp}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting codons or AAs in the enriched set. For example, \code{thresFreqUp = 0.25} indicates that the top 25\% of the most frequently occurring enriched codons are selected. This metric is combined with \code{thresOddsUp} to select the most frequent codons with the highest odds ratio. The default is \code{0.25}.  
   }
-  \item{thresOddsDown}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting codons or AAs in the depleted set. For example, \code{thresOddsDown = 0.3} indicates that the top 30\% of depleted codons with the lowest odds ratios will be selected. The default is \code{0.3}.
+  \item{thresOddsDown}{A numeric value between 0 and 1 specifying the percentage threshold for the odds ratio in selecting codons or AAs in the depleted set. For example, \code{thresOddsDown = 0.25} indicates that the top 25\% of depleted codons with the lowest odds ratios will be selected. The default is \code{0.25}.
   }
-  \item{thresFreqDown}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting codons or AAs in the depleted set. For example, \code{thresFreqDown = 0.3} indicates that the top 30\% of the most frequently occurring depleted codons are selected. This metric is combined with \code{thresOddsDown} to select the most frequent codons with the lowest odds ratio. The default is \code{0.3}.
+  \item{thresFreqDown}{A numeric value between 0 and 1 specifying the percentage threshold for the frequency in selecting codons or AAs in the depleted set. For example, \code{thresFreqDown = 0.25} indicates that the top 25\% of the most frequently occurring depleted codons are selected. This metric is combined with \code{thresOddsDown} to select the most frequent codons with the lowest odds ratio. The default is \code{0.25}.
   }
   \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either select or exclude from the analysis. This is done by providing a numeric value indicating the number of nucleotides from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50}, would denote the first 50 nucleotides of the CDS, while \code{subregion = -50}, would  denote the last 50 nucleotides of the CDS. The default is \code{NULL}.
   }
@@ -101,6 +101,7 @@ dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: 
 
 \examples{
 # load example data:
+ postNetExample <- postNetParcel::postNetExample
  ptn <- postNetExample$ptn
  
 # Run codon usage analysis of single codons
@@ -112,10 +113,10 @@ dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: 
           pAdj = 0.01, 
           rem5 = TRUE, 
           plotHeatmap = FALSE, 
-          thresOddsUp = 0.3, 
-          thresFreqUp = 0.3, 
-          thresOddsDown = 0.3, 
-          thresFreqDown = 0.3, 
+          thresOddsUp = 0.4, 
+          thresFreqUp = 0.4, 
+          thresOddsDown = 0.4, 
+          thresFreqDown = 0.4, 
           subregion = NULL, 
           subregionSel = NULL, 
           comparisons = list(c(1,2)), 
@@ -133,7 +134,6 @@ dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: 
  str(codons)
  
 # Count and plot ecdfs for sets of enriched/depleted codons, and compare between gene sets of interest
-
  codonCounts  <- codonCalc(ptn = ptn,
                           analysis = "codon", 
                           featsel = codons,

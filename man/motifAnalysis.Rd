@@ -79,29 +79,14 @@ Nystrom SL, McKay DJ (2021). “Memes: A motif analysis environment in R using t
 
 \dontrun{
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
  
  ptn <- motifAnalysis(ptn = ptn, 
                      stremeThreshold = 0.05,
                      minwidth = 6,
                      memePath = "/meme/bin", 
-                     region = c('UTR5','CDS','UTR3'),
+                     region = c('UTR5'),
                      subregion = NULL,
                      subregionSel = NULL)
                      
@@ -112,12 +97,11 @@ Nystrom SL, McKay DJ (2021). “Memes: A motif analysis environment in R using t
  str(myMotifs)
 
 # Extract full motif results from one gene set of interest:                                
-  motifsTransUp <- ptn_motifSelection(ptn = ptn,
+  motifsTransUp <- ptn_motifGeneList(ptn = ptn,
                                       region = 'UTR5',
                                       geneList = 'translationUp')
                                 
  str(motifsTransUp)
 }
 
-}
 

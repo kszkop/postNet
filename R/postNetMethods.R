@@ -105,32 +105,32 @@ setMethod("ptn_selection", "postNetData",
           })
 
 setGeneric("ptn_motifSelection",
-           function(x, region) standardGeneric("ptn_motifSelection"))
+           function(ptn, region) standardGeneric("ptn_motifSelection"))
 setMethod("ptn_motifSelection", "postNetData",
-          function(x, region){
-            check_ptn(x)
+          function(ptn, region){
+            check_ptn(ptn)
             check_region(region)
             if(length(region)>1){
               stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'")
             }
-            tmpReg <- slot(x@analysis@motifs, region)
+            tmpReg <- slot(ptn@analysis@motifs, region)
             motifsOut <- tmpReg$motifSelection
             return(motifsOut)
           })
 
-setGeneric("ptn_motifgeneList",
-           function(x, region, geneList) standardGeneric("ptn_motifgeneList"))
-setMethod("ptn_motifgeneList", "postNetData",
-          function(x, region, geneList){
-            check_ptn(x)
+setGeneric("ptn_motifGeneList",
+           function(ptn, region, geneList) standardGeneric("ptn_motifGeneList"))
+setMethod("ptn_motifGeneList", "postNetData",
+          function(ptn, region, geneList){
+            check_ptn(ptn)
             check_region(region)
             if(length(region)>1){
               stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'")
             }
-            if(!any(geneList %in% names(ptn_geneList(x)))){
+            if(!any(geneList %in% names(ptn_GeneList(ptn)))){
               stop('the regulatory geneList not in ptn')
             }
-            tmpReg <- slot(x@analysis@motifs, region)
+            tmpReg <- slot(ptn@analysis@motifs, region)
             motifsAnalysisOut <- tmpReg[[geneList]]
             return(motifsAnalysisOut)
           })

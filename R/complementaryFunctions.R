@@ -1159,8 +1159,10 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   }
 
   if (!isTRUE(allFeat) & length(presel) > 0) {
-    if (ncol(dataIn) + 1 == length(presel)) {
+    if (ncol(dataIn) - 1 == length(presel)) {
       stop("None of the features passed the selected significance threshold in univariate analyses.")
+    } else if (ncol(dataIn) - 2 == length(presel)) {
+      stop(paste("Only: ",getOrgNames(colnames(dataIn)[-presel][1], namesDf), sep=''), " passed the selected significance threshold in univariate analyses.")
     }
     dataIn <- dataIn[, -presel]
     models <- models[-presel]

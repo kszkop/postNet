@@ -53,6 +53,7 @@ plotSignatures(ptn,
 
 \examples{
 # load example data:
+ postNetExample <- postNetParcel::postNetExample
  ptn <- postNetExample$ptn
  
 # load signature data:

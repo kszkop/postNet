@@ -51,6 +51,7 @@ at the percentile specified.
 
 \examples{
 # load example data:
+ postNetExample <- postNetParcel::postNetExample
  ptn <- postNetExample$ptn
  
 # load signature data:
