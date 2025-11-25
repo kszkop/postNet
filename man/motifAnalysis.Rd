@@ -103,5 +103,5 @@ Nystrom SL, McKay DJ (2021). “Memes: A motif analysis environment in R using t
                                 
  str(motifsTransUp)
 }
-
+}
 
