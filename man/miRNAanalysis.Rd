@@ -107,6 +107,8 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 }
 
 \examples{
+
+\dontrun{
 # ------------------------------------------------------------------
 # Example 1: Running GAGE miRNA target enrichment analysis with gene lists 
 # ------------------------------------------------------------------
@@ -126,8 +128,6 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
                     direction = "less", 
                     threshold = 1)
  str(miRNAout)
-          
-\dontrun{
 
 # ------------------------------------------------------------------
 # Example 2: Running analysis requiring anota2seq analysis slope filtering
