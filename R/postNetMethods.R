@@ -127,7 +127,7 @@ setMethod("ptn_motifGeneList", "postNetData",
             if(length(region)>1){
               stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'")
             }
-            if(!any(geneList %in% names(ptn_GeneList(ptn)))){
+            if(!any(geneList %in% names(ptn_geneList(ptn)))){
               stop('the regulatory geneList not in ptn')
             }
             tmpReg <- slot(ptn@analysis@motifs, region)

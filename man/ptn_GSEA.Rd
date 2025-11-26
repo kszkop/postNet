@@ -60,28 +60,11 @@ Mootha, V., Lindgren, C., Eriksson, KF. et al. PGC-1α-responsive genes involved
 
 \examples{
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
 
 # Create example custom gene sets for GSEA:
-set1 <- sample(myGenes[[1]], 100)
-set2 <- sample(myGenes[[2]], 100)
-inSet <- list(Set1 = set1, Set2 = set2)
+ inSet <- list(set=sample(unlist(postNetExample$geneList[[1]]), 10))
 
 # Run GSEA on custom gene sets:
  ptn <- gseaAnalysis(ptn = ptn,

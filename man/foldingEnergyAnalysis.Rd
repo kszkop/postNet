@@ -59,25 +59,9 @@ M. Zuker. Mfold web server for nucleic acid folding and hybridization prediction
 
 \examples{
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
  
-
 # Compare the folding energy of the 5'UTR for each gene between translationUp genes vs. background, 
 # translationDown genes vs. background, and translationUp vs. translationDown genes. 
  FE <- foldingEnergyAnalysis(ptn = ptn,

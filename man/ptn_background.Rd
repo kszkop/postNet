@@ -24,22 +24,8 @@
 \examples{
 
 # load and create example data:
- data(postNetExample)
-
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
-# Initialize the postNetData object with custom gene lists:
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   source = "load", 
-   species = "human"
- )
+  postNetExample <- postNetParcel::postNetExample
+  ptn <- postNetExample$ptn
 
 # Access the set of background genes used in postNet analyses
   myBg <- ptn_background(ptn)

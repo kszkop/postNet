@@ -55,24 +55,10 @@ goDotplot(ptn,
 
 \examples{
 
+ \dontrun{
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
 
 # Run GO term analysis:
  ptn <- goAnalysis(ptn = ptn, 
@@ -86,4 +72,5 @@ goDotplot(ptn,
           pool=T, 
           size = 'Count', 
           pdfName='example')
+ }
 }

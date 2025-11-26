@@ -139,8 +139,9 @@ Wynshaw-Boris A, Topisirovic I, Larsson O, Hatzoglou M. A Unique ISR Program Det
 }
 
 \examples{
-# Load the mouse signatures 
- data(humanSignatures)
- str(humanSignatures)}
+# Load the mouse signatures
+ humanSignatures <- get_signatures("human")
+ str(humanSignatures)
+}
 
 \keyword{datasets}

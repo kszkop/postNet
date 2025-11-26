@@ -26,23 +26,8 @@
 
 \examples{
  # load example data:
-  data(postNetExample)
-  
-  # Initialize the postNetData object with custom gene lists:
-  myGenes <- postNetExample$geneList
-  myBg <- postNetExample$background
-  myEffect <- postNetExample$effect
-  
-  ptn <- postNetStart(
-    geneList = myGenes,
-    geneListcolours = c("#7FB7BE","#DB7F67"),
-    customBg = myBg,
-    effectMeasure = myEffect,
-    selection = "random",
-    setSeed = 123,
-    source = "load", 
-    species = "human"
-  )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
   
   # Run codon usage analysis of single codons
   ptn <- codonUsage(ptn = ptn, 
@@ -53,10 +38,10 @@
                     pAdj = 0.01, 
                     rem5 = TRUE, 
                     plotHeatmap = FALSE, 
-                    thresOddsUp = 0.3, 
-                    thresFreqUp = 0.3, 
-                    thresOddsDown = 0.3, 
-                    thresFreqDown = 0.3, 
+                    thresOddsUp = 0.4, 
+                    thresFreqUp = 0.4, 
+                    thresOddsDown = 0.4, 
+                    thresFreqDown = 0.4, 
                     subregion = NULL, 
                     subregionSel = NULL, 
                     comparisons = list(c(1,2)), 

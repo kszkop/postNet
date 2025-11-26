@@ -64,23 +64,8 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 # ------------------------------------------------------------------
 
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
 
 # Run GO term analysis:
  ptn <- goAnalysis(ptn = ptn, 
@@ -121,7 +106,7 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 # Note that the quality control and residual outlier testing are not 
 # performed to limit the running time of this example. For full details 
 # on running an analysis please see the anota2seq vignette and help manual.
- ads <- anota2seqRun(ads,
+ ads <- aanota2seq::anota2seqRun(ads,
     performQC = FALSE, 
     performROT = FALSE, 
     useProgBar = FALSE)

@@ -1,5 +1,5 @@
-\name{ptn_motifgeneList}
-\alias{ptn_motifgeneList,postNetData-method}
+\name{ptn_motifGeneList}
+\alias{ptn_motiGeneList,postNetData-method}
 \title{Accessor for the de-novo motif analysis results for each gene set of interest in a \code{postNetData} object
 }
 
@@ -7,7 +7,7 @@
 }
 
 \usage{
-\S4method{ptn_motifgeneList}{postNetData}(x, region, geneList)
+\S4method{ptn_motifGeneList}{postNetData}(x, region, geneList)
 }
 \arguments{
   \item{x}{a \code{postNetData} object.
@@ -20,7 +20,7 @@
   }
 }
 
-\value{The \code{ptn_motifgeneList} function returns additional information on the selected de-novo identified motifs for the specified gene list in \link[universalmotif]{universalmotif} format.
+\value{The \code{ptn_motifGeneList} function returns additional information on the selected de-novo identified motifs for the specified gene list in \link[universalmotif]{universalmotif} format.
 }
 
 \references{
@@ -43,35 +43,20 @@ Timothy L. Bailey, "STREME: Accurate and versatile sequence motif discovery", Bi
 
 \dontrun{
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
  
  ptn <- motifAnalysis(ptn = ptn, 
                      stremeThreshold = 0.05,
                      minwidth = 6,
                      memePath = "/meme/bin", 
-                     region = c('UTR5','CDS','UTR3'),
+                     region = c('UTR5'),
                      subregion = NULL,
                      subregionSel = NULL)
                      
 
 # Extract full motif results from one gene set of interest:                                
-  motifsTransUp <- ptn_motifSelection(ptn = ptn,
+  motifsTransUp <- ptn_motifGeneList(ptn = ptn,
                                       region = 'UTR5',
                                       geneList = 'translationUp')
                                 

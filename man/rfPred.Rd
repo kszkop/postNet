@@ -47,25 +47,11 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
 
 \examples{
 # load and create example data:
- data(postNetExample)
-
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
-# Initialize the postNetData object with custom gene lists:
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
  
 # Prepare the list of pre-calculated features to be used in feature integration modelling 
- myFeatures <- postNetExample$features[1:13]
+ myFeatures <- postNetExample$features
  str(myFeatures)
                           
 # Run feature integration modelling using random forest classification to selected features and 
@@ -77,8 +63,8 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
                           comparisons = list(c(1,2)))
 
 # Simulate a new gene list by randomly sampling genes from the background. 
- newGenes <- sample(postNetExample$background, size = 1000)
- newGeneList <- list(translationUp = newGenes[1:500], translationDown = newGenes[501:1000]) 
+ newGenes <- sample(postNetExample$background, size = 20)
+ newGeneList <- list(translationUp = newGenes[1:10], translationDown = newGenes[11:20]) 
  
 # Select the features that were used to train the final random forest model in the original dataset.
  predFeatureNames <- names(ptn_selectedFeatures(ptn, 

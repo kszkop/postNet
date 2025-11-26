@@ -67,7 +67,7 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
                           regOnly = T, 
                           allFeat = F,
                           analysis_type = "lm",
-                          covarFilt = 20,
+                          covarFilt = 10,
                           comparisons = list(c(1,2)),
                           NetModelSel = "omnibus")
                           

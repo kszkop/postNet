@@ -66,25 +66,8 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 # ------------------------------------------------------------------
 
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- set1 <- postNetExample$geneList[[1]][1:100]
- set2 <- postNetExample$geneList[[2]][1:100]
- myGenes <- list(Set1 = set1, Set2 = set2)
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
 
 # Run GAGE:
  ptn <- gageAnalysis(ptn,
@@ -116,7 +99,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 # Note that the quality control and residual outlier testing are not 
 # performed to limit the running time of this example. For full details 
 # on running an analysis please see the anota2seq vignette and help manual.
- ads <- anota2seqRun(ads,
+ ads <- anota2seq::anota2seqRun(ads,
     performQC = FALSE, 
     performROT = FALSE, 
     useProgBar = FALSE)

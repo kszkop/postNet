@@ -71,7 +71,7 @@ signature versus background are identified using a Wilcoxon rank-sum test.
 
 \examples{
 # load example data:
- data(postNetExample)
+ postNetExample <- postNetParcel::postNetExample
 
 # Initialize Anota2seqDataSet (see anota2seq vignette for details)
  ads <- anota2seq::anota2seqDataSetFromMatrix(
@@ -86,13 +86,13 @@ signature versus background are identified using a Wilcoxon rank-sum test.
 # Note that the quality control and residual outlier testing are not 
 # performed to limit the running time of this example. For full details 
 # on running an analysis please see the anota2seq vignette and help manual.
- ads <- anota2seqRun(ads,
+ ads <- anota2seq::anota2seqRun(ads,
     performQC = FALSE, 
     performROT = FALSE, 
     useProgBar = FALSE)
     
 # load signature data:
- data('humanSignatures')
+ humanSignatures <- get_signatures("human")
  
 # Examine the regulation of mTOR-sensitive transcripts in the results of the anota2seq analysis 
 plotSignatures_ads(ads = ads,
@@ -104,7 +104,7 @@ plotSignatures_ads(ads = ads,
                                signature_colours = c('red','blue'), 
                                xlim = c(-3,3), 
                                scatterXY = 4,
-                               tableCex = 1,
+                               tableCex = 0.65,
                                pdfName = 'mTORsignatures')
 
 }

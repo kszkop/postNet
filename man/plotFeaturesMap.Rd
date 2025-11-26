@@ -58,22 +58,8 @@ The \code{plotFeaturesMap} function also returns an updated \code{postNetData} o
 \examples{
 
 # load and create example data:
- data(postNetExample)
-
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
-# Initialize the postNetData object with custom gene lists:
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
  
 # Prepare the list of pre-calculated features to be used in feature integration modelling 
  myFeatures <- postNetExample$features
@@ -94,9 +80,9 @@ The \code{plotFeaturesMap} function also returns an updated \code{postNetData} o
  ptn <- plotFeaturesMap(ptn = ptn,
                         regOnly = TRUE,
                         comparisons = list(c(1,2)),
-                        featSel = names(ptn_selectedFeatures(ptn, 
+                        featSel = c(names(ptn_selectedFeatures(ptn, 
                                                analysis_type = "lm",
-                                               comparison = 1)),
+                                               comparison = 1)),"CDS_C"),
                         remBinary = TRUE,
                         scaled = TRUE,
                         centered = TRUE,

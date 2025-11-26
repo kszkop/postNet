@@ -206,7 +206,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
      \item{\link[postNet]{ptn_miRNA_analysis}}{}
      \item{\link[postNet]{ptn_miRNA_to_gene}}{}
      \item{\link[postNet]{ptn_model}}{}
-     \item{\link[postNet]{ptn_motifgeneList}}{}
+     \item{\link[postNet]{ptn_motifGeneList}}{}
      \item{\link[postNet]{ptn_motifSelection}}{}
      \item{\link[postNet]{ptn_selectedFeatures}}{}
      \item{\link[postNet]{ptn_selection}}{}

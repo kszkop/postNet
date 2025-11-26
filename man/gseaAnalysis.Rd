@@ -100,28 +100,11 @@ Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment anal
 # ------------------------------------------------------------------
 
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
 
 # Create example custom gene sets for GSEA:
-set1 <- sample(myGenes[[1]], 100)
-set2 <- sample(myGenes[[2]], 100)
-inSet <- list(Set1 = set1, Set2 = set2)
+ inSet <- list(set=sample(unlist(postNetExample$geneList[[1]]), 10))
 
 # Run GSEA on custom gene sets:
  ptn <- gseaAnalysis(ptn = ptn,
@@ -155,16 +138,8 @@ inSet <- list(Set1 = set1, Set2 = set2)
  msigdb::listSubCollections(msigdbOut)
  
 # Initialize a postNetData object:
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
 
 # Run GSEA on the C5 collection with GO:BP and specific terms:
  ptn <- gseaAnalysis(ptn = ptn,
@@ -191,7 +166,7 @@ inSet <- list(Set1 = set1, Set2 = set2)
 # Note that the quality control and residual outlier testing are not 
 # performed to limit the running time of this example. For full details 
 # on running an analysis please see the anota2seq vignette and help manual.
- ads <- anota2seqRun(ads,
+ ads <- anota2seq::anota2seqRun(ads,
     performQC = FALSE, 
     performROT = FALSE, 
     useProgBar = FALSE)
@@ -216,7 +191,7 @@ inSet <- list(Set1 = set1, Set2 = set2)
                           contrastSel=1)
                     
 # Create example custom gene sets for GSEA:
- set1 <- sample(row.names(postNetExample$ads_data$dataP), 15)
+ set1 <- sample(row.names(postNetExample$ads_data$dataP), 10)
  inSet <- list(Set1 = set1)                   
                           
 # Run GSEA on the C5 collection:

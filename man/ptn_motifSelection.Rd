@@ -40,29 +40,14 @@ Timothy L. Bailey, "STREME: Accurate and versatile sequence motif discovery", Bi
 
 \dontrun{
 # load example data:
- data(postNetExample)
-    
-# Initialize the postNetData object with custom gene lists:
- myGenes <- postNetExample$geneList
- myBg <- postNetExample$background
- myEffect <- postNetExample$effect
-
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#7FB7BE","#DB7F67"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
+ postNetExample <- postNetParcel::postNetExample
+ ptn <- postNetExample$ptn
  
  ptn <- motifAnalysis(ptn = ptn, 
                      stremeThreshold = 0.05,
                      minwidth = 6,
                      memePath = "/meme/bin", 
-                     region = c('UTR5','CDS','UTR3'),
+                     region = c('UTR5'),
                      subregion = NULL,
                      subregionSel = NULL)
                      

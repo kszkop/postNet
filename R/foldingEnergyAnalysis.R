@@ -78,7 +78,7 @@ foldingEnergyAnalysis <- function(ptn,
     #
     feOut <- list()
     # list existing species
-    currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "postNet"))
+    currTmp <- list.files(system.file("extdata/annotation/refseq/", package = "postNetParcel"))
 
     if (!species %in% currTmp) {
       stop("The 'load' option for 'sourceFE' is currently only available for human and mouse. Custom folding energies can be provided by specifying the \
@@ -87,11 +87,11 @@ foldingEnergyAnalysis <- function(ptn,
     #
     for (reg in region) {
       if (species == "human") {
-        energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), paste("humanDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "postNet"), stringsAsFactors = FALSE)
+        energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), paste("humanDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "postNetParcel"), stringsAsFactors = FALSE)
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
       if (species == "mouse") {
-        energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), paste("mouseDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "postNet"), stringsAsFactors = FALSE)
+        energyIn <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), paste("mouseDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "postNetParcel"), stringsAsFactors = FALSE)
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
       feOutTmp <- runFE(energyIn = energyIn, ptn = ptn, residFE = residFE)
