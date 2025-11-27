@@ -1,7 +1,7 @@
 Package: postNet
 Type: Package
 Title: Post-transcriptional network modeling
-Version: 0.0.1
+Version: 0.99.0
 Author: Krzysztof Szkop <krzysztof.szkop@ki.se>, Kathleen Watt <kathleen.watt@ki.se>, Ola Larsson <ola.larsson@ki.se>
 Maintainer: Krzysztof Szkop <krzysztof.szkop@ki.se>
 License: GPL-3
@@ -14,7 +14,7 @@ Depends:
   pqsfinder (>= 2.8.0),
   Biostrings (>= 2.60.2),
   data.table (>= 1.14.6),
-  postNetParcel (>= 1.0.0)
+  postNetParcel (>= 0.99.0)
 Imports:
   gridExtra (>= 2.3),
   curl (>= 4.3.1),
