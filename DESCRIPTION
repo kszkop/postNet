@@ -1,6 +1,7 @@
 Package: postNet
 Type: Package
 Title: Post-transcriptional network modeling
+Description: A tool that enables in silico identification, integration, and modeling of mRNA features that influence post-transcriptional regulation of gene expression at a transcriptome-wide scale.
 Version: 0.99.0
 Author: Krzysztof Szkop <krzysztof.szkop@ki.se>, Kathleen Watt <kathleen.watt@ki.se>, Ola Larsson <ola.larsson@ki.se>
 Maintainer: Krzysztof Szkop <krzysztof.szkop@ki.se>
