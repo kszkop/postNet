@@ -1603,36 +1603,38 @@ Several gene signatures relevant to post-transcriptional regulation are included
 When starting from custom gene lists and regulatory effect measurement the regulation of gene signatures can be assessed using the `plotSignatures` function. All signatures supplied to the `signatureList` parameter will be included on the same plot, where the background gene set is indicated in grey.
 
 The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by mTOR signalling. 
-```{r plotSignatures, eval=TRUE, echo=TRUE}
+```{r plotSignatures, eval=TRUE, echo=TRUE, message = FALSE, results = 'hide'}
 
 # load human signature data:
- data('humanSignatures')
+ data("humanSignatures")
  
 # Examine the regulation of mTOR-sensitive transcripts 
  plotSignatures(ptn = ptn,
                                signatureList = humanSignatures[c("Gandin_etal_2016_mTOR_transUp",
                                                                  "Gandin_etal_2016_mTOR_transDown")],
-                               signature_colours = c('red','blue'), 
+                               signature_colours = c("red","blue"), 
+                               dataName = "Example",
+                               generalName = "mTOR_sensitive_translation",
                                xlim = c(-3,3), 
-                               tableCex = 1,
-                               pdfName = "Example_mTORsignatures")
+                               tableCex = 0.7,
+                               pdfName = "mTORsignatures")
 ```
 
 ```{r plotSignaturesPDF, eval=TRUE, echo=FALSE}
 # Convert to PNG
-image_read_pdf("mTORsignatures.pdf", density = 300) %>%
+image_read_pdf("mTORsignatures_data_Example_signature_mTOR_sensitive_translation.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/mTORsignatures.png")
+  image_write("Figures/mTORsignatures_data_Example_signature_mTOR_sensitive_translation.png")
 
 ```
 
-```{r plotSignaturesPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap=""}
-knitr::include_graphics("Figures/mTORsignatures.png")
+```{r plotSignaturesPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDF of log2 fold changes in translation efficiency for signatures of mTOR-sensitive translation. Grey curve indicates the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates an increase compared to background, while shift to the left indicates a decrease."}
+knitr::include_graphics("Figures/mTORsignatures_data_Example_signature_mTOR_sensitive_translation.png")
 
 ```
 
 ```{r plotSignaturesHide, eval=TRUE, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
-unlink(c("mTORsignatures.pdf"))
+unlink(c("mTORsignatures_data_Example_signature_mTOR_sensitive_translation.pdf"))
 ```
 
 ### Assessing gene signature regulation from the anota2seq object workflow
@@ -1640,7 +1642,7 @@ unlink(c("mTORsignatures.pdf"))
 When starting from from the results of an `anota2seq` analysis, gene signatures can be assessed using the `plotSignatures_ads` function. The key difference from the custom gene list workflow is that instead of providing the `postNetData` object, the `anota2seqDataSet` object (the `ads` parameter) must be provided instead. Four eCDFs will be generated examining the distribution of log2 fold changes in total mRNA, polysome-associated mRNA (or ribosome-protected fragments; RPFs), translation, and buffering (also known as offsetting) for each gene signature provided. In addition to eCDFs, a scatter plot of total mRNA versus polysome-associated mRNA will also be generated, with the genes corresponding to the signatures provided coloured. 
 
 The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by activation of the integrated stress response with thapsigargin.  
-```{r plotSignatures_ads, eval=TRUE, echo=TRUE, results='hide'}
+```{r plotSignaturesAds, eval=TRUE, echo=TRUE, results='hide'}
 
 # Examine the regulation of ISR-sensitive transcripts in the results of an anota2seq analysis:
 plotSignatures_ads(ads = ads,
@@ -1658,7 +1660,7 @@ plotSignatures_ads(ads = ads,
 
 ```
 
-```{r plotSignatures_adsPDF, eval=TRUE, echo=FALSE}
+```{r plotSignaturesAdsPDF, eval=TRUE, echo=FALSE}
 # Convert to PNG
 image_read_pdf("Example_ISRsignatures_data_Osmosis_1h_signature_ISR_activated.pdf", density = 300) %>%
   image_resize("3000x") %>%
@@ -1666,12 +1668,12 @@ image_read_pdf("Example_ISRsignatures_data_Osmosis_1h_signature_ISR_activated.pd
 
 ```
 
-```{r plotSignatures_adsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Scatterplot of total vs. translated mRNA from an example anota2seq analysis with the location of genes belonging to signatures of interest colored (left panel). Subsequent panels show the eCDFs of log2 fold changes in translation and buffering regulatory modes, as well as for translated and total mRNA for the signatures of interest. Grey curves indicate the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates and increase compared to background, while shift to the left indicates a decrease."}
+```{r plotSignaturesAdsPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Gene signature analysis starting from an anota2seqDataSet. Scatterplot of total vs. translated mRNA from an example anota2seq analysis with the location of genes belonging to signatures of interest colored (left panel). Subsequent panels show the eCDFs of log2 fold changes in translation and buffering regulatory modes, as well as for translated and total mRNA for the signatures of interest. Grey curves indicate the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates an increase compared to background, while shift to the left indicates a decrease."}
 knitr::include_graphics("Figures/Example_ISRsignatures_data_Osmosis_1h_signature_ISR.png")
 
 ```
 
-```{r plotSignatures_adsHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+```{r plotSignaturesAdsHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("Example_ISRsignatures_data_Osmosis_1h_signature_ISR_activated.pdf"))
 ```
 
