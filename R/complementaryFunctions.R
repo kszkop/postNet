@@ -1162,7 +1162,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     if (ncol(dataIn) - 1 == length(presel)) {
       stop("None of the features passed the selected significance threshold in univariate analyses.")
     } else if (ncol(dataIn) - 2 == length(presel)) {
-      stop(paste("Only: ",getOrgNames(colnames(dataIn)[-presel][1], namesDf), sep=''), " passed the selected significance threshold in univariate analyses.")
+      stop(paste("Only: ", getOrgNames(colnames(dataIn)[-presel][1], namesDf), sep = ""), " passed the selected significance threshold in univariate analyses.")
     }
     dataIn <- dataIn[, -presel]
     models <- models[-presel]
@@ -1719,4 +1719,18 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
   legendOut <- legend_grob$grobs[grep("guide-box", legend_grob$layout$name)]
 
   return(list(mainPlot = colVecPlot, legend = legendOut))
+}
+
+get_signatures <- function(species) {
+  if (!is_valid_species(species)) {
+    stop("Please specify a species, at the moment only 'human' or 'mouse' are available).")
+  }
+  # List existing species
+  currTmp <- list.files(system.file("extdata/signatures", package = "postNetParcel"))
+
+  if (!species %in% currTmp) {
+    stop("This option is currently only available for species 'human' and 'mouse'. Please use the options 'custom' and 'customFile' to provide annotations for other species.")
+  }
+
+  signatures <- readRDS(system.file(paste("extdata/signatures", species, sep = "/"), paste(species, "Signatures.rds", sep = ""), package = "postNetParcel"))
 }
