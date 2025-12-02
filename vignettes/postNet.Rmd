@@ -867,7 +867,7 @@ unlink(c("Example_uORFs_strong.pdf"))
 
 The `motifAnalysis()` function applies `runStreme()` from the [memes package](https://bioconductor.org/packages/release/bioc/html/memes.html) [@Nystrom2021]. This requires that the MEME Suite software tools be installed locally, and the path to the executables must be provided (`memePath` parameter). The MEME Suite can be downloaded [here](https://meme-suite.org/meme/doc/download.html) following the [installation guide](https://meme-suite.org/meme/doc/install.html?man_type=web). It is possible to specify the minimum width (in nucleotides) and the enrichment p-value threshold for selecting motifs using the `minwidth` and `stremeThreshold` parameters. If custom reference sequence annotations have been used, the sequence type (RNA, DNA, protein) can also be adjusted with the `seqType` parameter. It is important to note that when using postNet with a custom [gene list](#geneLists), if no background is provided, postNet defines the background as all genes in the gene list. In the scenario where only one gene set is provided in the list, it is not advisable to use `motifAnalysis()` to identify enriched motifs, as the input and background will be the same.     
 
-The `motifAnalysis()` function returns an updated `postNetData` object where results are stored in the "motifs" slot. Identified motifs can be enumerated in transcripts and included in downstream modelling with `featureIntegration()` by using the `contentMotifs()` function. All results, including the list of significantly enriched motifs can be extracted using the `ptn_motifSelection()` and `ptn_motifgeneList()` functions.   
+The `motifAnalysis()` function returns an updated `postNetData` object where results are stored in the "motifs" slot. Identified motifs can be enumerated in transcripts and included in downstream modelling with `featureIntegration()` by using the `contentMotifs()` function. All results, including the list of significantly enriched motifs can be extracted using the `ptn_motifSelection()` and `ptn_motifGeneList()` functions.   
 
 **Note**: If you use `motifAnalysis()` in your work, please appropriately cite the memes R package, The MEME Suite, and the STREME tool. Licensing The MEME Suite is free for non-profit use. However, for-profit users should contact OIC-MEMESuite@ucsd.edu and purchase a license. See http://meme-suite.org/doc/copyright.html for details
 
@@ -888,7 +888,7 @@ In the example below, *de novo* motifs enriched in translationally activated and
                                 region = 'UTR5')
                                 
 # Extract full motif results from one gene set of interest:                                
- denovo_UTR5motifs_TransUp <- ptn_motifSelection(ptn = ptn,
+ denovo_UTR5motifs_TransUp <- ptn_motifgeneList(ptn = ptn,
                                       region = 'UTR5',
                                       geneList = 'translationUp')
                                 
