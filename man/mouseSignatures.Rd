@@ -4,13 +4,11 @@
 \title{Mouse gene signatures of translational control
 }
 \description{The \code{mouseSignatures} dataset is a list of example gene signatures derived from published studies profiling mRNA
-translation downstream of mTOR signalling and activation of the integrated stress response (ISR). In addition, an example of a signature comprised of mRNAs containing 
-5'TOP motifs is also included. The list is not intended to be exhaustive, but provides examples of how gene signatures can be used in a \pkg{postNet} analysis to gain 
-insights into post-transcriptional regulation of gene expression.}
+translation downstream of mTOR signalling and activation of the integrated stress response (ISR). In addition, an example of a signature comprised of mRNAs containing 5'TOP motifs is also included. The list is not intended to be exhaustive, but provides examples of how gene signatures can be used in a \pkg{postNet} analysis to gain insights into post-transcriptional regulation of gene expression.}
 
 \usage{data("mouseSignatures")}
 \format{
-  The format is:
+The format is:
 List of 5
  $ Gandin_etal_2016_mTOR_transUp      : chr [1:1487] "Zfy1" "Zfy2" "Isca2" "Rps14" ...
  $ Gandin_etal_2016_mTOR_transDown    : chr [1:1765] "Lpin1" "Galnt1" "Atrx" "Tbc1d31" ...
@@ -19,16 +17,10 @@ List of 5
  $ Guan_etal_2017_Tg1_transDown       : chr [1:774] "Mapre3" "Mettl24" "Isg15" "Idh3g" ...
 }
 \details{The \code{mouseSignatures} dataset contains a list of gene signatures relevent to understanding possible pathways and
-mRNA features involved in regulation of mRNA translation, with a specific focus on mTOR and integrated stress response (ISR)-sensitive translation. 
-These signatures have been compiled either directly from published studies, or from analyses of published datasets (sources and references 
+mRNA features involved in regulation of mRNA translation, with a specific focus on mTOR and integrated stress response (ISR)-sensitive translation. These signatures have been compiled either directly from published studies, or from analyses of published datasets (sources and references 
 described in detail below). Note that if the orignal source of the gene signature was from human, these gene IDs have been converted to mouse. 
 
-These gene signatures can be used with the \link[postNet]{plotSignatures}, \link[postNet]{plotSignatures_ads}, 
-and \link[postNet]{signaturesHeatmap} functions to perform statistical analyses and visualizations of how each
-gene signature is regulated in a given dataset. Furthermore, gene signatures can also be provided as features 
-in the \link[postNet]{featureIntegration} function which performs step-wise regression modelling or random forest
-classification to identify features that are most important in explaining post-transcriptional regulation in a given
-dataset. 
+These gene signatures can be used with the \link[postNet]{plotSignatures}, \link[postNet]{plotSignatures_ads}, and \link[postNet]{signaturesHeatmap} functions to perform statistical analyses and visualizations of how each gene signature is regulated in a given dataset. Furthermore, gene signatures can also be provided as features in the \link[postNet]{featureIntegration} function which performs step-wise regression modelling or random forest classification to identify features that are most important in explaining post-transcriptional regulation in a given dataset. 
 }
 
 \source{
