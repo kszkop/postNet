@@ -1,5 +1,5 @@
 codonUsage <- function(ptn,
-                       annotType = 'ptnCDS',
+                       annotType = "ptnCDS",
                        sourceSeq = "load",
                        analysis,
                        codonN = 1,
@@ -232,7 +232,7 @@ codonUsage <- function(ptn,
     }
 
     # indexes
-    indNames <- c("CAI", "CBI", "Fop", "GC3s", "tAI", "L_aa")
+    indNames <- c("CAI", "CBI", "Fop", "tAI", "L_aa")
 
     for (ind in indNames) {
       #####
