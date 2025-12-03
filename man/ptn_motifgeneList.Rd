@@ -43,7 +43,7 @@ Timothy L. Bailey, "STREME: Accurate and versatile sequence motif discovery", Bi
 
 \dontrun{
 # load example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
  ptn <- motifAnalysis(ptn = ptn, 

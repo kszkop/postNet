@@ -44,7 +44,7 @@ lengthAnalysis(ptn,
 
 \examples{
 # load example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
 # Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between

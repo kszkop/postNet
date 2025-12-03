@@ -47,7 +47,7 @@ function. If not using \code{ads}, these inputs are compiled from the \code{gene
 \examples{
 
 # load and create example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
 # Access the transcript IDs corresonding to the reference 5'UTR sequences from the postNetData object

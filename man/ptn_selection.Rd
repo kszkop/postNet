@@ -23,7 +23,7 @@ or \code{"random"}.
 \examples{
 
 # load and create example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
 # Access mRNA isoform selection method

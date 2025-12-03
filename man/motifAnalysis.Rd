@@ -79,7 +79,7 @@ Nystrom SL, McKay DJ (2021). “Memes: A motif analysis environment in R using t
 
 \dontrun{
 # load example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
  ptn <- motifAnalysis(ptn = ptn, 

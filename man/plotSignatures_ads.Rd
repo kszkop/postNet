@@ -71,7 +71,7 @@ signature versus background are identified using a Wilcoxon rank-sum test.
 
 \examples{
 # load example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
 
 # Initialize Anota2seqDataSet (see anota2seq vignette for details)
  ads <- anota2seq::anota2seqDataSetFromMatrix(

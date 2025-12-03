@@ -47,7 +47,7 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
 
 \examples{
 # load and create example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
 # Prepare the list of pre-calculated features to be used in feature integration modelling 

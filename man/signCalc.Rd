@@ -31,7 +31,7 @@ encoded as a 0.
 
 \examples{
 # load example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
 # Create signatures of interest to be used in featureIntegration models

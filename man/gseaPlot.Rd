@@ -58,7 +58,7 @@ Mootha, V., Lindgren, C., Eriksson, KF. et al. PGC-1α-responsive genes involved
 
 \examples{
 # load example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
 # Create example custom gene sets for GSEA:

@@ -100,7 +100,7 @@ Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment anal
 # ------------------------------------------------------------------
 
 # load example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
 # Create example custom gene sets for GSEA:

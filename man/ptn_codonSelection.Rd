@@ -29,7 +29,7 @@ ptn_codonSelection(x, comparison)
 
 \examples{
 # load example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
 # Run codon usage analysis of single codons

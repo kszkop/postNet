@@ -76,7 +76,7 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
 \examples{
 
 # load example data:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
 # ------------------------------------------------------------------
