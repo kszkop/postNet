@@ -10,7 +10,7 @@
       \item Random Forest feature selection and classifcation. This analysis implements Random Forest classification using \code{\link[randomForest]{randomForest}}. Feature selection is performed using \code{\link[Boruta]{Boruta}} to identify the set of features that best classify genes according to their regulation. The Random Forest model can then also be used to predict regulation for other gene lists or datasets using the \code{\link[postNet]{rfPred}} function.     
     }
     
-Both implementations of \code{featureIntegration} produce statistics and plots visualizating the relationship between the regulatory effect and the selected features. The relationships between selected features identified by \code{featureIntegration} and regulatory effects can be further explored using UMAP visualizations with the \code{\link[postNet]{plotFeaturesMap}} function.    
+Both implementations of \code{featureIntegration} produce statistics and plots visualizing the relationship between the regulatory effect and the selected features. The relationships between selected features identified by \code{featureIntegration} and regulatory effects can be further explored using UMAP visualizations with the \code{\link[postNet]{plotFeaturesMap}} function.    
 }
 
 \usage{
@@ -100,7 +100,7 @@ The resulting network plot is output as a PDF. Modelling is summarized in a PDF 
 
 The random forest implementation of \code{featureIntegration} will store results for each comparison in the \code{rf} slot. The pre-model, feature selection, and final model are stored as objects of class \code{\link[randomForest]{randomForest}} and \code{\link[Boruta]{Boruta}}. The selected features selected are listed in the \code{selectedFeatures} slot, along with their importance (Mean Decrease Accuracy) from the final model. Feature importance calculated by \code{\link[Boruta]{Boruta}} is plotted is output as a PDF file. PDF files are also output with ROC curves for the final model, and the importance of selected features.  
 
-Both implementations of \code{featureIntegration} output PDF files with sactterplots for each individual feature identified in final stepwise regression or random forest models, with Pearson's correlation coefficient between the feature and regulatory effect (two-sided test). The linear trend line, and cubic smoothing spline (allowing assessment of linearity) are displayed.  
+Both implementations of \code{featureIntegration} output PDF files with scatterplots for each individual feature identified in final stepwise regression or random forest models, with Pearson's correlation coefficient between the feature and regulatory effect (two-sided test). The linear trend line, and cubic smoothing spline (allowing assessment of linearity) are displayed.  
 }
 
 \references{

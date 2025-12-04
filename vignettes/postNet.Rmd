@@ -49,20 +49,22 @@ Here, we demonstrate a minimal example of the steps of a standard postNet analys
 
 ```{r load_package_data, eval=TRUE, echo=TRUE} 
 library(postNet)
-data("postNetExample")
+
+# Load the vignette example data 
+data("postNetVignette", package = "postNetParcel")
+
 ```
 
 **Step 1:** A `postNetData` object containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency derived from ribosome profiling and RNAseq comparing cells responding to osmotic stress against controls [@Krokowski2022]), and reference mRNA sequence annotations in initialized using the `postNetStart()` function.   
 ```{r gettingStartedInput, eval=TRUE, echo=TRUE}
 # Prepare custom gene lists and regulatory effect measurement:
-myGenes <- postNetExample$geneList
-myBg <- postNetExample$background
-myEffect <- postNetExample$effect
-
-str(myGenes)
-str(myBg)
-str(myEffect)
-
+ myGenes <- postNetVignette$geneList
+ str(myGenes)
+  myBg <- postNetVignette$background
+ str(myBg)
+  myEffect <- postNetVignette$effect
+ str(myEffect)
+ 
 ```
 
 ```{r gettingStartedInitialize, eval=TRUE, echo=TRUE, results='hide'}
@@ -141,12 +143,21 @@ unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf
 
 ```{r gettingStartedFeatureInt, eval=TRUE, echo=TRUE}
 # Prepare the list of pre-calculated features to be used in modelling (for example, the 'len' and 'content_UTR' variables defined in the previous step can be included) 
-features <- postNetExample$features
+features <- postNetVignette$features
 str(features)
 
+# Signatures of trans-acting factors can also be included, and some are provided with the package.
+data("humanSignatures")
+str(humanSignatures)
+
+# Signatures can be converted into feature inputs using the signCalc function
+trans_signatures <- signCalc(ptn, humanSignatures)
+
+# Compile the final feature input:
+features <- c(features, trans_signatures)
+
 # Group the features according to category (optional)
-group = c("UTR5", "UTR3", rep("UTR5",3), rep("UTR3",4), "CDS", "CDS", "UTR5", "UTR5", 
-                rep("Pathway",2),"UTR5", rep("Pathway",2))
+group = c("UTR5", "CDS","UTR3", rep("UTR5", 3), rep("UTR3", 3), "CDS", "UTR5", "UTR5", rep("Pathway", 5))
 groupColour = c('#834b62','#6699cc','#e9724c','#fff299')
 names(groupColour) <- c("UTR5","CDS", "UTR3","Pathway")
 
@@ -184,7 +195,7 @@ knitr::include_graphics("Figures/omnibus_lm_translationUp_translationDown_networ
 ```
 
 ```{r gettingStartedhideFeatureIntPlots, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
-unlink(c("omnibus_lm_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "omnibus_lm_translationUp_translationDown_Down_individually.pdf","omnibus_lm_translationUp_translationDown_FinalModel.pdf","omnibus_lm_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf","omnibus_lm_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf","omnibus_lm_translationUp_translationDown_network.pdf","omnibus_lm_translationUp_translationDown_uORFs_ATG_strong_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_C_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_T_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_T_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_A_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_length_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_T_individually.pdf"))
+unlink(c("omnibus_lm_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "omnibus_lm_translationUp_translationDown_Down_individually.pdf","omnibus_lm_translationUp_translationDown_FinalModel.pdf","omnibus_lm_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf","omnibus_lm_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf","omnibus_lm_translationUp_translationDown_network.pdf","omnibus_lm_translationUp_translationDown_uORFs_ATG_strong_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_C_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_T_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_T_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_A_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_length_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_T_individually.pdf","omnibus_lm_translationUp_translationDown_CDS_GC3_individually.pdf","omnibus_lm_translationUp_translationDown_CDS_length_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_A_individually.pdf"))
 ```
 
 **Step 4:** The `plotFeaturesMap()` function is used to visualize the relationship between translation efficiency and different features that were identified in the modelling step as significantly contributing to the observed translational regulation. These visualizations are also useful for exploring the overlaps between different features within the same mRNAs.  
@@ -254,16 +265,16 @@ The example below illustrates the set-up of a postNet analysis allowing identifi
 ```{r postNetStartGeneList, eval=TRUE, echo=TRUE}
 
 # Genes of interest should be provided in a named list.
- myGenes <- postNetExample$geneList
+ myGenes <- postNetVignette$geneList
  str(myGenes)
  
 # All gene IDs in the list should be present in the background.
- myBg <- postNetExample$background
+ myBg <- postNetVignette$background
  str(myBg)
  
 # The regulation effect measurement must be named with the same gene IDs
 # present in the background (or the gene list if no custom background is provided).
- myEffect <- postNetExample$effect
+ myEffect <- postNetVignette$effect
  str(myEffect)
 
 ```
@@ -302,15 +313,13 @@ The regulatory effect measurement is taken directly from the `Anota2seqDataSet` 
 When an `Anota2seqDataSet` is supplied, the appropriate background gene set, and colours for each gene list will be automatically retrieved.  
 
 The example below illustrates the set-up of a postNet analysis using the output of *anota2seq*, `ads`.  
-```{r GetAds, eval=TRUE, echo=TRUE, results = 'hide'}
-
-library(anota2seq)
+```{r GetAds, eval=TRUE, echo=TRUE, results = 'hide', warning = FALSE}
 
 # Initialize Anota2seqDataSet using example data (see anota2seq vignette for details)
  ads <- anota2seq::anota2seqDataSetFromMatrix(
-    dataP = postNetExample$ads_data$dataP,
-    dataT = postNetExample$ads_data$dataT,
-    phenoVec = postNetExample$ads_data$phenoVec,
+    dataP = postNetVignette$ads_data$dataP,
+    dataT = postNetVignette$ads_data$dataT,
+    phenoVec = postNetVignette$ads_data$phenoVec,
     batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
     dataType = "RNAseq",
     normalize = FALSE)
@@ -319,7 +328,7 @@ library(anota2seq)
 # Note that the quality control and residual outlier testing are not 
 # performed to limit the running time of this example. For full details 
 # on running an analysis please see the anota2seq vignette and help manual.
- ads <- anota2seqRun(ads,
+ ads <- anota2seq::anota2seqRun(ads,
     performQC = FALSE, 
     performROT = FALSE, 
     useProgBar = FALSE)
@@ -373,9 +382,9 @@ A `postNetData` object can then be initialized using the in-built reference sequ
 ```{r RefSeqLoad, eval=FALSE, echo=TRUE}
 
 # Prepare custom gene lists and regulatory effect measurement using example data:
-myGenes <- postNetExample$geneList
-myBg <- postNetExample$background
-myEffect <- postNetExample$effect
+myGenes <- postNetVignette$geneList
+myBg <- postNetVignette$background
+myEffect <- postNetVignette$effect
 
 # Initialize a postNetData object using in-built annotations for human:
 ptn <- postNetStart(
@@ -1051,9 +1060,8 @@ knitr::include_graphics("Figures/combined_indexes.png")
 ```
 
 ```{r codonUsageIndexHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
-unlink(c("codonCAI_index.pdf", "codonCBI_index.pdf", "codonFop_index.pdf","codonGC3s_index.pdf","codonL_aa_index.pdf","codontAI_index.pdf",
-         "Figures/codonCAI_index.png", "Figures/codonCBI_index.png",
-         "Figures/codonFop_index.png"))
+unlink(c("codonCAI_index.pdf", "codonCBI_index.pdf", "codonFop_index.pdf","codonL_aa_index.pdf","codontAI_index.pdf",
+         "Figures/codonCAI_index.png", "Figures/codonCBI_index.png","Figures/codonFop_index.png"))
 ```
 
 ### Selecting enriched or depleted codons or amino acids
@@ -1180,7 +1188,9 @@ unlink(c("features_Down_codonCalc.pdf", "features_Up_codonCalc.pdf",
 
 # Modelling and network analysis of post-transcriptional regulation
 
-The `featureIntegration()` function is used to model changes in post-transcriptional regulation and identify cis and/or trans factors (features of mRNA molecules, signatures of upstream regulators, etc.) that can explain the observed regulatory effects. The method integrates mRNA features and signatures obtained in previous steps of the postNet workflow (or from custom sources), and has several options for implementation, including stepwise linear regression modelling and network analysis, and Random Forest feature selection and classification. These topics and considerations for use will be discussed in the following sections. 
+The `featureIntegration()` function is used to model changes in post-transcriptional regulation and identify cis and/or trans factors (features of mRNA molecules, signatures of upstream regulators, etc.) that can explain the observed regulatory effects. The method integrates mRNA features and signatures obtained in previous steps of the postNet workflow (or from custom sources), and has several options for implementation, including forward stepwise linear regression modelling and network analysis, and Random Forest feature selection and classification, which allows prediction of post-transcriptional regulation in new data sets. These topics and considerations for use will be discussed in the following sections. 
+
+Both stepwise regression and random forest modelling implementations produce statistics and plots visualizing the relationship between regulatory effects and features. These relationships can be further explored using UMAP visualizations, described in later sections. 
 
 ## Selecting features for modelling
 
@@ -1229,14 +1239,14 @@ In the example code below, a list of input features for modelling is compiled us
 ```{r createFeaturesList, eval=TRUE, echo=TRUE}
 
 # Compile a list of features:
- myFeatureList <- c(len[c(1)], GC_content[c(1)], GC3_content, FE[c(1)], uORFs, UTR5_SCSCGS_num, codonCounts, signatureFeatures)
+ myFeatureList <- c(len[c(1,3)], GC_content[c(1)], GC3_content, FE[c(1)], uORFs, UTR5_SCSCGS_num, codonCounts, signatureFeatures)
 
 # Check that the elements of the list are named:
  names(myFeatureList)
 
 ```
 
-## Post-transcriptional network modelling with forward stepwise linear regression
+## Feature integration with forward stepwise linear regression
 
 After compiling an appropriate list of features, it is now possible to implement the `featureIntegration()` function to model the observed post-transcriptional regulation. The following sections will describe modelling using stepwise linear regression and network analysis. This analysis uses hierarchical multiple regression to identify features explaining changes in the regulatory effect, rank them according to their importance, and reveals independent and combinatorial effects (for example, co-occurrence of regulatory features in the same mRNA molecules). The results of this analysis can be visualized using network plots showing the association of features to regulatory effects, and the relationships between features. Stepwise linear regression modelling is carried out in three phases to generate univariate, omnibus, and adjusted models (described below). 
 
@@ -1260,11 +1270,11 @@ In phase 2, starting with the feature that best explained changes in the regulat
 knitr::include_graphics("Figures/stepwise_regression.png")
 ```
 
-In the output table above, the F-statistics are summarized at each step, where features are iteratively added to the model. The table is coloured according to a "stop-light" system, where cells marked in green indicate features that were significant and included in the final omnibus model. Cells marked in red/purple indicate features that did not improve the ability to explain additional variance in the regulatory effect measurement, and were therefore discarded from the model. For example, after the addition of CDS GC3 in step 2, the set of codons identified as enriched ("Codons_up") is dropped from the model (the F-statistic decreases from more than 204.6 to 1.3) as it is not able to significantly explain additional variance in the regulatory effect. Finally, cells marked in orange indicate a substantial change in the F-statistic for a given feature when another feature is added to the model, indicating a relationship between features. For example, we can see a relationship between the 5'UTR SCSCGS motif and 5'UTR length, as the F-statistic for the motif decreased by ~88.5% (from 132.5 to 15.2) between steps 3 and 4 when 5'UTR length was added to the model. These relationships can be explored in detail in the resulting network analyses, with correlations, and using UMAP visualizations (all described below). 
+In the output table above, the F-statistics are summarized at each step, where features are iteratively added to the model. The table is coloured according to a "stop-light" system, where cells marked in green indicate features that were significant and included in the final omnibus model. Cells marked in red/purple indicate features that did not improve the ability to explain additional variance in the regulatory effect measurement, and were therefore discarded from the model. For example, after the addition of CDS GC3 in step 2, the set of codons identified as enriched ("Codons_up") is dropped from the model (the F-statistic decreases from more than 204.6 to 1.3) as it is not able to significantly explain additional variance in the regulatory effect. Finally, cells marked in orange indicate a substantial change in the F-statistic for a given feature when another feature is added to the model (an increase or decrease of at least 50\%), indicating a relationship between features. For example, we can see a relationship between the 5'UTR SCSCGS motif and 5'UTR length, as the F-statistic for the motif decreased by ~88.5% (from 132.5 to 15.2) between steps 3 and 4 when 5'UTR length was added to the model. These relationships can be explored in detail in the resulting network analyses, with correlations, and using UMAP visualizations (all described below). 
 
 The features included in the final omnibus model are summarized in an output table:
 
-```{r omnibusPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Summary table of features included in the final omnibus model after forward stepwise regression."}
+```{r omnibusPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Summary table of features included in the final omnibus and adjusted models after forward stepwise regression."}
 knitr::include_graphics("Figures/omnibus_model.png")
 ```
 
@@ -1276,13 +1286,21 @@ In the 3rd and final phase, the *independent* contribution of each feature ident
 
 These adjusted values are useful when evaluating whether particular features tend to co-occur in the same mRNAs along with other features included in the model. This may suggest combinatorial effects between features, or reveal whether more specific features have impacts that are independent of more general features. For example, in the table above we see that after adjusting for all other features, the 5'UTR GC content still explains 10% of the regulatory effect independently, whereas the CDS GC3 content can independently explain only 0.3%, meaning that this feature co-varies very substantially with other features in the model. Note that in some instances the proportion of variance explained by a feature may increase after the adjustment, such as for TOP mRNAs (Cockman_etal_2020_classicTOP). This may suggest that this feature is anti-correlated with other features in the model. Indeed, in Figure 14 we can see that the F-statistic for the TOP mRNA signature increases between steps 1 and 2, and steps 4 and 5, suggesting that there is some relationship between TOP mRNAs, and 5'UTR GC content and length.    
 
-### Running stepwise linear regression analysis
+### Feature correlations
 
-Stepwise regression modelling and network analysis are specified in the `featureIntegration()` function by setting the `analysis_type` parameter to `lm`. A number of parameters can be used to control the behaviour of the modelling. Similarly to the functions previously described, [statistical comparisons](#comparisons) can be specified using the `comparisons` parameter. It is possible to perform multiple pair-wise comparisons with stepwise regression modelling. By default, regression modelling is performed using only the set of regulated genes (i.e., those included in `geneList`, or `regulation` if starting from an `Anota2seqDataSet` object). However, it is also possible to perform the modelling with all genes included in the data set by setting the `regOnly` parameter to `FALSE`. 
+In addition to the "stop-light" colouring of the F-value table to highlight substantial relationships between features based on changes in F-value, when the `useCorel` parameter is `TRUE`, an additional table of Pearson's correlation coefficients between features will also be displayed. A threshold for the strength of association between features in order for correlation coefficients to be calculated can be provided using the `covarFilt` parameter. This threshold is based on an integer representing the absolute change in F-value. The default value is `20`, but this may not be appropriate for all data sets and research questions and users can adjust this to see more or fewer correlations (thiis is discussed further below for Network visualizations). Note that the orange "stop-light" highlighting indicating substantial relationships in the F-value table (Figure 14) is independent of this the threshold set with `covarFilt`, and will always represent an increase or decrease in F-value of at least 50\%.
+
+```{r correlationPNG, echo=FALSE, fig.wide = FALSE, fig.cap="Summary table of Pearson's correlation coefficients between features."}
+knitr::include_graphics("Figures/correlations_model.png")
+```
+
+### Running feature integration with forward stepwise linear regression
+
+Stepwise regression modelling and network analysis are specified in the `featureIntegration()` function by setting the `analysis_type` parameter to `lm`. A number of parameters can be used to control the behavior of the modelling. Similarly to the functions previously described, [statistical comparisons](#comparisons) can be specified using the `comparisons` parameter. It is possible to perform multiple pair-wise comparisons with stepwise regression modelling. By default, regression modelling is performed using only the set of regulated genes (i.e., those included in `geneList`, or `regulation` if starting from an `Anota2seqDataSet` object). However, it is also possible to perform the modelling with all genes included in the data set by setting the `regOnly` parameter to `FALSE`. 
 
 By default, only the set of input features that are significantly associated with the regulatory effect in univariate models (phase 1) will be included in stepwise regression (phase 2). However, in some instances you may be interested in how various features interact with each other, so it is possible to bypass this filtering by setting the `allFeat` parameter to `FALSE`, which will allow all features provided as input with the `feature` parameter to be used in stepwise regression modelling. In addition, the phase 1 filtering is based on an *FDR* threshold of 0.05 for univariate models, however, this can be adjusted using the `fdrUni` parameter. Furthermore, features are retained or discarded in stepwise regression analysis based on a *P*-value threshold of 0.05. This can also be adjusted using the `stepP` parameter. 
 
-In the example code below the three phases of the forward stepwise regression modelling will be performed using the list of input features defined above. In this analysis, only the sets of regulated genes will be included in the analysis, comparing translationally activated and suppressed genes. Those features passing the *FDR* threshold of 0.05 in univariate models will be included in stepwise regression.   
+In the example code below the three phases of modelling will be performed using the list of input features defined above. In this analysis, only the sets of regulated genes will be included, comparing translationally activated and suppressed genes. Those features passing the *FDR* threshold of 0.05 in univariate models will be included in stepwise regression.   
 
 ```{r runLM, eval=TRUE, echo=TRUE}
 
@@ -1297,7 +1315,7 @@ In the example code below the three phases of the forward stepwise regression mo
 
 ```
 
-The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "FinalModel" will contain the summary tables shown above in Figures 13-15. Using the code below, it is possible the retrieve the full results from each phase of modelling using the `ptn_model()` function, as well as the set of features that were selected in the omnibus model that significantly explain changes in the regulatory effect with `ptn_selectedFeatures()`. Furthermore, if modelling using multiple pairwise comparisons was performed, you can check which modelling results are available using the `ptn_check_models()` function. See the example code below:  
+The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "FinalModel" will contain the summary tables shown above in Figures 13-16. It is possible to retrieve the full results from each phase of modelling using the `ptn_model()` function, as well as the set of features that were selected in the omnibus model that significantly explain changes in the regulatory effect with `ptn_selectedFeatures()`. Furthermore, if modelling using multiple pairwise comparisons was performed, you can check which modelling results are available using the `ptn_check_models()` function. See the example code below:  
 
 ```{r retrieveLM, eval=TRUE, echo=TRUE}
 
@@ -1310,45 +1328,238 @@ The results of the modelling will be stored in the `postNetData` object, and a s
                                             comparison = 1) 
  selectedFeaturesLM
  
-# Retrieve the stepwise regression results
+# Retrieve the stepwise regression results (other options include "stepwiseModel" and "finalModel"):
  univariateModel <- ptn_model(ptn, analysis_type = "lm", model = "univariateModel", comparison = 1) 
  str(univariateModel)
 
 ```
 
-The other PDF files produced will contain the network visualization of the features included in the modelling   
-
-  \item{useCorel}{If \code{analysis_type = "lm"}, provide a logical specifying if substantial correlations between features should be displayed as edges in network plots and coefficients be returned along with the final model. If \code{TRUE}, Pearson's correlation coefficients will be calculated between associated features, allowing visualization of how features co-vary in network plots. A threshold for the strength of association between features in order for correlation coefficients to be calculated must be provided using the \code{covarFilt} parameter. If \code{FALSE}, edges in network plots will instead represent the magnitude of the change in F-value for a given feature between sequential steps of stepwise regression to display the strength of associations between features, and no correlation coefficients will be calculated. Default is \code{TRUE}.    
-}
-  \item{covarFilt}{If \code{analysis_type = "lm"}, provide an integer specifying the minimum threshold for the change in F-value between sequential steps of stepwise regression to display the strength of associations between features in network graphs. Larger changes in F-values upon addition of a new feature to the model are indicative of a stronger association between features. Default is \code{20}, indicating that edges between feature nodes in network plots will be displayed between features where there was a change of 20 or more in the F-value for one feature upon addition of the other to the model. Note that this parameter is only applied to network analysis and not F-table visualizations.   
-}
-  \item{NetModelSel}{If \code{analysis_type = "lm"}, provide a string specifying how the variance explained should be displayed in the network plot. If \code{NetModelSel = "omnibus"}, the total variance explained by the omnibus model (the smallest model to explain the greated proportion of variance) will be displayed. The size of each node (representing features) is proportional to the variance explained, where covariance is assigned to the most influential feature (a rank-based greedy model). If \code{NetModelSel = "adjusted"}, the covariance will be eliminated and the values displayed will reflect the adjusted total variance explained, and the independent contribution of each feature. Default is \code{"omnibus"}. 
-}
+The other PDF files produced will contain the network visualization of the features included in the modelling, as well is plots of individual features, described below.    
 
 ### Network visualizations
 
-### Understanding covariance and feature correlations
+The results of feature integration using forward stepwise regression modelling can be visualized using network analyses. Each feature selected in the omnibus model that can significantly explain a proportion of variance in the regulatory effect appear in the networks as nodes. The size of the nodes correspond to the proportion of variance explained by the given feature, and can represent either the values from the omnibus model, or the adjusted model (selected using the `NetModelSel`) parameter. If `NetModelSel` is `omnibus`, the size of each node representing features will be proportional to the variance explained, where covariance is assigned to the most influential feature. If `NetModelSel` is `adjusted`, the size of the nodes will reflect the adjusted total variance explained, and therefore the independent contribution of each feature to the overall observed regulation.      
 
-Optionally, if \code{useCorel = TRUE}, a table of Pearson's correlation coefficients between features will also be displayed. For F-value tables, the feature explaining the greatest proportion of variance in the regulatory effect at each step is highlighted in green, while those removed from the model due to inability to significantly explain variance are marked in red. Features highlighted in orange indicate those where there was a substantial change in F-value (an increase or decrease of at least 50\%) following the addition of another feature to the model. Larger changes in F-value are indicative of a stronger relationship between features. Note that this highlighting is independent of the threshold applied with the \code{covarFilt} parameter, which controls edge selection for network analyses. For more details please refer to the postNet vignette.    
+The edges connecting nodes can either represent the Pearson correlation coefficients between features if the parameter `useCorel = TRUE`. However, if `FALSE`, the edges will instead represent the magnitude of the change in F-value for a given feature between sequential steps of stepwise regression, indicative of the strength of the associations between features. Note that while changes in F-value are indicative of the strength of relationships between features, this metric is not always easy to interpret and may not readily reveal whether features are positively or negatively correlated. Therefore, by default, edges will represent correlation coefficients. As described above, `covarFilt` parameter can be used to control the threshold for displaying edges between feature nodes. This threshold is based on the minimum change in F-value between sequential steps of stepwise regression, and when larger values are provided, only the strongest correlations will be displayed as edges in the network plot. 
 
-### Feature visualizations
+Finally, some features may not be significant in omnibus model but have substantial relationships with one or more features that are. These features will not be assigned a node, but will appear in pink with edges connecting to the feature nodes they are substantially correlated with. For example, in the network displayed below, 5'UTR folding energy did not independently explain changes in the regulatory effect, but as expected, was substantially negatively correlated with 5'UTR length and GC content. This example was included to highlight this functionality. However, it is likely not usually informative to include folding energy in modelling alongside length and GC content of 5'UTRs, as it is known to be highly dependent on these two features. Furthermore, the signature of genes translationally suppressed upon mTOR activation was not independently significant, but was substantially negatively correlated with the 5'UTR GC content and the GC3 codon index.       
 
-After running the `featureIntegration()` function, the input features used in modelling will be stored in the `postNetData` object as a `data.frame` where rows correspond to genes, and columns correspond to features. This can be retrieved using the `ptn_features()` function. 
+The network plot below displays the results of the example in the section above, where by default, `NetModelSel = "omnibus"`, `useCorel = TRUE`, and `covarFilt = 20`. 
 
-## Post-transcriptional network modelling with random forest classification
+```{r networkPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_lm_translationUp_translationDown_network.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_lm_translationUp_translationDown_network.png")
 
-### Overview
+```
 
-### Receiver Operating Characteristic (ROC) analysis
+```{r networkPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Network visualization of the results of forward stepwise regression modelling. Nodes represent features that were selected in the omnibus model, with the size proportional to the total variance in the regulatory effect explained by that feature. Edges represent the Pearson correlation coefficient between features. Wider lines indicate stronger positive or negative correlations. Features without a node indicated in pink represent those that were not selected in the omnibus model, but correlate substantially with one or more features that were significant in the model."}
+knitr::include_graphics("Figures/Example_lm_translationUp_translationDown_network.png")
 
-### Feature Importance
+```
 
-## Retreiving models and results from the postNetData object 
+```{r networkHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_lm_translationUp_translationDown_network.pdf","Example_lm_translationUp_translationDown_FinalModel.pdf",
+         "Example_lm_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "Example_lm_translationUp_translationDown_Down_individually.pdf", "Example_lm_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Example_lm_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf", "Example_lm_translationUp_translationDown_uORFs_ATG_strong_individually.pdf", "Example_lm_translationUp_translationDown_UTR5_length_individually.pdf","Example_lm_translationUp_translationDown_CDS_GC3_individually.pdf", "Example_lm_translationUp_translationDown_UTR5_GC_individually.pdf", "Example_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf", "Example_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf", "Example_lm_translationUp_translationDown_CDS_GC3_individually.pdf", "Example_lm_translationUp_translationDown_UTR5_GC_individually.pdf"))
 
+```
+
+When many features are selected in the stepwise regression modelling or when there are many substantial correlations between features, it may be desirable to organize the network plots to be more easily interpreted. The `lmfeatGroup` and `lmfeatureGroupColour` parameters can be used to group features in space, and assign coloured circles to the groupings. For example, it is possible to organize the layout of features in the network plot according to regions of the mRNA sequence they are found in. However, grouping is highly customizable and can be tailored to the data set and biological context. 
+
+In the example below, the same feature integration modelling as above will be performed adding grouping variables and colours to the network plot. Note that the total proportion of variance explained by the group of features is also displayed on the network plot for each category. 
+```{r networkGroupingLM, eval=TRUE, echo=TRUE}
+# Examine the input features
+ names(myFeatureList) 
+ 
+# Make a vector to assign groups to each features according to categories: 
+group = c("UTR5", "UTR3", "UTR5","CDS", "UTR5", "UTR5", "UTR5", "CDS", "CDS", rep("Pathway", 2), "UTR5", rep("Pathway", 2))
+
+# Assign colours to each grouping cateogy:
+groupColour = c('#834b62','#6699cc','#e9724c','#fff299')
+names(groupColour) <- c("UTR5","CDS", "UTR3","Pathway")
+
+
+# Run feature integration modelling using forward stepwise regression
+ ptn <- featureIntegration(ptn = ptn, 
+                          features = myFeatureList, 
+                          pdfName = "Example_grouped", 
+                          regOnly = TRUE, 
+                          allFeat = FALSE,
+                          analysis_type = "lm",
+                          comparisons = list(c(1,2)),
+                          lmfeatGroup = group,
+                          lmfeatGroupColour = groupColour,)
+
+```
+
+```{r networkGroupingPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_grouped_lm_translationUp_translationDown_network.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_grouped_lm_translationUp_translationDown_network.png")
+
+```
+
+```{r networkGroupingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Network visualization of the results of forward stepwise regression modelling. Selected features are grouped according to which region of the mRNA they correspond to, as well as upstream regulatory pathways known to alter translation efficiency."}
+knitr::include_graphics("Figures/Example_grouped_lm_translationUp_translationDown_network.png")
+
+```
+
+```{r networkGroupingHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_grouped_lm_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "Example_grouped_lm_translationUp_translationDown_Down_individually.pdf", "Example_grouped_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf", "Example_grouped_lm_translationUp_translationDown_CDS_GC3_individually.pdf", "Example_grouped_lm_translationUp_translationDown_FinalModel.pdf", "Example_grouped_lm_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Example_grouped_lm_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf", "Example_grouped_lm_translationUp_translationDown_network.pdf", "Example_grouped_lm_translationUp_translationDown_uORFs_ATG_strong_individually.pdf", "Example_grouped_lm_translationUp_translationDown_UTR5_GC_individually.pdf", "Example_grouped_lm_translationUp_translationDown_UTR5_length_individually.pdf"))
+```
+
+Finally, in addition to producing a PDF file, the results of the network analysis are stored in the `postNetData` object as an [igraph](https://CRAN.R-project.org/package=igraph) object [@Csárdi2006][@Antonov2023][@Csárdi2025], and can be retrieved using the `ptn_networkGraph` function. See the example code below: 
+
+```{r retrieveNetworkLM, eval=TRUE, echo=TRUE}
+
+# Retrieve the network graph of the results of the stepwise regression omnibus model:
+ networkGraph <- ptn_networkGraph(ptn, comparison = 1) 
+ str(networkGraph)
+
+```
+
+## Feature integration with Random Forest classification
+
+In addition to forward stepwise regression, the `featureIntegration` function can also apply Breiman's random forest algorithm (as implemented in the [randomForest](https://CRAN.R-project.org/package=randomForest) package [@Liaw2002]) to classify genes according to their regulation, and identify features associated with regulatory classes. Unlike with forward stepwise regression modelling, the relationships between features will not necessarily be revealed using feature selection and random forest classification, and network analysis cannot be implemented. However, random forest classifiers can be constructed and trained in one data set, and then applied to predict post-transcriptional regulation in new contexts using the selected features. Random forest classification with `featureIntegration()` is implemented in two steps described below.  
+
+```{r runRF, eval=TRUE, echo=FALSE}
+
+# Run feature integration modelling using Random Forest classification
+ ptn <- featureIntegration(ptn = ptn, 
+                          features = myFeatureList, 
+                          pdfName = "Example", 
+                          regOnly = TRUE, 
+                          allFeat = FALSE,
+                          analysis_type = "rf",
+                          comparisons = list(c(1,2)))
+
+```
+
+### Pre-modelling and feature selection
+
+In the first step, genes are divided into training (70\%) and validation (30\%) sets. A pre-modelling step is carried out where the Breiman's Random Forest algorithm [@Liaw2002] [@Breiman2019] is applied to perform supervised classification of genes into regulatory classes. Next, feature selection is performed using [Boruta](https://CRAN.R-project.org/package=Boruta) [@Kursa2010]. Boruta uses feature importance measurements from Random Forest classification to iteratively select features based on the comparison of importance attributes to randomly shuffled "shadow" attributes. This feature selection process finds all relevant features associated with the prediction, meaning features may be redundant with others already selected (see the [Boruta Vignette](https://cran.r-project.org/web/packages/Boruta/vignettes/inahurry.pdf) for details). Although not directly comparable, this differs somewhat in principle from forward stepwise regression modelling, where features will only be selected if they independently explain a proportion of variance in the regulatory effect beyond what is explained by other features in the model. In this example, in agreement with forward stepwise regression modelling, 5'UTR GC content is found to be the most important feature predicting post-transcriptional regulation in this context.   
+
+```{r featImpPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_randomForest_translationUp_translationDown_featureImportance.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_randomForest_translationUp_translationDown_featureImportance.png")
+
+```
+
+```{r featImpPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Boxplots of Z-Scores of Importance from feature selection using Boruta. Features coloured in green indicate retained features. Shadow feature metrics (randomly shuffled attributes) are indicated in blue."}
+knitr::include_graphics("Figures/Example_randomForest_translationUp_translationDown_featureImportance.png")
+
+```
+
+```{r featImpHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_randomForest_translationUp_translationDown_featureImportance.pdf"))
+```
+
+### Final modelling
+
+After performing feature selection, the Random Forest classification of genes into different regulatory classes is repeated using the refined set of retained features. The performance of the model is assessed using Receiver Operating Characteristic (ROC) curves (implemented with [ROCR](https://CRAN.R-project.org/package=ROCR)) [@Sing2005]. The ROC curve plots the rate of false positives against the rate of true positives and provides several metrics to evaluate the predictive power of the model. The area under the curve (AUC) describes the probability of ranking a randomly selected positive higher than a randomly selected negative. Also provided are the sensitivity (true positive rate), and the specificity (true negative rate). The feature importance from the final model is also reported as Mean Decreased Accuracy (see [randomForest](https://CRAN.R-project.org/package=randomForest) for details), where higher values indicate more important features.
+
+```{r finalRFPDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_randomForest_translationUp_translationDown_FinalModel.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_randomForest_translationUp_translationDown_FinalModel.png")
+
+```
+
+```{r finalRFPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Final modelling results using Random Forest Classification. Left panel: Feature importance (mean decrease accuracy) for selected features included in the final model. Right panel: Receiver Operating Characteristic (ROC) curve for Random Forest classification of translationally activated vs. suppressed genes."}
+knitr::include_graphics("Figures/Example_randomForest_translationUp_translationDown_FinalModel.png")
+
+```
+
+```{r finalRFHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_randomForest_translationUp_translationDown_FinalModel.pdf"))
+```
+
+### Running feature integration with Random Forest classification
+
+The `featureIntegration()`function can be run implementing Random Forest classification run as described above for forward stepwise regression modelling, simply by changing the input for the `analysis_type` parameter to `rf`. In the example code below, a Random Forest classification model will predict membership of regulated genes to translationally activated or suppressed categories using the list of input features defined above. 
+
+```{r runningRF, eval=FALSE, echo=TRUE}
+
+# Run feature integration modelling using Random Forest classification:
+ ptn <- featureIntegration(ptn = ptn, 
+                          features = myFeatureList, 
+                          pdfName = "Example", 
+                          regOnly = TRUE, 
+                          allFeat = FALSE,
+                          analysis_type = "rf",
+                          comparisons = list(c(1,2)))
+
+```
+
+The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "featureImportance.pdf" will contain a summary plot of feature importance from the feature selection step (Figure 19). The PDF with the suffix "FinalModel" will contain a summary of the feature importance for the selected features retained in the final model, as well as the ROC curve evaluating the performance of the model predictions (Figure 20). As for the forward stepwise regression implementation, it is possible to retrieve the full results from each step of modelling using the `ptn_model()` function, as well as the set of features that were retained during feature selection using `ptn_selectedFeatures()`. See the example code below:  
+
+```{r retrieveRF, eval=TRUE, echo=TRUE}
+
+# Check which models are available in the postNetData object:
+ ptn_check_models(ptn = ptn, analysis_type = "rf")
+
+# Extract the set of selected features and their importance:
+ selectedFeaturesRF <- ptn_selectedFeatures(ptn = ptn, 
+                                            analysis_type = "rf", 
+                                            comparison = 1) 
+ selectedFeaturesRF
+ 
+# Retrieve the final model results (other options include "preModel" or "borutaModel"): 
+ finalModel <- ptn_model(ptn, analysis_type = "rf", model = "finalModel", comparison = 1) 
+ str(finalModel)
+
+```
+
+## Individual feature visualizations
+
+Both implementations of `featureIntegration()` output PDF files with scatterplots for each individual feature identified in either the final stepwise regression or random forest models. The Pearson's correlation coefficient between the feature and regulatory effect (two-sided test) is displayed, along with the linear trend line and cubic smoothing spline (allowing assessment of linearity). For binary features, these metrics are not displayed. 
+
+```{r IndFeatPDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_randomForest_translationUp_translationDown_UTR5_GC_individually.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_randomForest_translationUp_translationDown_UTR5_GC_individually.png")
+
+image_read_pdf("Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.png")
+
+image_read_pdf("Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.png")
+
+# Read each image
+img1 <- image_read("Figures/Example_randomForest_translationUp_translationDown_UTR5_GC_individually.png")
+img2 <- image_read("Figures/Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.png")
+img3 <- image_read("Figures/Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.png")
+
+# Append them horizontally
+combined <- image_append(c(img1, img2, img3), stack = FALSE)
+
+# Save combined image at high resolution
+image_write(combined, path = "Figures/combined_individual.png")
+
+```
+
+```{r IndFeatPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Individual feature visualizations. Scatterplots of 5'UTR GC content (left), 5'UTR SCSCGS motif content (middle), and signature of genes translationally activated by mTOR (right) versus translation efficiency (effM). Pearson's correlation coefficients, linear trend lines, and cubic smoothing splines indicated."}
+knitr::include_graphics("Figures/combined_individual.png")
+
+```
+
+```{r IndFeatHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_randomForest_translationUp_translationDown_UTR5_GC_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.pdf",
+         "Figures/Example_randomForest_translationUp_translationDown_UTR5_GC_individually.png", "Figures/Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.png",
+         "Figures/Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Figures/Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.png", "Example_randomForest_translationUp_translationDown_CDS_GC3_individually.pdf", "Example_randomForest_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "Example_randomForest_translationUp_translationDown_Down_individually.pdf", "Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transDown_individually.pdf", "Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Example_randomForest_translationUp_translationDown_Guan_etal_2017_Tg1_transDown_individually.pdf", "Example_randomForest_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf", "Example_randomForest_translationUp_translationDown_pred_rocr.pdf", "Example_randomForest_translationUp_translationDown_uORFs_ATG_strong_individually.pdf", "Example_randomForest_translationUp_translationDown_Up_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR3_length_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR5_foldingEnergy_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR5_length_individually.pdf"))
+```
 
 <a name="UMAPvis"/>
 
-# Visualize and explore relationships between mRNA features and regulatory effects 
+# Visualize and explore relationships between features and regulatory effects 
 
 ## Plotting UMAPs
 
@@ -1487,7 +1698,7 @@ The example code below performs GAGE analysis using the "MF" GO term category, a
  
 ```
 
-## microRNA enrichment analysis with a postNetData object
+## microRNA target enrichment analysis with a postNetData object
 
 Within postNet, GAGE can also be applied to identify enrichments in microRNA (miRNA) targets in regulated gene sets of interest. This is done using the `miRNAanalysis` function which implements the `gage` package and uses miRNA target information from the [Target Scan database](https://www.targetscan.org). Note that this approach does not identify or predict miRNA binding sites in mRNA sequences, but rather assesses whether gene sets of interest may be regulated by particular miRNAs. 
 
@@ -1709,5 +1920,9 @@ knitr::include_graphics("Figures/ExampleSignatures_heatmap.png")
 ```{r ExampleSignatureHeatmap_Hide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("ExampleSignatures_heatmap.pdf"))
 ```
+
+# Citing postNet and implemented tools
+
+
 
 # References

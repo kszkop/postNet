@@ -19,7 +19,7 @@
 }
   \item{analysis_type}{A string specifying the method of analysis used for \link[postNet]{featureIntegration} to retrieve the selected features from. The options are \code{"lm"} to retrieve features selected by stepwise linear regression, or \code{"rf"} for features selected using random forest-based analyses.
 }
-  \item{model}{A string specifying the model the retrieve. If \code{analysis_type = "lm"}, the options are: \code{"univariateModel"}, \code{"stepwiseModel"}, or \code{"finalModel"}. If \code{analysis_type = "rf"}, the options are: \code{"preModel"}, \code{"borutaModel"}, or \code{"finalModel"}. 
+  \item{model}{A string specifying the model to retrieve. If \code{analysis_type = "lm"}, the options are: \code{"univariateModel"}, \code{"stepwiseModel"}, or \code{"finalModel"}. If \code{analysis_type = "rf"}, the options are: \code{"preModel"}, \code{"borutaModel"}, or \code{"finalModel"}. 
 }
   \item{comparison}{An integer specifying which comparison to select the model from. For example, \code{1} would select the first comparison specified in the \code{comparisons} parameter of the \link[postNet]{featureIntegration} function.
 }
