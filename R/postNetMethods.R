@@ -8,7 +8,7 @@ setMethod(
     check_region(region)
     check_ptn(x)
     if (length(region) > 1) {
-      stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis performed with CCDS annotation.")
+      stop("'region' can be only one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
     tmpReg <- slot(x@annot, region)
     seqOut <- tmpReg@sequences
@@ -26,7 +26,7 @@ setMethod(
     check_region(region)
     check_ptn(x)
     if (length(region) > 1) {
-      stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis performed with CCDS annotation.")
+      stop("'region' can be only one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
     tmpReg <- slot(x@annot, region)
     idOut <- tmpReg@id
@@ -44,7 +44,7 @@ setMethod(
     check_region(region)
     check_ptn(x)
     if (length(region) > 1) {
-      stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis performed with CCDS annotation.")
+      stop("'region' can be only one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
     tmpReg <- slot(x@annot, region)
     geneIDOut <- tmpReg@geneID
@@ -158,7 +158,7 @@ setMethod(
     check_ptn(ptn)
     check_region(region)
     if (length(region) > 1) {
-      stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'")
+      stop("'region' can be only one of: 'UTR3', 'CDS', 'UTR5'")
     }
     tmpReg <- slot(ptn@analysis@motifs, region)
     motifsOut <- tmpReg$motifSelection
@@ -176,7 +176,7 @@ setMethod(
     check_ptn(ptn)
     check_region(region)
     if (length(region) > 1) {
-      stop("'region' can be only one of these: 'UTR3', 'CDS', 'UTR5'")
+      stop("'region' can be only one of: 'UTR3', 'CDS', 'UTR5'")
     }
     if (!any(geneList %in% names(ptn_geneList(ptn)))) {
       stop("the regulatory geneList not in ptn")
@@ -238,11 +238,11 @@ ptn_miRNA_analysis <- function(ptn,
   check_direction(tolower(direction))
   check_ptn(ptn)
   if (!check_number(threshold)) {
-    stop(paste("Please provide one numeric value for ", threshold, sep = ""))
+    stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
   }
 
   if (is.null(slot(ptn@analysis, "miRNA"))) {
-    stop("Please run miRNAanalysis first")
+    stop("Please run miRNAanalysis() first")
   } else {
     miRNAres <- ptn@analysis@miRNA@miRNA_analysis
   }
@@ -259,7 +259,7 @@ ptn_miRNA_analysis <- function(ptn,
     resOut <- resOut[, c(1, 2, 5, 3, 4)]
     resOut <- data.frame(id = row.names(resOut), resOut, row.names = NULL)
   } else {
-    message("there are no miRNAs to output")
+    message("there are no enriched miRNAs to output.")
   }
   return(resOut)
 }
@@ -271,7 +271,7 @@ ptn_miRNA_to_gene <- function(ptn,
   check_ptn(ptn)
 
   if (is.null(slot(ptn@analysis, "miRNA"))) {
-    stop("Please run miRNAanalysis first")
+    stop("Please run miRNAanalysis() first.")
   } else {
     miRNATmp <- ptn@analysis@miRNA@miRNA_to_gene
   }
@@ -289,18 +289,18 @@ ptn_GO <- function(ptn,
   check_ptn(ptn)
   check_category(category)
   if (length(category) != 1) {
-    stop("Please provide only one category")
+    stop("Please provide only one category.")
   }
   if (!check_number(threshold)) {
-    stop(paste("Please provide one numeric value for ", threshold, sep = ""))
+    stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
   }
   #
   if (!any(geneList %in% names(ptn_geneList(ptn)))) {
-    stop("None of the regulatory geneList in ptn")
+    stop("None of the regulatory geneList are included in the ptn.")
   }
   #
   if (is.null(slot(ptn@analysis, "GO"))) {
-    stop("Please run GO analysis first")
+    stop("Please run goAnalysis() first.")
   } else {
     GOres <- slot(ptn@analysis@GO, category)
   }
@@ -310,7 +310,7 @@ ptn_GO <- function(ptn,
   if (nrow(GOresOut) > 0) {
     GOresOut <- data.frame(GOresOut, row.names = NULL)
   } else {
-    message("there are no GO categories to output")
+    message("There are no enriched GO categories to output.")
   }
   return(GOresOut)
 }
@@ -321,18 +321,18 @@ ptn_GSEA <- function(ptn,
   check_ptn(ptn)
 
   if (is.null(slot(ptn@analysis, "GSEA"))) {
-    stop("Please run GSEA analysis first")
+    stop("Please run gseaAnalysis() first.")
   } else {
     gseaOut <- slot(ptn@analysis, "GSEA")
   }
   if (!is.null(threshold)) {
     if (!check_number(threshold)) {
-      stop(paste("Please provide one numeric value for ", threshold, sep = ""))
+      stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
     }
     gseaOut <- gseaOut[which(gseaOut[, 8] < threshold), ]
   }
   if (nrow(gseaOut) == 0) {
-    message("there are no GSEA gene sets to output")
+    message("There are no enriched gene sets to output from GSEA.")
   }
   return(gseaOut)
 }
@@ -346,14 +346,14 @@ ptn_GAGE <- function(ptn,
   check_ptn(ptn)
   check_category(category)
   if (!check_number(threshold)) {
-    stop(paste("Please provide one numeric value for ", threshold, sep = ""))
+    stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
   }
 
   if (length(category) != 1) {
-    stop("Please provide only one category")
+    stop("Please provide only one category.")
   }
   if (is.null(slot(ptn@analysis, "GAGE"))) {
-    stop("Please run GAGE first ")
+    stop("Please run gageAnalysis() first.")
   } else {
     GAGEres <- slot(ptn@analysis@GAGE, category)
   }
@@ -367,7 +367,7 @@ ptn_GAGE <- function(ptn,
   resOut <- resOut[which(resOut[, 6] < threshold), ]
   #
   if (nrow(resOut) == 0) {
-    message("there are no terms enriched")
+    message("There are no enriched terms to output from GAGE.")
   } else {
     return(resOut)
   }
@@ -403,7 +403,7 @@ ptn_model <- function(ptn, analysis_type, model, comparison) {
   check_model(model, analysis_type = analysis_type)
 
   if (!check_number(comparison)) {
-    stop(paste("Please provide one numeric value for ", comparison, sep = ""))
+    stop(paste("Please provide a single numeric value for ", comparison, sep = ""))
   }
 
   tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
@@ -421,7 +421,7 @@ ptn_selectedFeatures <- function(ptn, analysis_type, comparison) {
   check_ptn(ptn)
   check_analysis_type(analysis_type)
   if (!check_number(comparison)) {
-    stop(paste("Please provide one numeric value for ", comparison, sep = ""))
+    stop(paste("Please provide a single numeric value for ", comparison, sep = ""))
   }
   #
   tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
@@ -437,7 +437,7 @@ ptn_selectedFeatures <- function(ptn, analysis_type, comparison) {
 ptn_networkGraph <- function(ptn, comparison) {
   check_ptn(ptn)
   if (!check_number(comparison)) {
-    stop(paste("Please provide one numeric value for ", comparison, sep = ""))
+    stop(paste("Please provide a single numeric value for ", comparison, sep = ""))
   }
 
   tmpIn <- ptn@analysis@featureIntegration$lm[[comparison]]

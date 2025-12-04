@@ -13,18 +13,18 @@ codonCalc <- function(ptn,
     codonsAll <- ptn_codonAnalysis(ptn)
     check_codonIn(codonsAll)
   } else {
-    stop("Codons analysis is NULL in the 'postNetData' object provided. Please run the codonUsage analysis function prior to running CodonCalc.")
+    stop("Codon analysis is NULL in the 'postNetData' object provided. Please run the codonUsage() function prior to running CodonCalc().")
   }
   #
   if (!check_logical(plotOut)) {
-    stop("'plotOut' can only be logical: TRUE of FALSE ")
+    stop("'plotOut' must be logical: TRUE of FALSE")
   }
   #
   if (isTRUE(plotOut)) {
     if (!is.null(plotType)) {
       check_plotType(plotType)
     } else {
-      stop("Please provide a selection for 'plotType' to specify the method for plotting. Options include: 'boxplot','violin , or 'ecdf'. ")
+      stop("Please provide a selection for 'plotType' to specify the method for plotting. Options include: 'boxplot','violin' , or 'ecdf'.")
     }
   }
   #
@@ -44,7 +44,7 @@ codonCalc <- function(ptn,
   #
   if (analysis == "codon") {
     if (!check_codons(featsel)) {
-      stop("Your input for 'featsel' does not contain valid codons.")
+      stop("Your input for 'featsel'. Invalid codons provided.")
     }
   }
   if (!isUnit(unit)) {
@@ -57,7 +57,7 @@ codonCalc <- function(ptn,
     featTmp <- featsel[[i]]
     featNameTmp <- names(featsel)[i]
     if (featNameTmp == 0) {
-      stop("The input for 'featSel' should be a named list.")
+      stop("The input for 'featSel' must be a named list.")
     }
     # if(is.null(featselName)){
     #  featNameTmp <- paste("codon",names(featsel)[i],sep="_")
@@ -92,7 +92,7 @@ codonCalc <- function(ptn,
       #
       resOut <- resQuant(qvec = codonCalcOutTmp, ptn = ptn)
       if (length(resOut) == 0) {
-        stop("There are no regulated genes in your input. Please check the input or run without indicating 'regulation' and 'comparisons'.")
+        stop("There are no regulated genes in your input. Please check the input, or run without indicating 'regulation' and 'comparisons'.")
       }
       colOut <- colPlot(ptn)
       pdf(nameOut, width = 8, height = 8, useDingbats = F)
