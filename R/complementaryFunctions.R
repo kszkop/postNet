@@ -159,7 +159,7 @@ adjustSeq <- function(annot,
     check_adjObj(adjObj)
     valid_regions <- c("UTR5", "UTR3")
     if (is.null(region_adj) | !all(region_adj %in% valid_regions)) {
-      stop("Please provide the 'region_adj', which can be 'UTR5' and/or 'UTR3'. It should also match the names of the entries in the list 'adjObj'.")
+      stop("Please provide an input for 'region_adj' to specify which sequence region(s) will be adjusted. The options are 'UTR5' and/or 'UTR3'. It input should match the names of the entries in the list provided with the 'adjObj' parameter.")
     }
     if (!check_logical(excl)) {
       stop("The input for 'excl' must be logical: TRUE or FALSE.")
@@ -174,8 +174,7 @@ adjustSeq <- function(annot,
     adjObj_temp <- adjObj[[reg]]
 
     if (is.null(adjObj_temp)) {
-      stop("One or more regions specified in 'region_adj' do not match those provided in the 'adjObj' list. Please ensure the names of 'adjObj' \
-           are 'UTR5' and/or 'UTR3', and correspond to 'region_adj'.")
+      stop("One or more sequence regions specified in 'region_adj' do not match those provided in the 'adjObj' list. \ Please ensure the names of 'adjObj' are 'UTR5' and/or 'UTR3', and correspond to 'region_adj'.")
     }
 
     if (length(which(names(adjObj_temp) %in% annotTmp$id)) == 0) {
@@ -191,7 +190,7 @@ adjustSeq <- function(annot,
     # adjObj_temp <- adjObj_temp[!names(adjObj_temp) %in% toRemove]
     #
     if (length(adjObj_temp) == 0) {
-      stop("None of the entries in the sequence adjustment vector are present in the existing annotation.")
+      stop("None of the entries in the provided sequence adjustment vector are present in the existing annotation.")
     }
     #
     annotTmp[match(names(adjObj_temp), annotTmp$id), ifelse(reg == "UTR5", "UTR5_seq", "UTR3_seq")] <- adjObj_temp
@@ -248,8 +247,7 @@ getBg <- function(ads = NULL, customBg = NULL, geneList = NULL) {
       if (!is.null(geneList)) {
         tmpDiff <- setdiff(as.character(unlist(geneList)), bgOut)
         if (length(tmpDiff) > 0) {
-          stop("There are genes in the 'geneList' that are not present in 'customBg'. Please ensure that the custom background includes all genes \
-          in your input gene list.")
+          stop("There are genes in the 'geneList' that are not present in 'customBg'. \ Please ensure that the custom background includes all genes in your input gene list.")
         }
       }
     } else {
@@ -888,7 +886,7 @@ convertSymbolToEntrezID <- function(geneList,
   # if some element of the list have become empty (empty gene signature) because none of the symbols have an entrezid
 
   if (length(geneListEntrezID) == 0) {
-    stop("None of the provided gene symbols could be converted to entrezid. Please check the gene identifiers.")
+    stop("None of the provided gene symbols could be converted to entrezIDs. Please check the gene identifiers.")
   }
 
   return(geneListEntrezID)
@@ -966,7 +964,7 @@ getDup <- function(numIn, tol = 1e-8) {
 printDup <- function(dupIn) {
   for (i in seq_along(dupIn)) {
     namesMerged <- paste(names(dupIn[[i]]), collapse = " and ")
-    messageOut <- paste("The following features are too highly corelated to each other (see help manual and vignette for details): ", namesMerged)
+    messageOut <- paste("The following features are too highly corelated to each other (see ?featureIntegration and vignette for details): ", namesMerged)
     print(messageOut)
   }
 }
@@ -1082,7 +1080,7 @@ prepFeatures <- function(ptn,
                          features) {
   check_ptn(ptn)
   if (!is_valid_named_list(features)) {
-    stop("The input for 'features' should be a named list of only numeric vectors.")
+    stop("The input for 'features' should be a named list of numeric vectors.")
   }
   # effM <- ptn_eff(ptn)
   # if(!is_numeric_vector(ptn_eff(ptn))){
@@ -1206,7 +1204,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
       isNAout <- names(lm(design, data = dataIn)[[1]][which(is.na(lm(design, data = dataIn)[[1]]))])
 
       if (length(isNAout) > 0) {
-        stop(paste("Consider removing: ", getOrgNames(names(isNAout), namesDf), " as it is too correlated with other features"))
+        stop(paste("Consider removing: ", getOrgNames(names(isNAout), namesDf), " as it is too correlated with other features."))
       }
       rownames(models2[[j]]) <- c(getOrgNames(rownames(models2[[j]])[-length(rownames(models2[[j]]))], namesDf), "Residuals")
     }
@@ -1723,13 +1721,13 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
 
 get_signatures <- function(species) {
   if (!is_valid_species(species)) {
-    stop("Please specify a species, at the moment only 'human' or 'mouse' are available).")
+    stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
   }
   # List existing species
   currTmp <- list.files(system.file("extdata/signatures", package = "postNetParcel"))
 
   if (!species %in% currTmp) {
-    stop("This option is currently only available for species 'human' and 'mouse'. Please use the options 'custom' and 'customFile' to provide annotations for other species.")
+    stop("This option is currently only available for species 'human' and 'mouse'. Please use the options 'custom' and 'customFile' in the postNetStart() function to provide annotations for other species.")
   }
 
   signatures <- readRDS(system.file(paste("extdata/signatures", species, sep = "/"), paste(species, "Signatures.rds", sep = ""), package = "postNetParcel"))

@@ -112,7 +112,7 @@ codonUsage <- function(ptn,
       #
       if (!species %in% currTmp) {
         stop("This option is currently only available for human and mouse. For analyses on other species or \
-             annotations, please use the source = 'custom' option in the PostNetStart function to provide custom reference \
+             annotations, please use the source = 'custom' option in the postNetStart() function to provide custom reference \
              sequences.")
       }
       if (species == "human") {
@@ -141,8 +141,8 @@ codonUsage <- function(ptn,
     stop("Please provide an input for 'analysis'. The options are 'codon' or 'AA' (amino acid).")
   }
   if (!check_number(codonN)) {
-    stop("Please provide numerical value for 'codonN' specifying the number of codons to consider in the analysis. \
-    For example, 1 will consider individual codons while 2 will consider dicodons, etc.")
+    stop("Please provide an integer value for 'codonN' specifying the number of consecutive codons to consider in the analysis. \
+    For example, 1 will consider each individual codon, while 2 will consider dicodons, etc.")
   }
   if (!check_logical(rem5)) {
     stop("The input for 'rem5' must be logical: TRUE or FALSE.")
@@ -157,8 +157,7 @@ codonUsage <- function(ptn,
 
   if (!is.null(comparisons)) {
     if (!check_comparisons(comparisons)) {
-      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \
-           denotes the background gene set.")
+      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \ denotes the background gene set.")
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 && is.null(ptn_background(ptn))) {
@@ -167,7 +166,7 @@ codonUsage <- function(ptn,
   } else {
     stop(
       "For further analysis to be performed, pairs of comparison must be specified with the 'comparisons' parameter. \
-      See the 'codonUsage' help page for details.",
+      See the 'codonUsage()' help page for details: ?codonUsage.",
       call. = FALSE
     )
   }
@@ -189,7 +188,7 @@ codonUsage <- function(ptn,
     #
     subSeq <- sapply(seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel))
     if (length(which(is.na(subSeq))) > 0) {
-      message("For some sequences, the selected subregion is longer than the sequence region. These sequences will be removed from the analysis.")
+      message("For some sequences, the selected subregion is longer than the reference sequence region. These sequences will be removed from the analysis.")
     }
     seqTmp <- subSeq
   }
@@ -370,8 +369,7 @@ codonUsage <- function(ptn,
         rem5Ind <- as.numeric(which(apply(resIn, 2, min) < 5))
         resIn <- resIn[, -rem5Ind]
       } else {
-        warning("In the contingency table (codon or AA counts by geneset), some counts are lower than 5 which may invalidate the Chi-squared test. \
-                You may wish to perform the analysis on a subset or groups of codons or AAs instead.",
+        warning("In the contingency table (codon or AA counts by geneset), some counts are lower than 5 which may invalidate the Chi-squared test. \ You may wish to perform the analysis on a subset or groups of codons or AAs instead.",
           call. = FALSE
         )
       }

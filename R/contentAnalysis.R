@@ -23,8 +23,7 @@ contentAnalysis <- function(ptn,
   }
   if (!is.null(comparisons)) {
     if (!check_comparisons(comparisons)) {
-      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \
-           denotes the background gene set.")
+      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \ denotes the background gene set.")
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 && is.null(ptn_background(ptn))) {
@@ -49,14 +48,13 @@ contentAnalysis <- function(ptn,
     #
     if (!is.null(subregion)) {
       if (is.null(subregionSel)) {
-        stop("You have chosen the option to select or exclude a subset of the sequence using the 'subregion' parameter. Please specify if you would like \
-             to 'select' or 'exclude' this subregion from the analysis using the 'subregionSel' parameter.")
+        stop("You have specified a subset of the sequence using the 'subregion' parameter. Please specify if you would like \ to 'select' or 'exclude' this subregion from the analysis using the 'subregionSel' parameter.")
       }
       #
       subSeq <- sapply(seqTmp, function(x) subset_seq(x, pos = subregion, subregionSel = subregionSel))
 
       if (length(which(is.na(subSeq))) > 0) {
-        message("For some sequences, the selected subregion is longer than the sequence region. These sequences will be removed from the analysis.")
+        message("For some sequences, the selected subregion is longer than the reference sequence region. \ These sequences will be removed from the analysis.")
       }
       seqTmp <- subSeq
     }
