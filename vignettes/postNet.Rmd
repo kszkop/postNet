@@ -1517,7 +1517,7 @@ The results of the modelling will be stored in the `postNetData` object, and a s
 
 ## Individual feature visualizations
 
-Both implementations of `featureIntegration()` output PDF files with scatterplots for each individual feature identified in either the final stepwise regression or random forest models. The Pearson's correlation coefficient between the feature and regulatory effect (two-sided test) is displayed, along with the linear trend line and cubic smoothing spline (allowing assessment of linearity). For binary features, these metrics are not displayed. 
+Both implementations of `featureIntegration()` output PDF files with scatterplots for each individual feature identified in either the final stepwise regression or random forest models. The Pearson's correlation coefficient between the feature and regulatory effect (two-sided test) is displayed, along with the linear trend line and cubic smoothing spline (allowing assessment of linearity). For binary features, these metrics are not displayed.
 
 ```{r IndFeatPDF, eval=TRUE, echo=FALSE}
 # Convert to PNG
@@ -1557,25 +1557,66 @@ unlink(c("Example_randomForest_translationUp_translationDown_UTR5_GC_individuall
          "Figures/Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Figures/Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.png", "Example_randomForest_translationUp_translationDown_CDS_GC3_individually.pdf", "Example_randomForest_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "Example_randomForest_translationUp_translationDown_Down_individually.pdf", "Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transDown_individually.pdf", "Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Example_randomForest_translationUp_translationDown_Guan_etal_2017_Tg1_transDown_individually.pdf", "Example_randomForest_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf", "Example_randomForest_translationUp_translationDown_pred_rocr.pdf", "Example_randomForest_translationUp_translationDown_uORFs_ATG_strong_individually.pdf", "Example_randomForest_translationUp_translationDown_Up_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR3_length_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR5_foldingEnergy_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR5_length_individually.pdf"))
 ```
 
-<a name="UMAPvis"/>
-
-# Visualize and explore relationships between features and regulatory effects 
-
-## Plotting UMAPs
-
-### Clustering and colouring options
-
-### Scaling and binary features 
-
-
 <a name="networkPred"/>
 
-# Predicting post-transcriptional regulation
+# Predicting post-transcriptional regulation in new data sets 
+
+Feature-based models trained using `featureIntegration()` can be used not only to interpret factors contributing to post-transcriptional regulation within a single data set, but also test whether the same features generalize across biological contexts. When `featureIntegration()`is implemented using Random Forest classification (when  `analysis_type = "rf"`), the final trained model can be exported and applied to new gene sets using the `rfPred()` function. The enables evaluation of whether features that explain post-transcriptional regulation in one system can accurately predict regulation in an independent data set, condition, or experimental model.   
 
 ## Selecting features to predict post-transcriptional regulation
 
 ## Predicting regulation in a new data set 
 
+
+<a name="UMAPvis"/>
+
+# Visualizing relationships between features and regulatory effects with UMAP 
+
+After identifying putative regulatory features using `featureIntegration()`, it is often helpful to explore how these features co-occur across genes and how they relate to regulatory effects. The `plotFeaturesMap()` function uses [umap](https://CRAN.R-project.org/package=umap) to generate Uniform Manifold Approximation and Projection (UMAP) visualizations based on user-selected features, allowing you to overlay regulatory effects and visually inspect how individual features vary across the same embedding. This provides an intuitive tool to identify transcripts with shared or differing regulatory behaviour and feature compositions.  
+
+## Plotting UMAPs
+
+When plotting UMAPs, each point will represent a gene. By default, only regulated genes will be included (those defined by the `geneList`or `regulation` parameters of the `postNetStart()` function). However, similarly to `featureIntegration()`, all genes can be included by setting the `regOnly` parameter to `FALSE`. The UMAP embedding is constructed from a user-defined set of features provided using the `featsel` parameter, often starting with those that were identified as informative during `featureIntegration`using either stepwise regression or Random Forest modelling. However, additional features of interest can also be included. The regulatory effect and feature values can then be overlaid on the embedding. Which features are coloured can be controlled using the `featCol` parameter. One PDF file with two panels will be generated for each feature provided with `featCol`. The left panel will be overlaid with the regulatory effect from the selected `comparisons`, and the right panel will be overlaid with the given feature.   
+
+UMAP is sensitive to input parameters and data pre-processing [@Huang2022]. Therefore, several options are provided that can be applied to feature values prior to dimensionality reduction. The `remBinary` parameter will remove binary features (0 or 1) which will often have a strong influence on gene clustering (default is `TRUE`). There are also options to scale and/or center the feature data using the `scaled` and `centered` parameters. Finally, outlier values can be filtered prior to generating UMAP embeddings using the `remExtreme` parameter. The default settings are a suggested starting point but may not be appropriate for all inputs, so it is recommended to test the impact of different input parameters. Users should exercise caution when interpreting spatial clustering of genes using this approach. These visualizations are intended to be used as a tool for data exploration and understanding relationships between different features and regulatory effects, particularly in cases where multiple features are co-occurring in the same mRNA.   
+
+In the example below, the set of features identified using forward stepwise regression modelling will be used to generate a UMAP embedding. PDF files will be generated with the regulatory effect and the values for 5'UTR GC content overlaid. The resulting UMAP coordinates are stored in the `featuresMap` slot of the `postNetData` object.   
+```{r plotUMAPs, eval=TRUE, echo=TRUE}
+
+# Plot UMAP visualizations using the features identified in stepwise regression modelling
+ptn <- plotFeaturesMap(ptn = ptn,
+                        regOnly = TRUE,
+                        comparisons = list(c(1,2)),
+                        featSel = c(names(ptn_selectedFeatures(ptn, 
+                                               analysis_type = "lm",
+                                               comparison = 1))),
+                        featCol = c("UTR5_GC"), 
+                        remBinary = TRUE,
+                        scaled = FALSE,
+                        centered = TRUE,
+                        remExtreme = 0.1,
+                        pdfName = "Example")
+
+```
+
+
+```{r plotUMAPsPDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_UTR5_GC_featureUMAP.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_UTR5_GC_featureUMAP.png")
+
+```
+
+```{r plotUMAPsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) generated based on features identified in the omnibus model using forward stepwise regression (left), with the 5'UTR GC content of mRNAs coloured (right)."}
+knitr::include_graphics("Figures/Example_UTR5_GC_featureUMAP.png")
+
+```
+
+```{r plotUMAPsHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_UTR5_GC_featureUMAP.pdf"))
+```
+                    
 <a name="enrichmentAnalysis"/>
 
 # Functional enrichment and threshold-independent signature analyses with postNet
