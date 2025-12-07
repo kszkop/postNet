@@ -1563,11 +1563,52 @@ unlink(c("Example_randomForest_translationUp_translationDown_UTR5_GC_individuall
 
 Feature-based models trained using `featureIntegration()` can be used not only to interpret factors contributing to post-transcriptional regulation within a single data set, but also test whether the same features generalize across biological contexts. When `featureIntegration()`is implemented using Random Forest classification (when  `analysis_type = "rf"`), the final trained model can be exported and applied to new gene sets using the `rfPred()` function. The enables evaluation of whether features that explain post-transcriptional regulation in one system can accurately predict regulation in an independent data set, condition, or experimental model.   
 
-## Selecting features to predict post-transcriptional regulation
+Running `rfPred()` requires a `postNetData` object that already contains a trained Random Forest model. By providing a single integer for the `comparison` argument, the user can select between models trained for different `comparisons` during `featureIntegration`. The train model will then be applied to a new list of genes provided with the `predGeneList` parameter. The list must have the same regulatory classes as the original data set used to train the model (e.g., `translationUp`, `translationDown`). For the genes included in `predGeneList`, features must be enumerated and compiled into a list, as described above for `featureIntegration()`. This list is provided with the `predFeatures` parameter, and must include exactly the same features as those in the final Random Forest model. These can be easily retrieved using the `ptn_selectedFeatures()` function as described above. The output of the `rfPred()` function is a PDF file containing the ROC curve evaluating how well the original features can explain the regulatory effect in the new data set. 
 
-## Predicting regulation in a new data set 
+In the example below, the Random Forest model trained in the example above will be applied to a new simulated data set created by randomly sampling the original data. Note that in this example, due to the randomization, the model is expected to have poor predictive power. 
 
+```{r rfPred, eval=TRUE, echo=TRUE}
 
+# Simulate a new gene list by randomly sampling genes from the existing background: 
+ newGenes <- sample(postNetVignette$background, size = 100)
+ newGeneList <- list(translationUp = newGenes[1:50], translationDown = newGenes[51:100]) 
+ 
+# Select the features that were used to train the final Random Forest model in the original data set:
+ predFeatureNames <- names(ptn_selectedFeatures(ptn, 
+                                                analysis_type = "rf", 
+                                                comparison = 1))
+  
+# Prepare the predictive features. In this case the same list of input features will be used to predict as the new gene lists are taken from the same data set the model was trained on. 
+# However, usually the input for the rfPred() function would be taken from a postNetData object from a separate analysis on a distinct dataset.
+
+ newFeatures <- myFeatureList[predFeatureNames] 
+
+# Evaluate the model in the new simulated data set:
+ ptn <- rfPred(ptn = ptn, 
+              comparison = 1, 
+              predGeneList = newGeneList, 
+              predFeatures = newFeatures, 
+              pdf= "Example" )
+
+```
+
+```{r rfPredPDF, eval=TRUE, echo=FALSE}
+# Convert to PNG
+image_read_pdf("Example_rocr.pdf", density = 300) %>%
+  image_resize("3000x") %>%
+  image_write("Figures/Example_rocr.png")
+
+```
+
+```{r rfPredPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Receiver Operating Characteristic (ROC) curve for the Random Forest classification model trained in the example above, applied to a new simulated data set of randomized genes to predict translationally activated vs. suppressed genes."}
+knitr::include_graphics("Figures/Example_rocr.png")
+
+```
+
+```{r rfPredHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_rocr.pdf"))
+```
+   
 <a name="UMAPvis"/>
 
 # Visualizing relationships between features and regulatory effects with UMAP 
@@ -1893,7 +1934,7 @@ unlink(c("mTORsignatures_data_Example_signature_mTOR_sensitive_translation.pdf")
 
 When starting from from the results of an `anota2seq` analysis, gene signatures can be assessed using the `plotSignatures_ads` function. The key difference from the custom gene list workflow is that instead of providing the `postNetData` object, the `anota2seqDataSet` object (the `ads` parameter) must be provided instead. Four eCDFs will be generated examining the distribution of log2 fold changes in total mRNA, polysome-associated mRNA (or ribosome-protected fragments; RPFs), translation, and buffering (also known as offsetting) for each gene signature provided. In addition to eCDFs, a scatter plot of total mRNA versus polysome-associated mRNA will also be generated, with the genes corresponding to the signatures provided coloured. 
 
-The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by activation of the integrated stress response with thapsigargin.  
+The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by activation of the integrated stress response with thapsigargin. Note that a very minimal example dataset was used to illustrate the `anota2seq` workflow, so very few genes are present in the outputs.   
 ```{r plotSignaturesAds, eval=TRUE, echo=TRUE, results='hide'}
 
 # Examine the regulation of ISR-sensitive transcripts in the results of an anota2seq analysis:
