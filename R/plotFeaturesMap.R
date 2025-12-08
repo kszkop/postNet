@@ -1,69 +1,65 @@
 plotFeaturesMap <- function(ptn,
-                           regOnly = TRUE,
-                           comparisons = NULL,
-                           featSel,
-                           remBinary = TRUE,
-                           featCol = NULL,
-                           scaled = FALSE,
-                           centered = TRUE,
-                           remExtreme = NULL,
-                           pdfName = NULL
-                           ){
-  
-
+                            regOnly = TRUE,
+                            comparisons = NULL,
+                            featSel,
+                            remBinary = TRUE,
+                            featCol = NULL,
+                            scaled = FALSE,
+                            centered = TRUE,
+                            remExtreme = NULL,
+                            pdfName = NULL) {
   check_ptn(ptn)
-  
-  if(!is.null(ptn_features(ptn))){
+
+  if (!is.null(ptn_features(ptn))) {
     featuresIn <- ptn_features(ptn)
   } else {
-    stop("features analysis is null, please run featureIntegration analysis first")
+    stop("Features analysis is NULL. Please run the featureIntegration() analysis first.")
   }
-  if(!check_featSel(featSel, features = featuresIn)){
-    stop("Please provide character vector of features. The recommedation is to provide these that were selected in the final featureIntegration model.
-         These can be obtained by running ptn_selectedFeatures function and providing ptn object, analysis_type (ie lm or rf) and comparison (it would be a consecutive number from the comparisons provided running featureIntegration)")
+  if (!check_featSel(featSel, features = featuresIn)) {
+    stop("Please provide a character vector of features of interest to be used for UMAP embeddings. We recommedation start with those that were selected in the \ final featureIntegration() models. These can be obtained by running the ptn_selectedFeatures() function. See help manuals and vignette for details.")
   }
-  if(!is.null(featCol)){
-    if(!check_featCol(featCol, features = featuresIn)){
-      stop("Please provide character vector of features to be plotted. All of them must be already calculated, to check what these are run: colnames(ptn_features(ptn)) ")
+  if (!is.null(featCol)) {
+    if (!check_featCol(featCol, features = featuresIn)) {
+      stop("Please provide a character vector defining the features that will be overlain on UMAPs. All features must be present in the 'features' stored in \ the ptn object. To check which features have been stored run: colnames(ptn_features(ptn))")
     }
   }
-  featuresSel <- featuresIn[,colnames(featuresIn) %in% featSel]
+  featuresSel <- featuresIn[, colnames(featuresIn) %in% featSel]
 
   if (!check_logical(regOnly)) {
-    stop("'regOnly' can only be TRUE or FALSE")
+    stop("The input for 'regOnly' must be logical: TRUE or FALSE")
   }
   if (!check_logical(scaled)) {
-    stop("'scaled' can only be TRUE or FALSE")
+    stop("The input for 'scaled' must be logical: TRUE or FALSE")
   }
   if (!check_logical(centered)) {
-    stop("'centered' can only be TRUE or FALSE")
+    stop("The input for 'centered' must be logical: TRUE or FALSE")
   }
-  if(!check_logical(remBinary)){
-    stop("'remBinary' can only be TRUE or FALSE")
+  if (!check_logical(remBinary)) {
+    stop("The input for 'remBinary' must be logical: TRUE or FALSE")
   }
   if (isTRUE(regOnly)) {
     if (!check_comparisons(comparisons)) {
-      stop("'comparisons' must be a list of numeric vector for paired comparisons example: list(c(0,2),c(0,1)). 0 is always a background.")
+      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \ denotes the background gene set.")
     }
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 && is.null(ptn_background(ptn))) {
-      stop(" 0 is always a background, but no background provided")
+      stop("0 always denotes the background, but no background has been provided.")
     }
     if (length(comparisons) != 1) {
-      stop("Although potentially posssible, please run each comparison separetely to fit well to your feature selection")
+      stop("Although potentially possible, please run each comparison separetely to fit your feature selection.")
     }
   }
   if (!is.null(remExtreme)) {
     if (!check_number(remExtreme)) {
-      stop("remExtreme should be a number indicating percentile of extreme values to be removed for colouring purposes ")
+      stop("The input for 'remExtreme' should be a number between 0 and 1 indicating a percentile threshold for extreme values to be removed \ for determining the colouring scale.")
     } else {
       if (remExtreme <= 0 | remExtreme >= 1) {
-        stop("remExtreme can be only 1 number between (0,1). It represents percentile in decimal of extreme values from both sides of distribution to be removed only for colouring scale")
+        stop("The input for 'remExtreme' can only be a single value between (0,1). It represents a percentile threshold in decimal format for extreme values \ from both sides of the feature distribution to be removed. Values are removed only for determining the colouring scale.")
       }
     }
   }
   #
   if (length(which(unique(unlist(comparisons)) == 0)) > 0 && is.null(ptn_background(ptn))) {
-    stop(" 0 is always a background, but no background provided")
+    stop("0 always denotes the background, but no background has been provided.")
   }
   #
   if (isTRUE(regOnly)) {
@@ -75,16 +71,16 @@ plotFeaturesMap <- function(ptn,
       compTmp <- comparisons[[1]]
     }
     listSel <- c(names(resOut[[compTmp[1]]]), names(resOut[[compTmp[2]]]))
-    featuresSel<- featuresSel[row.names(featuresSel) %in% listSel,]
-  } 
-  if(isTRUE(remBinary)){
+    featuresSel <- featuresSel[row.names(featuresSel) %in% listSel, ]
+  }
+  if (isTRUE(remBinary)) {
     binaryCols <- sapply(featuresSel, is_binary)
     featuresCluster <- featuresSel[, !binaryCols, drop = FALSE]
   } else {
     featuresCluster <- featuresSel
   }
-  if(isTRUE(scaled)){
-    #save <- featuresCluster
+  if (isTRUE(scaled)) {
+    # save <- featuresCluster
     featuresCluster <- scale(na.omit(featuresCluster), center = centered, scale = scaled)
   } else {
     featuresCluster <- na.omit(featuresCluster)
@@ -95,25 +91,24 @@ plotFeaturesMap <- function(ptn,
   colnames(fmapRes) <- colnames(fmapResOut) <- c("UMAP1", "UMAP2")
   fmapRes$Gene <- rownames(featuresCluster)
 
-  #Plot selected features
-  
+  # Plot selected features
+
   effTmp <- ptn_effect(ptn)
-  eff <- effTmp[match(row.names(fmapRes),names(effTmp))]
-  effect_fmap <- plot_fmap(fmapRes, colVec = eff, remExtreme = remExtreme, name='Effect')
-  
-  if(is.null(featCol)){
+  eff <- effTmp[match(row.names(fmapRes), names(effTmp))]
+  effect_fmap <- plot_fmap(fmapRes, colVec = eff, remExtreme = remExtreme, name = "Effect")
+
+  if (is.null(featCol)) {
     featCol <- featSel
   }
-  
-  featuresIn <- featuresIn[match(row.names(fmapRes),row.names(featuresIn)),]
-  for(feat in featCol){
 
-    featTmp <- featuresIn[,feat]
-    feature_fmap <- plot_fmap(fmapRes, colVec = featTmp, remExtreme = remExtreme, name=feat)
-    
-    pdf(ifelse(is.null(pdfName),paste(feat, '_featureUMAP.pdf', sep=''), paste(pdfName,feat, 'featureUMAP.pdf',sep='_')),width= 16,height=8, useDingbats = F)
-    par(mar=c(5,5,5,5),bty='l',font=2, font.axis=2, font.lab=2, cex.axis=0.9, cex.main=0.7,cex.lab=0.9)
-    
+  featuresIn <- featuresIn[match(row.names(fmapRes), row.names(featuresIn)), ]
+  for (feat in featCol) {
+    featTmp <- featuresIn[, feat]
+    feature_fmap <- plot_fmap(fmapRes, colVec = featTmp, remExtreme = remExtreme, name = feat)
+
+    pdf(ifelse(is.null(pdfName), paste(feat, "_featureUMAP.pdf", sep = ""), paste(pdfName, feat, "featureUMAP.pdf", sep = "_")), width = 16, height = 8, useDingbats = F)
+    par(mar = c(5, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.9)
+
     gridExtra::grid.arrange(
       effect_fmap$legend[[1]],
       effect_fmap$mainPlot,
@@ -125,6 +120,6 @@ plotFeaturesMap <- function(ptn,
 
     dev.off()
   }
-  ptn@analysis@featureIntegration[['featuresMap']] <- fmapResOut
+  ptn@analysis@featureIntegration[["featuresMap"]] <- fmapResOut
   return(ptn)
 }

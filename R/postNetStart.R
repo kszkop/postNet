@@ -34,27 +34,27 @@ postNetStart <- function(ads = NULL,
     }
     if (!is.null(regulation)) {
       if (!is.null(contrast) && !is.numeric(contrast) && !length(contrast) == length(regulation) && !contrast %in% seq(1, ncol(ads@contrasts), 1)) {
-        stop("The 'contrast' provided should be a numeric vector corresponding to the numbers of the anota2seq contrasts for each regulatory mode selected for comparison. Please see the anota2seq vignette for additional details on contrasts.")
+        stop("The input for 'contrast' must be a numeric vector corresponding to the numbers of the anota2seq contrasts for each regulatory mode selected for comparison. Please see the anota2seq vignette for additional details on contrasts.")
       }
     }
   }
   if (is.null(ads)) {
     if (is.null(geneList)) {
-      stop("Please provide either an anota2seq object or a gene list.")
+      stop("Please provide either an anota2seq object with the 'ads' parameter, or a list of regulated genes with the 'geneList' parameter.")
     } else {
       check_geneList(geneList)
 
       if (!is.null(geneListcolours) && !is.character(geneListcolours) && !length(geneListcolours) == length(geneList)) {
-        stop("'geneListcolours' should be a character vector of the same length as geneList. These colours will be used for plotting.")
+        stop("The input for 'geneListcolours' should be a character vector of the same length as 'geneList'. These colours will be used for plotting in \ downstream analyses.")
       }
     }
   }
   if (!is.null(customBg)) {
     if (!is.character(customBg)) {
-      stop("The 'customBg' provided must be a character vector.")
+      stop("The input for 'customBg' must be a character vector.")
     }
     if (!length(setdiff(unlist(geneList), customBg)) == 0) {
-      stop("There are entries in geneList that are not in 'customBg'. Please ensure that all genes are included in the background.")
+      stop("There are entries in 'geneList' that are not in 'customBg'. Please ensure that all genes in your gene lists are included in the background.")
     }
   }
   check_source(source)
@@ -65,19 +65,19 @@ postNetStart <- function(ads = NULL,
     check_adjObj(adjObj)
     valid_regions <- c("UTR5", "UTR3")
     if (!all(region_adj %in% valid_regions)) {
-      stop("'region_adj' must be provided and can only inlcude: 'UTR5', and/or 'UTR3'. It should also match the named entries in the list adjObj.")
+      stop("The input for 'region_adj' must be provided and can only inlcude: 'UTR5', and/or 'UTR3'. It should also match the named entries in the list adjObj.")
     }
     if (!check_logical(excl)) {
-      stop("'excl' must be logical: TRUE of FALSE.")
+      stop("The input for 'excl' must be logical: TRUE of FALSE.")
     }
     if (!check_logical(keepAll)) {
-      stop("'keepAll' must be logical: TRUE of FALSE.")
+      stop("The input for 'keepAll' must be logical: TRUE of FALSE.")
     }
   }
   # Check available species for the 'create' source
   if (source == "create") {
     if (!is_valid_species(species)) {
-      stop("Please specify a species, at the moment only 'human' or 'mouse' are available).")
+      stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
     }
     #### Download files
     if (species == "human"
@@ -198,7 +198,7 @@ postNetStart <- function(ads = NULL,
     write.table(outDB, file = "customDB.txt", col.names = TRUE, row.names = FALSE, sep = "\t", quote = FALSE)
   } else if (source == "createFromSourceFiles") {
     if (!is_valid_species(species)) {
-      stop("Please specify a species, at the moment only 'human' or 'mouse' are available).")
+      stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
     }
     # Unzip the source files
     source_files_tmp <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
@@ -253,13 +253,13 @@ postNetStart <- function(ads = NULL,
     }
   } else if (source == "load") {
     if (!is_valid_species(species)) {
-      stop("Please specify a species, at the moment only 'human' or 'mouse' are available).")
+      stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
     }
     # List existing species
     currTmp <- list.files(system.file("extdata/annotation/refseq", package = "postNetParcel"))
 
     if (!species %in% currTmp) {
-      stop("This option is currently only available for species 'human' and 'mouse'. Please use the options 'custom' and 'customFile' to provide annotations for other species.")
+      stop("This option is currently only available for species: 'human' and 'mouse'. Please use the 'custom' and 'customFile' parameters \ to provide annotations for other species.")
     }
 
     if (is.null(version)) {
@@ -295,7 +295,7 @@ postNetStart <- function(ads = NULL,
     # Path to ftp refSeq db
     if (is.null(genomic_gff_file)) {
       if (!is_valid_species(species)) {
-        stop("Please specify a species. Currently, 'human' or 'mouse' are available. For use with other species annotations, please use the 'custom' option and provide an annotation file using the 'customeFile' argument.")
+        stop("Please specify a species. Currently, 'human' or 'mouse' are available. For use with other species annotations, please use the 'custom' parameter, \ and provide an annotation file using the 'customeFile' parameter.")
       }
       #### Get the most recent release
       if (species == "human"
@@ -390,16 +390,16 @@ postNetStart <- function(ads = NULL,
 
     write.table(outDB, file = "customDB.txt", col.names = TRUE, row.names = FALSE, sep = "\t", quote = FALSE)
   } else {
-    stop("Please select one of: 'custom', 'create', 'createFromFasta', and 'createFromSourceFiles' for the 'source' argument. See the help page and vignette for additional details on sequence annotations.")
+    stop("Please select one of: 'custom', 'create', 'createFromFasta', and 'createFromSourceFiles' for the 'source' parameter. \ See the help page and vignette for additional details on sequence annotations.")
   }
 
   ####
   annotBg <- gSel(annot = outDB, ads = ads, customBg = customBg, geneList = geneList)
   if (nrow(annotBg) == 0) {
-    stop("Annotation geneIDs are not compatibile with gene IDs in the background")
+    stop("The gene IDs in the annotation are not compatibile with gene IDs in the background.")
   }
   if (length(setdiff(customBg, outDB$geneID)) > 0) {
-    warning(paste("There are ", length(setdiff(customBg, outDB$geneID)), " genes in the background that are not in the selected annotation.", sep = ""))
+    warning(paste("There are ", length(setdiff(customBg, outDB$geneID)), " genes in the background that are not present in the selected annotation.", sep = ""))
   }
 
   #
@@ -440,7 +440,7 @@ postNetStart <- function(ads = NULL,
   #  stop('Annotation geneIDs are not compatibile with gene IDs in the provided gene list/anota2seq object')
   # }
   if (length(setdiff(as.character(unlist(genesIn)), outDB$geneID)) > 0) {
-    warning(paste("There are ", length(setdiff(as.character(unlist(genesIn)), outDB$geneID)), " genes in the geneList/anota2seq object that are not in the selected annotation. ", sep = ""))
+    warning(paste("There are ", length(setdiff(as.character(unlist(genesIn)), outDB$geneID)), " genes in the geneList or anota2seq object that are not present in the selected annotation. ", sep = ""))
   }
 
   # add here to check numbers of genes

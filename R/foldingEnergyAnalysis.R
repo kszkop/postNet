@@ -39,7 +39,7 @@ foldingEnergyAnalysis <- function(ptn,
   #
   if (sourceFE == "custom") {
     if (is.null(customFileFE)) {
-      stop("Please provide a custom file with folding energies.")
+      stop("Please provide a custom file with folding energies using the 'customFileFE' parameter.")
     }
   }
   if (sourceFE == "load") {

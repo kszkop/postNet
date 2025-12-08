@@ -5,12 +5,12 @@ rfPred <- function(ptn,
                    pdfName = NULL) {
   check_ptn(ptn)
   if (is.null(ptn@analysis@featureIntegration$rf)) {
-    stop("Please run random forest analysis first")
+    stop("Please run the featureIntegration() function with the Random Forest implementation first.")
   }
   if (!check_number(comparison)) {
-    stop("Please provide the correct comparison number. You can check them using ptn_check_comparisons(ptn, analysis_type='rf') ")
+    stop("Please provide the correct comparison number. You can check which are available using: ptn_check_comparisons(ptn, analysis_type='rf') ")
     if (length(comparison) != 1) {
-      stop("There can be only one comparison")
+      stop("Please select only one comparison.")
     }
   }
   modelIn <- ptn_model(ptn, analysis_type = "rf", comparison = comparison, model = "finalModel")
@@ -19,10 +19,10 @@ rfPred <- function(ptn,
   check_features(predFeatures)
   if (!all(selFeat %in% names(predFeatures))) {
     missTmp <- setdiff(selFeat, names(predFeatures))
-    stop(paste("These features: ", missTmp, "are missing in the predFeature object. Please calculate and add them.", sep = ""))
+    stop(paste("These features: ", missTmp, "are missing in the 'predFeature' object. Please calculate and add them.", sep = ""))
   }
   if (length(predGeneList) != 2) {
-    stop("there can be only 2 entries for predGeneList")
+    stop("The inpur for 'predGeneList' can only have two categories.")
   }
 
   predFeaturesNames <- names(predFeatures)

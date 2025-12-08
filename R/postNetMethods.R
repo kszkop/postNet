@@ -8,7 +8,7 @@ setMethod(
     check_region(region)
     check_ptn(x)
     if (length(region) > 1) {
-      stop("'region' can be only one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
+      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
     tmpReg <- slot(x@annot, region)
     seqOut <- tmpReg@sequences
@@ -26,7 +26,7 @@ setMethod(
     check_region(region)
     check_ptn(x)
     if (length(region) > 1) {
-      stop("'region' can be only one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
+      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
     tmpReg <- slot(x@annot, region)
     idOut <- tmpReg@id
@@ -44,7 +44,7 @@ setMethod(
     check_region(region)
     check_ptn(x)
     if (length(region) > 1) {
-      stop("'region' can be only one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
+      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
     tmpReg <- slot(x@annot, region)
     geneIDOut <- tmpReg@geneID
@@ -158,7 +158,7 @@ setMethod(
     check_ptn(ptn)
     check_region(region)
     if (length(region) > 1) {
-      stop("'region' can be only one of: 'UTR3', 'CDS', 'UTR5'")
+      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5'.")
     }
     tmpReg <- slot(ptn@analysis@motifs, region)
     motifsOut <- tmpReg$motifSelection
@@ -176,10 +176,10 @@ setMethod(
     check_ptn(ptn)
     check_region(region)
     if (length(region) > 1) {
-      stop("'region' can be only one of: 'UTR3', 'CDS', 'UTR5'")
+      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5'.")
     }
     if (!any(geneList %in% names(ptn_geneList(ptn)))) {
-      stop("the regulatory geneList not in ptn")
+      stop("The list of regulated genes 'geneList' is not stored in the postNetData object.")
     }
     tmpReg <- slot(ptn@analysis@motifs, region)
     motifsAnalysisOut <- tmpReg[[geneList]]
@@ -242,7 +242,7 @@ ptn_miRNA_analysis <- function(ptn,
   }
 
   if (is.null(slot(ptn@analysis, "miRNA"))) {
-    stop("Please run miRNAanalysis() first")
+    stop("Please run the miRNAanalysis() function first.")
   } else {
     miRNAres <- ptn@analysis@miRNA@miRNA_analysis
   }
@@ -259,7 +259,7 @@ ptn_miRNA_analysis <- function(ptn,
     resOut <- resOut[, c(1, 2, 5, 3, 4)]
     resOut <- data.frame(id = row.names(resOut), resOut, row.names = NULL)
   } else {
-    message("there are no enriched miRNAs to output.")
+    message("There are no enriched miRNAs to output.")
   }
   return(resOut)
 }
@@ -271,7 +271,7 @@ ptn_miRNA_to_gene <- function(ptn,
   check_ptn(ptn)
 
   if (is.null(slot(ptn@analysis, "miRNA"))) {
-    stop("Please run miRNAanalysis() first.")
+    stop("Please run the miRNAanalysis() function first.")
   } else {
     miRNATmp <- ptn@analysis@miRNA@miRNA_to_gene
   }
@@ -289,18 +289,18 @@ ptn_GO <- function(ptn,
   check_ptn(ptn)
   check_category(category)
   if (length(category) != 1) {
-    stop("Please provide only one category.")
+    stop("Please provide only one GO category.")
   }
   if (!check_number(threshold)) {
     stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
   }
   #
   if (!any(geneList %in% names(ptn_geneList(ptn)))) {
-    stop("None of the regulatory geneList are included in the ptn.")
+    stop("None of the regulated genes included in 'geneList' are included in the postNetData object.")
   }
   #
   if (is.null(slot(ptn@analysis, "GO"))) {
-    stop("Please run goAnalysis() first.")
+    stop("Please run the goAnalysis() function first.")
   } else {
     GOres <- slot(ptn@analysis@GO, category)
   }
@@ -321,7 +321,7 @@ ptn_GSEA <- function(ptn,
   check_ptn(ptn)
 
   if (is.null(slot(ptn@analysis, "GSEA"))) {
-    stop("Please run gseaAnalysis() first.")
+    stop("Please run the gseaAnalysis() function first.")
   } else {
     gseaOut <- slot(ptn@analysis, "GSEA")
   }
@@ -353,7 +353,7 @@ ptn_GAGE <- function(ptn,
     stop("Please provide only one category.")
   }
   if (is.null(slot(ptn@analysis, "GAGE"))) {
-    stop("Please run gageAnalysis() first.")
+    stop("Please run the gageAnalysis() function first.")
   } else {
     GAGEres <- slot(ptn@analysis@GAGE, category)
   }

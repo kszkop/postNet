@@ -22,8 +22,7 @@ goDotplot <- function(ptn,
   #
   for (sel in category) {
     if (is.null(slot(ptn@analysis@GO, sel))) {
-      stop("No results found for the selected category. Please run the goAnalysis function
-           first for all of the selected categories.")
+      stop("No results found for the selected category. Please run the goAnalysis() function first for all of the selected categories.")
     } else {
       goIn <- slot(ptn@analysis@GO, sel)
     }

@@ -127,7 +127,7 @@ featureIntegration <- function(ptn,
       # fiOut@comparisons <- 'allData'
       #
       coloursTmp <- c("salmon", "skyblue")
-      lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt = covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn = coloursTmp, lmfeatGroup = lmfeatGroup, lmfeatGroupColour = lmfeatGroupColourOut,fdrUni = fdrUni, stepP = stepP)
+      lmOut <- runLM(dataIn = dataTmp, namesDf = namesDf, allFeat = allFeat, useCorel = useCorel, covarFilt = covarFilt, nameOut = pdfName, NetModelSel = NetModelSel, coloursIn = coloursTmp, lmfeatGroup = lmfeatGroup, lmfeatGroupColour = lmfeatGroupColourOut, fdrUni = fdrUni, stepP = stepP)
       # fiOut@lm[['allData']] <- lmOut
       compOut <- lmOut
       #
@@ -173,7 +173,7 @@ featureIntegration <- function(ptn,
       dataTmpSel$reg <- NA
       for (j in 1:2) {
         if (length(compTmp) != 2) {
-          stop("There is something wrong with comparisons. Please check that your input for 'comparisons' conforms to the example in the help manual.")
+          stop("There is something wrong with your comparisons. Please check that your input for 'comparisons' conforms to the example in the help manual.")
         }
         cTmp <- names(resOut[[compTmp[j]]])
         regTmp <- c("A", "B")
@@ -302,7 +302,7 @@ featureIntegration <- function(ptn,
     # fiOut@rf <- compOut
     ptn@analysis@featureIntegration[["rf"]] <- compOut
   } else {
-    stop("Please provide correct input for 'analysis_type'. Choose either 'lm' for linear regression or 'rf' for random forest.")
+    stop("Please provide correct input for 'analysis_type'. Choose either 'lm' for forward stepwise linear regression, or 'rf' for Random Forest.")
   }
   return(ptn)
 }
