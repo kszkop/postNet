@@ -1,4 +1,3 @@
-\docType{function}
 \name{plotSignatures}
 \alias{plotSignatures}
 \title{Analysis of regulation of gene signatures in a \code{postNetData} object

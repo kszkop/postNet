@@ -1,4 +1,3 @@
-\docType{function}
 \name{ptn_miRNA_analysis}
 \alias{ptn_miRNA_analysis}
 \title{Accessor for the "miRNA_analysis" slot of a \code{postNetData} object

@@ -1,4 +1,3 @@
-\docType{function}
 \name{lengthAnalysis}
 \alias{lengthAnalysis}
 \title{Calculate the length of mRNA sequence regions and compare between gene sets

@@ -1,4 +1,3 @@
-\docType{function}
 \name{ptn_GSEA}
 \alias{ptn_GSEA}
 \title{Accessor for the "GSEA" slot of a \code{postNetData} object

@@ -1,4 +1,3 @@
-\docType{function}
 \name{plotSignatures_ads}
 \alias{plotSignatures_ads}
 \title{Analysis of regulation of gene signatures in an \code{Anota2seqDataSet} object

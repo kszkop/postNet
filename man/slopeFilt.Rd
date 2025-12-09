@@ -1,4 +1,3 @@
-\docType{function}
 \name{slopeFilt}
 \alias{slopeFilt}
 \title{Filtering \pkg{anota2seq} analysis results according to slopes for use in GSEA, GAGE, and GO term analyses

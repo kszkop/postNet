@@ -1,4 +1,3 @@
-\docType{function}
 \name{ptn_miRNA_to_gene}
 \alias{ptn_miRNA_to_gene}
 \title{Accessor for the "miRNA_to_gene" slot of a \code{postNetData} object

@@ -1,4 +1,3 @@
-\docType{function}
 \name{ptn_GAGE}
 \alias{ptn_GAGE}
 \title{Accessor for the "GAGE" slot of a \code{postNetData} object

@@ -1,4 +1,3 @@
-\docType{function}
 \name{codonUsage}
 \alias{codonUsage}
 \title{Perform differential codon or amino acid usage analysis between gene sets

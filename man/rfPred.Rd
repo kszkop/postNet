@@ -1,4 +1,3 @@
-\docType{function}
 \name{rfPred}
 \alias{rfPred}
 \title{Predict post-transcriptional regulation using trained random forest models 

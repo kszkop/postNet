@@ -1,4 +1,3 @@
-\docType{function}
 \name{goAnalysis}
 \alias{goAnalysis}
 \title{Perform Gene Ontology Analysis using a \code{postNetData} object

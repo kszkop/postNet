@@ -1,4 +1,3 @@
-\docType{function}
 \name{ptn_check_models}
 \alias{ptn_check_models}
 \title{Accessor for the feature integration model comparisons in a \code{postNetData} object

@@ -1,4 +1,3 @@
-\docType{function}
 \name{gseaAnalysis}
 \alias{gseaAnalysis}
 \title{Perform Gene Set Enrichment Analysis (GSEA) with a \code{postNetData} object 

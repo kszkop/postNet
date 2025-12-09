@@ -1,4 +1,3 @@
-\docType{function}
 \name{get_signatures}
 \alias{get_signatures}
 \title{Retrieve gene signatures provided in the postNetParcel}

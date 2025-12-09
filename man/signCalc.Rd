@@ -1,4 +1,3 @@
-\docType{function}
 \name{signCalc}
 \alias{signCalc}
 \title{Create gene signatures for use in feature integration analysis

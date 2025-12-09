@@ -1,4 +1,3 @@
-\docType{function}
 \name{gseaPlot}
 \alias{gseaPlot}
 \title{Plot enriched terms from GSEA

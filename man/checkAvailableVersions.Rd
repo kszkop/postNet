@@ -1,4 +1,3 @@
-\docType{function}
 \name{checkAvailableVersions}
 \alias{checkAvailableVersions}
 \title{List the available RefSeq release versions for pre-prepared reference sequence annotations}

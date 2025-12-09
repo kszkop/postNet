@@ -1,4 +1,3 @@
-\docType{function}
 \name{featureIntegration}
 \alias{featureIntegration}
 \title{Feature integration with post-transcriptional network modelling

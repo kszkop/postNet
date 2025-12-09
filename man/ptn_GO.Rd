@@ -1,4 +1,3 @@
-\docType{function}
 \name{ptn_GO}
 \alias{ptn_GO}
 \title{Accessor for the "GO" slot of a \code{postNetData} object

@@ -1,4 +1,3 @@
-\docType{function}
 \name{signaturesHeatmap}
 \alias{signaturesHeatmap}
 \title{Generate heatmaps to evaluate the regulation of gene signatures in a \code{postNetData} object

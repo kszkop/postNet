@@ -1,4 +1,3 @@
-\docType{function}
 \name{ptn_networkGraph}
 \alias{ptn_networkGraph}
 \title{Accessor for the \code{networkGraph} slot of a \code{postNetData} object

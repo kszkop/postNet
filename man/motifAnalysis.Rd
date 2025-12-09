@@ -1,4 +1,3 @@
-\docType{function}
 \name{motifAnalysis}
 \alias{motifAnalysis}
 \title{De novo motif discovery using STREME and a \code{postNetData} object

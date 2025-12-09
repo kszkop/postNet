@@ -1,4 +1,3 @@
-\docType{function}
 \name{foldingEnergyAnalysis}
 \alias{foldingEnergyAnalysis}
 \title{Compare mRNA folding energy between gene sets  

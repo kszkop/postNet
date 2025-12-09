@@ -1,4 +1,3 @@
-\docType{function}
 \name{miRNAanalysis}
 \alias{miRNAanalysis}
 \title{Perform miRNA target enrichment analysis using a \code{postNetData} object 

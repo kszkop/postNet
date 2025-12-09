@@ -1,4 +1,3 @@
-\docType{function}
 \name{goDotplot}
 \alias{goDotplot}
 \title{Produce dot plots with results of GO term enrichment analysis

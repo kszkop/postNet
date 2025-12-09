@@ -1,4 +1,3 @@
-\docType{function}
 \name{contentAnalysis}
 \alias{contentAnalysis}
 \title{Calculate nucleotide content of mRNA sequence regions and compare between gene sets 

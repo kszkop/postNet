@@ -1,4 +1,3 @@
-\docType{function}
 \name{uorfAnalysis}
 \alias{uorfAnalysis}
 \title{Detect and quantify upstream open reading frames (uORFs)

@@ -1,4 +1,3 @@
-\docType{function}
 \name{contentMotifs}
 \alias{contentMotifs}
 \title{Detect, quantify, and compare sequence motifs between gene sets

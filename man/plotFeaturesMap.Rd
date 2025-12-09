@@ -1,4 +1,3 @@
-\docType{function}
 \name{plotFeaturesMap}
 \alias{plotFeaturesMap}
 \title{Explore mRNA features and regulatory effects using UMAP visualizations 

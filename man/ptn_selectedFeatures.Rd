@@ -1,4 +1,3 @@
-\docType{function}
 \name{ptn_selectedFeatures}
 \alias{ptn_selectedFeatures}
 \title{Accessor for the \code{selectedFeatures} slot of a \code{postNetData} object

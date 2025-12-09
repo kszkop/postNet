@@ -1,4 +1,3 @@
-\docType{function}
 \name{codonCalc}
 \alias{codonCalc}
 \title{Quantify and compare codon or amino acid usage across gene sets

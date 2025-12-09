@@ -1,4 +1,3 @@
-\docType{function}
 \name{postNetStart}
 \alias{postNetStart}
 \title{Create the data container and inputs for postNet analyses

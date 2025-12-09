@@ -1,4 +1,3 @@
-\docType{function}
 \name{gageAnalysis}
 \alias{gageAnalysis}
 \title{Perform GAGE analysis with a \code{postNetData} object 

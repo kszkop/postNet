@@ -1,4 +1,3 @@
-\docType{function}
 \name{ptn_model}
 \alias{ptn_model}
 \title{Accessor for the feature integration model slots of a \code{postNetData} object
