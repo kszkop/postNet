@@ -1,6 +1,6 @@
-\docType{methods}
+\docType{function}
 \name{ptn_selectedFeatures}
-\alias{ptn_selectedFeatures,postNetData-method}
+\alias{ptn_selectedFeatures}
 \title{Accessor for the \code{selectedFeatures} slot of a \code{postNetData} object
 }
 
@@ -8,7 +8,9 @@
 }
 
 \usage{
-\S4method{ptn_selectedFeatures}{postNetData}(ptn, analysis_type, comparison)
+ptn_selectedFeatures(ptn, 
+                     analysis_type, 
+                     comparison)
 }
 \arguments{
   \item{ptn}{A \linkS4class{postNetData} object.
@@ -49,23 +51,25 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
-# Prepare the list of pre-calculated features to be used in feature integration modelling 
+# Prepare the list of pre-calculated features to be used in feature integration modelling:
  myFeatures <- postNetExample$features
- str(features)
+ str(myFeatures)
 
-# Run feature integration modelling using stepwise regression
+# Run feature integration modelling using forward stepwise regression:
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
                           pdfName = "omnibus", 
-                          regOnly = T, 
-                          allFeat = F,
+                          regOnly = TRUE, 
+                          allFeat = FALSE,
                           analysis_type = "lm",
                           covarFilt = 10,
-                          comparisons = list(c(1,2)),
+                          comparisons = list(c(1, 2)),
                           NetModelSel = "omnibus")
                           
-# Retrieve the features selected by the model the explain changes in translation efficiency 
- selectedFeatures <- ptn_selectedFeatures(ptn, analysis_type = "lm", comparison = 1) 
+# Retrieve the features selected by the model that explain changes in translation efficiency: 
+ selectedFeatures <- ptn_selectedFeatures(ptn, 
+                                          analysis_type = "lm", 
+                                          comparison = 1) 
  str(selectedFeatures)
  
 }

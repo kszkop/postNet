@@ -5,6 +5,7 @@
 }
 
 \description{
+Retrieve the codons or amino acids that were selected as significantly enriched or depleted in the specified comparison from a \code{postNetData} object.
 }
 
 \usage{
@@ -12,14 +13,14 @@ ptn_codonSelection(x, comparison)
 }
 
 \arguments{
-  \item{x}{A \code{postNetData} object.
+  \item{x}{A \linkS4class{postNetData} object.
 }
   \item{comparison}{An integer specifying which comparison to select results from. For example, \code{1} would
   select the first comparison specified in the \code{comparisons} parameter of the \link[postNet]{codonUsage} function.
   }
 }
 
-\value{The value returned is a named list of the selected codons or AAs that were signficantly enriched or depleted (according to the thresholds selected in the \link[postNet]{codonUsage} function) in the specified comparisons. This list can be used as input for the \link[postNet]{codonCalc} function. 
+\value{The value returned is a named list of the selected codons or AAs that were significantly enriched or depleted (according to the thresholds selected in the \link[postNet]{codonUsage} function) in the specified comparisons. This list can be used as input for the \link[postNet]{codonCalc} function. 
 }
 
 \seealso{
@@ -51,7 +52,7 @@ ptn_codonSelection(x, comparison)
           plotType_index = "violin", 
           pdfName = 'codons')
           
-# Select codons of interest that were significantly enriched or depleted with high frequency, and the highest and lowest Odds ratios
+# Select codons of interest that were significantly enriched or depleted with high frequency, and the highest and lowest odds ratios
  
  codons <- ptn_codonSelection(ptn, comparison = 1)
 }

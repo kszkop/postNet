@@ -19,7 +19,7 @@ plotSignatures <- function(ptn,
     signature_colours <- paste0("#", sprintf("%06X", sample(0:16777215, length(signatureList))))
   }
   if (is.null(dataName) | is.null(generalName)) {
-    stop("Please provide an input for 'generalName' to be assinged to the gene signatures, and for 'dataName' to be assigned to the data being used.")
+    stop("Please provide an input for 'generalName' to be assigned to the gene signatures, and for 'dataName' to be assigned to the data being used.")
   }
 
   if (!check_number(tableCex)) {
@@ -27,7 +27,7 @@ plotSignatures <- function(ptn,
   }
 
   if (!is_numeric_vector(xlim) | length(xlim) != 2) {
-    stop("Please provide numeric vector to define the range of the x-axis, for example c(-2,2).")
+    stop("Please provide a numeric vector of length 2 to define the x-axis range, for example c(-2, 2).")
   }
   #
   effIn <- ptn_effect(ptn)

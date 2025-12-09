@@ -9,7 +9,7 @@ slopeFilt <- function(ads,
     stop("For filtering slopes, 'regulationGen' should be either 'translation' or 'buffering'.")
   }
   if (!is.numeric(contrastSel) | !contrastSel %in% seq(1, ncol(ads@contrasts), 1)) {
-    stop("THe input for 'contrastSel' should be a number corresponding to the desired contrast in anota2seq object.")
+    stop("The input for 'contrastSel' should be a number corresponding to the desired contrast in the anota2seq object.")
   }
 
   # Set default values for minSlope and maxSlope based on regulationGen if they are NULL

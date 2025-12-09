@@ -23,7 +23,7 @@ motifAnalysis <- function(ptn,
     stop("Please provide a value for 'stremeThreshold' to define the p-value threshold for motif selection.")
   }
   if (!check_number(minwidth)) {
-    stop("Please provide a positive integer to 'minwidth' to define the minimal width for motif selection.")
+    stop("Please provide a positive integer for 'minwidth' to define the minimal width for motif selection.")
   }
   if (is.null(memePath)) {
     stop("Please provide full file path to the STREME executables in meme/bin. Note that the MEME-Suite must be installed.")

@@ -421,7 +421,7 @@ checkFileColumns <- function(filePath) {
 
   noS <- length(unique(fileData$Species.ID))
   if (noS > 1) {
-    stop("Please subset the targetScan file the include only the desired species.")
+    stop("Please subset the targetScan file to include only the desired species.")
   }
   return(fileData)
 }
@@ -459,7 +459,7 @@ check_direction <- function(direction) {
     stop("The direction cannot be NULL.")
   }
   if (length(direction) != 1) {
-    stop("Please provide only one: greater or less")
+    stop("Please provide only one value: 'greater' or 'less'.")
   }
   if (!direction %in% c("greater", "less")) {
     stop("The input for 'direction' must be either 'greater' or 'less'.")
@@ -539,7 +539,7 @@ check_features <- function(features) {
     stop("Error: Each element in 'features' must be a vector.")
   }
   if (length(features) < 2) {
-    stop(" Please provide at least two features.")
+    stop("Please provide at least two features.")
   }
 }
 

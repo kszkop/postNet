@@ -19,7 +19,7 @@ goAnalysis <- function(ptn,
     stop("The inputs for 'maxSize', 'minSize', 'counts', and 'FDR' must be numeric.")
   }
   if (minSize <= 0 | maxSize <= 0 | counts <= 0 | FDR < 0) {
-    stop("The inputs for 'maxSize', 'minSize', 'counts', and 'FDR' must be postive.")
+    stop("The inputs for 'maxSize', 'minSize', 'counts', and 'FDR' must be positive.")
   }
   if (maxSize <= minSize) {
     stop("'maxSize' must be greater than 'minSize'.")
@@ -39,7 +39,7 @@ goAnalysis <- function(ptn,
     res <- lapply(res, function(x) x[!x %in% genesSlopeFiltOut])
   }
 
-  # Convert to enterezid
+  # Convert to Entrez ID
   bg_entrezID <- convertSymbolToEntrezID(geneList = bg, species = species)
   res_entrezID <- lapply(res, function(x) convertSymbolToEntrezID(geneList = x, species = species))
 

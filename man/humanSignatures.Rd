@@ -5,9 +5,7 @@
 }
 
 \description{The \code{humanSignatures} dataset is a list of example gene signatures derived from published studies profiling mRNA
-translation downstream of mTOR signalling and activation of the integrated stress response (ISR). In addition, an example of a signature comprised of mRNAs containing 
-5'TOP motifs is also included. The list is not intended to be exhaustive, but provides examples of how gene signatures can be used in a \pkg{postNet} analysis to gain 
-insights into post-transcriptional regulation of gene expression.} 
+translation downstream of mTOR signalling and activation of the integrated stress response (ISR). In addition, an example of a signature comprised of mRNAs containing 5'TOP motifs is also included. The list is not intended to be exhaustive, but provides examples of how gene signatures can be used in a \pkg{postNet} analysis to gain insights into post-transcriptional regulation of gene expression.} 
 
 \usage{data("humanSignatures")}
 \format{
@@ -20,15 +18,13 @@ List of 5
  $ Guan_etal_2017_Tg1_transDown       : chr [1:731] "AGA" "BCKDHB" "CST3" "CYBA" ...
 }
 
-\details{The \code{humanSignatures} dataset contains a list of gene signatures relevent to understanding possible pathways and
-mRNA features involved in regulation of mRNA translation, with a specific focus on mTOR and integrated stress response (ISR)-sensitive translation. 
-These signatures have been compiled either directly from published studies, or from analyses of published datasets (sources and references 
-described in detail below). Note that if the orignal source of the gene signature was from mouse, these gene IDs have been converted to human. 
+\details{The \code{humanSignatures} dataset contains a list of gene signatures relevant to understanding possible pathways and
+mRNA features involved in regulation of mRNA translation, with a specific focus on mTOR and integrated stress response (ISR)-sensitive translation. These signatures have been compiled either directly from published studies, or from analyses of published datasets (sources and references described in detail below). Note that if the original source of the gene signature was from mouse, these gene IDs have been converted to human. 
 
 These gene signatures can be used with the \link[postNet]{plotSignatures}, \link[postNet]{plotSignatures_ads}, 
 and \link[postNet]{signaturesHeatmap} functions to perform statistical analyses and visualizations of how each
 gene signature is regulated in a given dataset. Furthermore, gene signatures can also be provided as features 
-in the \link[postNet]{featureIntegration} function which performs step-wise regression modelling or random forest
+in the \link[postNet]{featureIntegration} function which performs forward stepwise regression modelling or random forest
 classification to identify features that are most important in explaining post-transcriptional regulation in a given
 dataset. 
 }
@@ -110,7 +106,7 @@ dataset.
   \item \strong{Publication Information}:{
     \itemize{
         \item Title: A Unique ISR Program Determines Cellular Responses to Chronic Stress
-        \item Method: Polysome fractionation followed by RNA seqeuncing 
+        \item Method: Polysome fractionation followed by RNA sequencing 
         \item Data Source: 
         \item Analysis Method:
         \item First Author, Last Author, Year:  Guan, Hatzoglou, 2017
@@ -139,7 +135,7 @@ Wynshaw-Boris A, Topisirovic I, Larsson O, Hatzoglou M. A Unique ISR Program Det
 }
 
 \examples{
-# Load the mouse signatures
+# Load the human gene signatures:
  humanSignatures <- get_signatures("human")
  str(humanSignatures)
 }

@@ -4,10 +4,7 @@
 \title{Accessor for the "background", "geneList", "effect", and "colours" slots of a \code{postNetData} object
 }
 
-\description{Retrieve the "background", "geneList", "effect", and "colours" slots from a \code{postNetData} object. If \code{ads} has been provided, these are retrieved from the \code{Anota2seqDataSet} based on the \code{regulation},
-\code{contrast}, \code{regulationGen}, and \code{contrastSel} arguments of the \code{\link[postNet]{postNetStart}} 
-function. If not using \code{ads}, these inputs are compiled from the \code{geneList}, \code{geneListcolours},
-\code{effectMeasure}, and optionally the \code{customBg} arguments.
+\description{Retrieve the "background", "geneList", "effect", and "colours" slots from a \code{postNetData} object. If \code{ads} has been provided, these are retrieved from the \code{Anota2seqDataSet} based on the \code{regulation}, \code{contrast}, \code{regulationGen}, and \code{contrastSel} arguments of the \code{\link[postNet]{postNetStart}} function. If not using \code{ads}, these inputs are compiled from the \code{geneList}, \code{geneListcolours}, \code{effectMeasure}, and optionally the \code{customBg} arguments.
 }
 
 \usage{
@@ -15,7 +12,7 @@ function. If not using \code{ads}, these inputs are compiled from the \code{gene
 }
 
 \arguments{
-  \item{x}{a \code{postNetData} object.
+  \item{x}{A \linkS4class{postNetData} object.
   }
 }
 
@@ -33,7 +30,7 @@ function. If not using \code{ads}, these inputs are compiled from the \code{gene
   \code{geneList}.
   
   \item \strong{effect}: a numeric vector corresponding to the regulation effect measurement. The elements of the vector
-  are named with the gene/transcipt IDs present in either \code{ads}, \code{geneList}, or \code{customBg}. If using
+  are named with the gene/transcript IDs present in either \code{ads}, \code{geneList}, or \code{customBg}. If using
   \code{ads}, the regulatory effect measurement is selected by \code{regulationGen}. If using \code{geneList}, it is
   provided with \code{effectMeasure}. 
   
@@ -50,7 +47,7 @@ function. If not using \code{ads}, these inputs are compiled from the \code{gene
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
-# Access the transcript IDs corresonding to the reference 5'UTR sequences from the postNetData object
+# Access the input data (background, geneList, effect, colours) stored in the postNetData object:
   myDataIn <- ptn_dataIn(ptn)
   str(myDataIn)
   

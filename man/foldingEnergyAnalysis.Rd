@@ -1,3 +1,4 @@
+\docType{function}
 \name{foldingEnergyAnalysis}
 \alias{foldingEnergyAnalysis}
 \title{Compare mRNA folding energy between gene sets  
@@ -23,7 +24,7 @@ foldingEnergyAnalysis(ptn,
   }
   \item{sourceFE}{A string specifying the source of the folding energy values. The options are \code{"load"}, or \code{"custom"}. If \code{"load"}, pre-calculated folding energies for the selected species ("human" or "mouse") will be used. If \code{"custom"}, a custom file with pre-calculated folding energies must be provided using the \code{customFileFE} argument. The default is \code{"load"}. 
   }
-  \item{customFileFE}{If \code{sourceFE = "custom"}, provide a string specifying the name and file path to the custom folding energy file. The custom file with calculated folding energies must be provided in a TAB delimited format with three columns: transcript ID, folding energy, and length of the sequence. Note that folding energies for different sequence regions (e.g. 5'UTR and 3'UTR) must be provided separately.
+  \item{customFileFE}{If \code{sourceFE = "custom"}, provide a string specifying the name and file path to the custom folding energy file. The custom file with calculated folding energies must be provided in a tab-delimited format with three columns: transcript ID, folding energy, and length of the sequence. Note that folding energies for different sequence regions (e.g. 5'UTR and 3'UTR) must be provided separately.
   }
   \item{residFE}{Logical indicating if the folding energies should be corrected for the length of the sequences. If \code{TRUE}, the values returned are the residuals from the linear model: FE ~ log2(sequence region length). See details below for usage recommendations. The default is \code{FALSE}.
   }
@@ -48,7 +49,7 @@ If the output folding energies will be used in downstream analysis with \link[po
 }
 
 \references{
-If you use the \code{foldingEnergyAnalysis} function in your analysis, with the \code{sourceFE = "load"}, please cite: \cr
+If you use the \code{foldingEnergyAnalysis} function in your analysis with the \code{sourceFE = "load"}, please cite: \cr
 
 M. Zuker. Mfold web server for nucleic acid folding and hybridization prediction. Nucleic Acids Res. 31 (13), 3406-3415, 2003. https://doi.org/10.1093/nar/gkg595
 }

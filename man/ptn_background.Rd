@@ -1,16 +1,16 @@
 \docType{methods}
 \name{ptn_background}
 \alias{ptn_background,postNetData-method}
-\title{Accessor for the gene set used as background from the "background" slot of a \code{postNetData} object
+\title{Accessor for the gene set used as background in a \code{postNetData} object
 }
-\description{The "background" slot holds a character vector of gene IDs used as the background in statistical comparisons performed in \pkg{postNet} analyses.
+\description{The \code{background} slot holds a character vector of gene IDs used as the background in statistical comparisons performed in \pkg{postNet} analyses.
 }
 \usage{
 \S4method{ptn_background}{postNetData}(x)
 }
 
 \arguments{
-  \item{x}{a \code{postNetData} object.
+  \item{x}{A \linkS4class{postNetData} object.
   }
 }
 

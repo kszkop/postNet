@@ -1,9 +1,10 @@
+\docType{methods}
 \name{ptn_motifSelection}
 \alias{ptn_motifSelection,postNetData-method}
 \title{Accessor for the "motifSelection" slot of a \code{postNetData} object
 }
 
-\description{Retrieve the "motifSelection" slot from a \code{postNetData} object, which holds de-novo identified motifs in the gene sets of interest that have enrichment p-values below the given threshold. 
+\description{Retrieve the "motifSelection" slot from a \code{postNetData} object, which holds de novo identified motifs in the gene sets of interest that have enrichment p-values below the given threshold. 
 }
 
 \usage{
@@ -11,14 +12,14 @@
 }
 
 \arguments{
-  \item{x}{a \code{postNetData} object.
+  \item{x}{A \linkS4class{postNetData} object.
   }
   \item{region}{A string specifying the sequence region of interest. This can be one of \code{"UTR5"},
   \code{"UTR3"}, or \code{"CDS"}.
   }
 }
 
-\value{The \code{ptn_motifSelection} function returns a character vector of de-novo identified motifs in the gene sets of interest that have enrichment p-values below the threshold set with the \code{stremeThreshold} parameter of the \link[postNet]{motifAnalysis} function. 
+\value{The \code{ptn_motifSelection} function returns a character vector of de novo identified motifs in the gene sets of interest that have enrichment p-values below the threshold set with the \code{stremeThreshold} parameter of the \link[postNet]{motifAnalysis} function. 
 }
 
 \references{
@@ -34,7 +35,7 @@ Timothy L. Bailey, "STREME: Accurate and versatile sequence motif discovery", Bi
 }
 
 \examples{
-# Note that as users must provide the path to the MEME Suite executables, it is not possile to
+# Note that as users must provide the path to the MEME Suite executables, it is not possible to
 # create a fully executable example as this path will vary depending on many factors. An example of
 # how to run this function is provided below, and can be updated with the correct memePath argument. 
 

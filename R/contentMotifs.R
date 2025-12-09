@@ -40,10 +40,10 @@ contentMotifs <- function(ptn,
     stop("For 'dist', please provide a numeric value specifying the minimal distance between motifs.")
   }
   if (!isUnitOut(unitOut)) {
-    stop("The input for 'unitOut' must be either 'numeric' or 'position'.")
+    stop("The input for 'unitOut' must be either 'number' or 'position'.")
   }
   if (!check_logical(resid)) {
-    stop("The input for 'resid' (specifying whether the values should be normalised for the sequence length) must be logical: TRUE of FALSE.")
+    stop("The input for 'resid' (specifying whether the values should be normalised for the sequence length) must be logical: TRUE or FALSE.")
   }
   if (!is_valid_seq_type(seqType)) {
     stop("The input for 'seqType' must be either 'dna', 'rna', or 'protein'.")

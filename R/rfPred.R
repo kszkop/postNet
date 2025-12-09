@@ -19,10 +19,10 @@ rfPred <- function(ptn,
   check_features(predFeatures)
   if (!all(selFeat %in% names(predFeatures))) {
     missTmp <- setdiff(selFeat, names(predFeatures))
-    stop(paste("These features: ", missTmp, "are missing in the 'predFeature' object. Please calculate and add them.", sep = ""))
+    stop(paste("These features: ", missTmp, " are missing in the 'predFeatures' object. Please calculate and add them.", sep = ""))
   }
   if (length(predGeneList) != 2) {
-    stop("The inpur for 'predGeneList' can only have two categories.")
+    stop("The input for 'predGeneList' can only have two categories.")
   }
 
   predFeaturesNames <- names(predFeatures)

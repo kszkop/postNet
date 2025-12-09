@@ -1,10 +1,11 @@
+\docType{function}
 \name{goAnalysis}
 \alias{goAnalysis}
 \title{Perform Gene Ontology Analysis using a \code{postNetData} object
 }
 
 \description{The \code{goAnalysis} function implements \link[clusterProfiler]{clusterProfiler} to perform Gene Ontology 
-enrichment analysis using the gene sets of interest associated with the regulatory effect measurement defined within \code{postNetData} object.
+enrichment analysis using the gene sets of interest associated with the regulatory effect measurement defined within the \code{postNetData} object.
 }
 
 \usage{
@@ -19,9 +20,9 @@ goAnalysis(ptn,
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
-  \item{genesSlopeFiltOut}{If using an \code{Anota2seqDataSet} with analysis results for the "translation" or "buffering" regulatory modes, optionally provide a character vector with gene IDs to be excluded from enrichment analysis that is the output of the \code{\link[postNet]{slopeFilt}} function. Although optional, this step is strongly recommended. This filtering is not necessary if using "mRNAAbundance", "totalmRNA", or "translatedmRNA". The default is \code{NULL}. 
+  \item{genesSlopeFiltOut}{If using an \code{Anota2seqDataSet} with analysis results for the "translation" or "buffering" regulatory modes, optionally provide a character vector with gene IDs to be excluded from enrichment analysis. This can be generated using the \code{\link[postNet]{slopeFilt}} function. Although optional, this step is strongly recommended. This filtering is not necessary if using "mRNAAbundance", "totalmRNA", or "translatedmRNA". The default is \code{NULL}. 
   }
   \item{category}{A character vector specifying one or more Gene Ontology categories to be included in the analysis. The options are \code{'BP'}, \code{"CC"}, \code{"MF"}, and \code{"KEGG"}. For example, \code{category = c("BP", "MF")}.
   }
@@ -31,7 +32,7 @@ goAnalysis(ptn,
   }
   \item{counts}{Integer specifying the minimal number of genes in the gene set of interest that must be included in the term. Terms with fewer genes overlapping with the gene set of interest than the threshold specified will be discarded, regardless of significance. The default is \code{10}.
   }
-  \item{FDR}{A numeric value providing the FDR threshold to be used to select significant enrichments. The default is \code{0.15}
+  \item{FDR}{A numeric value providing the FDR threshold to be used to select significant enrichments. The default is \code{0.15}.
   }
   \item{name}{Optionally, provide a name to be appended to the Excel output file storing the GO analysis results. Note that the "GO" slot of the \code{postNetData} object will reflect the results of the most recent analysis. However, multiple analyses can be run and saved by providing unique names to the output file. The default is \code{NULL}.
   }
@@ -40,7 +41,7 @@ goAnalysis(ptn,
 
 Note that if using results from an \pkg{anota2seq} analysis, it is strongly recommended to first apply filtering using the \link[postNet]{slopeFilt} function to exclude genes with unrealistic regression slopes.
 }
-\value{An S4 \linkS4class{enrichResult} object is stored in the \code{postNetData} object analysis slot for each category of GO terms assessed. In addition, the "results" slot of each \code{enrichResult} object is written to an Excel file. Separate Excel files are create for each \code{category}. 
+\value{An S4 \linkS4class{enrichResult} object is stored in the analysis slot of the \code{postNetData} object for each category of GO terms assessed. In addition, the "results" slot of each \code{enrichResult} object is written to an Excel file. Separate Excel files are created for each \code{category}. 
 }
 \references{
 See \link[clusterProfiler]{clusterProfiler} for full details of enrichment analysis implementation in R. \cr
@@ -75,7 +76,7 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 # Extract the significant enrichment results from the postNetData object:
  goOut <- ptn_GO(ptn, 
                  category = "BP", 
-                 geneList = 'translationUp', 
+                 geneList = "translationUp", 
                  threshold = 0.05)
  str(goOut)
  
@@ -83,7 +84,7 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
  goDotplot(ptn = ptn, 
           category = "BP", 
           nCategories = 50, 
-          pool = T, 
+          pool = TRUE, 
           size = "geneRatio", 
           pdfName = "example")
           
@@ -93,7 +94,7 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 # Example 2: Running GO term analysis with anota2seq results
 # ------------------------------------------------------------------
 
-# Initialize Anota2seqDataSet (see anota2seq vignette for details)
+# Initialize Anota2seqDataSet (see anota2seq vignette for details):
  ads <- anota2seq::anota2seqDataSetFromMatrix(
     dataP = postNetExample$ads_data$dataP,
     dataT = postNetExample$ads_data$dataT,
@@ -106,7 +107,7 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 # Note that the quality control and residual outlier testing are not 
 # performed to limit the running time of this example. For full details 
 # on running an analysis please see the anota2seq vignette and help manual.
- ads <- aanota2seq::anota2seqRun(ads,
+ ads <- anota2seq::anota2seqRun(ads,
     performQC = FALSE, 
     performROT = FALSE, 
     useProgBar = FALSE)

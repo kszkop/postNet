@@ -1,6 +1,6 @@
-\docType{methods}
+\docType{function}
 \name{ptn_GSEA}
-\alias{ptn_GSEA,postNetData-method}
+\alias{ptn_GSEA}
 \title{Accessor for the "GSEA" slot of a \code{postNetData} object
 }
 
@@ -8,17 +8,17 @@
 }
 
 \usage{
-\S4method{ptn_GSEA}{postNetData}(ptn, threshold)
+ptn_GSEA(ptn, threshold)
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
  }
   \item{threshold}{A numeric value providing the FDR threshold to be used to select results from the GSEA. 
  }
 }
 
-\value{A data.frame of GSEA results that is stored in the GSEA slot of the \code{postNetData} object, and written to a tab delimited text file. Each row of the data.frame corresponds to a term, with the following columns (also see \code{\link[fgsea]{fgseaMultilevel}} from the \pkg{fgsea} package):
+\value{A data.frame of GSEA results that is stored in the GSEA slot of the \code{postNetData} object, and written to a tab-delimited text file. Each row of the data.frame corresponds to a term, with the following columns (also see \code{\link[fgsea]{fgseaMultilevel}} from the \pkg{fgsea} package):
 
  \itemize{ 
   \item \strong{Term}: The name of the term or pathway tested.
@@ -43,7 +43,7 @@
 }
 
 \references{
-See \code{\link[fgsea]{fgsea}} for full details of GSEA implentation in R. \cr
+See \code{\link[fgsea]{fgsea}} for full details of GSEA implementation in R. \cr
 
 See \url{https://www.gsea-msigdb.org/gsea/index.jsp} for GSEA documentation. \cr
 

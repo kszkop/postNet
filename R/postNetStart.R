@@ -24,7 +24,7 @@ postNetStart <- function(ads = NULL,
                          setSeed = NULL) {
   #
   if (!is.null(ads) && !is.null(geneList)) {
-    stop("Please provide either an anota2seq object or a genelist, not both.")
+    stop("Please provide either an anota2seq object or a gene list, not both.")
   }
   if (!is.null(ads)) {
     check_ads(ads)
@@ -65,19 +65,19 @@ postNetStart <- function(ads = NULL,
     check_adjObj(adjObj)
     valid_regions <- c("UTR5", "UTR3")
     if (!all(region_adj %in% valid_regions)) {
-      stop("The input for 'region_adj' must be provided and can only inlcude: 'UTR5', and/or 'UTR3'. It should also match the named entries in the list adjObj.")
+      stop("The input for 'region_adj' must be provided and can only include: 'UTR5', and/or 'UTR3'. It should also match the named entries in the list adjObj.")
     }
     if (!check_logical(excl)) {
-      stop("The input for 'excl' must be logical: TRUE of FALSE.")
+      stop("The input for 'excl' must be logical: TRUE or FALSE.")
     }
     if (!check_logical(keepAll)) {
-      stop("The input for 'keepAll' must be logical: TRUE of FALSE.")
+      stop("The input for 'keepAll' must be logical: TRUE or FALSE.")
     }
   }
   # Check available species for the 'create' source
   if (source == "create") {
     if (!is_valid_species(species)) {
-      stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
+      stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
     }
     #### Download files
     if (species == "human"
@@ -198,7 +198,7 @@ postNetStart <- function(ads = NULL,
     write.table(outDB, file = "customDB.txt", col.names = TRUE, row.names = FALSE, sep = "\t", quote = FALSE)
   } else if (source == "createFromSourceFiles") {
     if (!is_valid_species(species)) {
-      stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
+      stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
     }
     # Unzip the source files
     source_files_tmp <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
@@ -253,7 +253,7 @@ postNetStart <- function(ads = NULL,
     }
   } else if (source == "load") {
     if (!is_valid_species(species)) {
-      stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
+      stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
     }
     # List existing species
     currTmp <- list.files(system.file("extdata/annotation/refseq", package = "postNetParcel"))
@@ -295,7 +295,7 @@ postNetStart <- function(ads = NULL,
     # Path to ftp refSeq db
     if (is.null(genomic_gff_file)) {
       if (!is_valid_species(species)) {
-        stop("Please specify a species. Currently, 'human' or 'mouse' are available. For use with other species annotations, please use the 'custom' parameter, \ and provide an annotation file using the 'customeFile' parameter.")
+        stop("Please specify a species. Currently, 'human' or 'mouse' are available. For use with other species annotations, please use the 'custom' parameter, \ and provide an annotation file using the 'customFile' parameter.")
       }
       #### Get the most recent release
       if (species == "human"
@@ -396,7 +396,7 @@ postNetStart <- function(ads = NULL,
   ####
   annotBg <- gSel(annot = outDB, ads = ads, customBg = customBg, geneList = geneList)
   if (nrow(annotBg) == 0) {
-    stop("The gene IDs in the annotation are not compatibile with gene IDs in the background.")
+    stop("The gene IDs in the annotation are not compatible with gene IDs in the background.")
   }
   if (length(setdiff(customBg, outDB$geneID)) > 0) {
     warning(paste("There are ", length(setdiff(customBg, outDB$geneID)), " genes in the background that are not present in the selected annotation.", sep = ""))

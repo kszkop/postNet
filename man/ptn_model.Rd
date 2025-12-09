@@ -1,6 +1,6 @@
-\docType{methods}
+\docType{function}
 \name{ptn_model}
-\alias{ptn_model,postNetData-method}
+\alias{ptn_model}
 \title{Accessor for the feature integration model slots of a \code{postNetData} object
 }
 
@@ -8,16 +8,16 @@
 }
 
 \usage{
-\S4method{ptn_model}{postNetData}(ptn, 
-                                  analysis_type, 
-                                  model, 
-                                  comparison)
+ptn_model(ptn, 
+          analysis_type, 
+          model, 
+          comparison)
 }
 
 \arguments{
   \item{ptn}{A \linkS4class{postNetData} object.
 }
-  \item{analysis_type}{A string specifying the method of analysis used for \link[postNet]{featureIntegration} to retrieve the selected features from. The options are \code{"lm"} to retrieve features selected by stepwise linear regression, or \code{"rf"} for features selected using random forest-based analyses.
+  \item{analysis_type}{A string specifying the method of analysis used for \link[postNet]{featureIntegration} to retrieve the selected features from. The options are \code{"lm"} to retrieve features selected by forward stepwise linear regression, or \code{"rf"} for features selected using random forest-based analyses.
 }
   \item{model}{A string specifying the model to retrieve. If \code{analysis_type = "lm"}, the options are: \code{"univariateModel"}, \code{"stepwiseModel"}, or \code{"finalModel"}. If \code{analysis_type = "rf"}, the options are: \code{"preModel"}, \code{"borutaModel"}, or \code{"finalModel"}. 
 }
@@ -25,23 +25,23 @@
 }
 }
 
-\value{If \code{analysis_type = "lm"} and \code{model = "univariateModel"}, and object of class \code{postNetUnivariate} is returned with three slots containing the p-values, FDRs, and proportion of variance explained for each feature passing the significance threshold in univariate models. 
+\value{If \code{analysis_type = "lm"} and \code{model = "univariateModel"}, an object of class \code{postNetUnivariate} is returned with three slots containing the p-values, FDRs, and proportion of variance explained for each feature passing the significance threshold in univariate models. 
 
-If \code{analysis_type = "lm"} and \code{model = "stepwiseModel"}, and object of class \code{postNetStepWise} is returned with two slots containing the linear models from each step of setpwise regression, and the F-value table storing the F-values for each feature at each step of stepwise regression.
+If \code{analysis_type = "lm"} and \code{model = "stepwiseModel"}, an object of class \code{postNetStepWise} is returned with two slots containing the linear models from each step of forward stepwise regression, and the F-value table storing the F-values for each feature at each step of forward stepwise regression.
 
-If \code{analysis_type = "lm"} and \code{model = "finalModel"}, and object of class \code{postNetFinalModel} is returned with three slots containing the the total variance explained by the final omnibus model, the final omnibus linear model, and a table summarizing the p-values and variance explained by each feature in the omnibus and adjusted models. 
+If \code{analysis_type = "lm"} and \code{model = "finalModel"}, an object of class \code{postNetFinalModel} is returned with three slots containing the total variance explained by the final omnibus model, the final omnibus linear model, and a table summarizing the p-values and variance explained by each feature in the omnibus and adjusted models. 
 
-If \code{analysis_type = "rf"} and \code{model = "preModel"}, and object of class \code{randomForest} is returned for the pre-model using all features. See \link[randomForest]{randomForest} for full description of the output object.
+If \code{analysis_type = "rf"} and \code{model = "preModel"}, an object of class \code{randomForest} is returned for the pre-model using all features. See \link[randomForest]{randomForest} for full description of the output object.
 
-If \code{analysis_type = "rf"} and \code{model = "borutaModel"}, and object of class \code{Boruta} is returned with the results of feature selection. See \link[Boruta]{Boruta} for full description of the output object.
+If \code{analysis_type = "rf"} and \code{model = "borutaModel"}, an object of class \code{Boruta} is returned with the results of feature selection. See \link[Boruta]{Boruta} for full description of the output object.
 
-If \code{analysis_type = "rf"} and \code{model = "finalModel"}, and object of class \code{randomForest} is returned for the final model using the selected features. See \link[randomForest]{randomForest} for full description of the output object.
+If \code{analysis_type = "rf"} and \code{model = "finalModel"}, an object of class \code{randomForest} is returned for the final model using the selected features. See \link[randomForest]{randomForest} for full description of the output object.
 }
 
 \references{
 Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R News, 2(3), 18-22. https://CRAN.R-project.org/doc/Rnews/. 
 
-Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Journal of Statistical Software, 36(11), 1–13. https://doi.org/10.18637/jss.v036.i11.
+Kursa MB., Witold R. Rudnicki (2010). “Feature Selection with the Boruta Package.” Journal of Statistical Software, 36(11), 1–13. https://doi.org/10.18637/jss.v036.i11.
 }
 
 \seealso{
@@ -58,9 +58,9 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
  
 # Prepare the list of pre-calculated features to be used in feature integration modelling 
  myFeatures <- postNetExample$features
- str(features)
+ str(myFeatures)
 
-# Run feature integration modelling using stepwise regression
+# Run feature integration modelling using forward stepwise regression:
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
                           pdfName = "omnibus", 
@@ -71,7 +71,7 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
                           comparisons = list(c(1,2)),
                           NetModelSel = "omnibus")
                           
-# Retrieve the omnibus model from stepwise regression analysis
+# Retrieve the omnibus model from forward stepwise regression analysis:
  finalModel <- ptn_model(ptn, analysis_type = "lm", model = "finalModel", comparison = 1) 
  str(finalModel)
 }

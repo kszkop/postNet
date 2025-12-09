@@ -1,6 +1,6 @@
-\docType{methods}
+\docType{function}
 \name{ptn_GAGE}
-\alias{ptn_GAGE,postNetData-method}
+\alias{ptn_GAGE}
 \title{Accessor for the "GAGE" slot of a \code{postNetData} object
 }
 
@@ -8,17 +8,17 @@
 }
 
 \usage{
-\S4method{ptn_GAGE}{postNetData}(ptn,
+ptn_GAGE(ptn,
         category, 
         direction, 
         threshold)
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
   \item{category}{A character vector specifying one or more gene ontology categories to be included in the analysis. 
-  The options are \code{'BP'}, \code{'CC'}, \code{'MF'}, and \code{'KEGG'}. For example, \code{category = c('BP','MF')}.
+  The options are \code{"BP"}, \code{"CC"}, \code{"MF"}, and \code{"KEGG"}. For example, \code{category = c("BP", "MF")}.
   }
   \item{direction}{A character indicating the directionality of regulation of the gene sets. Can be either
   \code{"greater"}, or \code{"less"}.
@@ -33,7 +33,7 @@
   \item \strong{p.geomean}: The geometric mean of the individual p-values from multiple single array-based gene set 
   tests.
   
-  \item \strong{stat.mean}: The mean of the individual statistics from multple single array-based gene set tests. The
+  \item \strong{stat.mean}: The mean of the individual statistics from multiple single array-based gene set tests. The
   value denotes the magnitude of the gene-set level changes, and the sign denotes the direction of the changes.
   
   \item \strong{p.val}: The global p-value or summary of the individual p-values from multiple single array-based gene
@@ -67,11 +67,11 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
  
 # Run GAGE:
  ptn <- gageAnalysis(ptn,
-                    category = 'CC')
+                    category = "CC")
 
-# Extract the signficant enrichment results from the postNetData object:
+# Extract the significant enrichment results from the postNetData object:
  gageOut <- ptn_GAGE(ptn = ptn,
-                    category = 'CC',
+                    category = "CC",
                     direction = "greater", 
                     threshold = 1)
  str(gageOut)

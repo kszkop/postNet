@@ -1,3 +1,4 @@
+\docType{function}
 \name{ptn_check_models}
 \alias{ptn_check_models}
 \title{Accessor for the feature integration model comparisons in a \code{postNetData} object
@@ -17,7 +18,7 @@ ptn_check_models(ptn, analysis_type)
 }
 }
 
-\value{Returns a character string specifying the comparisons that were used in modeling. For example "translationUp_c1_translationDown_c1" indicates the gene sets that were compared, and from which anota2seq contrast they were selected from (e.g. c1 = contrast 1).
+\value{Returns a character string specifying the comparisons that were used in modelling. For example "translationUp_c1_translationDown_c1" indicates the gene sets that were compared, and which anota2seq contrast they were selected from (e.g. c1 = contrast 1).
 }
 
 \seealso{
@@ -31,7 +32,7 @@ ptn_check_models(ptn, analysis_type)
  
 # Prepare the list of pre-calculated features to be used in feature integration modelling 
  myFeatures <- postNetExample$features
- str(features)
+ str(myFeatures)
 
 # Run feature integration modelling using stepwise regression
  ptn <- featureIntegration(ptn = ptn, 

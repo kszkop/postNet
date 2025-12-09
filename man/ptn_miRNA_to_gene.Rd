@@ -1,6 +1,6 @@
-\docType{methods}
+\docType{function}
 \name{ptn_miRNA_to_gene}
-\alias{ptn_miRNA_to_gene,postNetData-method}
+\alias{ptn_miRNA_to_gene}
 \title{Accessor for the "miRNA_to_gene" slot of a \code{postNetData} object
 }
 
@@ -9,11 +9,11 @@ the filtering thresholds for \code{contextScore} and/or \code{Pct}.
 }
 
 \usage{
-\S4method{ptn_miRNA_to_gene}{postNetData}(ptn, miRNAs)
+ptn_miRNA_to_gene(ptn, miRNAs)
 }
 
 \arguments{
-  \item{ptn}{A \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
   \item{miRNAs}{A character vector specifying one or more miRNAs for which to extract the list of target genes. 
   }
@@ -29,7 +29,7 @@ McGeary SE, Lin KS, Shi CY, Pham T, Bisaria N, Kelley GM, Bartel DP. The biochem
 
 Agarwal V, Bell GW, Nam J, Bartel DP. Predicting effective microRNA target sites in mammalian mRNAs. eLife, 4:e05005, (2015). eLife Lens view.
 
-Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Applicable Gene Set Enrichment for Pathways Analysis. BMC Bioinformatics 2009, 10:161.
+Luo W., Friedman M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Applicable Gene Set Enrichment for Pathways Analysis. BMC Bioinformatics 2009, 10:161.
 }
 
 \seealso{
@@ -46,13 +46,13 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 
 # Run GAGE miRNA target enrichment analysis:
  ptn <- miRNAanalysis(ptn = ptn,
-                     miRNATargetScanFile = 'miRNA_predictions_hsa.txt',
+                     miRNATargetScanFile = "miRNA_predictions_hsa.txt",
                      contextScore = -0.2,
                      Pct = 0.4)
 
 # Extract the significant enrichment results from the postNetData object:
  miRNAtargets <- ptn_miRNA_to_gene(ptn = ptn,
-                    miRNAs = c('hsa-miR-138-5p','hsa-miR-182-5p'))
+                    miRNAs = c("hsa-miR-138-5p", "hsa-miR-182-5p"))
  str(miRNAtargets)
 }
 

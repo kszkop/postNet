@@ -34,7 +34,7 @@ foldingEnergyAnalysis <- function(ptn,
     }
   }
   if (!check_logical(residFE)) {
-    stop("The input for 'residFE' (specifying whether the values should be normalised for the sequence length) must be logical: TRUE of FALSE.")
+    stop("The input for 'residFE' (specifying whether the values should be normalised for the sequence length) must be logical: TRUE or FALSE.")
   }
   #
   if (sourceFE == "custom") {
@@ -44,7 +44,7 @@ foldingEnergyAnalysis <- function(ptn,
   }
   if (sourceFE == "load") {
     if (!is_valid_species(species)) {
-      stop("Please provide an input for 'species'. Currently 'human' or 'mouse' are available.")
+      stop("The species stored in the 'postNetData' object is not supported. Currently 'human' or 'mouse' are available.")
     }
   }
   if (sourceFE == "custom") {

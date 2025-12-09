@@ -12,7 +12,7 @@ gseaPlot <- function(ptn,
     gseaOut <- ptn_GSEA(ptn)
   }
   if (!check_number(gseaParam) | !check_number(ticksSize)) {
-    stop("Please provide numeric values for 'gseaParam' and/or 'tickSize'.")
+    stop("Please provide numeric values for 'gseaParam' and/or 'ticksSize'.")
   }
   #
   effTmp <- ptn_effect(ptn)

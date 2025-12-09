@@ -1,3 +1,4 @@
+\docType{function}
 \name{contentAnalysis}
 \alias{contentAnalysis}
 \title{Calculate nucleotide content of mRNA sequence regions and compare between gene sets 
@@ -25,7 +26,7 @@ contentAnalysis(ptn,
   }
   \item{region}{A character vector specifying the sequence region(s) to be analyzed. This can be \code{"UTR5"}, \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
   }
-  \item{subregion}{Optionally, specify a more specific subregion of the sequences to either select or exclude from the analysis. Provide an integer indicating the number of nucleotides to include or exclude from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50}, denotes the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50}, denotes the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.  
+  \item{subregion}{Optionally, specify a more specific subregion of the sequences to either select or exclude from the analysis. Provide an integer indicating the number of nucleotides to include or exclude from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50} denotes the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50} denotes the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.  
   }
   \item{subregionSel}{If a value is provided for \code{subregion}, indicate whether the subregion should be selected (limiting the analysis to this region) or excluded by specifying either \code{"select"} or \code{"exclude"}. The default is \code{NULL}.
   }
@@ -51,7 +52,7 @@ contentAnalysis(ptn,
  ptn <- postNetExample$ptn
  
 # Calculate the GC of the first 50 nucleotides of the 5'UTR for each gene, and compare between
-# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes
+# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes:
  content_UTR5_first50 <- contentAnalysis(ptn = ptn, 
                            region = c("UTR5"),
                            subregion = 50,

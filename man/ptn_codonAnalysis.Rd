@@ -4,7 +4,7 @@
 \title{Accessor for the "codonAnalysis" slot of a \code{postNetData} object
 }
 
-\description{Retrieve the "codonAnalysis" slot from a \code{postNetData} object, which holds the results of of the codon usage analysis produced using the \link[postNet]{codonUsage} function.
+\description{Retrieve the "codonAnalysis" slot from a \code{postNetData} object, which holds the results of the codon usage analysis produced using the \link[postNet]{codonUsage} function.
 }
 
 \usage{
@@ -12,11 +12,11 @@
 }
 
 \arguments{
-  \item{x}{A \code{postNetData} object.
+  \item{x}{A \linkS4class{postNetData} object.
 }
 }
 
-\value{The value returned by the \code{ptn_codonAnalysis} function is a data.frame with the following columns: geneID, codon, AA, count, frequency, AACountPerGene, and relative_frequency. Here, frequency corresponds to the number of codons relative to all codons in the gene, and relative_frequency corresponds to the number of codons relative to all synonymous codons in the gene.
+\value{The value returned by the \code{ptn_codonAnalysis} function is a \code{data.frame} with the following columns: geneID, codon, AA, count, frequency, AACountPerGene, and relative_frequency. Here, frequency corresponds to the number of codons relative to all codons in the gene, and relative_frequency corresponds to the number of codons relative to all synonymous codons in the gene.
 }
 
 \seealso{ 

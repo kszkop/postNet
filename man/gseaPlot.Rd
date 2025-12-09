@@ -1,9 +1,10 @@
+\docType{function}
 \name{gseaPlot}
 \alias{gseaPlot}
 \title{Plot enriched terms from GSEA
 }
 
-\description{The \code{gseaPlot} function generates visualizations of the results of GSEA. The rank is plotted on the x-axis against the enrichment score on the y-axis. The position of genes belonging to the term or pathway of interest are indicated in the ranking by red bars.   
+\description{The \code{gseaPlot} function generates visualizations of the results of GSEA. The rank is plotted on the x-axis against the enrichment score on the y-axis. The positions of genes belonging to the term or pathway of interest are indicated in the ranking by red bars.   
 }
 
 \usage{
@@ -16,7 +17,7 @@ gseaPlot(ptn,
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
   \item{termNames}{Character vector specifying the names of the terms to be plotted.
   }
@@ -41,7 +42,7 @@ gseaPlot(ptn,
 
 \references{
 
-See \code{\link[fgsea]{fgsea}} for full details of GSEA implentation in R. \cr
+See \code{\link[fgsea]{fgsea}} for full details of GSEA implementation in R. \cr
 
 See \url{https://www.gsea-msigdb.org/gsea/index.jsp} for GSEA documentation. \cr
 
@@ -62,20 +63,20 @@ Mootha, V., Lindgren, C., Eriksson, KF. et al. PGC-1α-responsive genes involved
  ptn <- postNetExample$ptn
 
 # Create example custom gene sets for GSEA:
- inSet <- list(set=sample(unlist(postNetExample$geneList[[1]]), 10))
+ inSet <- list(set = sample(unlist(postNetExample$geneList[[1]]), 10))
 
 # Run GSEA on custom gene sets:
  ptn <- gseaAnalysis(ptn = ptn,
                     geneSet = inSet,
-                    name = 'example')
+                    name = "example")
 
-# Extract the signficant enrichment results from the postNetData object:
- gseaOut <- ptn_GSEA(ptn, threshold=0.05)
+# Extract the significant enrichment results from the postNetData object:
+ gseaOut <- ptn_GSEA(ptn, threshold = 0.05)
 
 # Plot GSEA results:
  gseaPlot(ptn = ptn,
           termNames = gseaOut$Term[1],
-          pdfName = 'my_GSEAplot')
+          pdfName = "my_GSEAplot")
 
 }
 

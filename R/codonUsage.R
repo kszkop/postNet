@@ -23,7 +23,7 @@ codonUsage <- function(ptn,
   if (annotType == "ccds") {
     species <- ptn_species(ptn)
     if (!is_valid_species(species)) {
-      stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
+      stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
     }
     selectionTmp <- slot(ptn, "selection")
     check_selection(selectionTmp)
@@ -165,7 +165,7 @@ codonUsage <- function(ptn,
     }
   } else {
     stop(
-      "For further analysis to be performed, pairs of comparison must be specified with the 'comparisons' parameter. \
+      "For further analysis to be performed, pairs of comparisons must be specified with the 'comparisons' parameter. \
       See the 'codonUsage()' help page for details: ?codonUsage.",
       call. = FALSE
     )

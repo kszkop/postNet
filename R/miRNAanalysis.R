@@ -57,7 +57,7 @@ miRNAanalysis <- function(ptn,
   }
 
   if (length(miRNAList) == 0) {
-    stop("No miRNA meet the selected thresholds. Try adjusting 'contextScore' and/or 'Pct' for less stringent flitering.")
+    stop("No miRNA meet the selected thresholds. Try adjusting 'contextScore' and/or 'Pct' for less stringent filtering.")
   }
 
   for (miRNA in 1:length(miRNAList)) {

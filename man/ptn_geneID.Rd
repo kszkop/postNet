@@ -3,14 +3,14 @@
 \alias{ptn_geneID,postNetData-method}
 \title{Accessor for the gene IDs in the "geneID" slot of a \code{postNetData} object
 }
-\description{Retrieve the gene IDs for the reference annotation sequences from a \code{postNetData} object. Each annotation for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ("id", "geneID", and "sequence"). The \code{ptn_geneID} function retrieves the gene IDs for sequences from the specified mRNA region. 
+\description{Retrieve the gene IDs for the reference annotation sequences from a \code{postNetData} object. The annotations for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ("id", "geneID", and "sequence"). The \code{ptn_geneID} function retrieves the gene IDs for sequences from the specified mRNA region. 
 }
 \usage{
 \S4method{ptn_geneID}{postNetData}(x, region)
 }
 
 \arguments{
-  \item{x}{a \code{postNetData} object.
+  \item{x}{A \linkS4class{postNetData} object.
   }
 
   \item{region}{The sequence region from which to access the transcript IDs. Can be either: \code{"UTR5"}, \code{"CDS"}, or
@@ -29,7 +29,7 @@ mRNA region.
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
-# Access the transcript IDs corresonding to the reference 5'UTR sequences from the postNetData object
+# Access the transcript IDs corresponding to the reference coding sequences (CDS) from the postNetData object:
   myGeneIDs <- ptn_geneID(ptn, "CDS")
   str(myGeneIDs)
   

@@ -1,22 +1,22 @@
-\docType{methods}
+\docType{function}
 \name{ptn_GO}
-\alias{ptn_GO,postNetData-method}
+\alias{ptn_GO}
 \title{Accessor for the "GO" slot of a \code{postNetData} object
 }
 
-\description{Retrieve the "GO" slot from a \code{postNetData} object, which holds the results of GO term enrichment analysis created by 
+\description{Retrieve the \code{"GO"} slot from a \code{postNetData} object, which holds the results of GO term enrichment analysis created by 
 the \link[postNet]{goAnalysis} function.
 }
 
 \usage{
-\S4method{ptn_GO}{postNetData}(ptn, 
+ptn_GO(ptn, 
       category, 
       geneList, 
       threshold)
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
 }
   \item{category}{A character vector specifying one or more Gene Ontology categories to extract results for. 
   The options are \code{'BP'}, \code{'CC'}, \code{'MF'}, and \code{'KEGG'}. For example, \code{category = c('BP','MF')}.
@@ -28,8 +28,7 @@ the \link[postNet]{goAnalysis} function.
 }
 }
 
-\value{A data.frame of GO term enrichment analysis results that is stored in the GO slot of the \code{postNetData} object, and written to an excel file. 
-Each row of the data.frame corresponds to a term, with the following columns:
+\value{A data.frame of GO term enrichment analysis results that is stored in the GO slot of the \code{postNetData} object, and written to an Excel file. Each row of the data.frame corresponds to a term, with the following columns:
 
  \itemize{ 
   \item \strong{ID}: The ID of the term or pathway tested.
@@ -50,7 +49,7 @@ Each row of the data.frame corresponds to a term, with the following columns:
 }
 
 \references{
-See \link[clusterProfiler]{clusterProfiler} for full details of enrichment analysis implentation in R. \cr
+See \link[clusterProfiler]{clusterProfiler} for full details of enrichment analysis implementation in R. \cr
 
 If you use the \code{goAnalysis} function in your analysis, please cite: \cr
 
@@ -63,7 +62,6 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 \link[postNet]{goAnalysis} \cr
 \link[postNet]{postNetStart} \cr
 \link[postNet]{slopeFilt} \cr
-\link[postNet]{ptn_GO} \cr
 \link[postNet]{goDotplot} \cr
 }
 
@@ -74,13 +72,13 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 
 # Run GO term analysis:
  ptn <- goAnalysis(ptn = ptn, 
-                  category=c('BP'),
-                  name = 'example')
+                  category=c("BP"),
+                  name = "example")
 
-# Extract the signficant enrichment results from the postNetData object:
+# Extract the significant enrichment results from the postNetData object:
  goOut <- ptn_GO(ptn, 
-                category = 'BP', 
-                geneList = 'translationUp', 
+                category = "BP", 
+                geneList = "translationUp", 
                 threshold = 0.05)
  str(goOut)
 }

@@ -16,11 +16,11 @@ plotFeaturesMap <- function(ptn,
     stop("Features analysis is NULL. Please run the featureIntegration() analysis first.")
   }
   if (!check_featSel(featSel, features = featuresIn)) {
-    stop("Please provide a character vector of features of interest to be used for UMAP embeddings. We recommedation start with those that were selected in the \ final featureIntegration() models. These can be obtained by running the ptn_selectedFeatures() function. See help manuals and vignette for details.")
+    stop("Please provide a character vector of features of interest to be used for UMAP embeddings. We recommed starting with those that were selected in the \ final featureIntegration() models. These can be obtained by running the ptn_selectedFeatures() function. See help manuals and vignette for details.")
   }
   if (!is.null(featCol)) {
     if (!check_featCol(featCol, features = featuresIn)) {
-      stop("Please provide a character vector defining the features that will be overlain on UMAPs. All features must be present in the 'features' stored in \ the ptn object. To check which features have been stored run: colnames(ptn_features(ptn))")
+      stop("Please provide a character vector defining the features that will be overlaid on UMAPs. All features must be present in the 'features' stored in \ the ptn object. To check which features have been stored run: colnames(ptn_features(ptn))")
     }
   }
   featuresSel <- featuresIn[, colnames(featuresIn) %in% featSel]
@@ -39,13 +39,13 @@ plotFeaturesMap <- function(ptn,
   }
   if (isTRUE(regOnly)) {
     if (!check_comparisons(comparisons)) {
-      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \ denotes the background gene set.")
+      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2), c(0,1)). 0 always \ denotes the background gene set.")
     }
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 && is.null(ptn_background(ptn))) {
       stop("0 always denotes the background, but no background has been provided.")
     }
     if (length(comparisons) != 1) {
-      stop("Although potentially possible, please run each comparison separetely to fit your feature selection.")
+      stop("Although potentially possible, please run each comparison separately to fit your feature selection.")
     }
   }
   if (!is.null(remExtreme)) {
@@ -53,7 +53,7 @@ plotFeaturesMap <- function(ptn,
       stop("The input for 'remExtreme' should be a number between 0 and 1 indicating a percentile threshold for extreme values to be removed \ for determining the colouring scale.")
     } else {
       if (remExtreme <= 0 | remExtreme >= 1) {
-        stop("The input for 'remExtreme' can only be a single value between (0,1). It represents a percentile threshold in decimal format for extreme values \ from both sides of the feature distribution to be removed. Values are removed only for determining the colouring scale.")
+        stop("The input for 'remExtreme' can only be a single value between 0 and 1. It represents a percentile threshold in decimal format for extreme values \ from both sides of the feature distribution to be removed. Values are removed only for determining the colouring scale.")
       }
     }
   }

@@ -8,7 +8,7 @@
 }
 
 \usage{
-\S4method{ptn_effect}{postNetData}(x)
+\S4method{ptn_geneList}{postNetData}(x)
 }
 
 \arguments{
@@ -25,7 +25,7 @@
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
-# Access version of the RefSeq annotation used to create the reference sequences
+# Access the gene sets of interest stored in the postNetData object:
   myGeneList <- ptn_geneList(ptn)
   str(myGeneList)
 }

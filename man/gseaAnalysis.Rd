@@ -1,9 +1,10 @@
+\docType{function}
 \name{gseaAnalysis}
 \alias{gseaAnalysis}
 \title{Perform Gene Set Enrichment Analysis (GSEA) with a \code{postNetData} object 
 }
 
-\description{The \code{gseaAnalysis} function implements the \link[fgsea]{fgsea} package to perform Gene Set Enrichment Analysis using the genes sets associated with the regulatory effect measurement contained in a \code{postNetData} object. These gene sets are specified by the \code{regulationGen}, or \code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
+\description{The \code{gseaAnalysis} function implements the \link[fgsea]{fgsea} package to perform Gene Set Enrichment Analysis using the gene sets associated with the regulatory effect measurement contained in a \code{postNetData} object. These gene sets are determined by the \code{regulationGen} or \code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
 }
 
 \usage{
@@ -19,9 +20,9 @@ gseaAnalysis(ptn,
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
-  \item{genesSlopeFiltOut}{If using an \code{Anota2seqDataSet} with analysis results for the "translation" or "buffering" regulatory modes, optionally provide a character vector with gene IDs to be excluded from GSEA that is the output of the \code{\link[postNet]{slopeFilt}} function. Although optional, this step is strongly recommended. This filtering is not necessary if using "mRNAAbundance", "totalmRNA", or "translatedmRNA". Default is \code{NULL}.  
+  \item{genesSlopeFiltOut}{If using an \code{Anota2seqDataSet} with analysis results for the "translation" or "buffering" regulatory modes, optionally provide a character vector with gene IDs to be excluded from GSEA. This can be generated using the \link[postNet]{slopeFilt} function. Although optional, this step is strongly recommended. This filtering is not necessary if using "mRNAAbundance", "totalmRNA", or "translatedmRNA". Default is \code{NULL}.  
   }
   \item{collection}{A character vector selecting the MSigDB collection of interest, for example:  \code{'c8'}, or \code{'h'}. Although possible, it is not recommended to run all collections in the same analysis. Available options for collections can be found at \url{https://www.gsea-msigdb.org/gsea/msigdb/index.jsp}, or by using the \pkg{msigdb} package (see example below). Currently, collections are only available for human and mouse. 
   }
@@ -29,11 +30,11 @@ gseaAnalysis(ptn,
   }
   \item{subsetNames}{Optionally, provide a character vector specifying specific terms to use for GSEA by providing the names of the pathways. For example: \code{c("GOBP_RIBOSOME_BIOGENESIS","GOBP_CAP_DEPENDENT_TRANSLATION_INITIATION")}. Default is \code{NULL}. 
   }
-  \item{geneSet}{Optionally,instead using a GSEA collection, provide named list of character vectors with custom gene signatures to be used in GSEA. Default is \code{NULL}.
+  \item{geneSet}{Optionally, instead of using a GSEA collection, provide named list of character vectors with custom gene signatures to be used in GSEA. Default is \code{NULL}.
   }
-  \item{maxSize}{Integer specifying the maximal size of a gene set to test. Terms/pathways with more genes will be exluded. Default is \code{500}.
+  \item{maxSize}{Integer specifying the maximal size of a gene set to test. Terms/pathways with more genes will be excluded. Default is \code{500}.
   }
-  \item{minSize}{Integer specifying the minimal size of a gene set to test. Terms/pathways with fewer genes will be exluded. Default is \code{10}.
+  \item{minSize}{Integer specifying the minimal size of a gene set to test. Terms/pathways with fewer genes will be excluded. Default is \code{10}.
   }
   \item{name}{Optionally, provide a name for the tab-delimited output file storing the results of the GSEA. Note that the "GSEA" slot of the \code{postNetData} object will reflect the results of the most recent analysis. However, multiple analyses can be run and saved by providing unique names to the output file. Default is \code{NULL}.
   }
@@ -44,7 +45,7 @@ gseaAnalysis(ptn,
 Note that if the results of an \pkg{anota2seq} analysis are being used for GSEA, it is strongly recommended to first perform filtering using the \link[postNet]{slopeFilt} function.
 }
 
-\value{A data.frame of GSEA results that is stored in the GSEA slot of the \code{postNetData} object, and written to a tab delimited text file. Each row of the data.frame corresponds to a term, with the following columns (also see \link[fgsea]{fgseaMultilevel} from the \pkg{fgsea} package):
+\value{A data.frame of GSEA results that is stored in the GSEA slot of the \code{postNetData} object, and written to a tab-delimited text file. Each row of the data.frame corresponds to a term, with the following columns (also see \link[fgsea]{fgseaMultilevel} from the \pkg{fgsea} package):
 
  \itemize{ 
   \item \strong{Term}: The name of the term or pathway tested.
@@ -70,7 +71,7 @@ Note that if the results of an \pkg{anota2seq} analysis are being used for GSEA,
 
 \references{
 
-See \link[fgsea]{fgsea} for full details of GSEA implentation in R. \cr
+See \link[fgsea]{fgsea} for full details of GSEA implementation in R. \cr
 
 See \url{https://www.gsea-msigdb.org/gsea/index.jsp} for GSEA documentation. \cr
 
@@ -187,8 +188,8 @@ Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment anal
     
 # Run slope filtering to remove the genes with unrealistic slopes:
  filtOutGenes <- slopeFilt(ads = ads, 
-                          regulationGen="translation", 
-                          contrastSel=1)
+                          regulationGen = "translation", 
+                          contrastSel = 1)
                     
 # Create example custom gene sets for GSEA:
  set1 <- sample(row.names(postNetExample$ads_data$dataP), 10)
@@ -198,6 +199,6 @@ Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment anal
  ptn <- gseaAnalysis(ptn = ptn,
                     genesSlopeFiltOut = filtOutGenes,
                     geneSet = inSet,
-                    name = 'ads_example')   
+                    name = "ads_example")   
   }
 }

@@ -16,9 +16,9 @@ List of 5
  $ Guan_etal_2017_Tg1_transUp         : chr [1:1336] "Mcm7" "Bcl2" "Usp33" "Gm13212" ...
  $ Guan_etal_2017_Tg1_transDown       : chr [1:774] "Mapre3" "Mettl24" "Isg15" "Idh3g" ...
 }
-\details{The \code{mouseSignatures} dataset contains a list of gene signatures relevent to understanding possible pathways and
+\details{The \code{mouseSignatures} dataset contains a list of gene signatures relevant to understanding possible pathways and
 mRNA features involved in regulation of mRNA translation, with a specific focus on mTOR and integrated stress response (ISR)-sensitive translation. These signatures have been compiled either directly from published studies, or from analyses of published datasets (sources and references 
-described in detail below). Note that if the orignal source of the gene signature was from human, these gene IDs have been converted to mouse. 
+described in detail below). Note that if the original source of the gene signature was from human, these gene IDs have been converted to mouse. 
 
 These gene signatures can be used with the \link[postNet]{plotSignatures}, \link[postNet]{plotSignatures_ads}, and \link[postNet]{signaturesHeatmap} functions to perform statistical analyses and visualizations of how each gene signature is regulated in a given dataset. Furthermore, gene signatures can also be provided as features in the \link[postNet]{featureIntegration} function which performs step-wise regression modelling or random forest classification to identify features that are most important in explaining post-transcriptional regulation in a given dataset. 
 }
@@ -31,7 +31,7 @@ These gene signatures can be used with the \link[postNet]{plotSignatures}, \link
         \item Signature Name(s): Gandin_etal_2016_mTOR_transUp, Gandin_etal_2016_mTOR_transDown
         \item Source: MCF7 cells
         \item Species: Human
-        \item Conditions: Insulin (4.2 nM) + torin1 (250 nM), Insulin (4.2 nM) + DMSO; 4 hrs
+        \item Conditions: Insulin (4.2 nM) + torin1 (250 nM), Insulin (4.2 nM) + DMSO; 4 h
         \item Replicates: 4 Reps/Condition 
         \item Comparison: Insulin + torin1 vs. Insulin
   }
@@ -100,7 +100,7 @@ These gene signatures can be used with the \link[postNet]{plotSignatures}, \link
   \item \strong{Publication Information}:{
     \itemize{
         \item Title: A Unique ISR Program Determines Cellular Responses to Chronic Stress
-        \item Method: Polysome fractionation followed by RNA seqeuncing 
+        \item Method: Polysome fractionation followed by RNA sequencing 
         \item Data Source: 
         \item Analysis Method:
         \item First Author, Last Author, Year:  Guan, Hatzoglou, 2017
@@ -116,11 +116,9 @@ These gene signatures can be used with the \link[postNet]{plotSignatures}, \link
 }
 
 \references{
-If you use these gene signatures in you analysis, please cite: \cr
+If you use these gene signatures in your analysis, please cite: \cr
 
-Gandin V, Masvidal L, Cargnello M, Gyenis L, McLaughlan S, Cai Y, Tenkerian C, Morita M, Balanathan P, Jean-Jean O, Stambolic V, Trost M, Furic L, 
-Larose L, Koromilas AE, Asano K, Litchfield D, Larsson O, Topisirovic I. mTORC1 and CK2 coordinate ternary and eIF4F complex assembly. Nat Commun. 
-2016 Apr 4;7:11127. doi: 10.1038/ncomms11127. PMID: 27040916; PMCID: PMC4822005.
+Gandin V, Masvidal L, Cargnello M, Gyenis L, McLaughlan S, Cai Y, Tenkerian C, Morita M, Balanathan P, Jean-Jean O, Stambolic V, Trost M, Furic L, Larose L, Koromilas AE, Asano K, Litchfield D, Larsson O, Topisirovic I. mTORC1 and CK2 coordinate ternary and eIF4F complex assembly. Nat Commun. 2016 Apr 4;7:11127. doi: 10.1038/ncomms11127. PMID: 27040916; PMCID: PMC4822005.
 
 Cockman E, Anderson P, Ivanov P. TOP mRNPs: Molecular Mechanisms and Principles of Regulation. Biomolecules. 2020 Jun 27;10(7):969. 
 doi: 10.3390/biom10070969. PMID: 32605040; PMCID: PMC7407576.

@@ -1,3 +1,4 @@
+\docType{function}
 \name{codonCalc}
 \alias{codonCalc}
 \title{Quantify and compare codon or amino acid usage across gene sets
@@ -20,7 +21,7 @@ codonCalc(ptn,
 \arguments{
   \item{ptn}{A \linkS4class{postNetData} object.
   }
-  \item{featsel}{A named list of vectors specifying one or more codons or amino acids to quantify and/or visualize. For example, for use in the downstream \link[postNet]{featureIntegration}, it is usually desirable to select those with high frequency, and the highest and lowest odds ratios identified using the \link[postNet]{codonUsage} function. This list can be easily generated using the S4 method \link[postNet]{ptn_codonSelection}. 
+  \item{featsel}{A named list of vectors specifying one or more codons or amino acids to quantify and/or visualize. For use in the downstream \link[postNet]{featureIntegration}, it is usually desirable to select those with high frequency, and the highest and lowest odds ratios identified using the \link[postNet]{codonUsage} function. This list can be easily generated using the S4 method \link[postNet]{ptn_codonSelection}. 
   }
   \item{analysis}{A string specifying whether to assess \code{"codon"}, or \code{"AA"} (amino acid) usage. The default is \code{"codon"}. 
   }
@@ -36,10 +37,10 @@ codonCalc(ptn,
   }
 }
 
-\details{The number or frequency of selected codons or amino acids is calculated for each gene, and a two-sided Wilcoxon Rank Sum test is performed to identify significant differences between gene sets of interest, or against background. If \code{plotOut} is \code{TRUE}, all indicated comparisons between different sets of genes will be performed and plotted.  
+\details{The number or frequency of selected codons or amino acids is calculated for each gene, and a two-sided Wilcoxon Rank Sum test is performed to identify significant differences between gene sets of interest, or against the background. If \code{plotOut} is \code{TRUE}, all indicated comparisons between different sets of genes will be performed and plotted.  
 }
 
-\value{A named list of numeric vectors for selected codons or amino acids with the calculated counts or frequencies for each gene. The elements in each vector are named with the gene ID. This list can be used as input for the downstream \link[postNet]{featureIntegration} analysis. The \code{codonCalc} function can also return PDF files of output plots with statistical comparisons between gene sets of interest.
+\value{A named list of numeric vectors for selected codons or amino acids with the calculated counts or frequencies for each gene. The elements in each vector are named by gene ID. This list can be used as input for the downstream \link[postNet]{featureIntegration} analysis. The \code{codonCalc} function can also write PDF files of output plots with statistical comparisons between gene sets of interest.
 }
 
 \seealso{
@@ -76,7 +77,7 @@ codonCalc(ptn,
  codons <- ptn_codonSelection(ptn, comparison = 1)
  
 # Calculate and plot ecdfs of codons counts, and compare between gene sets of interest
- codonCounts  <- codonCalc(ptn = ptn,
+ codonCounts <- codonCalc(ptn = ptn,
                           analysis = "codon", 
                           featsel = codons,
                           unit = "count", 

@@ -12,7 +12,7 @@
 }
 
 \arguments{
-  \item{x}{a \code{postNetData} object.
+  \item{x}{A \linkS4class{postNetData} object.
   }
 }
 
@@ -25,7 +25,7 @@
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
-# Access version of the RefSeq annotation used to create the reference sequences
+# Access the regulatory effect measurement stored in the postNetData object:
   myEffect_out <- ptn_effect(ptn)
   str(myEffect_out)
 }

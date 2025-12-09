@@ -19,14 +19,14 @@ plotSignatures_ads <- function(ads,
     stop("Please provide an input for 'dataName' that will be assigned to the data in the anota2seq object.")
   }
   if (length(effects_names) != 4) {
-    stop("There must be 4 effect names provided. By default, these reflect the data in the anota2seq object (Total mRNA Log2FC, Polysome-assocated mRNA Log2FC, Translation Log2FC, and Buffering Log2FC).")
+    stop("There must be 4 effect names provided. By default, these reflect the data in the anota2seq object (Total mRNA Log2FC, Polysome-associated mRNA Log2FC, Translation Log2FC, and Buffering Log2FC).")
   }
 
   check_geneList(signatureList)
   signNames <- names(signatureList)
 
   if (is.null(generalName)) {
-    stop('Please provide an input for "generalName" that will be assigned to the the gene signatures plotted.')
+    stop('Please provide an input for "generalName" that will be assigned to the gene signatures plotted.')
   }
   if (!is.character(signature_colours) || !length(signature_colours) == length(signatureList)) {
     stop("The input for the 'signature_colours' parameter should be a character vector of the same length as number of signatures in \ 'signatureList'. These colours will be used for plotting.")

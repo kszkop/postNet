@@ -33,7 +33,7 @@ contentAnalysis <- function(ptn,
   check_DNAsequence(contentIn)
 
   if (!is.null(subregion) && (!is.numeric(subregion) || !length(subregion) == 1)) {
-    stop("The input for 'subregion' must be an integer.")
+    stop("The input for 'subregion' must be a single integer.")
   }
   if (!is.null(subregionSel) && !subregionSel %in% c("select", "exclude")) {
     stop("The input for 'subregionSel' must be either 'select' or 'exclude'.")

@@ -6,8 +6,8 @@ signaturesHeatmap <- function(ptn,
   check_ptn(ptn)
   check_geneList(signatureList)
   if (!check_shiftUnit(unit)) {
-    stop("The input for 'unit' can be only 'FDR' or 'p25', 'p50', 'p75' (or any percentile in format p an integer). \
-         If FDR is selected: the heatmap will display the -log10 FDR from a Wilcoxon runk sum test (corrected for multitesting using BH) \ multiplied by the direction of eCDF shift. \ If percentile is selected: the heatmap will display the difference of the eCDF from the background for one of the percentiles.")
+    stop("The input for 'unit' can only be ‘FDR’ or a percentile such as ‘p25’, ‘p50’, ‘p75’ (i.e., ‘p’ followed by an integer). \
+         If FDR is selected: the heatmap will display the -log10 FDR from a Wilcoxon Rank Sum test (corrected for multiple testing using BH) \ multiplied by the direction of eCDF shift. \ If percentile is selected: the heatmap will display the difference of the eCDF from the background for one of the percentiles.")
   }
 
   compOut <- 1

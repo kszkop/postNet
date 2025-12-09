@@ -1,7 +1,7 @@
 uorfAnalysis <- function(ptn,
                          startCodon = "ATG",
                          KozakContext = "strong",
-                         onlyUTR5 = TRUE,
+                         onlyUTR5 = FALSE,
                          unitOut = "number",
                          comparisons = NULL,
                          plotOut = TRUE,
@@ -22,16 +22,16 @@ uorfAnalysis <- function(ptn,
     }
   }
   if (!isStartCodon(startCodon)) {
-    stop("The input for 'startCodon' must be a character vector of length one, and contain only a 3 nucleotide sequence, ex. 'ATG'")
+    stop("The input for 'startCodon' must be a character vector of length one, and contain a 3-nucleotide sequence, ex. 'ATG'")
   }
   if (!isKozakContext(KozakContext)) {
-    stop("The input for 'KozakContext' must be either: 'strong','adequate1','adequate2','weak',or 'any'.")
+    stop("The input for 'KozakContext' must be either: 'strong', 'adequate1', 'adequate2', 'weak', or 'any'.")
   }
   if (!check_logical(onlyUTR5)) {
-    stop("The input for 'onlyUTR5' must be logical: TRUE of FALSE.")
+    stop("The input for 'onlyUTR5' must be logical: TRUE or FALSE.")
   }
   if (!isUnitOut(unitOut)) {
-    stop("The input for 'unitOut' must be either 'numeric' or 'position'.")
+    stop("The input for 'unitOut' must be either 'number' or 'position'.")
   }
 
   #

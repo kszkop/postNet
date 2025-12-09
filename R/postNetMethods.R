@@ -8,7 +8,7 @@ setMethod(
     check_region(region)
     check_ptn(x)
     if (length(region) > 1) {
-      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
+      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5', or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
     tmpReg <- slot(x@annot, region)
     seqOut <- tmpReg@sequences
@@ -26,7 +26,7 @@ setMethod(
     check_region(region)
     check_ptn(x)
     if (length(region) > 1) {
-      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
+      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5', or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
     tmpReg <- slot(x@annot, region)
     idOut <- tmpReg@id
@@ -44,7 +44,7 @@ setMethod(
     check_region(region)
     check_ptn(x)
     if (length(region) > 1) {
-      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5' or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
+      stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5', or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
     tmpReg <- slot(x@annot, region)
     geneIDOut <- tmpReg@geneID
@@ -379,7 +379,7 @@ ptn_GAGE <- function(ptn,
 #
 #  tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
 #  if(is.null(tmpIn)){
-#    stop(paste('Please run ', analysis_type, 'analysis first', sep=''))
+#    stop(paste('Please run ', analysis_type, ' analysis first', sep=''))
 #  } else {
 #    print(names(tmpIn))
 #  }
@@ -391,7 +391,7 @@ ptn_check_models <- function(ptn, analysis_type) {
 
   tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
   if (is.null(tmpIn)) {
-    stop(paste("Please run ", analysis_type, "analysis first", sep = ""))
+    stop(paste("Please run ", analysis_type, " analysis first", sep = ""))
   } else {
     print(names(tmpIn))
   }

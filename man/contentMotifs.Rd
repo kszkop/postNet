@@ -1,9 +1,10 @@
+\docType{function}
 \name{contentMotifs}
 \alias{contentMotifs}
 \title{Detect, quantify, and compare sequence motifs between gene sets
 }
 
-\description{The \code{contentMotifs} function quantifies the number of position of motifs in sequence regions of interest and performs statistical comparisons between gene sets of interest, or against background. Motifs can be specified directly, or the output of the \link[postNet]{motifAnalysis} function, which detects de-novo motifs using STREME (part of the MEME-Suite), can be supplied. Finally, the function can also implement \link[pqsfinder]{pqsfinder} to identify G-quadruplexes. 
+\description{The \code{contentMotifs} function quantifies the number or position of motifs in sequence regions of interest and performs statistical comparisons between gene sets of interest, or against background. Motifs can be specified directly, or the output of the \link[postNet]{motifAnalysis} function, which detects de-novo motifs using STREME (part of the MEME-Suite), can be supplied. Finally, the function can also implement \link[pqsfinder]{pqsfinder} to identify G-quadruplexes. 
 }
 
 \usage{
@@ -25,21 +26,21 @@ contentMotifs(ptn,
 \arguments{
   \item{ptn}{A \linkS4class{postNetData} object.
   }
-  \item{motifsIn}{A character vector specifying the motif sequences to be detected and quantified. Ambiguities can be specified using IUPAC codes or [ ] (bracket) annotations. Motifs discovered with \link[postNet]{motifAnalysis} can be retrieved using \link[postNet]{ptn_motifSelection} and used. Optionally, G-quadruplexes can be specified as "G4".
+  \item{motifsIn}{A character vector specifying the motif sequences to be detected and quantified. Ambiguities can be specified using IUPAC codes or [ ] (bracket) annotations. Motifs discovered with \link[postNet]{motifAnalysis} can be retrieved using \link[postNet]{ptn_motifSelection} and used. Optionally, G-quadruplexes can be specified as \code{"G4"}.
   }
   \item{seqType}{A string specifying the type of sequence being provided to search for motifs. The options are \code{"dna"}, \code{"rna"}, or \code{"protein"}. The default is \code{"dna"}.
   }
-  \item{dist}{A numeric value specifying the minimal nucleotide distance between motifs. The default is 1.
+  \item{dist}{A numeric value specifying the minimal distance between motifs (in nucleotides for DNA/RNA or amino acids for protein). The default is 1.
   }
   \item{min_score}{A numeric value specifying the threshold for the quality of the G-quadruplexes prediction. This is only required when \code{motifsIn} includes the "G4" option. The default is 47. See \link[pqsfinder]{pqsfinder} for details.
   }
   \item{unitOut}{A string to specify whether the output should be the \code{"number"} of motifs detected per gene (for a given sequence region), or the \code{"position"} of the detected motifs in the mRNA sequence (start and end). Note that only the output with \code{"number"} can be used in the downstream analysis with the \link[postNet]{featureIntegration} function. The default is \code{"number"}.
   }
-  \item{resid}{Logical indicating if the quantification of motifs should be corrected for the length of the sequences. If \code{TRUE}, the values returned are the residuals from the linear model: number of motifs ~ log2(sequence region length). Note that this option can only be \code{TRUE} when \code{unitOut = "number"}. See details below for usage recommendations. The default is \code{FALSE}.
+  \item{resid}{Logical indicating if the quantification of motifs should be corrected for the length of the sequences. If \code{TRUE}, the values returned are the residuals from the linear model: number of motifs ~ log2(sequence region length). Note that this option can only be set to \code{TRUE} when \code{unitOut = "number"}. See details below for usage recommendations. The default is \code{FALSE}.
   }
   \item{region}{A character vector specifying the sequence region(s) to be analyzed. This can be \code{"UTR5"}, \code{"UTR3"}, \code{"CDS"}, or any combination of the regions.
   }
-  \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either select or exclude from the analysis. This is done by providing a numeric value indicating the number of nucleotides from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50} denotes the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50}, denotes the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.
+  \item{subregion}{Optionally, it is possible to specify a more specific subregion of the sequences to either select or exclude from the analysis. This is done by providing a numeric value indicating the number of nucleotides from either the start of the sequence region if positive, or the end if negative. For example, \code{subregion = 50} denotes the first 50 nucleotides of the sequence region(s) specified by \code{region}, while \code{subregion = -50} denotes the last 50 nucleotides of the sequence region(s). The default is \code{NULL}.
   }
   \item{subregionSel}{If a value is provided for \code{subregion}, indicate whether the subregion should be selected (limiting the analysis to this region) or excluded by specifying either \code{"select"} or \code{"exclude"}. The default is \code{NULL}.
   }
@@ -53,12 +54,12 @@ contentMotifs(ptn,
 
 \details{A two-sided Wilcoxon Rank Sum test is performed to identify significant differences in motif content between gene sets of interest, or against the background gene set. 
 
-Note that the \code{contentMotifs} function uses a more strict method of sequence matching to count motifs than the MEME-Suite, and for this reason some motifs identified with \link[postNet]{motifAnalysis}, which implements STREME, may have divergent quantifications between methods. Using a more stringent threshold with the \code{stremeThreshold} parameter may remedy this. Alternatively, motifs identified with STREME can be counted using the \link[memes]{runFimo} tool provided with the MEME-Suite.
+Note that the \code{contentMotifs} function uses a more strict method of sequence matching to count motifs than the MEME-Suite, and for this reason some motifs identified with \link[postNet]{motifAnalysis}, which implements STREME, may have divergent quantifications between methods. Using a more stringent threshold with the \code{stremeThreshold} parameter in \link[postNet]{motifAnalysis} may remedy this. Alternatively, motifs identified with STREME can be counted using the \link[memes]{runFimo} tool provided with the MEME-Suite.
 
 If the output motifs will be used in downstream analysis with \link[postNet]{featureIntegration}, consider carefully whether to apply the \code{resid} correction. If the length of the sequence regions will be included in the \code{featureIntegration} model, it is not recommended to correct the motif content for the sequence length. However, if length will not be included in \code{featureIntegration}, the correction can be performed.
 }
 
-\value{If \code{unitOut = "number"}, the output will be a named list of vectors with the number of motifs detected for each gene in each sequence region specified. This list can be used as input for the downstream \link[postNet]{featureIntegration} analysis. If the \code{unitOut = "position"}, the output will be a named list of lists with the start and end positions of each motif for each gene in each sequence region specified. These positions cannot be used in \link[postNet]{featureIntegration}. The \code{contentMotifs} function can also return PDF files of output plots with statistical comparisons between gene sets of interest when \code{unitOut = "number"}.
+\value{If \code{unitOut = "number"}, the output will be a named list of vectors with the number of motifs detected for each gene in each sequence region specified. This list can be used as input for the downstream \link[postNet]{featureIntegration} analysis. If \code{unitOut = "position"}, the output will be a named list of lists with the start and end positions of each motif for each gene in each sequence region specified. These positions cannot be used in \link[postNet]{featureIntegration}. The \code{contentMotifs} function can also return PDF files of output plots with statistical comparisons between gene sets of interest when \code{unitOut = "number"}.
 }
 
 \references{

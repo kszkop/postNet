@@ -1,6 +1,6 @@
-\docType{methods}
+\docType{function}
 \name{ptn_networkGraph}
-\alias{ptn_networkGraph,postNetData-method}
+\alias{ptn_networkGraph}
 \title{Accessor for the \code{networkGraph} slot of a \code{postNetData} object
 }
 
@@ -8,7 +8,7 @@
 }
 
 \usage{
-\S4method{ptn_networkGraph}{postNetData}(x, comparison)
+ptn_networkGraph(ptn, comparison)
 }
 
 \arguments{
@@ -32,11 +32,11 @@
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
-# Prepare the list of pre-calculated features to be used in feature integration modelling 
+# Prepare the list of pre-calculated features to be used in feature integration modelling: 
  myFeatures <- postNetExample$features
- str(features)
+ str(myFeatures)
 
-# Run feature integration modelling using stepwise regression
+# Run feature integration modelling using forward stepwise regression:
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
                           pdfName = "omnibus", 
@@ -47,7 +47,7 @@
                           comparisons = list(c(1,2)),
                           NetModelSel = "omnibus")
                           
-# Retrieve the network graph of the results of the stepwise regression omnibus model
+# Retrieve the network graph of the results of the forward stepwise regression omnibus model:
  networkGraph <- ptn_networkGraph(ptn, comparison = 1) 
  str(networkGraph)
 }

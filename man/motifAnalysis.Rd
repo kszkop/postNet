@@ -1,9 +1,10 @@
+\docType{function}
 \name{motifAnalysis}
 \alias{motifAnalysis}
-\title{De-novo motif discovery using STREME and a \code{postNetData} object
+\title{De novo motif discovery using STREME and a \code{postNetData} object
 }
 
-\description{The \code{motifAnalysis} function applies the STREME method from the MEME-Suite to discover de-novo ungapped motifs (recurring, fixed-length patterns) that are enriched in the selected sequence region(s) of gene sets of interest relative to control sequences (background). 
+\description{The \code{motifAnalysis} function applies the STREME method from the MEME-Suite to discover de novo ungapped motifs (recurring, fixed-length patterns) that are enriched in the selected sequence region(s) of gene sets of interest relative to control sequences (background). 
 }
 
 \usage{
@@ -18,7 +19,7 @@ motifAnalysis(ptn,
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{a \linkS4class{postNetData} object.
   }
   \item{stremeThreshold}{A numeric value specifying the enrichment p-value threshold for motif selection. 
   The default is 0.05. 
@@ -45,30 +46,30 @@ motifAnalysis(ptn,
   }
 }
 
-\value{The \code{motifAnalysis} function returns an updated \code{postNetData} object with results compiled into an S4 object of class \code{postNetMotifs} and stored in the "motifs" slot. Within the motif slot, results for each sequence region are provided as lists. The "motifSelection" list element corresponds to a character vector of identified motifs in the gene sets of interest that have enrichment p-values below the threshold set with the \code{stremeThreshold} parameter. Additional list elements are provided for each gene set of interest with the selected results with further information about the motifs in \link[universalmotif]{universalmotif} format. 
+\value{The \code{motifAnalysis} function returns an updated \code{postNetData} object with results compiled into an S4 object of class \code{postNetMotifs} and stored in the "motifs" slot. Within the motif slot, results for each sequence region are provided as lists. The "motifSelection" list element corresponds to a character vector of identified motifs in the gene sets of interest that have enrichment p-values below the threshold set with the \code{stremeThreshold} parameter. Additional list elements are provided for each gene set of interest containing detailed information about the selected motifs in \link[universalmotif]{universalmotif} format. 
 }
 
-\details{The \code{motifAnalysis} function applies the \link[memes]{runStreme} function from the \link[memes]{memes} package. However, the MEME Suite software tools must also be installed locally, and the path to the executables must be provided. The MEME Suite can be downloaded here: \url{https://meme-suite.org/meme/doc/download.html}. Installation instructions can be found here: \url{https://meme-suite.org/meme/doc/install.html?man_type=web}. 
+\details{The \code{motifAnalysis} function applies the \link[memes]{runStreme} function from the \link[memes]{memes} package. However, the MEME Suite of software tools must also be installed locally, and the path to the executables must be provided. The MEME Suite can be downloaded here: \url{https://meme-suite.org/meme/doc/download.html}. Installation instructions can be found here: \url{https://meme-suite.org/meme/doc/install.html?man_type=web}. 
 
-Motifs identified using \code{motifAnalysis} can be quantified and included in downstream \link[postNet]{featureIntegration} using the \link[postNet]{contentMotifs} function. Significantly enriched motifs can be extracted using the S4 method \link[postNet]{ptn_motifSelection} function, and \link[universalmotif]{universalmotif} results for each gene set included in \code{geneList} can be retrieved using the \link[postNet]{ptn_motifgeneList} function.   
+Motifs identified using \code{motifAnalysis} can be quantified and included in downstream \link[postNet]{featureIntegration} using the \link[postNet]{contentMotifs} function. Significantly enriched motifs can be extracted using the S4 method \link[postNet]{ptn_motifSelection} function, and \link[universalmotif]{universalmotif} results for each gene set included in \code{geneList} can be retrieved using the \link[postNet]{ptn_motifGeneList} function.   
 
 If you use the \code{motifAnalysis} function in your analysis, please appropriately cite the memes R package, The MEME Suite, and the STREME tool publications provided below. Licensing The MEME Suite is free for non-profit use. However, for-profit users should contact OIC-MEMESuite@ucsd.edu and purchase a license. See \url{http://meme-suite.org/doc/copyright.html} for details}
 
 \references{
 
-Timothy L. Bailey, James Johnson, Charles E. Grant, William S. Noble, "The MEME Suite", Nucleic Acids Research, 43(W1):W39-W49, 2015.
+Timothy L. Bailey, James Johnson, Charles E. Grant, William S. Noble. "The MEME Suite", Nucleic Acids Research, 43(W1):W39-W49, 2015.
 
 Timothy L. Bailey, "STREME: Accurate and versatile sequence motif discovery", Bioinformatics, 2021. https://doi.org/10.1093/bioinformatics/btab203
 
-Nystrom SL, McKay DJ (2021). “Memes: A motif analysis environment in R using tools from the MEME Suite.” PLOS Computational Biology, 17, 1-14. doi:10.1371/journal.pcbi.1008991, https://doi.org/10.1371/journal.pcbi.1008991. 
+Nystrom SL, McKay DJ (2021). "Memes: A motif analysis environment in R using tools from the MEME Suite." PLOS Computational Biology, 17, 1-14. doi:10.1371/journal.pcbi.1008991, https://doi.org/10.1371/journal.pcbi.1008991. 
 }
 
 \seealso{
 \link[memes]{memes} \cr
 \link[memes]{runStreme} \cr
 \link[universalmotif]{universalmotif} \cr
-\link[postNet]{contentMotifs}
-\link[postNet]{ptn_motifSelection}
+\link[postNet]{contentMotifs} \cr
+\link[postNet]{ptn_motifSelection} \cr
 \link[postNet]{ptn_motifGeneList}
 }
 
@@ -92,14 +93,14 @@ Nystrom SL, McKay DJ (2021). “Memes: A motif analysis environment in R using t
                      
 # Extract the significantly enriched motifs:
  myMotifs <- ptn_motifSelection(ptn = ptn,
-                                region = 'UTR5')
+                                region = "UTR5")
                                 
  str(myMotifs)
 
 # Extract full motif results from one gene set of interest:                                
   motifsTransUp <- ptn_motifGeneList(ptn = ptn,
-                                      region = 'UTR5',
-                                      geneList = 'translationUp')
+                                      region = "UTR5",
+                                      geneList = "translationUp")
                                 
  str(motifsTransUp)
 }

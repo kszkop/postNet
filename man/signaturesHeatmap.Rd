@@ -1,3 +1,4 @@
+\docType{function}
 \name{signaturesHeatmap}
 \alias{signaturesHeatmap}
 \title{Generate heatmaps to evaluate the regulation of gene signatures in a \code{postNetData} object
@@ -17,7 +18,7 @@ signaturesHeatmap(ptn,
 }
 
 \arguments{
-  \item{ptn}{A \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
   \item{signatureList}{A named list of vectors containing gene IDs for the signatures of interest to be examined. Note that several
   signatures of translational regulation are provided with the package for both human and mouse. These can be retrieved using the

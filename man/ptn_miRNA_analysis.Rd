@@ -1,20 +1,20 @@
-\docType{methods}
+\docType{function}
 \name{ptn_miRNA_analysis}
-\alias{ptn_miRNA_analysis,postNetData-method}
+\alias{ptn_miRNA_analysis}
 \title{Accessor for the "miRNA_analysis" slot of a \code{postNetData} object
 }
 
-\description{Retrieve the "miRNA_analysis" slot from a \code{postNetData} object, which holds the results of GAGE analysis identifying miRNA target enrichments in gene sets of interest created by the \link[postNet]{miRNAAnalysis} function.
+\description{Retrieve the "miRNA_analysis" slot from a \code{postNetData} object, which holds the results of GAGE analysis identifying miRNA target enrichments in gene sets of interest created by the \link[postNet]{miRNAanalysis} function.
 }
 
 \usage{
-\S4method{ptn_miRNA_analysis}{postNetData}(ptn, 
+ptn_miRNA_analysis(ptn, 
                   direction, 
                   threshold)
 }
 
 \arguments{
-  \item{ptn}{a \code{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
   \item{direction}{A character indicating the directionality of regulation of the gene sets. Can be either
   \code{"greater"}, or \code{"less"}.
@@ -23,7 +23,7 @@
   }
 }
 
-\details{Note that note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear in the results table labelled "greater" can be interpreted as those miRNA that may be downregulated or otherwise not active in the experimental condition. Likewise, enrichments in miRNA predicted to target genes that are downregulated that appear in the results table labelled "less" can be interpreted as those miRNA that may be upregulated or active in the experimental condition. 
+\details{Note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear in the results table labelled "greater" can be interpreted as those miRNA that may be downregulated or otherwise not active in the experimental condition. Likewise, enrichments in miRNA predicted to target genes that are downregulated that appear in the results table labelled "less" can be interpreted as those miRNA that may be upregulated or active in the experimental condition. 
 }
 
 \value{The value returned by the \code{ptn_miRNA_analysis} function is a data.frame with the following columns (see the \link[gage]{gage} package for full details):
@@ -31,7 +31,7 @@
  \itemize{ 
   \item \strong{p.geomean}: The geometric mean of the individual p-values from multiple single array-based gene set 
   tests.
-  \item \strong{stat.mean}: The mean of the individual statistics from multple single array-based gene set tests. The
+  \item \strong{stat.mean}: The mean of the individual statistics from multiple single array-based gene set tests. The
   value denotes the magnitude of the gene-set level changes, and the sign denotes the direction of the changes.
   \item \strong{p.val}: The global p-value or summary of the individual p-values from multiple single array-based gene
   set tests.
@@ -64,7 +64,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 
 # Run GAGE miRNA target enrichment analysis:
  ptn <- miRNAanalysis(ptn = ptn,
-                     miRNATargetScanFile = 'miRNA_predictions_hsa.txt',
+                     miRNATargetScanFile = "miRNA_predictions_hsa.txt",
                      contextScore = -0.2,
                      Pct = 0.4)
 

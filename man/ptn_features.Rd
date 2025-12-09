@@ -30,11 +30,11 @@
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
-# Prepare the list of pre-calculated features to be used in feature integration modelling 
+# Prepare the list of pre-calculated features to be used in feature integration modelling:
  myFeatures <- postNetExample$features
- str(features)
+ str(myFeatures)
 
-# Run feature integration modelling using stepwise regression
+# Run feature integration modelling using forward stepwise regression:
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
                           pdfName = "omnibus", 
@@ -45,7 +45,7 @@
                           comparisons = list(c(1,2)),
                           NetModelSel = "omnibus")
                           
-# Retrieve a data.frame summarzing the features for each gene used in modelling
+# Retrieve a data.frame summarizing the features for each gene used in modelling:
  featureInput <- ptn_features(ptn)
  str(featureInput)
 }

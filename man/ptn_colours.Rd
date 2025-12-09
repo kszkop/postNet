@@ -4,7 +4,7 @@
 \title{Accessor for the "colours" slot of a \code{postNetData} object
 }
 
-\description{Retrieve the "colours" slot of a a \code{postNetData} object, which holds a character vector with the user-provided colours used for plotting. The vector must be the same length as number of elements in \code{geneList} (e.g., one colour for each gene set of interest).  
+\description{Retrieve the "colours" slot of a \code{postNetData} object, which holds a character vector with the user-provided colours used for plotting. The vector must be the same length as the number of elements in \code{geneList} (e.g., one colour for each gene set of interest).  
 }
 
 \usage{
@@ -12,7 +12,7 @@
 }
 
 \arguments{
-  \item{x}{a \code{postNetData} object.
+  \item{x}{A \linkS4class{postNetData} object.
   }
 }
 

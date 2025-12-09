@@ -1,26 +1,27 @@
+\docType{methods}
 \name{ptn_motifGeneList}
-\alias{ptn_motiGeneList,postNetData-method}
-\title{Accessor for the de-novo motif analysis results for each gene set of interest in a \code{postNetData} object
+\alias{ptn_motifGeneList,postNetData-method}
+\title{Accessor for the de novo motif analysis results for each gene set of interest in a \code{postNetData} object
 }
 
-\description{Retrieve the results of de-novo motif identification for each gene set of interest in a \code{postNetData} object. Data for all motifs identified for each gene set of interest in the input \code{geneList} with enrichment p-values below the given threshold are stored in \link[universalmotif]{universalmotif} format. 
+\description{Retrieve the results of de novo motif identification for each gene set of interest in a \code{postNetData} object. Data for all motifs identified for each gene set of interest in the input \code{geneList} with enrichment p-values below the given threshold are stored in \link[universalmotif]{universalmotif} format. 
 }
 
 \usage{
 \S4method{ptn_motifGeneList}{postNetData}(x, region, geneList)
 }
 \arguments{
-  \item{x}{a \code{postNetData} object.
+  \item{x}{A \linkS4class{postNetData} object.
   }
   \item{region}{A string specifying the sequence region of interest. This can be one of \code{"UTR5"},
   \code{"UTR3"}, or \code{"CDS"}.
   }
-  \item{geneList}{A string providing the name of the gene set of interest from \code{geneList} to extract de-novo
+  \item{geneList}{A string providing the name of the gene set of interest from \code{geneList} to extract de novo
   motif results for. 
   }
 }
 
-\value{The \code{ptn_motifGeneList} function returns additional information on the selected de-novo identified motifs for the specified gene list in \link[universalmotif]{universalmotif} format.
+\value{The \code{ptn_motifGeneList} function returns additional information on the selected de novo identified motifs for the specified gene list in \link[universalmotif]{universalmotif} format.
 }
 
 \references{
@@ -37,7 +38,7 @@ Timothy L. Bailey, "STREME: Accurate and versatile sequence motif discovery", Bi
 }
 
 \examples{
-# Note that as users must provide the path to the MEME Suite executables, it is not possile to
+# Note that as users must provide the path to the MEME Suite executables, it is not possible to
 # create a fully executable example as this path will vary depending on many factors. An example of
 # how to run this function is provided below, and can be updated with the correct memePath argument. 
 

@@ -4,7 +4,7 @@
 \title{Accessor for the isoform selection parameter from the "selection" slot of a \code{postNetData} object
 }
 
-\description{Retrieve the "selection" slot a \code{postNetData} object, which holds the method chosen to select which mRNA isoforms are used in analyses. These can be one of: \code{"longest"}, \code{"shortest"}, or \code{"random"}.
+\description{Retrieve the "selection" slot from a \code{postNetData} object, which holds the method chosen to select which mRNA isoforms are used in analyses. These can be one of: \code{"longest"}, \code{"shortest"}, or \code{"random"}.
 }
 
 \usage{
@@ -12,12 +12,11 @@
 }
 
 \arguments{
-  \item{x}{a \code{postNetData} object.
+  \item{x}{A \linkS4class{postNetData} object.
   }
 }
 
-\value{A character specifying the method of selecting mRNA isoforms. Can be either \code{"longest"}, \code{"shortest"}, 
-or \code{"random"}.
+\value{A character specifying the method used to select mRNA isoforms. Can be either \code{"longest"}, \code{"shortest"}, or \code{"random"}.
 }
 
 \examples{
@@ -26,7 +25,7 @@ or \code{"random"}.
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
-# Access mRNA isoform selection method
+# Access mRNA isoform selection method:
   ptn_selection(ptn)
 
 }

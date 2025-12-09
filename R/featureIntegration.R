@@ -17,8 +17,7 @@ featureIntegration <- function(ptn,
   check_features(features)
   if (!is.null(comparisons)) {
     if (!check_comparisons(comparisons)) {
-      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \
-           denotes the background gene set.")
+      stop("The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \ denotes the background gene set.")
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 && is.null(ptn_background(ptn))) {
@@ -40,12 +39,12 @@ featureIntegration <- function(ptn,
       stop("The input for 'covarFilt' must be a positive numeric value.")
     }
     if (!is_valid_NetModelSel(NetModelSel)) {
-      stop("The input for 'NetModelSel' cannot be NULL and must be either: 'omnibus', or  'adjusted'.")
+      stop("The input for 'NetModelSel' cannot be NULL and must be either 'omnibus', or 'adjusted'.")
     }
   }
   if (analysis_type == "rf") {
     if (is.null(comparisons)) {
-      stop("Please provide the desired comparisons as a list of numeric vectors. Example: list(c(0,2),c(0,1)), where 0 is always denotes the background gene set.")
+      stop("Please provide the desired comparisons as a list of numeric vectors. Example: list(c(0,2),c(0,1)), where 0 always denotes the background gene set.")
     }
   }
   #
@@ -195,7 +194,7 @@ featureIntegration <- function(ptn,
 
       #
       model1Imp <- Boruta::Boruta(reg ~ ., data = TrainSet, doTrace = 0, maxRuns = 500, pValue = 0.001)
-      # selecct important once
+      # select important ones
       featComf <- row.names(Boruta::attStats(model1Imp))[which(as.character(Boruta::attStats(model1Imp)[, 6]) == "Confirmed")]
       #
       pdf(paste(nameOut, "featureImportance.pdf", sep = "_"), width = 8, height = 8, useDingbats = F)

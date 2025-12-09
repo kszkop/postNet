@@ -1,3 +1,4 @@
+\docType{function}
 \name{postNetStart}
 \alias{postNetStart}
 \title{Create the data container and inputs for postNet analyses
@@ -13,7 +14,7 @@
       \item A numeric regulation effect measurement (e.g., fold changes in gene expression or translation 
       efficiency, etc.) either from an \pkg{anota2seq} analysis, or from a custom source. These values will be used
       in the \link[postNet]{featureIntegration} analysis, where mRNA features, gene signatures, and/or other variables
-      can be used to explain changes in the regulation effect measurement using step-wise regression and/or random
+      can be used to explain changes in the regulation effect measurement using forward stepwise regression and/or random
       forest approaches.
     }
   The resulting \code{postNetData} object is then passed to downstream functions in the \pkg{postNet}
@@ -69,11 +70,11 @@
 }
   \item{contrastSel}{If using \code{ads}, select the \pkg{anota2seq} contrast where the "general" regulation effect measurement corresponding to \code{regulationGen} should be extracted from. This must be a single numeric value. 
 }
-  \item{geneList}{If \pkg{anota2seq} was not used, instead of providing \code{ads}, gene sets of interest can be provided as a named list of one or more character vectors. Each list element should be a set of genes (For example, \code{list(set1=c("GeneA","GeneB"), set2=c("GeneC","GeneD"))}). Ensure that the gene IDs provided match those in the reference sequence annotations.  
+  \item{geneList}{If \pkg{anota2seq} was not used, instead of providing \code{ads}, gene sets of interest can be provided as a named list of one or more character vectors. Each list element should be a set of genes (for example, \code{list(set1=c("GeneA","GeneB"), set2=c("GeneC","GeneD"))}). Ensure that the gene IDs provided match those in the reference sequence annotations.  
 }
-  \item{geneListcolours}{If using \code{geneList}, provide a character vector of colors to be used for plotting. This must have the same length as \code{geneList}. If using \code{ads}, the colours for each regulatory mode from \pkg{anota2seq} will be used automatically. 
+  \item{geneListcolours}{If using \code{geneList}, provide a character vector of colours to be used for plotting. This must have the same length as \code{geneList}. If using \code{ads}, the colours for each regulatory mode from \pkg{anota2seq} will be used automatically. 
 }
-  \item{customBg}{If using \code{geneList}, optionally provide a character vector of gene/transcript IDs corresponding to the custom background. This background will be used for statistical comparisons against the gene sets of interest provided in \code{geneList}. Note that the background should correspond to the set of genes or transcripts that was quantified (i.e., all genes used as input in the analysis that generated the regulatory effect measurement [\code{effectMeasure}]). For example, all genes in a given data set passing expression/reproducibility thresholds. Note that all genes in \code{geneList} must be found in \code{customBg}. If \code{customBg} is \code{NULL}, the background will be set as all genes IDs present in the provided \code{geneList}. Although optional, it is strongly recommended to carefully consider that the appropriate background is used. If using \code{ads}, the appropriate background is automatically retrieved from the \code{Anota2seqDataSet} object, and \code{customBg} should be \code{NULL}. 
+  \item{customBg}{If using \code{geneList}, optionally provide a character vector of gene/transcript IDs corresponding to the custom background. This background will be used for statistical comparisons against the gene sets of interest provided in \code{geneList}. Note that the background should correspond to the set of genes or transcripts that was quantified (i.e., all genes used as input in the analysis that generated the regulatory effect measurement [\code{effectMeasure}]). For example, all genes in a given data set passing expression/reproducibility thresholds. Note that all genes in \code{geneList} must be found in \code{customBg}. If \code{customBg} is \code{NULL}, the background will be set as all gene IDs present in the provided \code{geneList}. Although optional, it is strongly recommended to carefully consider that the appropriate background is used. If using \code{ads}, the appropriate background is automatically retrieved from the \code{Anota2seqDataSet} object, and \code{customBg} should be \code{NULL}. 
 }
   \item{effectMeasure}{If using \code{geneList}, provide a numeric vector corresponding to a custom regulation effect measurement. For example, fold changes in mRNA expression or translation efficiency (although any continuous numeric variable could theoretically be used). The elements of the vector should be named with the gene/transcript IDs in a format corresponding to those provided in the \code{geneList}. This parameter should not be provided when using \code{ads}, as the regulation effect measurement will be retrieved from the \code{Anota2seqDataSet} using the \code{regulationGen} parameter. 
 }
@@ -93,7 +94,7 @@
   Any integer can be provided (for example 123), however, the same value must be provided between different analyses for 
   isoform selection to be reproducible. 
 }
-  \item{source}{Select the source of the reference sequence annotations. Note that the the gene/transcript annotations used in the \code{ads} or \code{geneList} should be the same as those used in the reference sequence annotations. This parameter can be set to:
+  \item{source}{Select the source of the reference sequence annotations. Note that the gene/transcript annotations used in the \code{ads} or \code{geneList} should be the same as those used in the reference sequence annotations. This parameter can be set to:
    \describe{
      \item{\code{"load"}}{(Default) Load a pre-made RefSeq reference sequence annotation of the selected 
          \code{species} and \code{version} included in \pkg{postNet}. Currently, this option is supported with
@@ -103,8 +104,8 @@
          from the NCBI database for the selected \code{species} and build a new reference sequence annotation locally.
          Currently, this option is supported with the \code{species} \code{"human"} and \code{"mouse"}.}
      \item{\code{"createFromSourceFiles"}}{Use local RefSeq reference files already downloaded from the NCBI RefSeq
-         database to create annotation sequences. Three files are required, the RNA GBFF ("rna.gbff"), RNA FASTA ("rna
-         .fna"), and genomic GFF ("genomic.gff"). These files must be provided using the \code{rna_gbff_file},
+         database to create annotation sequences. Three files are required, the RNA GBFF ("rna.gbff"), RNA FASTA 
+         ("rna.fna"), and genomic GFF ("genomic.gff"). These files must be provided using the \code{rna_gbff_file},
          \code{rna_fa_file}, and \code{genomic_gff_file} parameters. This option can be used to assemble reference
          sequence annotations for RefSeq versions not currently supported with \code{"load"}, and unlike the
          \code{"create"} option does not require an internet connection if the reference files have already been
@@ -117,8 +118,8 @@
          supported with the \code{species} \code{"human"} and \code{"mouse"}.}
      \item{\code{"custom"}}{Use a pre-prepared reference sequence annotation file provided with the \code{customFile}
          parameter. This option can be used when working with sequences from \code{species} not currently supported
-         by the options above, or with annotations other than those in the NCBI RefSeq database. The \code{customfile} provided must be tab delimited and contain the columns: 
-         transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq.}
+         by the options above, or with annotations other than those in the NCBI RefSeq database. The \code{customFile} provided must be 
+         tab-delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq.}
    }
 }
   \item{version}{If \code{source} is \code{"load"}, specify the RefSeq release version that should be used for the reference sequence annotations. Available versions can be checked using the \code{\link[postNet]{checkAvailableVersions}}
@@ -127,17 +128,17 @@ function. If \code{NULL}, the most recent version is used for the specified \cod
   \item{species}{Select the species of interest. Currently, \code{"human"} and \code{"mouse"} are supported. This parameter is required unless \code{source} is \code{"custom"}.
 }
   \item{customFile}{If \code{source} is \code{"custom"}, provide the name and file path to the custom reference sequence
-annotation file. The \code{customFile} must be TAB-delimited, with the headings: \code{transcriptID, geneID, UTR5_seq, CDS_seq, UTR3_seq}. 
+annotation file. The \code{customFile} must be tab-delimited, with the headings: \code{transcriptID, geneID, UTR5_seq, CDS_seq, UTR3_seq}. 
 }
   \item{fastaFile}{If \code{source} is \code{"createFromFasta"}, provide the name and file path to a FASTA file to be used to assemble reference sequence annotations.
 }
-  \item{posFile}{If \code{source} is \code{"createFromFasta"}, provide the name and file path to a file specifying positions of transcript sequence regions in the \code{fastaFile}. The \code{posFile} must be TAB-delimited, with the headings: \code{transcriptID, utr5_stop, cds_stop, total_length}. Please see the vignette for additional details.
+  \item{posFile}{If \code{source} is \code{"createFromFasta"}, provide the name and file path to a file specifying positions of transcript sequence regions in the \code{fastaFile}. The \code{posFile} must be tab-delimited, with the headings: \code{transcriptID, utr5_stop, cds_stop, total_length}. Please see the vignette for additional details.
 }
-  \item{rna_gbff_file}{If \code{source} is \code{"createFromSourceFiles"}, provide the name and file path to a RNA GBFF reference file for either human or mouse. This can can be downloaded from the NCBI RefSeq database. Note that the file should be compressed with gzip (.gz extension), which is the default format for NCBI RefSeq downloads.
+  \item{rna_gbff_file}{If \code{source} is \code{"createFromSourceFiles"}, provide the name and file path to an RNA GBFF reference file for either human or mouse. This can be downloaded from the NCBI RefSeq database. Note that the file should be compressed with gzip (.gz extension), which is the default format for NCBI RefSeq downloads.
 }
-  \item{rna_fa_file}{If \code{source} is \code{"createFromSourceFiles"}, provide the name and file path to a RNA FASTA reference file for either human or mouse. This can can be downloaded from the NCBI RefSeq database. Note that the file should be compressed with gzip (.gz extension), which is the default format for NCBI RefSeq downloads.
+  \item{rna_fa_file}{If \code{source} is \code{"createFromSourceFiles"}, provide the name and file path to an RNA FASTA reference file for either human or mouse. This can be downloaded from the NCBI RefSeq database. Note that the file should be compressed with gzip (.gz extension), which is the default format for NCBI RefSeq downloads.
 }
-  \item{genomic_gff_file}{If \code{source} is \code{"createFromSourceFiles"}, provide the name and file path to a genomic GFF reference file for either human or mouse. This can can be downloaded from the NCBI RefSeq database. Note that the file should be compressed with gzip (.gz extension). If \code{source} is \code{"createFromFasta"}, an unzipped genomic GFF can be specified manually using this parameter. Alternatively, leaving \code{NULL} will automatically download the most recent version for \code{species} from the NCBI RefSeq database.
+  \item{genomic_gff_file}{If \code{source} is \code{"createFromSourceFiles"}, provide the name and file path to a genomic GFF reference file for either human or mouse. This can be downloaded from the NCBI RefSeq database. Note that the file should be compressed with gzip (.gz extension). If \code{source} is \code{"createFromFasta"}, an unzipped genomic GFF can be specified manually using this parameter. Alternatively, leaving \code{NULL} will automatically download the most recent version for \code{species} from the NCBI RefSeq database.
 }
   \item{adjObj}{A named list of custom UTR sequences that will replace the existing UTR sequences in the annotation file. List elements must be named \code{"UTR5"} and/or \code{"UTR3"}, and elements should be a named character vector of UTR sequences where names are transcript IDs (for example, \code{NM_...}), and values are the new UTR sequences. This parameter is useful when more precise measurements of UTR sequences are available (for example, from CAGE or QuantSeq data).
 }
@@ -146,7 +147,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 }
   \item{excl}{When providing custom UTR sequences with \code{adjObj}, sequences may not be available for all genes/isoforms included in the existing annotation file. This parameter determines whether to keep all genes/isoforms, or exclude those that are not included in \code{adjObj}. If \code{TRUE}, any transcript IDs present in the existing annotation file that are not present in \code{adjObj} will be removed. If \code{FALSE}, then the UTR sequences in the annotation file will be replaced with the custom sequences in \code{adjObj} when they are available, but for transcript IDs where a custom sequence is not available, the original sequence present in the annotation file will be retained and used in the analysis. The default is \code{FALSE}.
 }
-  \item{keepAll}{When using adjusting UTR sequences with \code{adjObj} and \code{excl} is \code{FALSE}, the \code{keepAll} parameter determines how the custom UTR sequences are integrated into the existing annotation file for genes with multiple isoforms. If \code{TRUE}, the UTR sequences in the annotation file will be replaced with the custom sequences corresponding to the same transcript IDs. However, if there are multiple transcript IDs (isoforms) for the same gene ID, all isoforms will be retained, including transcript IDs where custom sequences were not available in \code{adjObj}. Note that unless the custom sequences are always the longest or shortest isoforms that can be selected using the \code{selection} parameter, when \code{keepAll} is \code{TRUE}, the custom sequences are not guaranteed to be the ones considered if a gene-level analysis is performed. If \code{FALSE}, transcript IDs (isoforms) corresponding to the same gene that are not found in the custom sequences provided in \code{adjObj} will be removed, such that only the custom UTR sequences will be available for genes with multiple isoforms. The default is \code{FALSE}.
+  \item{keepAll}{When using custom UTR sequences with \code{adjObj} and \code{excl} is \code{FALSE}, the \code{keepAll} parameter determines how the custom UTR sequences are integrated into the existing annotation file for genes with multiple isoforms. If \code{TRUE}, the UTR sequences in the annotation file will be replaced with the custom sequences corresponding to the same transcript IDs. However, if there are multiple transcript IDs (isoforms) for the same gene ID, all isoforms will be retained, including transcript IDs where custom sequences were not available in \code{adjObj}. Note that unless the custom sequences are always the longest or shortest isoforms that can be selected using the \code{selection} parameter, when \code{keepAll} is \code{TRUE}, the custom sequences are not guaranteed to be the ones considered if a gene-level analysis is performed. If \code{FALSE}, transcript IDs (isoforms) corresponding to the same gene that are not found in the custom sequences provided in \code{adjObj} will be removed, such that only the custom UTR sequences will be available for genes with multiple isoforms. The default is \code{FALSE}.
 }
 }
 
@@ -173,7 +174,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 \value{An S4 object of class \code{postNetData} containing:
     \itemize{
       \item \strong{Reference Sequence Annotations:} 5'UTR, CDS, and 3'UTR sequences for each 
-      gene and/or transcript isoform, with the possiblity to customize UTRs via \code{adjObj}.
+      gene and/or transcript isoform, with the possibility to customize UTRs via \code{adjObj}.
       \item \strong{Gene Lists:} One or more sets of gene IDs of interest, as well as a set of
       gene IDs to be used as background for statistical comparisons (from \code{ads}, or 
       \code{geneList} and \code{customBg}).
@@ -190,7 +191,7 @@ annotation file. The \code{customFile} must be TAB-delimited, with the headings:
 
 \note{The helper functions available to retrieve inputs and results from the \linkS4class{postNetData} object are:
   \describe{
-     \item{\link[postNet]{ptn_backround}}{}
+     \item{\link[postNet]{ptn_background}}{}
      \item{\link[postNet]{ptn_codonAnalysis}}{}
      \item{\link[postNet]{ptn_codonSelection}}{}
      \item{\link[postNet]{ptn_colours}}{}

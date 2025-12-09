@@ -1,8 +1,9 @@
+\docType{function}
 \name{gageAnalysis}
 \alias{gageAnalysis}
 \title{Perform GAGE analysis with a \code{postNetData} object 
 }
-\description{The \code{gageAnalysis} function implements the \link[gage]{gage} package to perform Generally Applicable Gene-set Enrichement (GAGE) analysis using the regulatory effect measurement contained in a \code{postNetData} object. These values are specified by the \code{regulationGen} or \code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
+\description{The \code{gageAnalysis} function implements the \link[gage]{gage} package to perform Generally Applicable Gene-set Enrichment (GAGE) analysis using the regulatory effect measurement contained in a \code{postNetData} object. These values are determined by the \code{regulationGen} or \code{effectMeasure} parameters in the \link[postNet]{postNetStart} function. 
 }
 
 \usage{
@@ -16,7 +17,7 @@ gageAnalysis(ptn,
 \arguments{
   \item{ptn}{A \linkS4class{postNetData} object.
   }
-  \item{category}{A character vector specifying one or more gene ontology categories to be included in the analysis. The options are \code{'BP'}, \code{'CC'}, \code{'MF'}, and \code{'KEGG'}. For example, \code{category = c('BP','MF')}.
+  \item{category}{A character vector specifying one or more gene ontology categories to be included in the analysis. The options are \code{"BP"}, \code{"CC"}, \code{"MF"}, and \code{"KEGG"}. For example, \code{category = c("BP", "MF")}.
   }
   \item{genesSlopeFiltOut}{If using an \code{Anota2seqDataSet} with analysis results for the "translation" or "buffering" regulatory modes, optionally provide a character vector with gene IDs to be excluded from GAGE analysis. This can be generated using the \link[postNet]{slopeFilt} function. Although optional, this step is strongly recommended. This filtering is not necessary if using "mRNAAbundance", "totalmRNA", or "translatedmRNA". The default is \code{NULL}.
   }
@@ -26,7 +27,7 @@ gageAnalysis(ptn,
   }
 }
 
-\details{After running GAGE analysis, the results can be retrieved from the \code{postNetData} object using the S4 method \link[postNet]{ptn_GAGE} function.
+\details{After running GAGE analysis, the results can be retrieved from the \code{postNetData} object using the S4 method \link[postNet]{ptn_GAGE}.
 
 Note that if using results from an \pkg{anota2seq} analysis, it is strongly recommended to first apply filtering using the \link[postNet]{slopeFilt} function to exclude genes with unrealistic regression slopes.
 }
@@ -51,7 +52,7 @@ Note that if using results from an \pkg{anota2seq} analysis, it is strongly reco
 \references{
 If you use the \code{gageAnalysis} function in your analysis, please cite: \cr
 
-Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Applicable Gene Set Enrichment for Pathways Analysis. BMC Bioinformatics 2009, 10:161.
+Luo, W., Friedman, M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Applicable Gene Set Enrichment for Pathways Analysis. BMC Bioinformatics 2009, 10:161.
 }
 
 \seealso{

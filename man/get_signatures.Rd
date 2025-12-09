@@ -1,8 +1,9 @@
+\docType{function}
 \name{get_signatures}
 \alias{get_signatures}
 \title{Retrieve gene signatures provided in the postNetParcel}
 
-\description{The \code{get_signatures} function retrieves gene signatures of interested provided with the package for the indicated species. 
+\description{The \code{get_signatures} function retrieves gene signatures of interest provided with the package for the indicated species. 
 }
 
 \usage{
@@ -14,9 +15,9 @@ get_signatures(species)
 }
 }
 
-\details{The data retrieved contains a list of gene signatures relevent to understanding possible pathways and mRNA features involved in regulation of mRNA translation, with a specific focus on mTOR and integrated stress response (ISR)-sensitive translation. These signatures have been compiled either directly from published studies, or from analyses of published datasets (sources and references described in detail below). Note that if the orignal source of the gene signature was from human, these gene IDs have been converted to mouse, and vice versa. 
+\details{The data retrieved contains a list of gene signatures relevant to understanding possible pathways and mRNA features involved in regulation of mRNA translation, with a specific focus on mTOR and integrated stress response (ISR)-sensitive translation. These signatures have been compiled either directly from published studies, or from analyses of published datasets (sources and references described in detail below). Note that if the original source of the gene signature was from human, these gene IDs have been converted to mouse, and vice versa. 
 
-These gene signatures can be used with the \link[postNet]{plotSignatures}, \link[postNet]{plotSignatures_ads}, and \link[postNet]{signaturesHeatmap} functions to perform statistical analyses and visualizations of how each gene signature is regulated in a given dataset. Furthermore, gene signatures can also be provided as features in the \link[postNet]{featureIntegration} function which performs step-wise regression modelling or random forest classification to identify features that are most important in explaining post-transcriptional regulation in a given dataset. The \link[postNet]{signCalc} function can be used to convert gene signatures into a format compatible with \link[postNet]{featureIntegration}.   
+These gene signatures can be used with the \link[postNet]{plotSignatures}, \link[postNet]{plotSignatures_ads}, and \link[postNet]{signaturesHeatmap} functions to perform statistical analyses and visualizations of how each gene signature is regulated in a given dataset. Furthermore, gene signatures can also be provided as features in the \link[postNet]{featureIntegration} function which performs forward stepwise regression modelling or Random Forest classification to identify features that are most important in explaining post-transcriptional regulation in a given dataset. The \link[postNet]{signCalc} function can be used to convert gene signatures into a format compatible with \link[postNet]{featureIntegration}.   
 }
 
 \value{
@@ -106,7 +107,7 @@ List of 5 \cr
   \item \strong{Publication Information}:{
     \itemize{
         \item Title: A Unique ISR Program Determines Cellular Responses to Chronic Stress
-        \item Method: Polysome fractionation followed by RNA seqeuncing 
+        \item Method: Polysome fractionation followed by RNA sequencing 
         \item Data Source: 
         \item Analysis Method:
         \item First Author, Last Author, Year:  Guan, Hatzoglou, 2017
@@ -122,7 +123,7 @@ List of 5 \cr
 }
 
 \references{
-If you use these gene signatures in you analysis, please cite: \cr
+If you use these gene signatures in your analysis, please cite: \cr
 
 Gandin V, Masvidal L, Cargnello M, Gyenis L, McLaughlan S, Cai Y, Tenkerian C, Morita M, Balanathan P, Jean-Jean O, Stambolic V, Trost M, Furic L, 
 Larose L, Koromilas AE, Asano K, Litchfield D, Larsson O, Topisirovic I. mTORC1 and CK2 coordinate ternary and eIF4F complex assembly. Nat Commun. 
@@ -144,7 +145,7 @@ Wynshaw-Boris A, Topisirovic I, Larsson O, Hatzoglou M. A Unique ISR Program Det
 }
 
 \examples{
-# Load the mouse signatures 
+# Load the human gene signatures: 
  humanSignatures <- get_signatures("human")
  str(humanSignatures)
 
