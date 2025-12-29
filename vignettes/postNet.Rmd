@@ -151,7 +151,7 @@ features <- postNetVignette$features
 str(features)
 
 # Signatures of trans-acting factors can also be included, and some are provided with the package
-data("humanSignatures", package = "postNetParcel")
+humanSignatures <- get_signatures(species = 'human')
 str(humanSignatures)
 
 # Signatures can be converted into feature inputs using the signCalc function
