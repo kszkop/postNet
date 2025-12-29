@@ -212,7 +212,7 @@ featureIntegration <- function(ptn,
       # tmpNames <- c(namesDf$originalNames, addNames)[match(tmpNames, c(namesDf$newNames, addNames))]
       coloursN <- rep("black", length(tmpNames))
       coloursN[tmpNames %in% addNames] <- "firebrick1"
-      axis(side = 1, at = 1:length(tmpNames), labels = F, font = 2, lwd = 2, las = 2, cex.axis = 0.5, tck = -0.005)
+      axis(side = 1, at = 1:length(tmpNames), labels = FALSE, font = 2, lwd = 2, las = 2, cex.axis = 0.5, tck = -0.005)
       text(1:length(tmpNames), par("usr")[3] - 1.05, labels = tmpNames, col = coloursN, srt = 45, adj = 1, cex = 0.55, xpd = NA)
       dev.off()
 

@@ -1348,7 +1348,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   )
 
 
-  tb3out <- data.frame(Features = names(step1expl), Pvalue_Univariate = format(as.numeric(step1pval), scientific = TRUE, digits = 2), FDRvalue_Univariate = format(as.numeric(step1fdr), scientific = T, digits = 2), VarianceExplained_Univariate = as.numeric(step1expl))
+  tb3out <- data.frame(Features = names(step1expl), Pvalue_Univariate = format(as.numeric(step1pval), scientific = TRUE, digits = 2), FDRvalue_Univariate = format(as.numeric(step1fdr), scientific = TRUE, digits = 2), VarianceExplained_Univariate = as.numeric(step1expl))
   tb3out <- tb3out[with(tb3out, order(-tb3out$VarianceExplained_Univariate)), ]
 
   tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
