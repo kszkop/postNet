@@ -51,7 +51,8 @@ Imports:
   clusterProfiler (>= 4.14.6),
   gage (>= 2.56.0),
   magick (>= 2.9.0),
-  withr (>= 3.0.2)
+  withr (>= 3.0.2),
+  pdftools (>= 3.6.0)
 Suggests: 
     knitr,
     rmarkdown,
