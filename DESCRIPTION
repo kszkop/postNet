@@ -10,7 +10,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyLoad: true
 Depends: 
-  R (>= 4.1.0),
+  R (>= 4.4.0),
   dplyr (>= 1.0.7),
   pqsfinder (>= 2.8.0),
   Biostrings (>= 2.60.2),

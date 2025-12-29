@@ -79,7 +79,8 @@ Luo, W., Friedman, M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Ap
                     direction = "greater", 
                     threshold = 1) # This will return the complete results. For only significant results the threshold should be lowered. 
  str(gageOut)
-          
+}
+
 \dontrun{
 
 # ------------------------------------------------------------------
@@ -127,6 +128,4 @@ Luo, W., Friedman, M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Ap
  ptn <- gageAnalysis(ptn,
                     genesSlopeFiltOut = filtOutGenes,
                     category = "CC")   
-  }
-
 }
