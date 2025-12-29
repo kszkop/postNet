@@ -23,6 +23,7 @@ codonUsage(ptn,
           subregionSel = NULL, 
           comparisons, 
           plotType_index = "boxplot", 
+          seed = NULL,
           pdfName = NULL)
 }
 

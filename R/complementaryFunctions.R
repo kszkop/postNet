@@ -133,17 +133,20 @@ regSel <- function(annot, region) { # , ext=FALSE){
   return(annotOut)
 }
 
-isoSel <- function(annot, method, seed = NULL) {
+isoSel <- function(annot, method, setSeed=NULL) {
   # Select per gene level
   if (method == "shortest") {
     annotOut <- as.data.frame(annot %>% group_by(geneID) %>% dplyr::slice(which.min(lenTmp)))
   } else if (method == "longest") {
     annotOut <- as.data.frame(annot %>% group_by(geneID) %>% dplyr::slice(which.max(lenTmp)))
   } else {
-    if (!is.null(seed)) {
-      set.seed(setSeed)
+    sampler <- function() {
+      annot %>%  dplyr::group_by(geneID) %>% dplyr::slice_sample(n = 1)
     }
-    annotOut <- as.data.frame(annot %>% group_by(geneID) %>% dplyr::slice_sample(n = 1))
+    annotOut <- as.data.frame(
+      if (is.null(seed)) sampler()
+      else withr::with_seed(seed, sampler())
+    )
   }
   return(annotOut)
 }
