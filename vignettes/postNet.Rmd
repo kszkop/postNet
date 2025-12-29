@@ -116,31 +116,31 @@ len <- lengthAnalysis(ptn = ptn,
 # Convert to PNG
 magick::image_read_pdf("Example_UTR5_boxplot_lengthAnalysis.pdf", density = 300) %>%
   magick::image_resize("3000x") %>%
-  magick::image_write("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
+  magick::image_write("vignettes/Figures/Example_UTR5_boxplot_lengthAnalysis.png")
 
 magick::image_read_pdf("Example_UTR5_GC_content.pdf", density = 300) %>%
   magick::image_resize("3000x") %>%
-  magick::image_write("Figures/Example_UTR5_GC_content.png")
+  magick::image_write("vignettes/Figures/Example_UTR5_GC_content.png")
 
 # Read each image
-img1 <- magick::image_read("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
-img2 <- magick::image_read("Figures/Example_UTR5_GC_content.png")
+img1 <- magick::image_read("vignettes/Figures/Example_UTR5_boxplot_lengthAnalysis.png")
+img2 <- magick::image_read("vignettes/Figures/Example_UTR5_GC_content.png")
 
 # Append them horizontally
 combined <- magick::image_append(c(img1, img2), stack = FALSE)
 
 # Save combined image at high resolution
-magick::image_write(combined, path = "Figures/combined_UTR5_features.png")
+magick::image_write(combined, path = "vignettes/Figures/combined_UTR5_features.png")
 
 ```
 
 ```{r gettingStartedEnumeratePNGS, echo=FALSE, fig.wide = TRUE, fig.cap="Comparisons of 5'UTR length and GC content between mRNAs belonging to regulated gene sets."}
-knitr::include_graphics("Figures/combined_UTR5_features.png")
+knitr::include_graphics("vignettes/Figures/combined_UTR5_features.png")
 
 ```
 
 ```{r gettingStartedhidePlots, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
-unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf","Figures/Example_UTR5_boxplot_lengthAnalysis.png","Figures/Example_UTR5_GC_content.png"))
+unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf","vignettes/Figures/Example_UTR5_boxplot_lengthAnalysis.png","vignettes/Figures/Example_UTR5_GC_content.png"))
 ```
 
 **Step 3:** Changes in translation efficiency are modelled using the `featureIntegration()` function which performs stepwise regression to identify the collection of features that best explain the observed regulation. In this minimal example, a set of pre-calculated features is used including both *cis*-acting (enumerated mRNA features) and *trans*-acting (signatures of upstream regulatory pathways) factors. 
