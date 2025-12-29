@@ -34,7 +34,7 @@ codonUsage <- function(ptn,
       if (species == "human") {
         #
         download.file("ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/CCDS.current.txt", destfile = "CCDS_human.txt")
-        ccds <- read.delim(file = "CCDS_human.txt", as.is = c(F, T, T, F, T, F, F, T, T, T, F))
+        ccds <- read.delim(file = "CCDS_human.txt", as.is = c(FALSE, TRUE, TRUE, FALSE, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE))
         unlink("CCDS_human.txt")
         #
         ccds$ccds_id_cl <- gsub("\\..*", "", ccds$ccds_id)
@@ -71,7 +71,7 @@ codonUsage <- function(ptn,
       } else if (species == "mouse") {
         #
         download.file("ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_mouse/CCDS.current.txt", destfile = "CCDS_mouse.txt")
-        ccds <- read.delim(file = "CCDS_mouse.txt", as.is = c(F, T, T, F, T, F, F, T, T, T, F))
+        ccds <- read.delim(file = "CCDS_mouse.txt", as.is = c(FALSE, TRUE, TRUE, FALSE, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE, FALSE))
         unlink("CCDS_mouse.txt")
         #
         ccds$ccds_id_cl <- gsub("\\..*", "", ccds$ccds_id)

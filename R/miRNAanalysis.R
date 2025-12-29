@@ -42,7 +42,7 @@ miRNAanalysis <- function(ptn,
     effIn <- effTmp
   }
   #
-  rankIn <- effIn[order(effIn, decreasing = T)]
+  rankIn <- effIn[order(effIn, decreasing = TRUE)]
   #
   if (!is.null(contextScore)) {
     miRNATargetScan <- miRNATargetScan[miRNATargetScan$Cumulative.weighted.context...score < contextScore, ]
