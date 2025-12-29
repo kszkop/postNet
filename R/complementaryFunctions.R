@@ -1348,7 +1348,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   )
 
 
-  tb3out <- data.frame(Features = names(step1expl), Pvalue_Univariate = format(as.numeric(step1pval), scientific = T, digits = 2), FDRvalue_Univariate = format(as.numeric(step1fdr), scientific = T, digits = 2), VarianceExplained_Univariate = as.numeric(step1expl))
+  tb3out <- data.frame(Features = names(step1expl), Pvalue_Univariate = format(as.numeric(step1pval), scientific = TRUE, digits = 2), FDRvalue_Univariate = format(as.numeric(step1fdr), scientific = T, digits = 2), VarianceExplained_Univariate = as.numeric(step1expl))
   tb3out <- tb3out[with(tb3out, order(-tb3out$VarianceExplained_Univariate)), ]
 
   tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
@@ -1439,7 +1439,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     nodeOutAll <- nodeOut
   }
   # create igraph object
-  net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed = F)
+  net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed = FALSE)
   # rescale to size ans other attributes
   lsize <- rescale(igraph::V(net)$VarianceExplained, 0, 100, 0, 75)
   lsize[which(lsize > 0)] <- lsize[which(lsize > 0)] + 2
@@ -1504,8 +1504,8 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   par(mar = c(0, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
 
   plot(-2, 2, xlim = c(-2, 2), ylim = c(-2, 2), xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE, xaxt = "n", type = "n", yaxt = "n")
-  legend(-2, 2, lwd = c(7, 3, 3, 7), col = c(rep(grDevices::adjustcolor("#F40009", alpha.f = 0.2), 2), rep(grDevices::adjustcolor("#1C39BB", alpha.f = 0.2), 2)), title = ifelse(isTRUE(useCorel), "Correlation", "Co-variance"), c("+", "", "", "-"), bty = "n", xpd = T)
-  legend(-1.5, 2, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = T)
+  legend(-2, 2, lwd = c(7, 3, 3, 7), col = c(rep(grDevices::adjustcolor("#F40009", alpha.f = 0.2), 2), rep(grDevices::adjustcolor("#1C39BB", alpha.f = 0.2), 2)), title = ifelse(isTRUE(useCorel), "Correlation", "Co-variance"), c("+", "", "", "-"), bty = "n", xpd = TRUE)
+  legend(-1.5, 2, pt.cex = c(4, 3, 2, 1), pch = 20, col = "gray75", title = c("Variance explained"), c("", "", "", ""), bty = "n", xpd = TRUE)
   legend(0.5, 2, paste("Total variance explained: ", sum(igraph::V(net)$VarianceExplained), "%"), cex = 1.25, col = "grey30")
 
 

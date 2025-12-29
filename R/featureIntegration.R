@@ -57,7 +57,7 @@ featureIntegration <- function(ptn,
   colnames(dataTmp) <- c(paste("a", seq(1, ncol(dataTmp), 1), sep = ""))
 
   dataTmp$effM <- effTmp[match(row.names(dataTmp), names(effTmp))]
-  namesDf <- data.frame(originalNames = colnames(ptn_features(ptn))[1:ncol(dataTmp) - 1], newNames = colnames(dataTmp)[1:ncol(dataTmp) - 1], stringsAsFactors = F)
+  namesDf <- data.frame(originalNames = colnames(ptn_features(ptn))[1:ncol(dataTmp) - 1], newNames = colnames(dataTmp)[1:ncol(dataTmp) - 1], stringsAsFactors = FALSE)
   #
   resOut <- resQuant(qvec = ptn_effect(ptn), ptn = ptn)
   #
@@ -229,8 +229,8 @@ featureIntegration <- function(ptn,
       pdf(paste(nameOut, "FinalModel.pdf", sep = "_"), width = 16, height = 8, useDingbats = FALSE)
       par(mfrow = c(1, 2), mar = c(9, 5, 10, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
       colDot <- rep("black", length(randomForest::importance(model2)[, 3]))
-      # colDot[which(names(sort(randomForest::importance(model2)[, 3], decreasing = F)) %in% featComf)] <- "#B0F2BC"
-      dotchart(sort(randomForest::importance(model2)[, 3], decreasing = F), cex = 0.75, col = colDot, labels = names(sort(varImpIn, decreasing = F)), xlab = "", xaxt = "n", frame.plot = FALSE, pch = 16)
+      # colDot[which(names(sort(randomForest::importance(model2)[, 3], decreasing = FALSE)) %in% featComf)] <- "#B0F2BC"
+      dotchart(sort(randomForest::importance(model2)[, 3], decreasing = FALSE), cex = 0.75, col = colDot, labels = names(sort(varImpIn, decreasing = FALSE)), xlab = "", xaxt = "n", frame.plot = FALSE, pch = 16)
 
       axis(side = 1, seq(0, roundNice(max(varImpIn), direction = "up"), 5), font = 2, lwd = 2)
       mtext(side = 1, line = 4, "Feature Importance \n (Mean Decrease Accuracy)", col = "black", font = 2, cex = 1.2)
