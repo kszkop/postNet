@@ -560,7 +560,7 @@ codonUsage <- function(ptn,
         #
         par(mar = c(0, 8, 0, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
         plot(0, 1, xlim = c(-xlimT, xlimT), ylim = c(0, 1), xaxt = "n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, type = "n", frame.plot = FALSE)
-        legend(-xlimT, 0.5, paste(regComb[1], "vs", regComb[2], sep = " "), bty = "n", horiz = TRUE, xpd = T, y.intersp = 2.8, cex = 1.3)
+        legend(-xlimT, 0.5, paste(regComb[1], "vs", regComb[2], sep = " "), bty = "n", horiz = TRUE, xpd = TRUE, y.intersp = 2.8, cex = 1.3)
 
         par(mar = c(5, 8, 0, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.7, cex.main = 1.7, cex.lab = 1.3)
         plot(statOut, sumFreq, col = "black", pch = 20, cex = 0.1, xlab = "", ylab = "", lwd = 1, bty = "n", font = 2, xlim = c(-xlimT, xlimT), ylim = range(sumFreq))

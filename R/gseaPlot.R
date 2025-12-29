@@ -22,7 +22,7 @@ gseaPlot <- function(ptn,
     effIn <- effTmp
   }
   #
-  rankIn <- effIn[order(effIn, decreasing = T)]
+  rankIn <- effIn[order(effIn, decreasing = TRUE)]
   # if(!is.null(ads)){
   #  tmpAds <- anota2seq::anota2seqGetOutput(ads,
   #                                          analysis = regulationGen,
