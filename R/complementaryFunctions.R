@@ -1555,7 +1555,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
 
   par(mar = c(5, 5, 0, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
   plot(-2, 2, xlim = c(-2, 2), ylim = c(-2, 2), xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE, xaxt = "n", type = "n", yaxt = "n")
-  tmpCoord <- legend(-2, -2, fill = coloursIn, c("Positive regulation", "Negative regulation"), cex = 1.1, bty = "n", xpd = T, inset = -0.1)
+  tmpCoord <- legend(-2, -2, fill = coloursIn, c("Positive regulation", "Negative regulation"), cex = 1.1, bty = "n", xpd = TRUE, inset = -0.1)
   legend("topright", "Covary with significant features", bty = "n", text.col = "#B14D8E")
   dev.off()
 
@@ -1625,7 +1625,7 @@ plotScatterInd <- function(set1, set2 = NULL, orgName, coloursIn, nameOut) {
       plotrix::ablineclip(lm(set[, 2] ~ set[, 1]), col = "#AFBADC", lwd = 4, x1 = xlim_min, x2 = xlim_max)
       plotrix::ablineclip(lm(set[, 2] ~ set[, 1]), col = "black", lwd = 1, x1 = xlim_min, x2 = xlim_max)
 
-      text((xlim_min + xlim_max) / 2, ylim_max, paste("pvalue ", format(as.numeric(cor.test(set[, 1], set[, 2])[3]), scientific = T, digits = 3), ", r=", round(as.numeric(cor.test(set[, 1], set[, 2])[4]), 3), sep = ""), bty = "n", col = "black", cex = 1.25, font = 2)
+      text((xlim_min + xlim_max) / 2, ylim_max, paste("pvalue ", format(as.numeric(cor.test(set[, 1], set[, 2])[3]), scientific = TRUE, digits = 3), ", r=", round(as.numeric(cor.test(set[, 1], set[, 2])[4]), 3), sep = ""), bty = "n", col = "black", cex = 1.25, font = 2)
     }
   }
   dev.off()

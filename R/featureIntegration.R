@@ -223,7 +223,7 @@ featureIntegration <- function(ptn,
       # run model on training set
       model2 <- randomForest::randomForest(reg ~ ., data = TrainSet, importance = TRUE, ntree = 500)
       #
-      varImpIn <- sort(randomForest::importance(model2)[, 3], decreasing = T)
+      varImpIn <- sort(randomForest::importance(model2)[, 3], decreasing = TRUE)
       # names(varImpIn) <- namesDf$originalNames[match(names(varImpIn), namesDf$newNames)]
       #
       pdf(paste(nameOut, "FinalModel.pdf", sep = "_"), width = 16, height = 8, useDingbats = FALSE)
