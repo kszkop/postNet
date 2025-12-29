@@ -77,7 +77,7 @@ goDotplot <- function(ptn,
         size_limits <- c(min_val, max_val)
       }
       #
-      pdf(nameOut, width = 8, height = 8, useDingbats = F)
+      pdf(nameOut, width = 8, height = 8, useDingbats = FALSE)
       par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
       pOut <- ggplot2::ggplot(goDf, ggplot2::aes(x = log10fdr, y = reorder(Description, log10fdr), size = scale, colour = regulation)) +
         ggplot2::geom_point() +
@@ -149,7 +149,7 @@ goDotplot <- function(ptn,
             size_limits <- c(min_val, max_val)
           }
           #
-          pdf(nameOut, width = 8, height = 8, useDingbats = F)
+          pdf(nameOut, width = 8, height = 8, useDingbats = FALSE)
           par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
           pOut <- ggplot2::ggplot(goDf, ggplot2::aes(x = log10fdr, y = reorder(Description, log10fdr), size = scale)) +
             ggplot2::geom_point(color = colOut[names(goIn)[i]]) +

@@ -242,7 +242,7 @@ codonUsage <- function(ptn,
       colOutInd <- colPlot(ptn)
 
       ##
-      pdf(paste(nameOut, ind, "_index.pdf", sep = ""), width = 8, height = 8, useDingbats = F)
+      pdf(paste(nameOut, ind, "_index.pdf", sep = ""), width = 8, height = 8, useDingbats = FALSE)
       ylabel <- paste(ind, "index", sep = " ")
       plotPostNet(resOutInd, colOutInd, comparisons, ylabel = ylabel, plotType = plotType_index)
       dev.off()
@@ -394,7 +394,7 @@ codonUsage <- function(ptn,
       #
       residOut <- t(as.matrix(StResiduals))
 
-      pdf(paste(nameOut, paste(colnames(residOut), collapse = "_"), "heatmap.pdf", sep = "_"), width = 20, height = 28, useDingbats = F)
+      pdf(paste(nameOut, paste(colnames(residOut), collapse = "_"), "heatmap.pdf", sep = "_"), width = 20, height = 28, useDingbats = FALSE)
       par(mar = c(10, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
       col <- grDevices::colorRampPalette(c("blue", "white", "red"))(50)
 
@@ -440,7 +440,7 @@ codonUsage <- function(ptn,
         #
         xylim1 <- roundNice(max(resIn2[, c(1, 2)]), direction = "up")
         #
-        pdf(paste(nameOut, paste(colnames(resIn2)[1:2], collapse = "_"), "averageFreq.pdf", sep = "_"), width = 8, height = 8, useDingbats = F)
+        pdf(paste(nameOut, paste(colnames(resIn2)[1:2], collapse = "_"), "averageFreq.pdf", sep = "_"), width = 8, height = 8, useDingbats = FALSE)
         par(mar = c(10, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
         pOut1 <- ggplot2::ggplot(resIn2, ggplot2::aes(!!sym(colnames(resIn2)[1]), !!sym(colnames(resIn2)[2]), col = AA)) +
           ggplot2::theme_bw() +
@@ -470,7 +470,7 @@ codonUsage <- function(ptn,
         #
         xylim2 <- roundNice(max(resIn3[, c(1, 2)]), direction = "up")
         #
-        pdf(paste(nameOut, paste(colnames(resIn3)[1:2], collapse = "_"), "codonUsage.pdf", sep = "_"), width = 8, height = 8, useDingbats = F)
+        pdf(paste(nameOut, paste(colnames(resIn3)[1:2], collapse = "_"), "codonUsage.pdf", sep = "_"), width = 8, height = 8, useDingbats = FALSE)
         par(mar = c(10, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
         pOut2 <- ggplot2::ggplot(resIn3, ggplot2::aes(!!sym(colnames(resIn3)[1]), !!sym(colnames(resIn3)[2]), col = AA)) +
           ggplot2::theme_bw() +
@@ -502,7 +502,7 @@ codonUsage <- function(ptn,
 
         #
         xlimT <- roundNice(max(abs(range(statOut))), direction = "up")
-        pdf(paste(nameOut, paste(regComb[, 1], collapse = "_"), "codon_oddratio_vs_freq.pdf", sep = ""), width = 8, height = 8, useDingbats = F)
+        pdf(paste(nameOut, paste(regComb[, 1], collapse = "_"), "codon_oddratio_vs_freq.pdf", sep = ""), width = 8, height = 8, useDingbats = FALSE)
         m <- layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1), heights = c(1, 5))
         #
         par(mar = c(0, 8, 0, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -554,7 +554,7 @@ codonUsage <- function(ptn,
 
         xlimT <- roundNice(max(abs(range(statOut))), direction = "up")
 
-        pdf(paste(nameOut, paste(regComb[, 1], collapse = "_"), "AA_oddratio_vs_freq.pdf", sep = ""), width = 8, height = 8, useDingbats = F)
+        pdf(paste(nameOut, paste(regComb[, 1], collapse = "_"), "AA_oddratio_vs_freq.pdf", sep = ""), width = 8, height = 8, useDingbats = FALSE)
         m <- layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1), heights = c(1, 5))
         #
         par(mar = c(0, 8, 0, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)

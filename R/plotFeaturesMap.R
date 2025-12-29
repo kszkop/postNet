@@ -106,7 +106,7 @@ plotFeaturesMap <- function(ptn,
     featTmp <- featuresIn[, feat]
     feature_fmap <- plot_fmap(fmapRes, colVec = featTmp, remExtreme = remExtreme, name = feat)
 
-    pdf(ifelse(is.null(pdfName), paste(feat, "_featureUMAP.pdf", sep = ""), paste(pdfName, feat, "featureUMAP.pdf", sep = "_")), width = 16, height = 8, useDingbats = F)
+    pdf(ifelse(is.null(pdfName), paste(feat, "_featureUMAP.pdf", sep = ""), paste(pdfName, feat, "featureUMAP.pdf", sep = "_")), width = 16, height = 8, useDingbats = FALSE)
     par(mar = c(5, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.9)
 
     gridExtra::grid.arrange(

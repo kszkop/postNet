@@ -1355,7 +1355,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   # tb4out <- tb4out[with(tb4out, order(-tb4out$VarianceExplained_IndependentAll)), ]
   # tg4 <- gridExtra::tableGrob(tb4out, rows = NULL)
 
-  # pdf(paste(nameOut, "varexpl_independAll.pdf", sep = "_") , width = dim(tg4)[2] + dim(tg4)[2] + 4, height = dim(tg4)[1] / 2, useDingbats = F)
+  # pdf(paste(nameOut, "varexpl_independAll.pdf", sep = "_") , width = dim(tg4)[2] + dim(tg4)[2] + 4, height = dim(tg4)[1] / 2, useDingbats = FALSE)
   # gridExtra::grid.arrange(tg4, ncol = 1, nrow = 1)
   # dev.off()
 
@@ -1398,12 +1398,12 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     ##
     tg5 <- gridExtra::tableGrob(tb5Out, rows = NULL)
 
-    pdf(paste(nameOut, "FinalModel.pdf", sep = "_"), width = dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2] + dim(tg5)[2] + 14.5, height = dim(tg1)[1] / 2, useDingbats = F)
+    pdf(paste(nameOut, "FinalModel.pdf", sep = "_"), width = dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2] + dim(tg5)[2] + 14.5, height = dim(tg1)[1] / 2, useDingbats = FALSE)
     gridExtra::grid.arrange(tg3, tg1, tg2, tg5, ncol = 4, nrow = 1, padding = 0, top = 0, left = 0)
     grid::grid.text(paste("Total variance explained: ", sum(as.numeric(varExpldepend)), "%", sep = ""), x = grid::unit(0.75, "npc"), y = grid::unit(0.90, "npc"), gp = grid::gpar(fontsize = 15))
     dev.off()
   } else {
-    pdf(paste(nameOut, "FinalModel.pdf", sep = "_"), width = dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2] + 14.5, height = dim(tg1)[1] / 2, useDingbats = F)
+    pdf(paste(nameOut, "FinalModel.pdf", sep = "_"), width = dim(tg3)[2] + dim(tg1)[2] + dim(tg2)[2] + 14.5, height = dim(tg1)[1] / 2, useDingbats = FALSE)
     gridExtra::grid.arrange(tg3, tg1, tg2, ncol = 3, nrow = 1, padding = 0, top = 0, left = 0)
     grid::grid.text(paste("Total variance explained: ", sum(as.numeric(varExpldepend)), "%", sep = ""), x = grid::unit(0.75, "npc"), y = grid::unit(0.90, "npc"), gp = grid::gpar(fontsize = 15))
     dev.off()
@@ -1495,7 +1495,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   layOut <- normalizeLayout(layOut)
 
   #
-  pdf(paste(nameOut, "network.pdf", sep = "_"), height = 8, width = 8, useDingbats = F, family = "Helvetica")
+  pdf(paste(nameOut, "network.pdf", sep = "_"), height = 8, width = 8, useDingbats = FALSE, family = "Helvetica")
   m <- layout(mat = matrix(c(1, 2, 3), nrow = 3, ncol = 1), heights = c(2, 8, 1))
   #
   par(mar = c(0, 5, 5, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -1573,7 +1573,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
 
 
 plotScatterInd <- function(set1, set2 = NULL, orgName, coloursIn, nameOut) {
-  pdf(paste(nameOut, orgName, "individually.pdf", sep = "_"), width = ifelse(is_binary(set1[, 1]), 6, 8), height = 8, useDingbats = F)
+  pdf(paste(nameOut, orgName, "individually.pdf", sep = "_"), width = ifelse(is_binary(set1[, 1]), 6, 8), height = 8, useDingbats = FALSE)
   par(mar = c(9, 5, 5, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.7, cex.main = 1.7, cex.lab = 1.3)
   #
   if (is.null(set2)) {

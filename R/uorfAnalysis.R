@@ -87,7 +87,7 @@ uorfAnalysis <- function(ptn,
     ylimTmp <- as.numeric(adjust_ylim(ylimTmp2_1, ylimTmp2_2))
 
     # Plot
-    pdf(ifelse(is.null(pdfName), paste("uORFs_", KozakContext, ".pdf", sep = ""), paste(pdfName, "_uORFs_", KozakContext, ".pdf", sep = "")), width = 8, height = 8, useDingbats = F)
+    pdf(ifelse(is.null(pdfName), paste("uORFs_", KozakContext, ".pdf", sep = ""), paste(pdfName, "_uORFs_", KozakContext, ".pdf", sep = "")), width = 8, height = 8, useDingbats = FALSE)
     m <- layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1), heights = c(1, 5))
     xlimTmp <- c(0.5, length(resProp) + 0.5)
     #

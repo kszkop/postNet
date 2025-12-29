@@ -76,7 +76,7 @@ signaturesHeatmap <- function(ptn,
     tableFinal <- cbind(tableFinal, rep(0, nrow(tableFinal)))
   }
 
-  pdf(ifelse(is.null(pdfName), "heatmap.pdf", paste(pdfName, "heatmap.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
+  pdf(ifelse(is.null(pdfName), "heatmap.pdf", paste(pdfName, "heatmap.pdf", sep = "_")), width = 8, height = 8, useDingbats = FALSE)
   par(mar = c(10, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.9)
 
   gplots::heatmap.2(tableFinal,

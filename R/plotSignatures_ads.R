@@ -52,7 +52,7 @@ plotSignatures_ads <- function(ads,
     scatterXY <- roundNice(max(abs(c(range(regData$totalApvEff), range(regData$polyApvEff)))), direction = "up")
   }
   #
-  pdf(ifelse(is.null(pdfName), paste("data_", dataName, "_signature_", generalName, ".pdf", sep = ""), paste(pdfName, paste("data_", dataName, "_signature_", generalName, ".pdf", sep = ""), sep = "_")), width = 18, height = 4, useDingbats = F)
+  pdf(ifelse(is.null(pdfName), paste("data_", dataName, "_signature_", generalName, ".pdf", sep = ""), paste(pdfName, paste("data_", dataName, "_signature_", generalName, ".pdf", sep = ""), sep = "_")), width = 18, height = 4, useDingbats = FALSE)
   par(mfrow = c(1, 5), mar = c(5, 5, 6, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.25, cex.main = 1.9, cex.lab = 2)
   plot(regData$totalApvEff, regData$polyApvEff, pch = 16, cex = 1.9, col = "grey75", ylab = effects_names[2], xlab = effects_names[1], main = paste(paste("Data: ", dataName, sep = ""), "\n", paste("Signature: ", generalName, ""), sep = ""), xlim = c(-scatterXY, scatterXY), ylim = c(-scatterXY, scatterXY))
   abline(v = 0)

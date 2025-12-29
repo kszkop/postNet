@@ -95,7 +95,7 @@ contentAnalysis <- function(ptn,
         } else {
           colOut <- colPlot(ptn)
           # Plot
-          pdf(ifelse(is.null(pdfName), paste(reg, content, "content.pdf", sep = "_"), paste(pdfName, reg, content, "content.pdf", sep = "_")), width = 8, height = 8, useDingbats = F)
+          pdf(ifelse(is.null(pdfName), paste(reg, content, "content.pdf", sep = "_"), paste(pdfName, reg, content, "content.pdf", sep = "_")), width = 8, height = 8, useDingbats = FALSE)
           ylabel <- paste(paste0(content, " content"), "in ", reg, "(%)", sep = " ")
           plotPostNet(resOut, colOut, comparisons, ylabel = ylabel, plotType = plotType)
           dev.off()

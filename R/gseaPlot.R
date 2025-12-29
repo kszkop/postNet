@@ -71,7 +71,7 @@ gseaPlot <- function(ptn,
 
     nameOut <- ifelse(!is.null(pdfName), paste(pdfName, "gsea", termTmp, sep = "_"), paste("gsea", termTmp, sep = "_"))
 
-    pdf(paste(nameOut, ".pdf", sep = ""), width = 8, height = 4, useDingbats = F)
+    pdf(paste(nameOut, ".pdf", sep = ""), width = 8, height = 4, useDingbats = FALSE)
     par(mar = c(5, 5, 5, 10), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 0.7, cex.lab = 0.7)
     peOut <- ggplot2::ggplot(toPlot, ggplot2::aes(x = x, y = y)) +
       ggplot2::geom_line(color = "grey75", linetype = 1, linewidth = 0.75) +

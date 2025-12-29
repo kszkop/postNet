@@ -122,7 +122,7 @@ contentMotifs <- function(ptn,
 
             colOut <- colPlot(ptn)
             # Plot
-            pdf(nameOut, width = 8, height = 8, useDingbats = F)
+            pdf(nameOut, width = 8, height = 8, useDingbats = FALSE)
             ylabel <- paste(reg, motif, sep = "_")
             plotPostNet(resOut, colOut, comparisons, ylabel = ylabel, plotType = "ecdf")
             dev.off()

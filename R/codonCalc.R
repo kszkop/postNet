@@ -95,7 +95,7 @@ codonCalc <- function(ptn,
         stop("There are no regulated genes in your input. Please check the input, or run without indicating 'regulation' and 'comparisons'.")
       }
       colOut <- colPlot(ptn)
-      pdf(nameOut, width = 8, height = 8, useDingbats = F)
+      pdf(nameOut, width = 8, height = 8, useDingbats = FALSE)
       ylabel <- paste("codon usage(", unit, ")", sep = "")
       plotPostNet(resOut, colOut, comparisons, ylabel = ylabel, plotType = plotType)
       # paste("codon usage(", unit, ")","\n", featNameTmp, ":" ,paste(featTmp,collapse=','),sep='')
