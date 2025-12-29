@@ -53,7 +53,7 @@ gseaAnalysis <- function(ptn,
     effIn <- effTmp
   }
   #
-  rankIn <- effIn[order(effIn, decreasing = T)]
+  rankIn <- effIn[order(effIn, decreasing = TRUE)]
   if (is.null(geneSet)) {
     species <- ptn_species(ptn)
     if (!species %in% c("human", "mouse")) {
@@ -63,7 +63,7 @@ gseaAnalysis <- function(ptn,
     eh <- ExperimentHub::ExperimentHub()
     AnnotationHub::query(eh, "msigdb")
 
-    versionTmp <- as.character(sort(as.numeric(msigdb::getMsigdbVersions()), decreasing = T))[1]
+    versionTmp <- as.character(sort(as.numeric(msigdb::getMsigdbVersions()), decreasing = TRUE))[1]
     msigdbOut <- msigdb::getMsigdb(org = ifelse(species == "human", "hs", "mm"), id = "SYM", version = versionTmp)
     msigdbOut <- msigdb::appendKEGG(msigdbOut, version = versionTmp)
     #

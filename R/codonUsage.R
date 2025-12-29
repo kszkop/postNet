@@ -250,7 +250,7 @@ codonUsage <- function(ptn,
     }
   }
   #
-  compTmpAll <- sort(unique(unlist(comparisons)), decreasing = F)
+  compTmpAll <- sort(unique(unlist(comparisons)), decreasing = FALSE)
   compOut1 <- list()
   compOut2 <- list()
   compOut3 <- list()
