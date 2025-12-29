@@ -35,7 +35,7 @@ gageAnalysis <- function(ptn,
   effIn <- effIn[!is.na(names(effIn))]
 
   #
-  rankIn <- effIn[order(effIn, decreasing = T)]
+  rankIn <- effIn[order(effIn, decreasing = TRUE)]
 
   #
   GAGEout <- new("postNetGAGE",
