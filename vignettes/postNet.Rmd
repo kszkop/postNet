@@ -2053,5 +2053,10 @@ Luo, Weijun, Friedman, Michael, Shedden, Kerby, Hankenson, Kurt, Woolf, Peter (2
 If you use the `goAnalysis()` function in your work, please also cite:
 
 Xu S, Hu E, Cai Y, Xie Z, Luo X, Zhan L, Tang W, Wang Q, Liu B, Wang R, Xie W, Wu T, Xie L, Yu G (2024). “Using clusterProfiler to characterize multiomics data.” Nature Protocols, 19(11), 3292-3320. doi:10.1038/s41596-024-01020-z. 
+# Session info
+
+```{r sessionInfo}
+sessionInfo()
+```
 
 # References
