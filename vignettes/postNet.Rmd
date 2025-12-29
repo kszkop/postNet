@@ -114,24 +114,23 @@ len <- lengthAnalysis(ptn = ptn,
 
 ```{r gettingStartedEnumeratePDFconvert, eval=TRUE, echo=FALSE}
 # Convert to PNG
-library(magick)
-image_read_pdf("Example_UTR5_boxplot_lengthAnalysis.pdf", density = 300) %>%
-  image_resize("3000x") %>%
-  image_write("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
+magick::image_read_pdf("Example_UTR5_boxplot_lengthAnalysis.pdf", density = 300) %>%
+  magick::image_resize("3000x") %>%
+  magick::image_write("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
 
-image_read_pdf("Example_UTR5_GC_content.pdf", density = 300) %>%
-  image_resize("3000x") %>%
-  image_write("Figures/Example_UTR5_GC_content.png")
+magick::image_read_pdf("Example_UTR5_GC_content.pdf", density = 300) %>%
+  magick::image_resize("3000x") %>%
+  magick::image_write("Figures/Example_UTR5_GC_content.png")
 
 # Read each image
-img1 <- image_read("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
-img2 <- image_read("Figures/Example_UTR5_GC_content.png")
+img1 <- magick::image_read("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
+img2 <- magick::image_read("Figures/Example_UTR5_GC_content.png")
 
 # Append them horizontally
-combined <- image_append(c(img1, img2), stack = FALSE)
+combined <- magick::image_append(c(img1, img2), stack = FALSE)
 
 # Save combined image at high resolution
-image_write(combined, path = "Figures/combined_UTR5_features.png")
+magick::image_write(combined, path = "Figures/combined_UTR5_features.png")
 
 ```
 
