@@ -103,9 +103,9 @@ goAnalysis <- function(ptn,
 
         checkID <- check_id_type(seqinr::c2s(strsplit(geneIDs_temp[[1]], "/")[[1]][1:5]))
         if (checkID == "entrezID") {
-          tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(convertEntrezIDToSymbol(unlist(strsplit(x, "/")), species = species)), collapse = ":"), USE.NAMES = F)
+          tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(convertEntrezIDToSymbol(unlist(strsplit(x, "/")), species = species)), collapse = ":"), USE.NAMES = FALSE)
         } else {
-          tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x, "/"))), collapse = ":"), USE.NAMES = F)
+          tabTmp$geneID <- sapply(geneIDs_temp, function(x) paste(sort(unlist(strsplit(x, "/"))), collapse = ":"), USE.NAMES = FALSE)
         }
       } else {
         message(paste("No significant results for", sel, "in", names(resOut)[i], sep = " "))

@@ -629,7 +629,7 @@ convertIUPAC <- function(motif) {
 motifLenCalc <- function(motif) {
   lenTmp <- length(seqinr::s2c(gsub("\\[|\\]", "", motif)))
   #
-  bracSel <- unlist(regmatches(motif, gregexpr("(?<=\\[).*?(?=\\])", motif, perl = T)))
+  bracSel <- unlist(regmatches(motif, gregexpr("(?<=\\[).*?(?=\\])", motif, perl = TRUE)))
   lenB <- length(seqinr::s2c(seqinr::c2s(bracSel)))
   #
   nNotInBrackets <- lenTmp - lenB
