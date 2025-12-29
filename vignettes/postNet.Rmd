@@ -22,6 +22,7 @@ knitr::opts_chunk$set(tidy = FALSE,
                       message = FALSE, 
                       error = FALSE, 
                       warning = TRUE)
+library(dplyr)
 ```
 
 # Introduction
