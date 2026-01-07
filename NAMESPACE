@@ -8,15 +8,15 @@ importFrom(pqsfinder,PQSViews)
 importFrom(dplyr,"%>%")
 importFrom(data.table,":=")
 importFrom("grDevices", "adjustcolor", "dev.off", "pdf")
-    importFrom("graphics", "abline", "axis", "boxplot", "dotchart",
+importFrom("graphics", "abline", "axis", "boxplot", "dotchart",
                "layout", "legend", "lines", "mtext", "par", "plot.new",
                "plot.window", "points", "rect", "text")
-    importFrom("methods", "new", "slot", "slot<-", "slotNames")
-    importFrom("stats", "IQR", "anova", "as.formula", "chisq.test",
+importFrom("methods", "new", "slot", "slot<-", "slotNames")
+importFrom("stats", "IQR", "anova", "as.formula", "chisq.test",
                "coefficients", "complete.cases", "cor", "cor.test", "ecdf",
                "end", "fisher.test", "frequency", "lm", "median",
                "na.omit", "p.adjust", "predict", "qchisq", "quantile",
                "reorder", "setNames", "smooth.spline", "start",
                "wilcox.test")
-    importFrom("utils", "combn", "download.file", "read.delim",
+importFrom("utils", "combn", "download.file", "read.delim",
                "read.table", "tail", "write.table")

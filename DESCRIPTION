@@ -53,7 +53,12 @@ Imports:
   gage (>= 2.56.0),
   magick (>= 2.9.0),
   withr (>= 3.0.2),
-  pdftools (>= 3.6.0)
+  pdftools (>= 3.6.0),
+  grDevices,
+  graphics,
+  methods,
+  stats,
+  utils
 Suggests: 
     knitr,
     rmarkdown,
