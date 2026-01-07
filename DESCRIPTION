@@ -6,7 +6,8 @@ Version: 0.99.0
 Authors@R: c(person("Krzysztof", "Szkop", email = "krzysztof.szkop@gmail.com", role = c("aut","cre")),
     person("Kathleen", "Watt", email = "watt.kathleen@gmail.com", role = "aut"),
     person("Ola", "Larsson", email = "ola.larsson@ki.se", role = "aut"))
-License: MIT + file LICENSE
+License: MIT
+License: file LICENSE
 Encoding: UTF-8
 LazyLoad: true
 Depends: 
