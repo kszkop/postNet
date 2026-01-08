@@ -92,7 +92,7 @@ ptn <- postNetStart(
 
 **Step 2:** mRNA features that may influence post-transcriptional regulation of gene expression are enumerated. In this minimal example, the length and nucleotide content of 5'UTR regions are calculated and compared between gene sets. However, numerous other features across all sequence regions can be examined (see [Analysis of mRNA sequence features](#mRNAfeatures)). These analyses allow both statistical comparisons of mRNA features between gene sets of interest, and generate outputs that can be used to assess the contribution of a given mRNA feature to the observed regulatory effect in the modelling step.
 
-```{r gettingStartedEnumerate, eval=TRUE, echo=TRUE, fig.width=10, fig.height=5}
+```{r gettingStartedEnumerate, eval=TRUE, echo=TRUE, fig.width=10, fig.height=5, fig.cap="Comparisons of 5'UTR length and GC content between mRNAs belonging to regulated gene sets."}
 # Quantify the length and nucleotide content of the 5'UTR and compare between regulated gene sets 
 grDevices::pdf(NULL)
 
@@ -121,7 +121,12 @@ plot_content <- grDevices::recordPlot()
 
 grDevices::dev.off()
 
-gridExtra::grid.arrange(plot_len, plot_content, ncol = 2)
+oldpar <- par(mfrow = c(1, 2))
+on.exit(par(oldpar), add = TRUE)
+
+replayPlot(plot_len)
+replayPlot(plot_content)
+
 ```
 
 
