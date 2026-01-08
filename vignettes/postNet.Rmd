@@ -32,28 +32,28 @@ Post-transcriptional regulation is a major determinant of gene expression, occur
 
 To address this challenge, we developed postNet, an R/Bioconductor package for transcriptome-wide identification, quantification, and modelling of RNA features that associate with post-transcriptional regulation. PostNet provides a suite of flexible tools to perform sequence feature analysis and statistical comparisons across gene sets of interest, including nucleotide content, sequence length, folding energy, motifs, uORFs, and codon composition. PostNet also performs hierarchical statistical modelling to decipher regulatory networks, revealing independent and combinatorial effects of mRNA features on post-transcriptional regulation of gene expression. The package also supports machine learning approaches, including Random Forest models, to classify modes of post-transcriptional regulation based on feature composition. These models can be applied across datasets to predict regulatory mechanisms and to test generalizability across experimental contexts. Finally, postNet also allows users to explore relationships between regulatory effects and features using network analyses and UMAP visualizations. In summary, postNet provides an integrated computational framework for dissecting how mRNA sequence features and/or other regulatory elements interact to shape gene expression.
 
-# Workflow
+# Workflow 
 
-PostNet was designed to accommodate a variety of inputs and biological contexts. A postNet analysis can consist of the following steps:
+PostNet was designed to accommodate a variety of inputs and biological contexts. A postNet analysis can consist of the following steps: 
 
-1)  Initialize a `postNetData` object with the `postNetStart()` function, containing curated reference mRNA sequences, gene sets of interest to be compared, and a regulatory effect measurement that will be used in downstream analyses. See [Setting up a postNet analysis](#settingUp) for details.
-2)  Identify and quantify mRNA sequence features, and compare them between gene sets of interest. See [Analysis of mRNA sequence features](#mRNAfeatures) for details.
-3)  Model post-transcriptional changes in gene expression using mRNA features (or other variables) underlying regulatory processes with the `featureIntegration()` function, which implements either forward stepwise regression or Random Forest classification approaches. See [Modelling post-transcriptional regulation](#modelling) for details.
-4)  Perform network analysis based on forward stepwise regression models to understand the independent and overlapping contribution of mRNA features to post-transcriptional regulation, and use identified features and trained Random Forest models to predict regulation in other datasets with the `rfPred()` function. See [Network analysis and prediction](#networkPred) for details.
-5)  Explore relationships between mRNA features (or other variables) and regulatory effects using UMAP visualizations with the `plotFeaturesMap()` function. See [Visualize and explore relationships between mRNA features and regulation](#UMAPvis) for details.
-6)  Optionally, perform functional enrichment analyses on the regulated gene sets of interest. See [Functional enrichment analyses with postNet](#enrichmentAnalysis) for details.
+1) Initialize a `postNetData` object with the `postNetStart()` function, containing curated reference mRNA sequences, gene sets of interest to be compared, and a regulatory effect measurement that will be used in downstream analyses. See [Setting up a postNet analysis](#settingUp) for details.
+2) Identify and quantify mRNA sequence features, and compare them between gene sets of interest. See [Analysis of mRNA sequence features](#mRNAfeatures) for details.
+3) Model post-transcriptional changes in gene expression using mRNA features (or other variables) underlying regulatory processes with the `featureIntegration()` function, which implements either forward stepwise regression or Random Forest classification approaches. See [Modelling post-transcriptional regulation](#modelling) for details.
+4) Perform network analysis based on forward stepwise regression models to understand the independent and overlapping contribution of mRNA features to post-transcriptional regulation, and use identified features and trained Random Forest models to predict regulation in other datasets with the `rfPred()` function. See [Network analysis and prediction](#networkPred) for details.
+5) Explore relationships between mRNA features (or other variables) and regulatory effects using UMAP visualizations with the `plotFeaturesMap()` function. See [Visualize and explore relationships between mRNA features and regulation](#UMAPvis) for details.
+6) Optionally, perform functional enrichment analyses on the regulated gene sets of interest. See [Functional enrichment analyses with postNet](#enrichmentAnalysis) for details.
 
 # Getting started
 
 Here, we demonstrate a minimal example of the steps of a standard postNet analysis workflow using an example dataset illustrating changes in mRNA translation, with default parameters. This includes:
 
--   Compiling input data and selecting reference mRNA sequence annotations,
--   Enumerating mRNA features in regulated gene sets of interest,
--   Modelling changes in mRNA translation efficiency using forward stepwise regression to identify the collection of mRNA features that best explain the observed regulation (omnibus model),
--   Performing network analysis visualizing the independent and overlapping regulatory contribution of mRNA features, and finally
--   Exploring modelling results using UMAP visualizations.
+- Compiling input data and selecting reference mRNA sequence annotations, 
+- Enumerating mRNA features in regulated gene sets of interest,
+- Modelling changes in mRNA translation efficiency using forward stepwise regression to identify the collection of mRNA features that best explain the observed regulation (omnibus model),
+- Performing network analysis visualizing the independent and overlapping regulatory contribution of mRNA features, and finally
+- Exploring modelling results using UMAP visualizations.
 
-```{r load_package_data, eval=TRUE, echo=TRUE}
+```{r load_package_data, eval=TRUE, echo=TRUE} 
 # Load the package 
 library(postNet)
 
@@ -62,8 +62,7 @@ data("postNetVignette", package = "postNetParcel")
 
 ```
 
-**Step 1:** A `postNetData` object containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency derived from ribosome profiling and RNA-seq comparing cells responding to osmotic stress against controls [@Krokowski2022]), and reference mRNA sequence annotations is initialized using the `postNetStart()` function.
-
+**Step 1:** A `postNetData` object containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency derived from ribosome profiling and RNA-seq comparing cells responding to osmotic stress against controls [@Krokowski2022]), and reference mRNA sequence annotations is initialized using the `postNetStart()` function.   
 ```{r gettingStartedInput, eval=TRUE, echo=TRUE}
 # Prepare custom gene lists and regulatory effect measurement:
  myGenes <- postNetVignette$geneList
@@ -90,12 +89,10 @@ ptn <- postNetStart(
 
 ```
 
-**Step 2:** mRNA features that may influence post-transcriptional regulation of gene expression are enumerated. In this minimal example, the length and nucleotide content of 5'UTR regions are calculated and compared between gene sets. However, numerous other features across all sequence regions can be examined (see [Analysis of mRNA sequence features](#mRNAfeatures)). These analyses allow both statistical comparisons of mRNA features between gene sets of interest, and generate outputs that can be used to assess the contribution of a given mRNA feature to the observed regulatory effect in the modelling step.
+**Step 2:** mRNA features that may influence post-transcriptional regulation of gene expression are enumerated. In this minimal example, the length and nucleotide content of 5'UTR regions are calculated and compared between gene sets. However, numerous other features across all sequence regions can be examined (see [Analysis of mRNA sequence features](#mRNAfeatures)). These analyses allow both statistical comparisons of mRNA features between gene sets of interest, and generate outputs that can be used to assess the contribution of a given mRNA feature to the observed regulatory effect in the modelling step. 
 
-```{r gettingStartedEnumerate, eval=TRUE, echo=TRUE, fig.width=10, fig.height=5, fig.cap="Comparisons of 5'UTR length and GC content between mRNAs belonging to regulated gene sets."}
+```{r gettingStartedEnumerate, eval=TRUE, echo=TRUE}
 # Quantify the length and nucleotide content of the 5'UTR and compare between regulated gene sets 
-grDevices::pdf(NULL)
-
 len <- lengthAnalysis(ptn = ptn, 
                       region = c("UTR5"), 
                       comparisons = list(c(0,1),c(0,2),c(1,2)),
@@ -103,11 +100,9 @@ len <- lengthAnalysis(ptn = ptn,
                       plotType = 'boxplot',
                       pdfName = "Example")
                   
-str(len)
+ str(len)
  
-plot_len <- grDevices::recordPlot()
- 
-content_UTR5 <- contentAnalysis(ptn = ptn, 
+ content_UTR5 <- contentAnalysis(ptn = ptn, 
                            region = c("UTR5"),
                            comparisons = list(c(0,1),c(0,2),c(1,2)), 
                            contentIn = c("GC"),
@@ -115,22 +110,42 @@ content_UTR5 <- contentAnalysis(ptn = ptn,
                            plotType = "ecdf",
                            pdfName = "Example")
                       
-str(content_UTR5)
-
-plot_content <- grDevices::recordPlot()
-
-grDevices::dev.off()
-
-oldpar <- par(mfrow = c(1, 2))
-on.exit(par(oldpar), add = TRUE)
-
-replayPlot(plot_len)
-replayPlot(plot_content)
+ str(content_UTR5)
 
 ```
 
+```{r gettingStartedEnumeratePDFconvert, eval=TRUE, echo=FALSE}
+# Convert to PNG
+magick::image_read_pdf("Example_UTR5_boxplot_lengthAnalysis.pdf", density = 300) %>%
+  magick::image_resize("3000x") %>%
+  magick::image_write("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
 
-**Step 3:** Changes in translation efficiency are modelled using the `featureIntegration()` function which performs stepwise regression to identify the collection of features that best explain the observed regulation. In this minimal example, a set of pre-calculated features is used including both *cis*-acting (enumerated mRNA features) and *trans*-acting (signatures of upstream regulatory pathways) factors.
+magick::image_read_pdf("Example_UTR5_GC_content.pdf", density = 300) %>%
+  magick::image_resize("3000x") %>%
+  magick::image_write("Figures/Example_UTR5_GC_content.png")
+
+# Read each image
+img1 <- magick::image_read("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
+img2 <- magick::image_read("Figures/Example_UTR5_GC_content.png")
+
+# Append them horizontally
+combined <- magick::image_append(c(img1, img2), stack = FALSE)
+
+# Save combined image at high resolution
+magick::image_write(combined, path = "Figures/combined_UTR5_features.png")
+
+```
+
+```{r gettingStartedEnumeratePNGS, echo=FALSE, fig.wide = TRUE, fig.cap="Comparisons of 5'UTR length and GC content between mRNAs belonging to regulated gene sets."}
+knitr::include_graphics("Figures/combined_UTR5_features.png")
+
+```
+
+```{r gettingStartedhidePlots, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
+unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf","Figures/Example_UTR5_boxplot_lengthAnalysis.png","Figures/Example_UTR5_GC_content.png"))
+```
+
+**Step 3:** Changes in translation efficiency are modelled using the `featureIntegration()` function which performs stepwise regression to identify the collection of features that best explain the observed regulation. In this minimal example, a set of pre-calculated features is used including both *cis*-acting (enumerated mRNA features) and *trans*-acting (signatures of upstream regulatory pathways) factors. 
 
 ```{r gettingStartedFeatureInt, eval=TRUE, echo=TRUE}
 # Prepare the list of pre-calculated features to be used in modelling (for example, the 'len' and 'content_UTR' variables defined in the previous step can be included) 
@@ -190,7 +205,7 @@ knitr::include_graphics("Figures/omnibus_lm_translationUp_translationDown_networ
 unlink(c("omnibus_lm_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "omnibus_lm_translationUp_translationDown_Down_individually.pdf","omnibus_lm_translationUp_translationDown_FinalModel.pdf","omnibus_lm_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf","omnibus_lm_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf","omnibus_lm_translationUp_translationDown_network.pdf","omnibus_lm_translationUp_translationDown_uORFs_ATG_strong_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_C_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_T_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_T_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_A_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_length_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_T_individually.pdf","omnibus_lm_translationUp_translationDown_CDS_GC3_individually.pdf","omnibus_lm_translationUp_translationDown_CDS_length_individually.pdf","omnibus_lm_translationUp_translationDown_UTR3_A_individually.pdf","omnibus_lm_translationUp_translationDown_UTR5_GC_individually.pdf"))
 ```
 
-**Step 4:** The `plotFeaturesMap()` function is used to visualize the relationship between translation efficiency and different features that were identified in the modelling step as significantly contributing to the observed post-transcriptional regulation. These visualizations are also useful for exploring the overlaps between different features within the same mRNAs.
+**Step 4:** The `plotFeaturesMap()` function is used to visualize the relationship between translation efficiency and different features that were identified in the modelling step as significantly contributing to the observed post-transcriptional regulation. These visualizations are also useful for exploring the overlaps between different features within the same mRNAs.  
 
 ```{r gettingStartedPlotFeaturesMap, eval=TRUE, echo=TRUE}
 
@@ -226,7 +241,7 @@ knitr::include_graphics("Figures/Example_UTR5_SCSCGS_featureUMAP.png")
 unlink(c("Example_UTR5_SCSCGS_featureUMAP.pdf"))
 ```
 
-This example provided an overview of a minimal postNet workflow. Full details of alternative workflows and additional inputs and options are discussed in the following sections.
+This example provided an overview of a minimal postNet workflow. Full details of alternative workflows and additional inputs and options are discussed in the following sections. 
 
 <a name="settingUp"/>
 
@@ -234,9 +249,9 @@ This example provided an overview of a minimal postNet workflow. Full details of
 
 The basic workflow of a postNet analysis aims to explain the post-transcriptional regulatory fate of mRNAs based on their repertoire of *cis*-acting sequence features and/or interactions with *trans*-acting factors. Three basic inputs are required to run a postNet analysis:
 
-1)  Reference sequence annotations that will be used to identify and/or enumerate regulatory features.
-2)  Gene sets of interest that undergo post-transcriptional regulation.
-3)  A regulatory effect measurement, for example, the log2 fold change in translation efficiency between an experimental and control condition.
+1) Reference sequence annotations that will be used to identify and/or enumerate regulatory features.
+2) Gene sets of interest that undergo post-transcriptional regulation.
+3) A regulatory effect measurement, for example, the log2 fold change in translation efficiency between an experimental and control condition.
 
 These inputs are compiled at the start of the analysis by initializing a `postNetData` object using the `postNetStart()` function. This class of object serves as the container for storing inputs and some outputs generated during the analysis, and is designated by `ptn` in the example code provided here. The following sections describe the different options and customizations available, along with examples illustrating how to set up a postNet analysis.
 
@@ -246,13 +261,13 @@ Throughout this vignette, we will use example data provided with the package to 
 
 <a name="geneLists"/>
 
-The most flexible implementation of postNet allows gene lists of interest and regulatory effect measurements to be supplied from custom sources. Here, the `postNetStart()` function will be used with the `geneList`, `geneListcolours`, `customBg`, and `effectMeasure` parameters to initialize the `postNetData` object.
+The most flexible implementation of postNet allows gene lists of interest and regulatory effect measurements to be supplied from custom sources. Here, the `postNetStart()` function will be used with the `geneList`, `geneListcolours`, `customBg`, and `effectMeasure` parameters to initialize the `postNetData` object.    
 
 Depending on the aim of the analysis, different inputs can be provided. In the case where the goal is simply to enumerate sequence features in genes of interest without statistical comparisons, `geneList` can be a single list of gene IDs with no background gene set. To perform statistical comparisons, one or more gene sets of interest must be provided, either with or without a custom background gene set (`customBg` parameter). Although optional, it is strongly recommended to carefully consider that the appropriate background is used. Typically, this would be all genes in the given dataset passing expression and/or reproducibility thresholds. When providing custom gene lists, it is also required to specify colours (`geneListcolours` parameter) that will be used in visualizations generated at various steps of the analysis.
 
-For each gene provided as part of a gene set of interest or background set, you must provide a regulatory effect measurement. As postNet is designed for examining post-transcriptional regulation, this would typically be the log2 fold changes in mRNA translation efficiency or expression between two conditions. However, other continuous numeric variables representing a change between two conditions could also be used, allowing a high degree of flexibility in potential applications.
+For each gene provided as part of a gene set of interest or background set, you must provide a regulatory effect measurement. As postNet is designed for examining post-transcriptional regulation, this would typically be the log2 fold changes in mRNA translation efficiency or expression between two conditions. However, other continuous numeric variables representing a change between two conditions could also be used, allowing a high degree of flexibility in potential applications. 
 
-The example below illustrates the set-up of a postNet analysis allowing identification of mRNA features and statistical comparisons between sets of translationally activated and suppressed genes, as well as modelling and network analysis to identify features associated with changes in translational regulation and their interdependence.
+The example below illustrates the set-up of a postNet analysis allowing identification of mRNA features and statistical comparisons between sets of translationally activated and suppressed genes, as well as modelling and network analysis to identify features associated with changes in translational regulation and their interdependence.  
 
 ```{r postNetStartGeneList, eval=TRUE, echo=TRUE}
 
@@ -291,18 +306,20 @@ The example below illustrates the set-up of a postNet analysis allowing identifi
 
 <a name="anota2seq"/>
 
-A `postNetData` object can also be constructed directly downstream of running an analysis using the [Anota2seq](https://bioconductor.org/packages/anota2seq) package to identify differentially translated genes. Here, the `postNetStart()` function will be used with the `ads`, `regulation`, `contrast`, `regulationGen`, and `contrastSel` parameters to initialize the `postNetData` object.
+A `postNetData` object can also be constructed directly downstream of running an analysis using the [Anota2seq](https://bioconductor.org/packages/anota2seq) package to identify differentially translated genes. Here, the `postNetStart()` function will be used with the `ads`, `regulation`, `contrast`, `regulationGen`, and `contrastSel` parameters to initialize the `postNetData` object.  
+ 
+*Anota2seq* can be applied using data from both polysome and ribosome profiling techniques, and categorizes genes into three different regulatory modes: 
+1) Abundance, where changes in mRNA levels can be explained by transcription or mRNA stability.
+2) Translation, where polysome-association is altered without a change in total mRNA level (this mode is expected to alter protein levels).
+3) Buffering/translational offsetting, where polysome-association is maintained while total mRNA level changes (this mode is not expected to alter protein levels).
 
-*Anota2seq* can be applied using data from both polysome and ribosome profiling techniques, and categorizes genes into three different regulatory modes: 1) Abundance, where changes in mRNA levels can be explained by transcription or mRNA stability. 2) Translation, where polysome-association is altered without a change in total mRNA level (this mode is expected to alter protein levels). 3) Buffering/translational offsetting, where polysome-association is maintained while total mRNA level changes (this mode is not expected to alter protein levels).
+An `Anota2seqDataSet` can be provided using the `ads` parameter of `postNetStart()`. The `regulation` parameter allows the user to select which sets of regulated genes identified using *anota2seq* will be used in statistical comparisons and downstream feature integration modelling and network analysis. In addition to the three regulatory modes listed above, where changes in both total and translated mRNA are taken into account, it is also possible to examine differences in total and translated mRNA independently. Gene sets can be selected from multiple contrasts in *anota2seq* specified with the `contrast` parameter (see the [anota2seq vignette](https://bioconductor.org/packages/release/bioc/vignettes/anota2seq/inst/doc/anota2seq.pdf) for more details).    
 
-An `Anota2seqDataSet` can be provided using the `ads` parameter of `postNetStart()`. The `regulation` parameter allows the user to select which sets of regulated genes identified using *anota2seq* will be used in statistical comparisons and downstream feature integration modelling and network analysis. In addition to the three regulatory modes listed above, where changes in both total and translated mRNA are taken into account, it is also possible to examine differences in total and translated mRNA independently. Gene sets can be selected from multiple contrasts in *anota2seq* specified with the `contrast` parameter (see the [anota2seq vignette](https://bioconductor.org/packages/release/bioc/vignettes/anota2seq/inst/doc/anota2seq.pdf) for more details).
+The regulatory effect measurement is taken directly from the `Anota2seqDataSet` object, and is specified by the `regulationGen` parameter. *Anota2seq* calculates sets of fold changes for each gene, in each regulatory mode. Although gene sets from all regulatory modes and contrasts can be selected for statistical comparisons, only one "general" regulatory effect measurement can be supplied (i.e., fold changes in translation efficiency, *or* buffering, etc.), so consideration should be given to downstream modelling where the mRNA features (and/or other input signatures) quantified in the gene sets specified by `regulation` will be used to explain changes in the regulatory effect measurement specified by `regulationGen`. Similarly to the gene sets, the regulatory effect measurement can be selected from any contrast from the *anota2seq* analysis using the `contrastSel` parameter.        
 
-The regulatory effect measurement is taken directly from the `Anota2seqDataSet` object, and is specified by the `regulationGen` parameter. *Anota2seq* calculates sets of fold changes for each gene, in each regulatory mode. Although gene sets from all regulatory modes and contrasts can be selected for statistical comparisons, only one "general" regulatory effect measurement can be supplied (i.e., fold changes in translation efficiency, *or* buffering, etc.), so consideration should be given to downstream modelling where the mRNA features (and/or other input signatures) quantified in the gene sets specified by `regulation` will be used to explain changes in the regulatory effect measurement specified by `regulationGen`. Similarly to the gene sets, the regulatory effect measurement can be selected from any contrast from the *anota2seq* analysis using the `contrastSel` parameter.
+When an `Anota2seqDataSet` is supplied, the appropriate background gene set, and colours for each gene list will be automatically retrieved.  
 
-When an `Anota2seqDataSet` is supplied, the appropriate background gene set, and colours for each gene list will be automatically retrieved.
-
-The example below illustrates the set-up of a postNet analysis using the output of *anota2seq*, `ads`.
-
+The example below illustrates the set-up of a postNet analysis using the output of *anota2seq*, `ads`.  
 ```{r GetAds, eval=TRUE, echo=TRUE, results = 'hide', warning = FALSE}
 
 # Initialize Anota2seqDataSet using example data (see anota2seq vignette for details)
@@ -328,7 +345,7 @@ The example below illustrates the set-up of a postNet analysis using the output 
 unlink(c("ANOTA2SEQ_rvm_fit_for_all_contrasts_group.jpg"))
 ```
 
-This postNet analysis will allow identification of mRNA features and comparison between translationally activated and suppressed genes, as well as buffered (total mRNA up and down) genes from contrast 1. Feature integration and network analysis will model the fold changes in translation efficiency from contrast 1. Note that in this example, if the buffering gene sets are included in modelling comparisons, the regulatory effect measurement values for these genes will be the fold changes in translation efficiency.
+This postNet analysis will allow identification of mRNA features and comparison between translationally activated and suppressed genes, as well as buffered (total mRNA up and down) genes from contrast 1. Feature integration and network analysis will model the fold changes in translation efficiency from contrast 1. Note that in this example, if the buffering gene sets are included in modelling comparisons, the regulatory effect measurement values for these genes will be the fold changes in translation efficiency.   
 
 ```{r postNetStartAds, eval=TRUE, echo=TRUE, results = 'hide'}
 
@@ -355,7 +372,7 @@ It is highly recommended to use reference sequence annotations that correspond t
 
 ### Loading in-built reference sequence annotations
 
-By default, `source = "load"` meaning `postNetStart()` will load one of the in-built reference sequence annotations provided with the package. This option is available when `species = "human"` or `"mouse"`, and several versions can be chosen from with the `version` parameter. All in-built annotations are based on different releases of NCBI RefSeq GRCh38 (human) and GRCm39 (mouse) genome assemblies and corresponding transcript annotations.
+By default, `source = "load"` meaning `postNetStart()` will load one of the in-built reference sequence annotations provided with the package. This option is available when `species = "human"` or `"mouse"`, and several versions can be chosen from with the `version` parameter. All in-built annotations are based on different releases of NCBI RefSeq GRCh38 (human) and GRCm39 (mouse) genome assemblies and corresponding transcript annotations.     
 
 It is possible to check which RefSeq release versions have in-built annotations available within the package using the `checkAvailableVersions()` function.
 
@@ -391,7 +408,7 @@ ptn <- postNetStart(
 
 ### Retrieving or constructing reference sequence annotations from the NCBI RefSeq database
 
-In addition to the in-built annotations, it is also possible to either retrieve or construct reference sequences for any RefSeq release version. Currently, only human and mouse are supported with these options.
+In addition to the in-built annotations, it is also possible to either retrieve or construct reference sequences for any RefSeq release version. Currently, only human and mouse are supported with these options. 
 
 By specifying `source = "create"` in `postNetStart()`, annotation files from the most recent RefSeq release version for the indicated species will be automatically downloaded and used to construct a new reference sequence annotation locally. Note that downloads may take several minutes, and files will be stored in the working directory. Using this option requires an internet connection.
 
@@ -409,7 +426,7 @@ ptn <- postNetStart(
 
 ```
 
-Alternatively, two additional offline methods are available to construct reference sequence annotations if files have already been downloaded from [RefSeq](https://www.ncbi.nlm.nih.gov/refseq/) and are available locally. This can be done by specifying `source = "createFromSourceFiles"` in `postNetStart()`, and providing the RNA GBFF ("rna.gbff"), RNA FASTA ("rna.fna"), and genomic GFF ("genomic.gff") files. These files must be provided using the `rna_gbff_file`, `rna_fa_file`, and `genomic_gff_file` parameters of `postNetStart()`.
+Alternatively, two additional offline methods are available to construct reference sequence annotations if files have already been downloaded from [RefSeq](https://www.ncbi.nlm.nih.gov/refseq/) and are available locally. This can be done by specifying `source = "createFromSourceFiles"` in `postNetStart()`, and providing the RNA GBFF ("rna.gbff"), RNA FASTA ("rna.fna"), and genomic GFF ("genomic.gff") files. These files must be provided using the `rna_gbff_file`, `rna_fa_file`, and `genomic_gff_file` parameters of `postNetStart()`.    
 
 ```{r RefSeqCreateFromSourceFiles, eval=FALSE, echo=TRUE}
 
@@ -435,7 +452,7 @@ ptn <- postNetStart(
 
 ```
 
-For added flexibility in defining sequence regions, it is also possible to assemble reference sequence annotations from a FASTA file using `source = "createFromFasta"` in `postNetStart()`. This option requires that a FASTA file be provided using the `fastaFile` parameter, along with an additional file specifying the coordinates of the mRNA sequence regions (provided with the `posFile` parameter). This position file must be tab delimited and have columns indicating the transcript id, 5'UTR length, end of the coding sequence, and the total transcript length (see example below). Optionally, a genomic GFF file can also be provided using the `genomic_gff_file` parameter. However, if no GFF is provided the latest version for the indicated species will be automatically downloaded from the RefSeq database.
+For added flexibility in defining sequence regions, it is also possible to assemble reference sequence annotations from a FASTA file using `source = "createFromFasta"` in `postNetStart()`. This option requires that a FASTA file be provided using the `fastaFile` parameter, along with an additional file specifying the coordinates of the mRNA sequence regions (provided with the `posFile` parameter). This position file must be tab delimited and have columns indicating the transcript id, 5'UTR length, end of the coding sequence, and the total transcript length (see example below). Optionally, a genomic GFF file can also be provided using the `genomic_gff_file` parameter. However, if no GFF is provided the latest version for the indicated species will be automatically downloaded from the RefSeq database.  
 
 ```{r RefSeqCreateFromFasta, eval=FALSE, echo=TRUE}
 
@@ -465,7 +482,7 @@ ptn <- postNetStart(
 
 The transcriptome is highly diverse, with mRNA isoform expression patterns varying across cell types [@FANTOM2014], and between normal and disease states [@Qamra2017]. The sequences of mRNA molecules can also be dynamically regulated through processes such as alternative splicing [@Wright2022], altered transcription start site usage [@Watt2025], and alternative polyadenylation [@Navickas2023]. Analyses relating mRNA sequence features to post-transcriptional regulation will benefit from more precise sequence annotations if these are available.
 
-Custom reference sequence annotations can be used with the `postNetStart()` function and may be desirable in cases when working with data from species not currently supported by the options described above, with annotations other than those in the NCBI RefSeq database, or if sequences have been experimentally determined. A pre-prepared reference sequence annotation file can be provided using the `customFile` parameter. This file must be tab delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq.
+Custom reference sequence annotations can be used with the `postNetStart()` function and may be desirable in cases when working with data from species not currently supported by the options described above, with annotations other than those in the NCBI RefSeq database, or if sequences have been experimentally determined. A pre-prepared reference sequence annotation file can be provided using the `customFile` parameter. This file must be tab delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq. 
 
 ```{r RefSeqCustom, eval=FALSE, echo=TRUE}
 
@@ -488,9 +505,9 @@ ptn <- postNetStart(
 
 ### Selecting transcript isoforms
 
-Using sequence annotations provided with the package or built from the RefSeq database, postNet will perform gene-level analyses. For genes with multiple mRNA isoforms, the `selection` parameter of the `postNetStart()` function can be used to specify which isoforms will be considered in analyses. Depending on the application, it may sometimes be of interest to consider the longest or shortest mRNA isoforms for each gene. However, selecting the extremes for all genes may skew the results for some types of analysis. By default, isoforms for each gene will be selected at random to prevent a systematic length bias. However, it is important to note that each time the `postNetStart()` function is run, different isoforms may be selected leading to slight variations in results. If it is necessary to ensure reproducibility of isoform selection between different runs of the `postNetStart()` function, the `setSeed` parameter can be used. Alternatively, high-confidence representative protein-coding transcript isoforms can be selected based on the Match Annotation from NCBI and EMBL-EBI (MANE) initiative [@Morales2022].
+Using sequence annotations provided with the package or built from the RefSeq database, postNet will perform gene-level analyses. For genes with multiple mRNA isoforms, the `selection` parameter of the `postNetStart()` function can be used to specify which isoforms will be considered in analyses. Depending on the application, it may sometimes be of interest to consider the longest or shortest mRNA isoforms for each gene. However, selecting the extremes for all genes may skew the results for some types of analysis. By default, isoforms for each gene will be selected at random to prevent a systematic length bias. However, it is important to note that each time the `postNetStart()` function is run, different isoforms may be selected leading to slight variations in results. If it is necessary to ensure reproducibility of isoform selection between different runs of the `postNetStart()` function, the `setSeed` parameter can be used. Alternatively, high-confidence representative protein-coding transcript isoforms can be selected based on the Match Annotation from NCBI and EMBL-EBI (MANE) initiative [@Morales2022].     
 
-Although it is also possible to perform isoform-level analyses of mRNA features with `postNet` by supplying custom sequence annotations as described above, careful consideration should be given to the approach used when analyzing isoform versus gene-level data. If differential regulation of unique isoforms can be confidently quantified, it may be possible to treat these similarly to gene-level data when performing `featureIntegration()` modelling. However, it should be considered that including multiple isoforms for the same genes that contain shared sequences may have confounding effects, giving results that may be misleading or difficult to interpret. An alternative option is to enumerate mRNA features at the isoform level, and then summarize these at the gene-level prior to modelling [@Watt2025].
+Although it is also possible to perform isoform-level analyses of mRNA features with `postNet` by supplying custom sequence annotations as described above, careful consideration should be given to the approach used when analyzing isoform versus gene-level data. If differential regulation of unique isoforms can be confidently quantified, it may be possible to treat these similarly to gene-level data when performing `featureIntegration()` modelling. However, it should be considered that including multiple isoforms for the same genes that contain shared sequences may have confounding effects, giving results that may be misleading or difficult to interpret. An alternative option is to enumerate mRNA features at the isoform level, and then summarize these at the gene-level prior to modelling [@Watt2025].     
 
 ```{r IsoformSel, eval=FALSE, echo=TRUE}
 
@@ -507,12 +524,12 @@ ptn <- postNetStart(
  )
 
 ```
-
+ 
 ### Adjusting UTR sequence annotations
 
 Numerous sequencing approaches are available to specifically map UTRs, such as nanoCAGE [@Poulain2017] and QuantSeq [@Moll2014]. For this reason, it is also possible to adjust only UTR sequences if more specific data is available for your experimental condition or model of interest.
 
-Custom UTR sequences will replace UTRs in an existing annotation file when using the `adjObj` and `region_adj` parameters of the `postNetStart()` function. A list of custom sequences must be provided, specifying which UTR region(s) should be replaced. If custom UTR sequences are available for some, but not all genes in the existing sequence annotation, whether genes and isoforms without custom sequences are kept or discarded from the analysis can be controlled using the `excl` parameter. The `keepAll` parameter can also be used to control how custom UTR isoform sequences are stored for genes with multiple isoforms.
+Custom UTR sequences will replace UTRs in an existing annotation file when using the `adjObj` and `region_adj` parameters of the `postNetStart()` function. A list of custom sequences must be provided, specifying which UTR region(s) should be replaced. If custom UTR sequences are available for some, but not all genes in the existing sequence annotation, whether genes and isoforms without custom sequences are kept or discarded from the analysis can be controlled using the `excl` parameter. The `keepAll` parameter can also be used to control how custom UTR isoform sequences are stored for genes with multiple isoforms.        
 
 ```{r AdjObj, eval=TRUE, echo=TRUE}
 
@@ -524,7 +541,7 @@ customUTR5s <-  list(UTR5 = myUTR5seqs)
 str(customUTR5s)
 
 ```
-
+ 
 ```{r AdjustUTRs, eval=FALSE, echo=TRUE}
 
 # Initialize a postNetData object with custom 5'UTR sequences, replacing the 5'UTR sequences
@@ -546,12 +563,14 @@ ptn <- postNetStart(
  )
 
 ```
-
+ 
+ 
 <a name="mRNAfeatures"/>
 
 # Analysis of mRNA sequence features
 
-*PostNet* includes a variety of tools for identifying and enumerating sequence features of mRNA. These tools can be used for stand-alone analyses to visualize and perform statistical comparisons of mRNA features between sets of regulated genes (described below). However, the outputs of these tools can also be compiled into per-gene catalogs of *cis*-acting regulatory features and used with the `featureIntegration()` function to model changes in post-transcriptional regulation, and dissect networks of interactions between features.
+*PostNet* includes a variety of tools for identifying
+and enumerating sequence features of mRNA. These tools can be used for stand-alone analyses to visualize and perform statistical comparisons of mRNA features between sets of regulated genes (described below). However, the outputs of these tools can also be compiled into per-gene catalogs of *cis*-acting regulatory features and used with the `featureIntegration()` function to model changes in post-transcriptional regulation, and dissect networks of interactions between features.
 
 ## Statistical comparisons, selecting sequence sub-regions, and plotting options
 
@@ -561,18 +580,17 @@ For the tools described in the following sections, where possible, statistical a
 
 <a name="subregions"/>
 
-Some regulatory sequence features of mRNA are highly positional, such as 5' terminal oligopyrimidine (TOP) motifs [@Philippe2020; @Cockman2020], or codon "ramp" sequences [@Verma2019]. Therefore, for some tools described below, users may wish to search for and/or enumerate mRNA sequence features within more specific sequence sub-regions. This can be accomplished using the `subregion`, and `subregionSel` parameters. The `subregion` parameter takes an integer indicating the number of nucleotides to include or exclude from either the start of the sequence region if positive, or the end if negative. For example, `subregion = 50` denotes the first 50 nucleotides of the sequence region(s) specified by the `region` parameter (5'UTR, CDS, or 3'UTR), while `subregion = -50`, denotes the last 50 nucleotides of the sequence region(s). The `subregionSel` parameter can then be applied to allow the user to either examine only this selected sub-region, or to exclude it from the analysis.
+Some regulatory sequence features of mRNA are highly positional, such as 5' terminal oligopyrimidine (TOP) motifs [@Philippe2020; @Cockman2020], or codon "ramp" sequences [@Verma2019]. Therefore, for some tools described below, users may wish to search for and/or enumerate mRNA sequence features within more specific sequence sub-regions. This can be accomplished using the `subregion`, and `subregionSel` parameters. The `subregion` parameter takes an integer indicating the number of nucleotides to include or exclude from either the start of the sequence region if positive, or the end if negative. For example, `subregion = 50` denotes the first 50 nucleotides of the sequence region(s) specified by the `region` parameter (5'UTR, CDS, or 3'UTR), while `subregion = -50`, denotes the last 50 nucleotides of the sequence region(s). The `subregionSel` parameter can then be applied to allow the user to either examine only this selected sub-region, or to exclude it from the analysis. 
 
 <a name="plottingOpts"/>
 
-In most cases, three options for visualizations are available with the `plotType` parameter, including box plots, violin plots, and empirical cumulative distribution functions (eCDFs). If the `plotType` selected is *ecdf*, then differences between distributions at the 25th, 50th, and 75th percentiles will also be reported.
+In most cases, three options for visualizations are available with the `plotType` parameter, including box plots, violin plots, and empirical cumulative distribution functions (eCDFs). If the `plotType` selected is *ecdf*, then differences between distributions at the 25th, 50th, and 75th percentiles will also be reported.     
 
 ## Length of sequence regions
 
 The length of different mRNA sequence regions can have important implications for post-transcriptional regulation [@Mayr2016; @Gandin2016]. For each gene, the `lengthAnalysis()` function computes and returns a list of the log2 length of each mRNA sequence region specified by the `region` parameter. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
 
-The example below will compute a list (`len`) of the log2 length for each gene and sequence region, and produce three PDF files with eCDFs and statistics comparing the length of each sequence region between gene sets and background.
-
+The example below will compute a list (`len`) of the log2 length for each gene and sequence region, and produce three PDF files with eCDFs and statistics comparing the length of each sequence region between gene sets and background.   
 ```{r lengthAnalysisBoxplot, eval=TRUE, echo=TRUE}
 
 # Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between
@@ -632,10 +650,9 @@ unlink(c("Example_UTR5_ecdf_lengthAnalysis.pdf", "Example_UTR3_ecdf_lengthAnalys
 
 Nucleotide content is associated with the post-transcriptional fate of mRNAs. For each gene, the `contentAnalysis()` function computes and returns a list of the percentage of nucleotide content of each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific sequence [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
 
-The `contentIn` parameter is used to specify one or more nucleotide(s) or nucleotide combinations to quantify. These can be any selection or combination of A, T, G, or C. For example `c("GC")` to obtain the combined percentage of G and C, or `c("G", "C")` to obtain the individual percentages. Within the coding sequence, it may also be of interest to calculate nucleotide content at specific codon positions, for example the GC content at the 3rd codon position ("GC3") is often used as an indicator of codon bias [@Aota1986]. For this reason, when the input for the `region` parameter includes `"CDS"`, nucleotide content at specific codon positions can also be quantified by supplying the nucleotide or combination of nucleotides, along with the codon position to be examined (1, 2, or 3). For example, `c("GC3")` calculates percentage of GC content in the third codon position, while `c("A12")` would provide the percentage of A content in the first and second codon positions.
+The `contentIn` parameter is used to specify one or more nucleotide(s) or nucleotide combinations to quantify. These can be any selection or combination of A, T, G, or C. For example `c("GC")` to obtain the combined percentage of G and C, or `c("G", "C")` to obtain the individual percentages. Within the coding sequence, it may also be of interest to calculate nucleotide content at specific codon positions, for example the GC content at the 3rd codon position ("GC3") is often used as an indicator of codon bias [@Aota1986]. For this reason, when the input for the `region` parameter includes `"CDS"`, nucleotide content at specific codon positions can also be quantified by supplying the nucleotide or combination of nucleotides, along with the codon position to be examined (1, 2, or 3). For example, `c("GC3")` calculates percentage of GC content in the third codon position, while `c("A12")` would provide the percentage of A content in the first and second codon positions.   
 
-The example below will compute a list (`GC_content`) of the percentage of GC content for each gene and sequence region, and produce three PDF files with violin plots and statistics comparing the GC content of each sequence region between gene sets and background.
-
+The example below will compute a list (`GC_content`) of the percentage of GC content for each gene and sequence region, and produce three PDF files with violin plots and statistics comparing the GC content of each sequence region between gene sets and background.   
 ```{r contentAnalysisGCviolin, eval=TRUE, echo=TRUE}
 
 # Calculate the GC content of each sequence region for each gene, and compare between
@@ -692,8 +709,7 @@ unlink(c("Example_UTR5_GC_content.pdf", "Example_UTR3_GC_content.pdf", "Example_
          "Figures/Example_CDS_GC_content.png"))
 ```
 
-In addition to calculating the percentage of GC content for each gene and sequence region (as above), the code below will return the GC content at the third codon position (GC3) for the coding sequence.
-
+In addition to calculating the percentage of GC content for each gene and sequence region (as above), the code below will return the GC content at the third codon position (GC3) for the coding sequence.  
 ```{r contentAnalysisGC3, eval=TRUE, echo=TRUE}
 
 # Calculate the GC of each sequence region for each gene, as well as the GC3 content of
@@ -713,8 +729,7 @@ In addition to calculating the percentage of GC content for each gene and sequen
 unlink(c("Example_CDS_GC3_content.pdf"))
 ```
 
-Finally, the code below provides an example of how the `subregion` and `subregionSel` parameters can be used to quantify the percentage of G content in the first and last 15 nucleotides of the 5'UTR.
-
+Finally, the code below provides an example of how the `subregion` and `subregionSel` parameters can be used to quantify the percentage of G content in the first and last 15 nucleotides of the 5'UTR. 
 ```{r contentAnalysisSubregion, eval=FALSE, echo=TRUE}
 
 # Calculate the G content of the first and last 15 nucleotides of the 5'UTR for each gene, and 
@@ -746,14 +761,13 @@ content_UTR5_last15 <- contentAnalysis(ptn = ptn,
 
 The folding energy of mRNA molecules is an indication of the thermodynamic stability of higher-order structures, and has implications for post-transcriptional regulation [@Faure2016; @Zur2012]. For each gene, the `foldingEnergyAnalysis()` function returns a list of free energy measurements for each mRNA sequence region specified by the `region` parameter. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can be generated using the parameters described above.
 
-The `foldingEnergyAnalysis()` function does not perform folding energy calculations for sequences, but allows comparisons between gene sets of interest using pre-calculated values. The source of these values is specified using the `sourceFE` parameter, where pre-calculated values provided with the package can either be loaded, or custom values can be supplied using the `customFileFE` parameter. Pre-calculated folding energies supplied with the package are currently available for human and mouse RefSeq releases "rel_109.20201120", and "rel_109.20200923". These values were calculated for all sequence regions using the mfold algorithm [@Zuker2003], available [here](https://www.unafold.org/). Mfold reports the Gibbs free energy (Δ*G*) for the most probable RNA structures, where lower values indicate more stable structures and larger ones indicate less stable, more flexible mRNA molecules.
+The `foldingEnergyAnalysis()` function does not perform folding energy calculations for sequences, but allows comparisons between gene sets of interest using pre-calculated values. The source of these values is specified using the `sourceFE` parameter, where pre-calculated values provided with the package can either be loaded, or custom values can be supplied using the `customFileFE` parameter. Pre-calculated folding energies supplied with the package are currently available for human and mouse RefSeq releases "rel_109.20201120", and "rel_109.20200923". These values were calculated for all sequence regions using the mfold algorithm [@Zuker2003], available [here](https://www.unafold.org/). Mfold reports the Gibbs free energy (Δ*G*) for the most probable RNA structures, where lower values indicate more stable structures and larger ones indicate less stable, more flexible mRNA molecules.  
 
 To use custom free energy values with the `customFileFE` parameter, the user must supply a TAB delimited file with three columns corresponding to: transcript ID, folding energy, and length of the sequence region. Note that folding energies for different sequence regions (e.g. 5'UTR and 3'UTR) must be provided separately.
 
-The `residFE` parameter also offers the option of correcting the folding energies for the length of the sequences, which may sometimes be desirable to facilitate comparisons between gene sets. Here, instead of Δ*G*, the values returned are the residuals from the linear model: FE \~ log2(sequence region length). Note that if folding energies will be used in downstream modelling analysis with `featureIntegration()`, consideration should be given to the `residFE` parameter. If the length of the sequence regions will also be included in modelling, it is not recommended to correct the folding energies for the sequence length.
+The `residFE` parameter also offers the option of correcting the folding energies for the length of the sequences, which may sometimes be desirable to facilitate comparisons between gene sets. Here, instead of Δ*G*, the values returned are the residuals from the linear model: FE ~ log2(sequence region length). Note that if folding energies will be used in downstream modelling analysis with `featureIntegration()`, consideration should be given to the `residFE` parameter. If the length of the sequence regions will also be included in modelling, it is not recommended to correct the folding energies for the sequence length.
 
-The example below will compute a list (`FE`) of the folding energies for 5'UTR regions, and produce a PDF file with box plots and statistics comparing the folding energy between regulated gene sets and background.
-
+The example below will compute a list (`FE`) of the folding energies for 5'UTR regions, and produce a PDF file with box plots and statistics comparing the folding energy between regulated gene sets and background. 
 ```{r foldingEnergyBoxplot, eval=TRUE, echo=TRUE}
 
 # Compare the folding energy of the 5'UTRs between translationUp 
@@ -787,7 +801,6 @@ unlink(c("Example_UTR5_boxplot_foldEnergyAnalysis.pdf"))
 ```
 
 In the example code below, a custom file with pre-calculated folding energies is provided for 5'UTR sequences.
-
 ```{r foldingEnergyCustom, eval=FALSE, echo=TRUE}
 
 # An example of the required input format for the customFile parameter ("custom_UTR5FE.txt"):
@@ -813,24 +826,23 @@ In the example code below, a custom file with pre-calculated folding energies is
 
 ## Upstream open reading frames
 
-Upstream open reading frames (uORFs) are common regulatory elements found in the 5'UTRs of many transcripts, imparting context-dependent post-transcriptional regulatory effects [@Barbosa2013]. For each gene, the `uorfAnalysis()` function returns either the number, or the coordinates of the positions of uORFs in the 5'UTR. [Statistical comparisons](#comparisons) can be generated using the parameters described above.
+Upstream open reading frames (uORFs) are common regulatory elements found in the 5'UTRs of many transcripts, imparting context-dependent post-transcriptional regulatory effects [@Barbosa2013]. For each gene, the `uorfAnalysis()` function returns either the number, or the coordinates of the positions of uORFs in the 5'UTR. [Statistical comparisons](#comparisons) can be generated using the parameters described above. 
 
 By default, the `uorfAnalysis()` function will search for uORFs with canonical start codons ("AUG") in a strong Kozak context. However, it is also possible to identify uORFs with non-canonical start codons using the `startCodon` parameter, and to specify the Kozak context of the start codon using the `KozakContext` parameter, where:
 
-1)  `"strong"` = [AG][ATGC][ATGC] [Start codon] G
-2)  `"adequate1"` = [AG][ATGC][ATGC] [Start codon] [ATC]
-3)  `"adequate2"` = [TC][ATGC][ATGC] [Start codon] G
-4)  `"weak"` = [TC][ATGC][ATGC] [Start codon] [ATC]
-5)  `"any"` = [ATGC][ATGC][ATGC] [Start codon] [ATGC]
+1) `"strong"` = [AG][ATGC][ATGC] [Start codon] G
+2) `"adequate1"` = [AG][ATGC][ATGC] [Start codon] [ATC]
+3) `"adequate2"` = [TC][ATGC][ATGC] [Start codon] G
+4) `"weak"` = [TC][ATGC][ATGC] [Start codon] [ATC]
+5) `"any"` = [ATGC][ATGC][ATGC] [Start codon] [ATGC]
 
-Note that if `KozakContext = "any"`, the nucleotide context of the start codon is not considered.
+Note that if `KozakContext = "any"`, the nucleotide context of the start codon is not considered. 
 
-Some uORFs are completely contained within the 5'UTR, as is the case for the uORF found in the transcript CHOP (DDIT3) [@Jousse2001]. However, in other cases the start codon for the uORF may be in the 5'UTR, but the stop codon may be found downstream of the start codon of the main ORF, as for ATF4 [@Vattem2004]. Using the `onlyUTR5` parameter, it is possible to specifically identify uORFs completely contained in 5'UTRs, instead of all uORFs.
+Some uORFs are completely contained within the 5'UTR, as is the case for the uORF found in the transcript CHOP (DDIT3) [@Jousse2001]. However, in other cases the start codon for the uORF may be in the 5'UTR, but the stop codon may be found downstream of the start codon of the main ORF, as for ATF4 [@Vattem2004]. Using the `onlyUTR5` parameter, it is possible to specifically identify uORFs completely contained in 5'UTRs, instead of all uORFs. 
 
-Finally, in addition to quantifying the number of uORFs for a given transcript, it is also often of interest to know the positions in the sequence where the uORFs occur. The `unitOut` parameter can be used to specify whether the number, or coordinates (nucleotide position of the start and stop codons) of the detected uORFs will be returned.
+Finally, in addition to quantifying the number of uORFs for a given transcript, it is also often of interest to know the positions in the sequence where the uORFs occur. The `unitOut` parameter can be used to specify whether the number, or coordinates (nucleotide position of the start and stop codons) of the detected uORFs will be returned. 
 
-The example below will compute a list (`uORFs`) of the number of uORFs with canonical start codons in a strong Kozak context for each gene, and produce a PDF file with a bar plot and statistics comparing between gene sets.
-
+The example below will compute a list (`uORFs`) of the number of uORFs with canonical start codons in a strong Kozak context for each gene, and produce a PDF file with a bar plot and statistics comparing between gene sets.   
 ```{r uorfAnalysis, eval=TRUE, echo=TRUE}
 
 # Identify all uORFs with canonical start codons in a strong Kozak context (including
@@ -869,14 +881,13 @@ unlink(c("Example_uORFs_strong.pdf"))
 
 *De novo* motif discovery in postNet is carried out using the `motifAnalysis()` function, which implements [STREME](https://meme-suite.org/meme/doc/streme.html) [@Bailey2021] from the [MEME-Suite](https://meme-suite.org/) [@Bailey2015] to identify ungapped motifs (recurring, fixed-length patterns) that are enriched in the selected sequence region(s) of gene sets of interest relative to control sequences (background). It is also possible to select more specific sequence [sub-regions](#subregions) to either examine or exclude from the analysis.
 
-The `motifAnalysis()` function applies `runStreme()` from the [memes package](https://bioconductor.org/packages/release/bioc/html/memes.html) [@Nystrom2021]. This requires that the MEME Suite software tools be installed locally, and the path to the executables must be provided (`memePath` parameter). The MEME Suite can be downloaded [here](https://meme-suite.org/meme/doc/download.html) following the [installation guide](https://meme-suite.org/meme/doc/install.html?man_type=web). It is possible to specify the minimum width (in nucleotides) and the enrichment p-value threshold for selecting motifs using the `minwidth` and `stremeThreshold` parameters. If custom reference sequence annotations have been used, the sequence type (RNA, DNA, protein) can also be adjusted with the `seqType` parameter. It is important to note that when using postNet with a custom [gene list](#geneLists), if no background is provided, postNet defines the background as all genes in the gene list. In the scenario where only one gene set is provided in the list, it is not advisable to use `motifAnalysis()` to identify enriched motifs, as the input and background will be the same.
+The `motifAnalysis()` function applies `runStreme()` from the [memes package](https://bioconductor.org/packages/release/bioc/html/memes.html) [@Nystrom2021]. This requires that the MEME Suite software tools be installed locally, and the path to the executables must be provided (`memePath` parameter). The MEME Suite can be downloaded [here](https://meme-suite.org/meme/doc/download.html) following the [installation guide](https://meme-suite.org/meme/doc/install.html?man_type=web). It is possible to specify the minimum width (in nucleotides) and the enrichment p-value threshold for selecting motifs using the `minwidth` and `stremeThreshold` parameters. If custom reference sequence annotations have been used, the sequence type (RNA, DNA, protein) can also be adjusted with the `seqType` parameter. It is important to note that when using postNet with a custom [gene list](#geneLists), if no background is provided, postNet defines the background as all genes in the gene list. In the scenario where only one gene set is provided in the list, it is not advisable to use `motifAnalysis()` to identify enriched motifs, as the input and background will be the same.     
 
-The `motifAnalysis()` function returns an updated `postNetData` object where results are stored in the "motifs" slot. Identified motifs can be enumerated in transcripts and included in downstream modelling with `featureIntegration()` by using the `contentMotifs()` function. All results, including the list of significantly enriched motifs can be extracted using the `ptn_motifSelection()` and `ptn_motifGeneList()` functions.
+The `motifAnalysis()` function returns an updated `postNetData` object where results are stored in the "motifs" slot. Identified motifs can be enumerated in transcripts and included in downstream modelling with `featureIntegration()` by using the `contentMotifs()` function. All results, including the list of significantly enriched motifs can be extracted using the `ptn_motifSelection()` and `ptn_motifGeneList()` functions.   
 
-**Note**: If you use `motifAnalysis()` in your work, please appropriately cite the memes R package, The MEME Suite, and the STREME tool. Licensing for The MEME Suite is free for non-profit use. However, for-profit users should contact [OIC-MEMESuite\@ucsd.edu](mailto:OIC-MEMESuite@ucsd.edu){.email} and purchase a license. See <http://meme-suite.org/doc/copyright.html> for details
+**Note**: If you use `motifAnalysis()` in your work, please appropriately cite the memes R package, The MEME Suite, and the STREME tool. Licensing for The MEME Suite is free for non-profit use. However, for-profit users should contact OIC-MEMESuite@ucsd.edu and purchase a license. See http://meme-suite.org/doc/copyright.html for details
 
-In the example below, *de novo* motifs enriched in translationally activated and suppressed gene sets compared to background will be identified for all sequence regions. Motifs passing an enrichment p-value threshold of 0.05 will be extracted, along with the full motif analysis results for the translationally activated gene set.
-
+In the example below, *de novo* motifs enriched in translationally activated and suppressed gene sets compared to background will be identified for all sequence regions. Motifs passing an enrichment p-value threshold of 0.05 will be extracted, along with the full motif analysis results for the translationally activated gene set. 
 ```{r motifAnalysis, eval=FALSE, echo=TRUE}
 
 # Note that as users must provide the path to the MEME Suite executables. An example of
@@ -903,16 +914,15 @@ In the example below, *de novo* motifs enriched in translationally activated and
 
 Sequence motifs can contribute to the structure and stability of RNA molecules, as well as mediate RNA-protein interactions. Numerous motifs play an important role in post-transcriptional regulation, including 5'TOP motifs, which render translation sensitive to regulation via mTOR [@Philippe2020; @Cockman2020], and G-quadruplexes that can impact the translation and stability of the mRNAs where they occur [@Bugaut2012]. For each gene, the `contentMotifs()` function identifies user-supplied sequence motifs and returns a list of enumerations and/or positions for each mRNA sequence region specified by the `region` parameter. It is also possible to select more specific sequence [sub-regions](#subregions) to either examine or exclude from the analysis. [Statistical comparisons](#comparisons) between gene sets can be specified using the parameters described above.
 
-The `motifsIn` parameter is used to provide the motif sequences to be detected and enumerated. Ambiguities can be specified using [IUPAC codes](https://genome.ucsc.edu/goldenPath/help/iupac.html) or [ ] (bracket) annotations. The input motifs provided should match the type of reference sequences to be searched in your analysis (i.e., RNA, DNA, or protein), and can be specified using the `seqType` parameter. The `contentMotifs()` function can also implement [pqsfinder](https://bioconductor.org/packages/release/bioc/html/pqsfinder.html) to identify G-quadruplexes when `motifsIn = "G4"`, using the `min_score` to adjust the prediction threshold. If you use the "G4" option in your work, please cite Hon *et al*. [@Hon2017]. The [ATtRACT](https://attract.cnic.es/#) database, is a database of RNA binding proteins and associated motifs [@Giudice2016], and may also be useful for identifying motifs of interest and potential mechanisms of post-transcriptional regulation in your data. Note that often you will first run the `motifAnalysis()` function to identify the enriched motifs to enumerate. In the example code above, `denovo_UTR5motifs`, extracted using the `ptn_motifSelection()` function can be supplied directly as input to `contentMotifs()` using the `motifsIn` parameter.
+The `motifsIn` parameter is used to provide the motif sequences to be detected and enumerated. Ambiguities can be specified using [IUPAC codes](https://genome.ucsc.edu/goldenPath/help/iupac.html) or [ ] (bracket) annotations. The input motifs provided should match the type of reference sequences to be searched in your analysis (i.e., RNA, DNA, or protein), and can be specified using the `seqType` parameter. The `contentMotifs()` function can also implement [pqsfinder](https://bioconductor.org/packages/release/bioc/html/pqsfinder.html) to identify G-quadruplexes when `motifsIn = "G4"`, using the `min_score` to adjust the prediction threshold. If you use the "G4" option in your work, please cite Hon *et al*. [@Hon2017]. The [ATtRACT](https://attract.cnic.es/#) database, is a database of RNA binding proteins and associated motifs [@Giudice2016], and may also be useful for identifying motifs of interest and potential mechanisms of post-transcriptional regulation in your data. Note that often you will first run the `motifAnalysis()` function to identify the enriched motifs to enumerate. In the example code above, `denovo_UTR5motifs`, extracted using the `ptn_motifSelection()` function can be supplied directly as input to `contentMotifs()` using the `motifsIn` parameter.   
 
-It is also possible to identify overlapping, or non-overlapping motifs, as well as dictate spatial constraints between motifs using the `dist` parameter to dictate the minimum nucleotide distance between motifs. Similarly to `uorfAnalysis()`, it is also often of interest to know the positions in the sequence where the motifs occur, and the `unitOut` parameter can be used to specify whether the number, or coordinates (nucleotide position of the beginning and end of the motif) will be returned.
+It is also possible to identify overlapping, or non-overlapping motifs, as well as dictate spatial constraints between motifs using the `dist` parameter to dictate the minimum nucleotide distance between motifs. Similarly to `uorfAnalysis()`, it is also often of interest to know the positions in the sequence where the motifs occur, and the `unitOut` parameter can be used to specify whether the number, or coordinates (nucleotide position of the beginning and end of the motif) will be returned. 
 
-As for `foldingEnergyAnalysis()`, the `resid` parameter of `contentMotifs()` offers the option of correcting the number of motifs per transcript for the length of the sequences (as longer sequences have more opportunity to contain motifs). Here, the values returned are the residuals from the linear model: number of motifs \~ log2(sequence region length). Note that if motifs will be used in downstream modelling analysis with `featureIntegration()`, and the length of the sequence regions will also be included in the same models, it is not recommended to correct the number of motifs for the sequence length.
+As for `foldingEnergyAnalysis()`, the `resid` parameter of `contentMotifs()` offers the option of correcting the number of motifs per transcript for the length of the sequences (as longer sequences have more opportunity to contain motifs). Here, the values returned are the residuals from the linear model: number of motifs ~ log2(sequence region length). Note that if motifs will be used in downstream modelling analysis with `featureIntegration()`, and the length of the sequence regions will also be included in the same models, it is not recommended to correct the number of motifs for the sequence length.
 
 It is important to note that the `contentMotifs()` function uses a more strict method of sequence matching to count motifs than the MEME-Suite [@Bailey2015], and for this reason some motifs identified with `motifAnalysis()`, which implements STREME [@Bailey2021], may have divergent quantification between methods. Using a more stringent threshold with the `stremeThreshold` parameter of `motifAnalysis()` may remedy this. Alternatively, motifs identified with STREME can be counted using the [FIMO](https://meme-suite.org/meme/doc/fimo.html) [@Grant2011] tool provided with the MEME-Suite.
 
-The example below will compute a list (`UTR5_SCSCGS_num`) of the number of SCSCGS in the 5'UTR for each gene, and produce a PDF file with an eCDF plot and statistics comparing enrichment of the motif between gene sets. A second list (`UTR5_SCSCGS_pos`) will contain the coordinates of the positions of the motifs within the 5'UTR for each gene.
-
+The example below will compute a list (`UTR5_SCSCGS_num`) of the number of SCSCGS in the 5'UTR for each gene, and produce a PDF file with an eCDF plot and statistics comparing enrichment of the motif between gene sets. A second list (`UTR5_SCSCGS_pos`) will contain the coordinates of the positions of the motifs within the 5'UTR for each gene.    
 ```{r contentMotifs, eval=TRUE, echo=TRUE}
 
 # Detect and quantify a given motif within 5'UTRs, and compare between translationUp vs. 
@@ -961,14 +971,13 @@ unlink(c("Example_UTR5_SCSCGS_content.pdf"))
 
 ## Codon and amino acid usage
 
-PostNet includes functionality for enumerating and comparing codon usage across gene sets, implemented with the `codonUsage()`, and `codonCalc()` functions. In this workflow, the `codonUsage()` function is first used to enumerate usage of single codons (or multiple, e.g. dicodons) or amino acids (AAs), and identify those that are enriched or depleted between different gene sets of interest. The `codonCalc()` function can then be applied to obtain the number or frequency of selected codons or AAs for each gene, and perform statistical comparisons between gene sets. The outputs of `codonCalc()` can be used as input features for modelling analyses using `featureIntegration()`.
+PostNet includes functionality for enumerating and comparing codon usage across gene sets, implemented with the `codonUsage()`, and `codonCalc()` functions. In this workflow, the `codonUsage()` function is first used to enumerate usage of single codons (or multiple, e.g. dicodons) or amino acids (AAs), and identify those that are enriched or depleted between different gene sets of interest. The `codonCalc()` function can then be applied to obtain the number or frequency of selected codons or AAs for each gene, and perform statistical comparisons between gene sets. The outputs of `codonCalc()` can be used as input features for modelling analyses using `featureIntegration()`. 
 
-### Generating a codon and amino acid count and frequency table
+### Generating a codon and amino acid count and frequency table 
 
-The `codonUsage()` function can be used to enumerate either codon or AA usage, specified with the `analysis` parameter. Analyses can be performed using the coding region of reference sequence annotations stored in the `postNetData` object. Alternatively, coding sequences can be either automatically created from the [NCBI Consensus CDS database](https://www.ncbi.nlm.nih.gov/projects/CCDS/CcdsBrowse.cgi) or loaded using the `annotType` and `sourceSeq` parameters. It is also possible to enumerate multiple codon combinations, for example dicodons, using the `codonN` parameter. Similarly to `contentAnalysis()` and `contentMotifs()`, it is also possible to select more specific sequence [sub-regions](#subregions) for analysis, for example to specifically examine the codon "ramp" downstream of the start codon [@Verma2019].
+The `codonUsage()` function can be used to enumerate either codon or AA usage, specified with the `analysis` parameter. Analyses can be performed using the coding region of reference sequence annotations stored in the `postNetData` object. Alternatively, coding sequences can be either automatically created from the [NCBI Consensus CDS database](https://www.ncbi.nlm.nih.gov/projects/CCDS/CcdsBrowse.cgi) or loaded using the `annotType` and `sourceSeq` parameters. It is also possible to enumerate multiple codon combinations, for example dicodons, using the `codonN` parameter. Similarly to `contentAnalysis()` and `contentMotifs()`, it is also possible to select more specific sequence [sub-regions](#subregions) for analysis, for example to specifically examine the codon "ramp" downstream of the start codon [@Verma2019].  
 
-The example below demonstrates an implementation of `codonUsage()` generating a summary table of codon counts and frequencies for all genes. Note that "frequency" corresponds to the number of codons relative to all codons in the gene, while "relative frequency" corresponds to the number of codons relative to all synonymous codons in the gene. This table can then be retrieved using the `ptn_codonAnalysis()` function. In this case, [statistical comparisons](#comparisons) will be performed between translationally activated and suppressed gene sets.
-
+The example below demonstrates an implementation of `codonUsage()` generating a summary table of codon counts and frequencies for all genes. Note that "frequency" corresponds to the number of codons relative to all codons in the gene, while "relative frequency" corresponds to the number of codons relative to all synonymous codons in the gene. This table can then be retrieved using the `ptn_codonAnalysis()` function. In this case, [statistical comparisons](#comparisons) will be performed between translationally activated and suppressed gene sets. 
 ```{r codonUsageTable, eval=TRUE, echo=TRUE}
 # Examine the composition of all genes:
 
@@ -1021,7 +1030,7 @@ unlink(c("codon_translationUp_translationDown_codonUsage.pdf", "codon_translatio
 
 ### Codon usage indexes
 
-The `codonUsage()` function also computes several codon indexes and performs statistical comparisons between gene sets of interest. These include the CAI (codon adaptation index) [@Sharp1987], CBI (Codon Bias Index) [@Bennetzen1982], FOP (frequency of optimal codons) [@Ikemura1981], L_aa (Number of AAs in protein), and tAI (tRNA adaptation index) [@Dos_Reis2004]. The type of [Visualizations](#plottingOpts) generated can be controlled as described above, using the `plotType_index` parameter.
+The `codonUsage()` function also computes several codon indexes and performs statistical comparisons between gene sets of interest. These include the CAI (codon adaptation index) [@Sharp1987], CBI (Codon Bias Index) [@Bennetzen1982], FOP (frequency of optimal codons) [@Ikemura1981], L_aa (Number of AAs in protein), and tAI (tRNA adaptation index) [@Dos_Reis2004]. The type of [Visualizations](#plottingOpts) generated can be controlled as described above, using the `plotType_index` parameter. 
 
 Below are several examples produced by the example code above.
 
@@ -1066,8 +1075,7 @@ unlink(c("codonCAI_index.pdf", "codonCBI_index.pdf", "codonFop_index.pdf","codon
 
 The `codonUsage()` function can also be used to identify enriched or depleted codons or AAs between gene sets of interest. In the first step of the analysis, for each gene set comparison, a Chi-square test is applied to assess significant differences in codon or AA usage. To visualize the results of this test, a clustered heatmap of the standardized Chi-square residuals for each codon or AA between the gene sets of interest can be produced using the `plotHeatmap` parameter. Then, for codons or AAs passing significance thresholds (specified using the `pAdj` parameter), the odds ratio for each desired comparison pair is calculated and plotted against the frequency. Codons or AAs of interest with differential usage between gene sets are usually identified as those with a high or low odds ratio, and high frequency. These thresholds can be defined using the `thresOddsUp`, `thresFreqUp`, `thresOddsDown` and `thresFreqDown` parameters.
 
-In the example below, enriched and depleted codons will be identified between translationally activated and suppressed gene sets. These are defined as those with an adjusted p-value less than 0.01 in a Chi-square test, and are within the top 30% of enrichment or depletion based on odds ratios and average frequencies.
-
+In the example below, enriched and depleted codons will be identified between translationally activated and suppressed gene sets. These are defined as those with an adjusted p-value less than 0.01 in a Chi-square test, and are within the top 30\% of enrichment or depletion based on odds ratios and average frequencies.  
 ```{r codonUsageSelected, eval=FALSE, echo=TRUE}
 
 # Identify enriched and depleted codons between
@@ -1121,14 +1129,13 @@ unlink(c("codon_translationUp_translationDown_heatmap.pdf", "codontranslationUp_
          "Figures/codon_translationUp_translationDown_heatmap.png", "Figures/codontranslationUp_translationDowncodon_oddratio_vs_freq.png"))
 ```
 
-### Enumerating selected codons or amino acids
+### Enumerating selected codons or amino acids 
 
 After identifying codons or AAs with differential usage between gene sets using the `codonUsage()` function, these can be enumerated across genes using the `codonSelection()` function for use in modelling using `featureIntegration()`. [Statistical comparisons](#comparisons) and [visualizations](#plottingOpts) can also be generated using the parameters described above.
 
-Codons or AAs to examine are specified using the `featsel` parameter, and the output can be calculated as either the number of occurrences per gene, or the frequency (the count per gene relative to all other codons or AAs in the gene) specified by the `unit` parameter.
+Codons or AAs to examine are specified using the `featsel` parameter, and the output can be calculated as either the number of occurrences per gene, or the frequency (the count per gene relative to all other codons or AAs in the gene) specified by the `unit` parameter. 
 
-In the example below, codons identified as enriched or depleted between gene sets based on Chi-square and odds ratio analyses are enumerated for each gene, and these are compared between translationally activated and suppressed gene sets.
-
+In the example below, codons identified as enriched or depleted between gene sets based on Chi-square and odds ratio analyses are enumerated for each gene, and these are compared between translationally activated and suppressed gene sets.  
 ```{r codonCalc, eval=TRUE, echo=TRUE}
 
 # Select codons of interest with high frequency, and the highest and lowest odds ratios
@@ -1188,28 +1195,27 @@ unlink(c("features_Down_codonCalc.pdf", "features_Up_codonCalc.pdf",
 
 # Modelling and network analysis of post-transcriptional regulation
 
-The `featureIntegration()` function is used to model changes in post-transcriptional regulation and identify *cis-* and/or *trans*-acting factors (features of mRNA molecules, signatures of upstream regulators, etc.) that can explain the observed regulatory effects. The method integrates mRNA features and signatures obtained in previous steps of the postNet workflow (or from custom sources), and has several options for implementation, including forward stepwise linear regression modelling and network analysis, and Random Forest feature selection and classification, which allows prediction of post-transcriptional regulation in new datasets. These topics and considerations for use will be discussed in the following sections.
+The `featureIntegration()` function is used to model changes in post-transcriptional regulation and identify *cis-* and/or *trans*-acting factors (features of mRNA molecules, signatures of upstream regulators, etc.) that can explain the observed regulatory effects. The method integrates mRNA features and signatures obtained in previous steps of the postNet workflow (or from custom sources), and has several options for implementation, including forward stepwise linear regression modelling and network analysis, and Random Forest feature selection and classification, which allows prediction of post-transcriptional regulation in new datasets. These topics and considerations for use will be discussed in the following sections. 
 
-Both stepwise regression and Random Forest modelling implementations produce statistics and plots visualizing the relationship between regulatory effects and features. These relationships can be further explored using UMAP visualizations, described in later sections.
+Both stepwise regression and Random Forest modelling implementations produce statistics and plots visualizing the relationship between regulatory effects and features. These relationships can be further explored using UMAP visualizations, described in later sections. 
 
 ## Selecting features for modelling
 
-Many different types of features can be included in modelling with the `featureIntegration()` function. The input features must be provided as a list summarizing the properties of each gene, that will be used to explain the observed changes in regulation (using forward stepwise linear regression modelling), or to predict the regulatory outcome for a given gene (using a Random Forest classifier). Prior to modelling, careful consideration should be given to the features that are included in the models. These considerations will largely depend on the individual datasets being examined and on the biological questions being addressed. However, some general advice to keep in mind is outlined here.
+Many different types of features can be included in modelling with the `featureIntegration()` function. The input features must be provided as a list summarizing the properties of each gene, that will be used to explain the observed changes in regulation (using forward stepwise linear regression modelling), or to predict the regulatory outcome for a given gene (using a Random Forest classifier). Prior to modelling, careful consideration should be given to the features that are included in the models. These considerations will largely depend on the individual datasets being examined and on the biological questions being addressed. However, some general advice to keep in mind is outlined here. 
 
 ### *Cis*-acting features
 
-Most analyses of post-transcriptional regulation using postNet will likely be interested in identifying sequence-encoded features of mRNA molecules that may be responsible for mediating selective regulation (*cis*-acting elements). From the postNet workflow, the outputs of the `lengthAnalysis()`, `contentAnalysis()`, `uorfAnalysis()`, `foldingEnergyAnalysis()`, `contentMotifs()`, and `codonCalc()` functions generate per-gene summary values that can be directly supplied as features in modelling. In addition to the features that can be enumerated using postNet, additional *cis*-acting features could be included from custom sources, or based on experimental measurements. For example, the length of the poly-A tail, the presence of RNA modifications such as m6A, or measurements of RNA stability or structures.
+Most analyses of post-transcriptional regulation using postNet will likely be interested in identifying sequence-encoded features of mRNA molecules that may be responsible for mediating selective regulation (*cis*-acting elements). From the postNet workflow, the outputs of the `lengthAnalysis()`, `contentAnalysis()`, `uorfAnalysis()`, `foldingEnergyAnalysis()`, `contentMotifs()`, and `codonCalc()` functions generate per-gene summary values that can be directly supplied as features in modelling. In addition to the features that can be enumerated using postNet, additional *cis*-acting features could be included from custom sources, or based on experimental measurements. For example, the length of the poly-A tail, the presence of RNA modifications such as m6A, or measurements of RNA stability or structures.  
 
 ### *Trans*-acting features
 
-In addition to *cis*-acting features, it is also possible to include features describing upstream regulators (*trans*-acting features). These can be gene signatures of known regulation downstream of particular pathways or factors, for example genes translationally activated or suppressed by an inhibitor treatment or knockdown of an RNA binding protein. Including such gene signatures in modelling can serve several hypothesis-generating purposes. For example, when examining post-transcriptional regulation in a complex physiological condition, including signatures of upstream regulators may help to identify factors or pathways that may be modulated in that condition. For example, including known signatures of translational regulation when modelling the translatome under hypoxia confirmed that suppression of mTOR signalling and activation of the ISR play key roles in the observed translational control, and suggested the potential involvement of other factors such as DAP5 that were not previously appreciated [@Watt2025]. In addition, including *trans*-acting feature signatures can also allow assessment of the relationship between upstream regulators and sequence-encoded features. For example, stepwise regression modelling can identify covariance between features. If a *cis*-acting sequence feature co-varies substantially with an upstream signalling pathway (meaning the element is present in the same genes regulated by this pathway), one may hypothesize that this sequence element could be involved in mediating the observed post-transcriptional regulation exerted by that pathway. Several example gene signatures, including mTOR and ISR-sensitive translation, are included with the package.
+In addition to *cis*-acting features, it is also possible to include features describing upstream regulators (*trans*-acting features). These can be gene signatures of known regulation downstream of particular pathways or factors, for example genes translationally activated or suppressed by an inhibitor treatment or knockdown of an RNA binding protein. Including such gene signatures in modelling can serve several hypothesis-generating purposes. For example, when examining post-transcriptional regulation in a complex physiological condition, including signatures of upstream regulators may help to identify factors or pathways that may be modulated in that condition. For example, including known signatures of translational regulation when modelling the translatome under hypoxia confirmed that suppression of mTOR signalling and activation of the ISR play key roles in the observed translational control, and suggested the potential involvement of other factors such as DAP5 that were not previously appreciated [@Watt2025]. In addition, including *trans*-acting feature signatures can also allow assessment of the relationship between upstream regulators and sequence-encoded features. For example, stepwise regression modelling can identify covariance between features. If a *cis*-acting sequence feature co-varies substantially with an upstream signalling pathway (meaning the element is present in the same genes regulated by this pathway), one may hypothesize that this sequence element could be involved in mediating the observed post-transcriptional regulation exerted by that pathway. Several example gene signatures, including mTOR and ISR-sensitive translation, are included with the package.    
 
 ### Creating custom features
 
-In general, features that can be included in modelling can be either numeric, or categorical. Numeric features can be both continuous (for example, sequence region nucleotide content or length), or discrete (for example, the number of uORFs in 5'UTRs). Categorical features can also be included by converting to binary variables. This is useful for evaluating gene signatures in relation to regulatory outcomes, but can also be applied in many scenarios where mRNA can be divided into two classes (for example those with a certain property would be coded as 1, while those without would be coded as 0, etc.). It is also possible to supply categorical features with a directionality. For example, a feature that can be increased, decreased, or unchanged could be coded as 1, -1, or 0 for each gene to be included in modelling.
+In general, features that can be included in modelling can be either numeric, or categorical. Numeric features can be both continuous (for example, sequence region nucleotide content or length), or discrete (for example, the number of uORFs in 5'UTRs). Categorical features can also be included by converting to binary variables. This is useful for evaluating gene signatures in relation to regulatory outcomes, but can also be applied in many scenarios where mRNA can be divided into two classes (for example those with a certain property would be coded as 1, while those without would be coded as 0, etc.). It is also possible to supply categorical features with a directionality. For example, a feature that can be increased, decreased, or unchanged could be coded as 1, -1, or 0 for each gene to be included in modelling. 
 
 Any gene signature constituting a list of genes, including those provided with the package (stored in the `humanSignatures` and `mouseSignatures` objects) can be converted to feature inputs compatible with modelling using the `signCalc()` function. In the example code below, signatures of mTOR and ISR-sensitive translation, as well as mRNAs known to contain classical TOP motifs will be converted into binary variables that can be used as feature inputs in `featureIntegration()` modelling.
-
 ```{r signCalc, eval=TRUE, echo=TRUE}
 
 # load the signatures provided with the package:
@@ -1222,22 +1228,21 @@ Any gene signature constituting a list of genes, including those provided with t
 
 ```
 
-### Highly correlated variables and general features
+### Highly correlated variables and general features 
 
 In determining the appropriate set of features to include in modelling, consideration should be given to the relationships between features, and the information provided by very general features.
 
-In stepwise regression modelling, highly or perfectly correlated variables cannot be supplied together in the same model. For example, this can be relevant when examining the percentage of nucleotide content individually for each base, since the content of G and C or A and T will often be highly correlated, and the sum of A, T, G, and C will add to 100%. In instances where features are too highly correlated for optimal modelling, the `featureIntegration()` function will print an error message identifying the correlated features, and one must be removed from the input in order to proceed. In addition, when enumerating some features such as codon composition, folding energy, or motif content, these values can be corrected for the length of the sequence region. In these instances, it may then not be advisable to also include the sequence region length as a separate feature in the modelling since it has already been accounted for.
+In stepwise regression modelling, highly or perfectly correlated variables cannot be supplied together in the same model. For example, this can be relevant when examining the percentage of nucleotide content individually for each base, since the content of G and C or A and T will often be highly correlated, and the sum of A, T, G, and C will add to 100\%. In instances where features are too highly correlated for optimal modelling, the `featureIntegration()` function will print an error message identifying the correlated features, and one must be removed from the input in order to proceed. In addition, when enumerating some features such as codon composition, folding energy, or motif content, these values can be corrected for the length of the sequence region. In these instances, it may then not be advisable to also include the sequence region length as a separate feature in the modelling since it has already been accounted for.
 
-Extra consideration should also be given to inclusion and interpretation of very general features in modelling. General features include physical properties of mRNAs like the length of sequence regions, and the GC content. These features will often explain large proportions of the observed post-transcriptional regulatory effects, but these results can be difficult to interpret. For example, while there is evidence demonstrating that the length of the 5'UTR can play a role in determining the translation efficiency of the transcript [@Gandin2016], the same regulatory association between length and translation efficiency is not necessarily well-established for the CDS or 3'UTR. For this reason, if the length of the 3'UTR explains significant proportions of the observed regulation in your model, it is difficult to conclude if this is truly related to the physical property of the sequence length, or that longer sequences are more likely to include other regulatory elements. Similarly, GC content is highly related to folding energy and the propensity for the formation of structures, so may represent the combined effect of other more specific features. Including the GC content of CDS could, for example, obscure the impact of specific codon biases if these codons happen to be GC-rich. In that instance it may be more informative to include a more specific metric like the GC3 content [@Aota1986] instead. Conversely, in other contexts, including general features like GC content can be informative. For example, if you are interested in a very GC-rich motif, including both the motif and the sequence region GC content in the model can reveal if the regulatory effect of the motif is independent of the overall GC content.
+Extra consideration should also be given to inclusion and interpretation of very general features in modelling. General features include physical properties of mRNAs like the length of sequence regions, and the GC content. These features will often explain large proportions of the observed post-transcriptional regulatory effects, but these results can be difficult to interpret. For example, while there is evidence demonstrating that the length of the 5'UTR can play a role in determining the translation efficiency of the transcript [@Gandin2016], the same regulatory association between length and translation efficiency is not necessarily well-established for the CDS or 3'UTR. For this reason, if the length of the 3'UTR explains significant proportions of the observed regulation in your model, it is difficult to conclude if this is truly related to the physical property of the sequence length, or that longer sequences are more likely to include other regulatory elements. Similarly, GC content is highly related to folding energy and the propensity for the formation of structures, so may represent the combined effect of other more specific features. Including the GC content of CDS could, for example, obscure the impact of specific codon biases if these codons happen to be GC-rich. In that instance it may be more informative to include a more specific metric like the GC3 content [@Aota1986] instead. Conversely, in other contexts, including general features like GC content can be informative. For example, if you are interested in a very GC-rich motif, including both the motif and the sequence region GC content in the model can reveal if the regulatory effect of the motif is independent of the overall GC content.     
 
-Although we cannot make specific recommendations regarding the inclusion of general features in modelling, as this will be highly dependent on the context and biological question, in general we would suggest performing modelling both with, and without general features like sequence length and GC content for the CDS and 3'UTR to better understand how these variables relate to other more specific regulatory elements.
+Although we cannot make specific recommendations regarding the inclusion of general features in modelling, as this will be highly dependent on the context and biological question, in general we would suggest performing modelling both with, and without general features like sequence length and GC content for the CDS and 3'UTR to better understand how these variables relate to other more specific regulatory elements. 
 
 ### Creating the feature list
 
-Features that will be included in modelling are passed to the `featureIntegration()` function as a named list of numeric vectors. Each vector element in the list must have names corresponding to the gene IDs in your `postNetData` object. Ideally, all genes in the dataset should be represented in each feature vector as any genes missing data for one or more features will be excluded from the analysis.
+Features that will be included in modelling are passed to the `featureIntegration()` function as a named list of numeric vectors. Each vector element in the list must have names corresponding to the gene IDs in your `postNetData` object. Ideally, all genes in the dataset should be represented in each feature vector as any genes missing data for one or more features will be excluded from the analysis.  
 
 In the example code below, a list of input features for modelling is compiled using the outputs of previous steps of the analysis.
-
 ```{r createFeaturesList, eval=TRUE, echo=TRUE}
 
 # Compile a list of features:
@@ -1257,7 +1262,7 @@ In the example code below, a list of input features for modelling is compiled us
 
 ## Feature integration with forward stepwise linear regression
 
-After compiling an appropriate list of features, it is now possible to implement the `featureIntegration()` function to model the observed post-transcriptional regulation. The following sections will describe modelling using stepwise linear regression and network analysis. This analysis uses hierarchical multiple regression to identify features explaining changes in the regulatory effect, rank them according to their importance, and reveals independent and combinatorial effects (for example, co-occurrence of regulatory features in the same mRNA molecules). The results of this analysis can be visualized using network plots showing the association of features to regulatory effects, and the relationships between features. Stepwise linear regression modelling is carried out in three phases to generate univariate, omnibus, and adjusted models (described below).
+After compiling an appropriate list of features, it is now possible to implement the `featureIntegration()` function to model the observed post-transcriptional regulation. The following sections will describe modelling using stepwise linear regression and network analysis. This analysis uses hierarchical multiple regression to identify features explaining changes in the regulatory effect, rank them according to their importance, and reveals independent and combinatorial effects (for example, co-occurrence of regulatory features in the same mRNA molecules). The results of this analysis can be visualized using network plots showing the association of features to regulatory effects, and the relationships between features. Stepwise linear regression modelling is carried out in three phases to generate univariate, omnibus, and adjusted models (described below). 
 
 ### Phase 1: Univariate models
 
@@ -1269,17 +1274,17 @@ The results of these univariate models are summarized in an output table where f
 knitr::include_graphics("Figures/univariate_models.png")
 ```
 
-The results of the univariate models are used to prioritize the features included in the second phase of stepwise regression modelling.
+The results of the univariate models are used to prioritize the features included in the second phase of stepwise regression modelling. 
 
 ### Phase 2: Stepwise regression model (omnibus)
 
-In phase 2, starting with the feature that best explained changes in the regulatory effect from univariate models (in the example above this would be 5'UTR GC content), forward stepwise regression is performed by adding features to the model in an iterative fashion, keeping covariance assigned to the most influential feature (a rank-based greedy model). In each step, the best performing model (the feature with the strongest association with the regulatory effect) is retained, and features that fail to explain additional variance are discarded. Whether a feature is retained in the model is based on the size of the F-statistic, and a *P*-value below a selected threshold (by default \< 0.05). The resulting omnibus model represents the smallest set of features that can explain the greatest proportion of variance in the regulatory effect measurement. This step both ranks features according to their relative importance, and reveals relationships between them.
+In phase 2, starting with the feature that best explained changes in the regulatory effect from univariate models (in the example above this would be 5'UTR GC content), forward stepwise regression is performed by adding features to the model in an iterative fashion, keeping covariance assigned to the most influential feature (a rank-based greedy model). In each step, the best performing model (the feature with the strongest association with the regulatory effect) is retained, and features that fail to explain additional variance are discarded. Whether a feature is retained in the model is based on the size of the F-statistic, and a *P*-value below a selected threshold (by default < 0.05). The resulting omnibus model represents the smallest set of features that can explain the greatest proportion of variance in the regulatory effect measurement. This step both ranks features according to their relative importance, and reveals relationships between them.
 
 ```{r stepwisePNG, echo=FALSE, fig.wide = TRUE, fig.cap="Output of stepwise regression summarizing F-values at each step of modelling."}
 knitr::include_graphics("Figures/stepwise_regression.png")
 ```
 
-In the output table above, the F-statistics are summarized at each step, where features are iteratively added to the model. The table is coloured according to a "traffic-light" system, where cells marked in green indicate features that were significant and included in the final omnibus model. Cells marked in red/purple indicate features that did not improve the ability to explain additional variance in the regulatory effect measurement, and were therefore discarded from the model. For example, after the addition of CDS GC3 in step 2, the set of codons identified as enriched ("Codons_up") is dropped from the model (the F-statistic decreases from more than 204.6 to 1.3) as it is not able to significantly explain additional variance in the regulatory effect. Finally, cells marked in orange indicate a substantial change in the F-statistic for a given feature when another feature is added to the model (an increase or decrease of at least 50%), indicating a relationship between features. For example, we can see a relationship between the 5'UTR SCSCGS motif and 5'UTR length, as the F-statistic for the motif decreased by \~88.5% (from 132.5 to 15.2) between steps 3 and 4 when 5'UTR length was added to the model. These relationships can be explored in detail in the resulting network analyses, with correlations, and using UMAP visualizations (all described below).
+In the output table above, the F-statistics are summarized at each step, where features are iteratively added to the model. The table is coloured according to a "traffic-light" system, where cells marked in green indicate features that were significant and included in the final omnibus model. Cells marked in red/purple indicate features that did not improve the ability to explain additional variance in the regulatory effect measurement, and were therefore discarded from the model. For example, after the addition of CDS GC3 in step 2, the set of codons identified as enriched ("Codons_up") is dropped from the model (the F-statistic decreases from more than 204.6 to 1.3) as it is not able to significantly explain additional variance in the regulatory effect. Finally, cells marked in orange indicate a substantial change in the F-statistic for a given feature when another feature is added to the model (an increase or decrease of at least 50\%), indicating a relationship between features. For example, we can see a relationship between the 5'UTR SCSCGS motif and 5'UTR length, as the F-statistic for the motif decreased by ~88.5\% (from 132.5 to 15.2) between steps 3 and 4 when 5'UTR length was added to the model. These relationships can be explored in detail in the resulting network analyses, with correlations, and using UMAP visualizations (all described below). 
 
 The features included in the final omnibus model are summarized in an output table:
 
@@ -1287,17 +1292,17 @@ The features included in the final omnibus model are summarized in an output tab
 knitr::include_graphics("Figures/omnibus_model.png")
 ```
 
-Here, the total proportion of variance in the regulatory effect that can be explained by features included in the omnibus model is \~45%. The *P*-value for each feature from the stepwise regression model is provided, along with the variance explained. Note that since covariance is assigned to the most influential feature, the proportion of variance explained assigned to 5'UTR GC content is 30.4%, the same as in the univariate analysis. However, CDS GC3 content now explains 6.6% of the variance as opposed to 21.4% in the univariate analysis. This is because of the rank-based greedy nature of the model, as since 5'UTR GC and CDS GC3 content co-vary, this covariance is assigned to the more influential of the two features. This relationship is also apparent when examining the F-value table above, as there was a large decrease in the F-statistic for CDS GC3 between steps 1 and 2 indicating a relationship with 5'UTR GC.
+Here, the total proportion of variance in the regulatory effect that can be explained by features included in the omnibus model is ~45%. The *P*-value for each feature from the stepwise regression model is provided, along with the variance explained. Note that since covariance is assigned to the most influential feature, the proportion of variance explained assigned to 5'UTR GC content is 30.4%, the same as in the univariate analysis. However, CDS GC3 content now explains 6.6% of the variance as opposed to 21.4% in the univariate analysis. This is because of the rank-based greedy nature of the model, as since 5'UTR GC and CDS GC3 content co-vary, this covariance is assigned to the more influential of the two features. This relationship is also apparent when examining the F-value table above, as there was a large decrease in the F-statistic for CDS GC3 between steps 1 and 2 indicating a relationship with 5'UTR GC.     
 
 ### Phase 3: Adjusted model
 
-In the 3rd and final phase, the *independent* contribution of each feature identified in phase 2 is determined. This is done by removing covariance from the omnibus model, which as described above, was previously assigned to the most influential features. This provides the adjusted contribution of each feature. The output of phase 3 is provided in the summary table above (Figure 15), where the last column is the percentage of variance in the regulatory effect explained by a given feature, independent of all other features in the omnibus model.
+In the 3rd and final phase, the *independent* contribution of each feature identified in phase 2 is determined. This is done by removing covariance from the omnibus model, which as described above, was previously assigned to the most influential features. This provides the adjusted contribution of each feature. The output of phase 3 is provided in the summary table above (Figure 15), where the last column is the percentage of variance in the regulatory effect explained by a given feature, independent of all other features in the omnibus model. 
 
-These adjusted values are useful when evaluating whether particular features tend to co-occur in the same mRNAs along with other features included in the model. This may suggest combinatorial effects between features, or reveal whether more specific features have impacts that are independent of more general features. For example, in the table above we see that after adjusting for all other features, the 5'UTR GC content still explains 10% of the regulatory effect independently, whereas the CDS GC3 content can independently explain only 0.3%, meaning that this feature co-varies very substantially with other features in the model. Note that in some instances the proportion of variance explained by a feature may increase after the adjustment, such as for TOP mRNAs (Cockman_etal_2020_classicTOP). This may suggest that this feature is anti-correlated with other features in the model. Indeed, in Figure 14 we can see that the F-statistic for the TOP mRNA signature increases between steps 1 and 2, and steps 4 and 5, suggesting that there is some relationship between TOP mRNAs, and 5'UTR GC content and length.
+These adjusted values are useful when evaluating whether particular features tend to co-occur in the same mRNAs along with other features included in the model. This may suggest combinatorial effects between features, or reveal whether more specific features have impacts that are independent of more general features. For example, in the table above we see that after adjusting for all other features, the 5'UTR GC content still explains 10% of the regulatory effect independently, whereas the CDS GC3 content can independently explain only 0.3%, meaning that this feature co-varies very substantially with other features in the model. Note that in some instances the proportion of variance explained by a feature may increase after the adjustment, such as for TOP mRNAs (Cockman_etal_2020_classicTOP). This may suggest that this feature is anti-correlated with other features in the model. Indeed, in Figure 14 we can see that the F-statistic for the TOP mRNA signature increases between steps 1 and 2, and steps 4 and 5, suggesting that there is some relationship between TOP mRNAs, and 5'UTR GC content and length.    
 
 ### Feature correlations
 
-In addition to the "traffic-light" colouring of the F-value table to highlight substantial relationships between features based on changes in F-value, when the `useCorel` parameter is `TRUE`, an additional table of Pearson's correlation coefficients between features will also be displayed. A threshold for the strength of association between features in order for correlation coefficients to be calculated can be provided using the `covarFilt` parameter. This threshold is based on an integer representing the absolute change in F-value. The default value is `20`, but this may not be appropriate for all datasets and research questions and users can adjust this to see more or fewer correlations (this is discussed further below for network visualizations). Note that the orange "traffic-light" highlighting indicating substantial relationships in the F-value table (Figure 14) is independent of the threshold set with `covarFilt`, and will always represent an increase or decrease in F-value of at least 50%.
+In addition to the "traffic-light" colouring of the F-value table to highlight substantial relationships between features based on changes in F-value, when the `useCorel` parameter is `TRUE`, an additional table of Pearson's correlation coefficients between features will also be displayed. A threshold for the strength of association between features in order for correlation coefficients to be calculated can be provided using the `covarFilt` parameter. This threshold is based on an integer representing the absolute change in F-value. The default value is `20`, but this may not be appropriate for all datasets and research questions and users can adjust this to see more or fewer correlations (this is discussed further below for network visualizations). Note that the orange "traffic-light" highlighting indicating substantial relationships in the F-value table (Figure 14) is independent of the threshold set with `covarFilt`, and will always represent an increase or decrease in F-value of at least 50\%.
 
 ```{r correlationPNG, echo=FALSE, fig.wide = FALSE, fig.cap="Summary table of Pearson's correlation coefficients between features."}
 knitr::include_graphics("Figures/correlations_model.png")
@@ -1305,11 +1310,11 @@ knitr::include_graphics("Figures/correlations_model.png")
 
 ### Running feature integration with forward stepwise linear regression
 
-Stepwise regression modelling and network analysis are specified in the `featureIntegration()` function by setting the `analysis_type` parameter to `lm`. A number of parameters can be used to control the behavior of the modelling. Similarly to the functions previously described, [statistical comparisons](#comparisons) can be specified using the `comparisons` parameter. It is possible to perform multiple pair-wise comparisons with stepwise regression modelling. By default, regression modelling is performed using only the set of regulated genes (i.e., those included in `geneList`, or `regulation` if starting from an `Anota2seqDataSet` object). However, it is also possible to perform the modelling with all genes included in the dataset by setting the `regOnly` parameter to `FALSE`.
+Stepwise regression modelling and network analysis are specified in the `featureIntegration()` function by setting the `analysis_type` parameter to `lm`. A number of parameters can be used to control the behavior of the modelling. Similarly to the functions previously described, [statistical comparisons](#comparisons) can be specified using the `comparisons` parameter. It is possible to perform multiple pair-wise comparisons with stepwise regression modelling. By default, regression modelling is performed using only the set of regulated genes (i.e., those included in `geneList`, or `regulation` if starting from an `Anota2seqDataSet` object). However, it is also possible to perform the modelling with all genes included in the dataset by setting the `regOnly` parameter to `FALSE`. 
 
-By default, only the set of input features that are significantly associated with the regulatory effect in univariate models (phase 1) will be included in stepwise regression (phase 2). However, in some instances you may be interested in how various features interact with each other, so it is possible to bypass this filtering by setting the `allFeat` parameter to `TRUE`, which will allow all features provided as input with the `features` parameter to be used in stepwise regression modelling. In addition, the phase 1 filtering is based on an *FDR* threshold of 0.05 for univariate models, however, this can be adjusted using the `fdrUni` parameter. Furthermore, features are retained or discarded in stepwise regression analysis based on a *P*-value threshold of 0.05. This can also be adjusted using the `stepP` parameter.
+By default, only the set of input features that are significantly associated with the regulatory effect in univariate models (phase 1) will be included in stepwise regression (phase 2). However, in some instances you may be interested in how various features interact with each other, so it is possible to bypass this filtering by setting the `allFeat` parameter to `TRUE`, which will allow all features provided as input with the `features` parameter to be used in stepwise regression modelling. In addition, the phase 1 filtering is based on an *FDR* threshold of 0.05 for univariate models, however, this can be adjusted using the `fdrUni` parameter. Furthermore, features are retained or discarded in stepwise regression analysis based on a *P*-value threshold of 0.05. This can also be adjusted using the `stepP` parameter. 
 
-In the example code below the three phases of modelling will be performed using the list of input features defined above. In this analysis, only the sets of regulated genes will be included, comparing translationally activated and suppressed genes. Those features passing the *FDR* threshold of 0.05 in univariate models will be included in stepwise regression.
+In the example code below the three phases of modelling will be performed using the list of input features defined above. In this analysis, only the sets of regulated genes will be included, comparing translationally activated and suppressed genes. Those features passing the *FDR* threshold of 0.05 in univariate models will be included in stepwise regression.   
 
 ```{r runLM, eval=TRUE, echo=TRUE}
 
@@ -1324,7 +1329,7 @@ In the example code below the three phases of modelling will be performed using 
 
 ```
 
-The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "FinalModel" will contain the summary tables shown above in Figures 13-16. It is possible to retrieve the full results from each phase of modelling using the `ptn_model()` function, as well as the set of features that were selected in the omnibus model that significantly explain changes in the regulatory effect with `ptn_selectedFeatures()`. Furthermore, if modelling using multiple pairwise comparisons was performed, you can check which modelling results are available using the `ptn_check_models()` function. See the example code below:
+The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "FinalModel" will contain the summary tables shown above in Figures 13-16. It is possible to retrieve the full results from each phase of modelling using the `ptn_model()` function, as well as the set of features that were selected in the omnibus model that significantly explain changes in the regulatory effect with `ptn_selectedFeatures()`. Furthermore, if modelling using multiple pairwise comparisons was performed, you can check which modelling results are available using the `ptn_check_models()` function. See the example code below:  
 
 ```{r retrieveLM, eval=TRUE, echo=TRUE}
 
@@ -1343,17 +1348,17 @@ The results of the modelling will be stored in the `postNetData` object, and a s
 
 ```
 
-The other PDF files produced will contain the network visualization of the features included in the modelling, as well is plots of individual features, described below.
+The other PDF files produced will contain the network visualization of the features included in the modelling, as well is plots of individual features, described below.    
 
 ### Network visualizations
 
-The results of feature integration using forward stepwise regression modelling can be visualized using network analyses. Each feature selected in the omnibus model that can significantly explain a proportion of variance in the regulatory effect appear in the networks as nodes. The size of the nodes corresponds to the proportion of variance explained by the given feature, and can represent either the values from the omnibus model, or the adjusted model (selected using the `NetModelSel` parameter). If `NetModelSel` is `omnibus`, the size of each node representing features will be proportional to the variance explained, where covariance is assigned to the most influential feature. If `NetModelSel` is `adjusted`, the size of the nodes will reflect the adjusted total variance explained, and therefore the independent contribution of each feature to the overall observed regulation.
+The results of feature integration using forward stepwise regression modelling can be visualized using network analyses. Each feature selected in the omnibus model that can significantly explain a proportion of variance in the regulatory effect appear in the networks as nodes. The size of the nodes corresponds to the proportion of variance explained by the given feature, and can represent either the values from the omnibus model, or the adjusted model (selected using the `NetModelSel` parameter). If `NetModelSel` is `omnibus`, the size of each node representing features will be proportional to the variance explained, where covariance is assigned to the most influential feature. If `NetModelSel` is `adjusted`, the size of the nodes will reflect the adjusted total variance explained, and therefore the independent contribution of each feature to the overall observed regulation.      
 
-The edges connecting nodes can either represent the Pearson correlation coefficients between features if the parameter `useCorel = TRUE`. However, if `FALSE`, the edges will instead represent the magnitude of the change in F-value for a given feature between sequential steps of stepwise regression, indicative of the strength of the associations between features. Note that while changes in F-value are indicative of the strength of relationships between features, this metric is not always easy to interpret and may not readily reveal whether features are positively or negatively correlated. Therefore, by default, edges will represent correlation coefficients. As described above, `covarFilt` parameter can be used to control the threshold for displaying edges between feature nodes. This threshold is based on the minimum change in F-value between sequential steps of stepwise regression, and when larger values are provided, only the strongest correlations will be displayed as edges in the network plot.
+The edges connecting nodes can either represent the Pearson correlation coefficients between features if the parameter `useCorel = TRUE`. However, if `FALSE`, the edges will instead represent the magnitude of the change in F-value for a given feature between sequential steps of stepwise regression, indicative of the strength of the associations between features. Note that while changes in F-value are indicative of the strength of relationships between features, this metric is not always easy to interpret and may not readily reveal whether features are positively or negatively correlated. Therefore, by default, edges will represent correlation coefficients. As described above, `covarFilt` parameter can be used to control the threshold for displaying edges between feature nodes. This threshold is based on the minimum change in F-value between sequential steps of stepwise regression, and when larger values are provided, only the strongest correlations will be displayed as edges in the network plot. 
 
-Finally, some features may not be significant in the omnibus model but have substantial relationships with one or more features that are. These features will not be assigned a node, but will appear in pink with edges connecting to the feature nodes they are substantially correlated with. For example, in the network displayed below, 5'UTR folding energy did not independently explain changes in the regulatory effect, but as expected, was substantially negatively correlated with 5'UTR length and GC content. This example was included to highlight this functionality. However, it is likely not usually informative to include folding energy in modelling alongside length and GC content of 5'UTRs, as it is known to be highly dependent on these two features. Furthermore, the signature of genes translationally suppressed upon mTOR activation was not independently significant, but was substantially negatively correlated with the 5'UTR GC content and the GC3 codon index.
+Finally, some features may not be significant in the omnibus model but have substantial relationships with one or more features that are. These features will not be assigned a node, but will appear in pink with edges connecting to the feature nodes they are substantially correlated with. For example, in the network displayed below, 5'UTR folding energy did not independently explain changes in the regulatory effect, but as expected, was substantially negatively correlated with 5'UTR length and GC content. This example was included to highlight this functionality. However, it is likely not usually informative to include folding energy in modelling alongside length and GC content of 5'UTRs, as it is known to be highly dependent on these two features. Furthermore, the signature of genes translationally suppressed upon mTOR activation was not independently significant, but was substantially negatively correlated with the 5'UTR GC content and the GC3 codon index.       
 
-The network plot below displays the results of the example in the section above, where by default, `NetModelSel = "omnibus"`, `useCorel = TRUE`, and `covarFilt = 20`.
+The network plot below displays the results of the example in the section above, where by default, `NetModelSel = "omnibus"`, `useCorel = TRUE`, and `covarFilt = 20`. 
 
 ```{r networkPDFconvert, eval=TRUE, echo=FALSE}
 # Convert to PNG
@@ -1374,10 +1379,9 @@ unlink(c("Example_lm_translationUp_translationDown_network.pdf","Example_lm_tran
 
 ```
 
-When many features are selected in the stepwise regression modelling or when there are many substantial correlations between features, it may be desirable to organize the network plots to be more easily interpreted. The `lmfeatGroup` and `lmfeatGroupColour` parameters can be used to group features in space, and assign coloured circles to the groupings. For example, it is possible to organize the layout of features in the network plot according to regions of the mRNA sequence they are found in. However, grouping is highly customizable and can be tailored to the dataset and biological context.
+When many features are selected in the stepwise regression modelling or when there are many substantial correlations between features, it may be desirable to organize the network plots to be more easily interpreted. The `lmfeatGroup` and `lmfeatGroupColour` parameters can be used to group features in space, and assign coloured circles to the groupings. For example, it is possible to organize the layout of features in the network plot according to regions of the mRNA sequence they are found in. However, grouping is highly customizable and can be tailored to the dataset and biological context. 
 
-In the example below, the same feature integration modelling as above will be performed adding grouping variables and colours to the network plot. Note that the total proportion of variance explained by the group of features is also displayed on the network plot for each category.
-
+In the example below, the same feature integration modelling as above will be performed adding grouping variables and colours to the network plot. Note that the total proportion of variance explained by the group of features is also displayed on the network plot for each category. 
 ```{r networkGroupingLM, eval=TRUE, echo=TRUE}
 # Examine the input features
  names(myFeatureList) 
@@ -1420,7 +1424,7 @@ knitr::include_graphics("Figures/Example_grouped_lm_translationUp_translationDow
 unlink(c("Example_grouped_lm_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "Example_grouped_lm_translationUp_translationDown_Down_individually.pdf", "Example_grouped_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf", "Example_grouped_lm_translationUp_translationDown_CDS_GC3_individually.pdf", "Example_grouped_lm_translationUp_translationDown_FinalModel.pdf", "Example_grouped_lm_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Example_grouped_lm_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf", "Example_grouped_lm_translationUp_translationDown_network.pdf", "Example_grouped_lm_translationUp_translationDown_uORFs_ATG_strong_individually.pdf", "Example_grouped_lm_translationUp_translationDown_UTR5_GC_individually.pdf", "Example_grouped_lm_translationUp_translationDown_UTR5_length_individually.pdf"))
 ```
 
-Finally, in addition to producing a PDF file, the results of the network analysis are stored in the `postNetData` object as an [igraph](https://CRAN.R-project.org/package=igraph) object [@Csárdi2006; @Antonov2023; @Csárdi2025], and can be retrieved using the `ptn_networkGraph` function. See the example code below:
+Finally, in addition to producing a PDF file, the results of the network analysis are stored in the `postNetData` object as an [igraph](https://CRAN.R-project.org/package=igraph) object [@Csárdi2006; @Antonov2023; @Csárdi2025], and can be retrieved using the `ptn_networkGraph` function. See the example code below: 
 
 ```{r retrieveNetworkLM, eval=TRUE, echo=TRUE}
 
@@ -1432,7 +1436,7 @@ Finally, in addition to producing a PDF file, the results of the network analysi
 
 ## Feature integration with Random Forest classification
 
-In addition to forward stepwise regression, the `featureIntegration()` function can also apply Breiman's Random Forest algorithm (as implemented in the [randomForest](https://CRAN.R-project.org/package=randomForest) package [@Liaw2002]) to classify genes according to their regulation, and identify features associated with regulatory classes. Unlike with forward stepwise regression modelling, the relationships between features will not necessarily be revealed using feature selection and Random Forest classification, and network analysis cannot be implemented. However, Random Forest classifiers can be constructed and trained in one dataset, and then applied to predict post-transcriptional regulation in new contexts using the selected features. Random Forest classification with `featureIntegration()` is implemented in two steps described below.
+In addition to forward stepwise regression, the `featureIntegration()` function can also apply Breiman's Random Forest algorithm (as implemented in the [randomForest](https://CRAN.R-project.org/package=randomForest) package [@Liaw2002]) to classify genes according to their regulation, and identify features associated with regulatory classes. Unlike with forward stepwise regression modelling, the relationships between features will not necessarily be revealed using feature selection and Random Forest classification, and network analysis cannot be implemented. However, Random Forest classifiers can be constructed and trained in one dataset, and then applied to predict post-transcriptional regulation in new contexts using the selected features. Random Forest classification with `featureIntegration()` is implemented in two steps described below.  
 
 ```{r runRF, eval=TRUE, echo=FALSE}
 
@@ -1449,7 +1453,7 @@ In addition to forward stepwise regression, the `featureIntegration()` function 
 
 ### Pre-modelling and feature selection
 
-In the first step, genes are divided into training (70%) and validation (30%) sets. A pre-modelling step is carried out where the Breiman's Random Forest algorithm [@Liaw2002; @Breiman2019] is applied to perform supervised classification of genes into regulatory classes. Next, feature selection is performed using [Boruta](https://CRAN.R-project.org/package=Boruta) [@Kursa2010]. Boruta uses feature importance measurements from Random Forest classification to iteratively select features based on the comparison of importance attributes to randomly shuffled "shadow" attributes. This feature selection process finds all relevant features associated with the prediction, meaning features may be redundant with others already selected (see the [Boruta Vignette](https://cran.r-project.org/web/packages/Boruta/vignettes/inahurry.pdf) for details). Although not directly comparable, this differs somewhat in principle from forward stepwise regression modelling, where features will only be selected if they independently explain a proportion of variance in the regulatory effect beyond what is explained by other features in the model. In this example, in agreement with forward stepwise regression modelling, 5'UTR GC content is found to be the most important feature predicting post-transcriptional regulation in this context.
+In the first step, genes are divided into training (70\%) and validation (30\%) sets. A pre-modelling step is carried out where the Breiman's Random Forest algorithm [@Liaw2002; @Breiman2019] is applied to perform supervised classification of genes into regulatory classes. Next, feature selection is performed using [Boruta](https://CRAN.R-project.org/package=Boruta) [@Kursa2010]. Boruta uses feature importance measurements from Random Forest classification to iteratively select features based on the comparison of importance attributes to randomly shuffled "shadow" attributes. This feature selection process finds all relevant features associated with the prediction, meaning features may be redundant with others already selected (see the [Boruta Vignette](https://cran.r-project.org/web/packages/Boruta/vignettes/inahurry.pdf) for details). Although not directly comparable, this differs somewhat in principle from forward stepwise regression modelling, where features will only be selected if they independently explain a proportion of variance in the regulatory effect beyond what is explained by other features in the model. In this example, in agreement with forward stepwise regression modelling, 5'UTR GC content is found to be the most important feature predicting post-transcriptional regulation in this context.   
 
 ```{r featImpPDFconvert, eval=TRUE, echo=FALSE}
 # Convert to PNG
@@ -1491,7 +1495,7 @@ unlink(c("Example_randomForest_translationUp_translationDown_FinalModel.pdf"))
 
 ### Running feature integration with Random Forest classification
 
-The `featureIntegration()` function can also be used to implement Random Forest classification. To do so, the function is run as described above changing the input for the `analysis_type` parameter to `rf`. In the example code below, a Random Forest classification model will predict membership of regulated genes to translationally activated or suppressed categories using the list of input features defined above.
+The `featureIntegration()` function can also be used to implement Random Forest classification. To do so, the function is run as described above changing the input for the `analysis_type` parameter to `rf`. In the example code below, a Random Forest classification model will predict membership of regulated genes to translationally activated or suppressed categories using the list of input features defined above. 
 
 ```{r runningRF, eval=FALSE, echo=TRUE}
 
@@ -1506,7 +1510,7 @@ The `featureIntegration()` function can also be used to implement Random Forest 
 
 ```
 
-The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "featureImportance.pdf" will contain a summary plot of feature importance from the feature selection step (Figure 19). The PDF with the suffix "FinalModel" will contain a summary of the feature importance for the selected features retained in the final model, as well as the ROC curve evaluating the performance of the model predictions (Figure 20). As for the forward stepwise regression implementation, it is possible to retrieve the full results from each step of modelling using the `ptn_model()` function, as well as the set of features that were retained during feature selection using `ptn_selectedFeatures()`. See the example code below:
+The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "featureImportance.pdf" will contain a summary plot of feature importance from the feature selection step (Figure 19). The PDF with the suffix "FinalModel" will contain a summary of the feature importance for the selected features retained in the final model, as well as the ROC curve evaluating the performance of the model predictions (Figure 20). As for the forward stepwise regression implementation, it is possible to retrieve the full results from each step of modelling using the `ptn_model()` function, as well as the set of features that were retained during feature selection using `ptn_selectedFeatures()`. See the example code below:  
 
 ```{r retrieveRF, eval=TRUE, echo=TRUE}
 
@@ -1569,13 +1573,13 @@ unlink(c("Example_randomForest_translationUp_translationDown_UTR5_GC_individuall
 
 <a name="networkPred"/>
 
-# Predicting post-transcriptional regulation in new datasets
+# Predicting post-transcriptional regulation in new datasets 
 
-Feature-based models trained using `featureIntegration()` can be used not only to interpret factors contributing to post-transcriptional regulation within a single dataset, but also test whether the same features generalize across biological contexts. When `featureIntegration()` is implemented using Random Forest classification (when `analysis_type = "rf"`), the final trained model can be exported and applied to new gene sets using the `rfPred()` function. This enables evaluation of whether features that explain post-transcriptional regulation in one system can accurately predict regulation in an independent dataset, condition, or experimental model.
+Feature-based models trained using `featureIntegration()` can be used not only to interpret factors contributing to post-transcriptional regulation within a single dataset, but also test whether the same features generalize across biological contexts. When `featureIntegration()` is implemented using Random Forest classification (when  `analysis_type = "rf"`), the final trained model can be exported and applied to new gene sets using the `rfPred()` function. This enables evaluation of whether features that explain post-transcriptional regulation in one system can accurately predict regulation in an independent dataset, condition, or experimental model.   
 
-Running `rfPred()` requires a `postNetData` object that already contains a trained Random Forest model. By providing a single integer for the `comparison` argument, the user can select between models trained for different `comparisons` during `featureIntegration()` modelling. The trained model will then be applied to a new list of genes provided with the `predGeneList` parameter. The list must have the same regulatory classes as the original dataset used to train the model (e.g., `translationUp`, `translationDown`). For the genes included in `predGeneList`, features must be enumerated and compiled into a list, as described above for `featureIntegration()`. This list is provided with the `predFeatures` parameter, and must include exactly the same features as those in the final Random Forest model. These can be easily retrieved using the `ptn_selectedFeatures()` function as described above. The output of the `rfPred()` function is a PDF file containing the ROC curve evaluating how well the original features can explain the regulatory effect in the new dataset.
+Running `rfPred()` requires a `postNetData` object that already contains a trained Random Forest model. By providing a single integer for the `comparison` argument, the user can select between models trained for different `comparisons` during `featureIntegration()` modelling. The trained model will then be applied to a new list of genes provided with the `predGeneList` parameter. The list must have the same regulatory classes as the original dataset used to train the model (e.g., `translationUp`, `translationDown`). For the genes included in `predGeneList`, features must be enumerated and compiled into a list, as described above for `featureIntegration()`. This list is provided with the `predFeatures` parameter, and must include exactly the same features as those in the final Random Forest model. These can be easily retrieved using the `ptn_selectedFeatures()` function as described above. The output of the `rfPred()` function is a PDF file containing the ROC curve evaluating how well the original features can explain the regulatory effect in the new dataset. 
 
-In the example below, the Random Forest model trained in the example above will be applied to a new simulated dataset created by randomly sampling the original data. Note that in this example, due to the randomization, the model is expected to have poor predictive power.
+In the example below, the Random Forest model trained in the example above will be applied to a new simulated dataset created by randomly sampling the original data. Note that in this example, due to the randomization, the model is expected to have poor predictive power. 
 
 ```{r rfPred, eval=TRUE, echo=TRUE}
 
@@ -1618,21 +1622,20 @@ knitr::include_graphics("Figures/Example_rocr.png")
 ```{r rfPredHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("Example_rocr.pdf"))
 ```
-
+   
 <a name="UMAPvis"/>
 
-# Visualizing relationships between features and regulatory effects with UMAP
+# Visualizing relationships between features and regulatory effects with UMAP 
 
-After identifying putative regulatory features using `featureIntegration()`, it is often helpful to explore how these features co-occur across genes and how they relate to regulatory effects. The `plotFeaturesMap()` function uses [umap](https://CRAN.R-project.org/package=umap) to generate Uniform Manifold Approximation and Projection (UMAP) visualizations based on user-selected features, allowing you to overlay regulatory effects and visually inspect how individual features vary across the same embedding. This provides an intuitive tool to identify transcripts with shared or differing regulatory behaviour and feature compositions.
+After identifying putative regulatory features using `featureIntegration()`, it is often helpful to explore how these features co-occur across genes and how they relate to regulatory effects. The `plotFeaturesMap()` function uses [umap](https://CRAN.R-project.org/package=umap) to generate Uniform Manifold Approximation and Projection (UMAP) visualizations based on user-selected features, allowing you to overlay regulatory effects and visually inspect how individual features vary across the same embedding. This provides an intuitive tool to identify transcripts with shared or differing regulatory behaviour and feature compositions.  
 
 ## Plotting UMAPs
 
-When plotting UMAPs, each point will represent a gene. By default, only regulated genes will be included (those defined by the `geneList` or `regulation` parameters of the `postNetStart()` function). However, similarly to `featureIntegration()`, all genes can be included by setting the `regOnly` parameter to `FALSE`. The UMAP embedding is constructed from a user-defined set of features provided using the `featSel` parameter, often starting with those that were identified as informative during `featureIntegration()` using either stepwise regression or Random Forest modelling. However, additional features of interest can also be included. The regulatory effect and feature values can then be overlaid on the embedding. Which features are coloured can be controlled using the `featCol` parameter. One PDF file with two panels will be generated for each feature provided with `featCol`. The left panel will be overlaid with the regulatory effect from the selected `comparisons`, and the right panel will be overlaid with the given feature.
+When plotting UMAPs, each point will represent a gene. By default, only regulated genes will be included (those defined by the `geneList` or `regulation` parameters of the `postNetStart()` function). However, similarly to `featureIntegration()`, all genes can be included by setting the `regOnly` parameter to `FALSE`. The UMAP embedding is constructed from a user-defined set of features provided using the `featSel` parameter, often starting with those that were identified as informative during `featureIntegration()` using either stepwise regression or Random Forest modelling. However, additional features of interest can also be included. The regulatory effect and feature values can then be overlaid on the embedding. Which features are coloured can be controlled using the `featCol` parameter. One PDF file with two panels will be generated for each feature provided with `featCol`. The left panel will be overlaid with the regulatory effect from the selected `comparisons`, and the right panel will be overlaid with the given feature.   
 
-UMAP is sensitive to input parameters and data pre-processing [@Huang2022]. Therefore, several options are provided that can be applied to feature values prior to dimensionality reduction. The `remBinary` parameter will remove binary features (0 or 1) which will often have a strong influence on gene clustering (default is `TRUE`). There are also options to scale and/or center the feature data using the `scaled` and `centered` parameters. Finally, the `remExtreme` parameter can be used to filter outlier values prior to generating the colour scales for features and effect measurements overlaid on UMAP embeddings. The default settings are a suggested starting point but may not be appropriate for all inputs, so it is recommended to test the impact of different input parameters. Users should exercise caution when interpreting spatial clustering of genes using this approach. These visualizations are intended to be used as a tool for data exploration and understanding relationships between different features and regulatory effects, particularly in cases where multiple features are co-occurring in the same mRNA.
+UMAP is sensitive to input parameters and data pre-processing [@Huang2022]. Therefore, several options are provided that can be applied to feature values prior to dimensionality reduction. The `remBinary` parameter will remove binary features (0 or 1) which will often have a strong influence on gene clustering (default is `TRUE`). There are also options to scale and/or center the feature data using the `scaled` and `centered` parameters. Finally, the `remExtreme` parameter can be used to filter outlier values prior to generating the colour scales for features and effect measurements overlaid on UMAP embeddings. The default settings are a suggested starting point but may not be appropriate for all inputs, so it is recommended to test the impact of different input parameters. Users should exercise caution when interpreting spatial clustering of genes using this approach. These visualizations are intended to be used as a tool for data exploration and understanding relationships between different features and regulatory effects, particularly in cases where multiple features are co-occurring in the same mRNA.   
 
-In the example below, the set of features identified using forward stepwise regression modelling will be used to generate a UMAP embedding. PDF files will be generated with the regulatory effect and the values for 5'UTR GC content overlaid. The resulting UMAP coordinates are stored in the `featuresMap` slot of the `postNetData` object.
-
+In the example below, the set of features identified using forward stepwise regression modelling will be used to generate a UMAP embedding. PDF files will be generated with the regulatory effect and the values for 5'UTR GC content overlaid. The resulting UMAP coordinates are stored in the `featuresMap` slot of the `postNetData` object.   
 ```{r plotUMAPs, eval=TRUE, echo=TRUE}
 
 # Plot UMAP visualizations using the features identified in stepwise regression modelling
@@ -1651,6 +1654,7 @@ ptn <- plotFeaturesMap(ptn = ptn,
 
 ```
 
+
 ```{r plotUMAPsPDF, eval=TRUE, echo=FALSE}
 # Convert to PNG
 image_read_pdf("Example_UTR5_GC_featureUMAP.pdf", density = 300) %>%
@@ -1667,18 +1671,18 @@ knitr::include_graphics("Figures/Example_UTR5_GC_featureUMAP.png")
 ```{r plotUMAPsHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("Example_UTR5_GC_featureUMAP.pdf"))
 ```
-
+                    
 <a name="enrichmentAnalysis"/>
 
 # Functional enrichment and threshold-independent signature analyses with postNet
 
-In addition to tools for identifying and enumerating sequence features of mRNA and modelling networks of post-transcriptional regulation, postNet can also be used to perform enrichment analyses including implementations of GSEA, GAGE, and GO term analysis to provide functional insights into gene sets of interest. It is also possible to examine the regulation of gene signatures in your dataset in a threshold-independent manner, providing insights into possible mechanisms explaining observed regulation and allowing comparisons between datasets.
+In addition to tools for identifying and enumerating sequence features of mRNA and modelling networks of post-transcriptional regulation, postNet can also be used to perform enrichment analyses including implementations of GSEA, GAGE, and GO term analysis to provide functional insights into gene sets of interest. It is also possible to examine the regulation of gene signatures in your dataset in a threshold-independent manner, providing insights into possible mechanisms explaining observed regulation and allowing comparisons between datasets.  
 
 ## Slope filtering when using an Anota2seqDataSet object
 
 <a name="slopeFiltering"/>
 
-When performing GSEA, GAGE, or GO term analysis using the output of an *anota2seq* analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is because the slopes fitted by the *anota2seq* APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering (or offsetting). Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended. The `slopeFilt` function identifies these genes with unrealistic slopes, allowing them to be removed from downstream analyses. Note that in high-quality datasets few genes will require slope filtering, but filtering thresholds can be adjusted with the `minSlope` and `maxSlope` parameters.
+When performing GSEA, GAGE, or GO term analysis using the output of an *anota2seq* analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is because the slopes fitted by the *anota2seq* APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering (or offsetting). Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended. The `slopeFilt` function identifies these genes with unrealistic slopes, allowing them to be removed from downstream analyses. Note that in high-quality datasets few genes will require slope filtering, but filtering thresholds can be adjusted with the `minSlope` and `maxSlope` parameters. 
 
 ```{r slopeFilt, eval=TRUE, echo=TRUE}
 
@@ -1690,18 +1694,17 @@ When performing GSEA, GAGE, or GO term analysis using the output of an *anota2se
                 
 ```
 
-The output of the `slopeFilt()` function can be directly supplied to downstream enrichment analysis functions using the `genesSlopeFiltOut` parameter.
+The output of the `slopeFilt()` function can be directly supplied to downstream enrichment analysis functions using the `genesSlopeFiltOut` parameter.  
 
 ```{r slopeFiltStr, eval=TRUE, echo=TRUE}
 str(filtOutGenes)
 ```
-
+ 
 ## Performing GSEA with a postNetData object
 
-PostNet performs Gene Set Enrichment Analysis (GSEA) [@Mootha2003; @Subramanian2005], using the `gseaAnalysis()` function and the regulatory effect measurement contained in a `postNetData` object. The analysis implements the [fgsea](https://bioconductor.org/packages/fgsea) package [@Korotkevich2016], and can be applied using gene sets from The Molecular Signatures Database [MSigDB](https://www.gsea-msigdb.org/gsea/index.jsp). Gene expression signatures to be considered in the analysis can be selected from MSigDB using the `collection` and `subcollection` parameters, and specific gene sets can be specified using `subsetNames`. Gene sets can be further refined using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included in each gene set.
+PostNet performs Gene Set Enrichment Analysis (GSEA) [@Mootha2003; @Subramanian2005],  using the `gseaAnalysis()` function and the regulatory effect measurement contained in a `postNetData` object. The analysis implements the [fgsea](https://bioconductor.org/packages/fgsea) package [@Korotkevich2016], and can be applied using gene sets from The Molecular Signatures Database [MSigDB](https://www.gsea-msigdb.org/gsea/index.jsp). Gene expression signatures to be considered in the analysis can be selected from MSigDB using the `collection` and `subcollection` parameters, and specific gene sets can be specified using `subsetNames`. Gene sets can be further refined using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included in each gene set.      
 
-The code below provides an example of how to run GSEA analysis on genes ranked according to log2 fold changes in translation efficiency, using specific gene set terms from the MSigDB. If you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in both the `gseaAnalysis()` and `gseaPlot()` functions.
-
+The code below provides an example of how to run GSEA analysis on genes ranked according to log2 fold changes in translation efficiency, using specific gene set terms from the MSigDB. If you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in both the `gseaAnalysis()` and `gseaPlot()` functions.  
 ```{r GSEAmsigDB, eval=FALSE, echo=TRUE}
 
 # If using a GSEA collection from MSigDB, check the available versions:
@@ -1727,7 +1730,6 @@ The code below provides an example of how to run GSEA analysis on genes ranked a
 ```
 
 In addition to the collections in MSigDB, GSEA can also be run using custom gene sets using the `geneSet` parameter.
-
 ```{r GSEAcustom, eval=TRUE, echo=TRUE}
 
 # Create example custom gene sets for GSEA:
@@ -1742,8 +1744,7 @@ inSet <- list(Set1 = set1, Set2 = set2)
 
 ```
 
-GSEA results can be extracted from the `postNetData` object and plotted using the `ptn_GSEA()` and `gseaPlot` functions.
-
+GSEA results can be extracted from the `postNetData` object and plotted using the `ptn_GSEA()` and `gseaPlot` functions.  
 ```{r GSEAplotting, eval=TRUE, echo=TRUE}
 
 # Extract the significant enrichment results from the postNetData object:
@@ -1776,10 +1777,9 @@ unlink(c("gsea_Set1.pdf","Example_gseaAnalysis.txt"))
 
 Generally Applicable Gene-set Enrichment (GAGE) analysis can also be performed using the regulatory effect measurement contained in a `postNetData` object. The `gageAnalysis()` function implements the [gage](https://bioconductor.org/packages/gage) package [@Luo2009], and can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, as well as with 'KEGG' pathways. These are specified using the `category` parameter. Similarly to GSEA, terms/pathways can be filtered using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included in each term or pathway.
 
-The results of the analysis can be retrieved using the `ptn_GAGE` function. As GAGE uses a two-directional test, the directionality of the results ("greater", "less") can be specified with the `direction` parameter.
-
-The example code below performs GAGE analysis using the "MF" GO term category, and extracts terms that are significantly associated with increased log2 fold changes in translation efficiency. Note that if you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in the `gageAnalysis()` function.
-
+The results of the analysis can be retrieved using the `ptn_GAGE` function. As GAGE uses a two-directional test, the directionality of the results ("greater", "less") can be specified with the `direction` parameter.  
+ 
+The example code below performs GAGE analysis using the "MF" GO term category, and extracts terms that are significantly associated with increased log2 fold changes in translation efficiency. Note that if you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in the `gageAnalysis()` function.   
 ```{r GAGEanalysis, eval=FALSE, echo=TRUE}
 
 # Run GAGE:
@@ -1796,16 +1796,15 @@ The example code below performs GAGE analysis using the "MF" GO term category, a
 
 ## microRNA target enrichment analysis with a postNetData object
 
-Within postNet, GAGE can also be applied to identify enrichments in microRNA (miRNA) targets in regulated gene sets of interest. This is done using the `miRNAanalysis()` function which implements the [gage](10.18129/B9.bioc.gage) package [@Luo2009] and uses miRNA target information from the [TargetScan database](https://www.targetscan.org). Note that this approach does not identify or predict miRNA binding sites in mRNA sequences, but rather assesses whether gene sets of interest may be regulated by particular miRNAs.
+Within postNet, GAGE can also be applied to identify enrichments in microRNA (miRNA) targets in regulated gene sets of interest. This is done using the `miRNAanalysis()` function which implements the [gage](10.18129/B9.bioc.gage) package [@Luo2009] and uses miRNA target information from the [TargetScan database](https://www.targetscan.org). Note that this approach does not identify or predict miRNA binding sites in mRNA sequences, but rather assesses whether gene sets of interest may be regulated by particular miRNAs. 
 
-To perform the analysis, it is necessary to download a miRNA target prediction file from the [TargetScan database](https://www.targetscan.org). This file must contain the headings 'Cumulative weighted context++ score', 'Aggregate PCT', 'Gene Symbol', and 'Representative miRNA'. Importantly, predictions for multiple species are contained within the file, so it is essential to subset to retain information for only the desired species prior to running the analysis. Once downloaded and subset, this file is supplied using the `miRNATargetScanFile` parameter.
+To perform the analysis, it is necessary to download a miRNA target prediction file from the [TargetScan database](https://www.targetscan.org). This file must contain the headings 'Cumulative weighted context++ score', 'Aggregate PCT', 'Gene Symbol', and 'Representative miRNA'. Importantly, predictions for multiple species are contained within the file, so it is essential to subset to retain information for only the desired species prior to running the analysis. Once downloaded and subset, this file is supplied using the `miRNATargetScanFile` parameter.    
 
-Prior to running GAGE analysis, miRNA-mRNA targeting predictions should be filtered to retain high-confidence predictions, or adjusted depending on the biological question. This filtering is performed by specifying thresholds in the cumulative weighted context++ score (CWCS) using the `contextScore` parameter, and/or the Aggregate PCT using the `Pct` parameter. The CWCS provides a measure of the efficacy of predicted miRNA targeting, where larger negative values indicate more repression in response to a miRNA [@Agarwal2015; @Grimson2007]. This metric is useful as it captures all types of interactions and can be used in cases where miRNAs are not highly conserved across species. The Aggregate PCT is a measurement of how well conserved the predicted miRNA-mRNA targeting is across species [Agarwal et al., 2015, Friedman et al., 2009]. Values closer to 1 indicate a greater probability of evolutionary conservation due to maintenance of miRNA targeting (i.e., biological function). Depending on the biological question, filtering can be performed on one or both of these metrics (see the TargetScan [FAQ](https://www.targetscan.org/faqs.html) for further details regarding target prediction).
+Prior to running GAGE analysis, miRNA-mRNA targeting predictions should be filtered to retain high-confidence predictions, or adjusted depending on the biological question. This filtering is performed by specifying thresholds in the cumulative weighted context++ score (CWCS) using the `contextScore` parameter, and/or the Aggregate PCT using the `Pct` parameter. The CWCS provides a measure of the efficacy of predicted miRNA targeting, where larger negative values indicate more repression in response to a miRNA [@Agarwal2015; @Grimson2007]. This metric is useful as it captures all types of interactions and can be used in cases where miRNAs are not highly conserved across species. The Aggregate PCT is a measurement of how well conserved the predicted miRNA-mRNA targeting is across species [Agarwal et al., 2015, Friedman et al., 2009]. Values closer to 1 indicate a greater probability of evolutionary conservation due to maintenance of miRNA targeting (i.e., biological function). Depending on the biological question, filtering can be performed on one or both of these metrics (see the TargetScan [FAQ](https://www.targetscan.org/faqs.html) for further details regarding target prediction).   
 
 After the appropriate filtering has been applied, GAGE is implemented to identify enrichments in miRNAs predicted to target genes in gene sets of interest based on rankings (genes are ranked by the regulatory effect measurement). Similarly to GSEA and GAGE analyses, sets of miRNA target predictions can be filtered using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included.
 
-The example code below performs GAGE miRNA target enrichment analysis using human mRNA-miRNA target predictions. Target predictions are filtered according to both the CWCS and the Aggregate PCT in this example, but these may vary depending on what the user is interested in. Note that if you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in the `miRNAanalysis()` function.
-
+The example code below performs GAGE miRNA target enrichment analysis using human mRNA-miRNA target predictions. Target predictions are filtered according to both the CWCS and the Aggregate PCT in this example, but these may vary depending on what the user is interested in. Note that if you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in the `miRNAanalysis()` function.   
 ```{r miRNAanalysis, eval=FALSE, echo=TRUE}
 
 # An example of the required format for the input for miRNATargetScanFile parameter ("miRNA_predictions_hsa.txt"):
@@ -1826,12 +1825,11 @@ The example code below performs GAGE miRNA target enrichment analysis using huma
 
 ```
 
-After running the analysis, the results can be retrieved using either the `ptn_miRNA_analysis`, or `ptn_miRNA_to_gene` functions.
+After running the analysis, the results can be retrieved using either the `ptn_miRNA_analysis`, or `ptn_miRNA_to_gene` functions. 
 
-The `ptn_miRNA_analysis` function will return the results of the GAGE analysis. When interpreting the results, note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear in the results table labelled "greater" can be interpreted as those miRNA that may be downregulated or otherwise not active in the experimental condition. Likewise, enrichments in miRNA predicted to target genes that are downregulated that appear in the results table labelled "less" can be interpreted as those miRNA that may be upregulated or active in the experimental condition.
+The `ptn_miRNA_analysis` function will return the results of the GAGE analysis. When interpreting the results, note that enrichments in miRNA predicted to target genes that are upregulated (e.g., if the regulatory effect measurement is log2 fold change) that appear in the results table labelled "greater" can be interpreted as those miRNA that may be downregulated or otherwise not active in the experimental condition. Likewise, enrichments in miRNA predicted to target genes that are downregulated that appear in the results table labelled "less" can be interpreted as those miRNA that may be upregulated or active in the experimental condition.  
 
-The `ptn_miRNA_to_gene` function will return the lists of genes that are predicted to be targeted by the miRNA passing the filtering threshold set by `contextScore` and `Pct` parameters. These may be desirable if you plan to include specific miRNA in modelling analyses using the `featureIntegration()` function. These gene lists can be converted to signatures using the `signCalc()` function and be included as features in the models.
-
+The `ptn_miRNA_to_gene` function will return the lists of genes that are predicted to be targeted by the miRNA passing the filtering threshold set by `contextScore` and `Pct` parameters. These may be desirable if you plan to include specific miRNA in modelling analyses using the `featureIntegration()` function. These gene lists can be converted to signatures using the `signCalc()` function and be included as features in the models. 
 ```{r miRNAanalysisResults, eval=FALSE, echo=TRUE}
 
 # Extract the significant miRNA target enrichment results from the postNetData object:
@@ -1847,12 +1845,12 @@ The `ptn_miRNA_to_gene` function will return the lists of genes that are predict
  
 ```
 
+
 ## GO term analysis with a postNetData object
 
-Gene Ontology (GO) term enrichment analysis can also be performed using the gene lists of interest in a `postNetData` object. The `goAnalysis()` function implements [clusterProfiler](https://bioconductor.org/packages/clusterProfiler) [@Xu2024], and similarly to GAGE analysis can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, and with 'KEGG' pathways specified using the `category` parameter, with optional filtering using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included. In addition, enriched terms can be filtered according to FDR threshold, and for the number of genes in the gene sets of interest that are included in the term using the `FDR` and `counts` parameters, respectively.
+Gene Ontology (GO) term enrichment analysis can also be performed using the gene lists of interest in a `postNetData` object. The `goAnalysis()` function implements [clusterProfiler](https://bioconductor.org/packages/clusterProfiler) [@Xu2024], and similarly to GAGE analysis can be used with the Biological Process "BP", Molecular Function "MF", or Cellular Component "CC" Gene Ontology categories, and with 'KEGG' pathways specified using the `category` parameter, with optional filtering using the `maxSize` and `minSize` parameters to set upper and lower thresholds for the number of genes included. In addition, enriched terms can be filtered according to FDR threshold, and for the number of genes in the gene sets of interest that are included in the term using the `FDR` and `counts` parameters, respectively.  
 
-The example code below performs GO term enrichment analysis using the "BP" GO term category, and "KEGG" pathways. Note that if you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in the `goAnalysis()` function.
-
+The example code below performs GO term enrichment analysis using the "BP" GO term category, and "KEGG" pathways. Note that if you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in the `goAnalysis()` function.  
 ```{r GOanalysis, eval=TRUE, echo=TRUE}
 
 # Run GO term analysis using a postNetData object:
@@ -1862,8 +1860,7 @@ The example code below performs GO term enrichment analysis using the "BP" GO te
 
 ```
 
-The results of the analysis can be retrieved using the `ptn_GO` function and visualized using the `goDotplot()` function. The `pool` parameter of the `goDotplot` function controls if separate plots will be generated for each gene list of interest, or whether results for all gene lists will be pooled into a single plot. It is also possible to specify which terms will be plotted using the `termSel` parameter. Finally, the metric used to determine the size of the dot for each enriched term can be controlled using the `size` parameter to reflect either the number of genes that were included in the enriched term, or the ratio of genes included to total number of genes in the term.
-
+The results of the analysis can be retrieved using the `ptn_GO` function and visualized using the `goDotplot()` function. The `pool` parameter of the `goDotplot` function controls if separate plots will be generated for each gene list of interest, or whether results for all gene lists will be pooled into a single plot. It is also possible to specify which terms will be plotted using the `termSel` parameter. Finally, the metric used to determine the size of the dot for each enriched term can be controlled using the `size` parameter to reflect either the number of genes that were included in the enriched term, or the ratio of genes included to total number of genes in the term.     
 ```{r GOplotting, eval=TRUE, echo=TRUE}
 
 # Extract the significant enrichment results for Biological Process:
@@ -1911,8 +1908,7 @@ Several gene signatures relevant to post-transcriptional regulation are included
 
 When starting from custom gene lists and regulatory effect measurement the regulation of gene signatures can be assessed using the `plotSignatures` function. All signatures supplied to the `signatureList` parameter will be included on the same plot, where the background gene set is indicated in grey.
 
-The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by mTOR signalling.
-
+The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by mTOR signalling. 
 ```{r plotSignatures, eval=TRUE, echo=TRUE, message = FALSE, results = 'hide'}
 
 # load human signature data:
@@ -1949,10 +1945,9 @@ unlink(c("mTORsignatures_data_Example_signature_mTOR_sensitive_translation.pdf")
 
 ### Assessing gene signature regulation from the *anota2seq* object workflow
 
-When starting from the results of an *anota2seq* analysis, gene signatures can be assessed using the `plotSignatures_ads` function. The key difference from the custom gene list workflow is that instead of providing the `postNetData` object, the `anota2seqDataSet` object (the `ads` parameter) must be provided instead. Four eCDFs will be generated examining the distribution of log2 fold changes in total mRNA, polysome-associated mRNA (or ribosome-protected fragments; RPFs), translation, and buffering (also known as offsetting) for each gene signature provided. In addition to eCDFs, a scatter plot of total mRNA versus polysome-associated mRNA will also be generated, with the genes corresponding to the signatures provided coloured.
+When starting from the results of an *anota2seq* analysis, gene signatures can be assessed using the `plotSignatures_ads` function. The key difference from the custom gene list workflow is that instead of providing the `postNetData` object, the `anota2seqDataSet` object (the `ads` parameter) must be provided instead. Four eCDFs will be generated examining the distribution of log2 fold changes in total mRNA, polysome-associated mRNA (or ribosome-protected fragments; RPFs), translation, and buffering (also known as offsetting) for each gene signature provided. In addition to eCDFs, a scatter plot of total mRNA versus polysome-associated mRNA will also be generated, with the genes corresponding to the signatures provided coloured. 
 
-The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by activation of the integrated stress response with thapsigargin. Note that a very minimal example dataset was used to illustrate the *anota2seq* workflow, so very few genes are present in the outputs.
-
+The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by activation of the integrated stress response with thapsigargin. Note that a very minimal example dataset was used to illustrate the *anota2seq* workflow, so very few genes are present in the outputs.   
 ```{r plotSignaturesAds, eval=TRUE, echo=TRUE, results='hide', warning = FALSE}
 
 # Examine the regulation of ISR-sensitive transcripts in the results of an anota2seq analysis:
@@ -1992,8 +1987,7 @@ unlink(c("Example_ISRsignatures_data_Osmosis_1h_signature_ISR_activated.pdf"))
 
 Finally, it is also possible to generate a heatmap comparing the regulation of multiple gene signatures in your dataset of interest using the `signaturesHeatmap` function. The values displayed in the heatmap are specified using the `unit` parameter, and can either be based on significance or the magnitude of the regulation for each given gene signature. For significance, the values displayed in the heatmap are obtained from a two-sided Wilcoxon Rank Sum test comparing the regulatory effect measurement values for the gene signature of interest against the background. P-values are corrected for multiple testing using the Benjamini & Hochberg method, and the -log10(FDR) value is multiplied by either 1 or -1 corresponding to up- or down-regulation of the gene signature compared to background, respectively. For magnitude, the values displayed in the heatmap are obtained by taking the difference between the eCDFs of the regulatory effect measurements for the gene signature and the background, at the percentile specified.
 
-The example code below will examine the regulation of all gene signatures included with the package, based on the significance and directionality of the regulation.
-
+The example code below will examine the regulation of all gene signatures included with the package, based on the significance and directionality of the regulation.  
 ```{r plotSignaturesHeatmap, eval=TRUE, echo=TRUE, results='hide'}
 
 # Examine the regulation of all gene signatures:
@@ -2036,7 +2030,8 @@ Bailey, T. L., Johnson, J., Grant, C. E., & Noble, W. S. (2015). The MEME Suite.
 
 Bailey T. L. (2021). STREME: accurate and versatile sequence motif discovery. Bioinformatics (Oxford, England), 37(18), 2834–2840. DOI: 10.1093/bioinformatics/btab203.
 
-Nystrom SL, McKay DJ (2021) Memes: A motif analysis environment in R using tools from the MEME Suite. PLoS Comput Biol 17(9): e1008991. DOI: 10.1371/journal.pcbi.1008991.
+Nystrom SL, McKay DJ (2021) Memes: A motif analysis environment in R using tools from
+the MEME Suite. PLoS Comput Biol 17(9): e1008991. DOI: 10.1371/journal.pcbi.1008991.
 
 If you use the `G4` option with the `contentMotifs()` function in your work, please also cite:
 
@@ -2044,21 +2039,22 @@ Hon, J., Martínek, T., Zendulka, J., & Lexa, M. (2017). pqsfinder: an exhaustiv
 
 If you use the Random Forest implementation of the `featureIntegration()` function in your work, please cite:
 
-Kursa, Miron B., and Witold R. Rudnicki. 2010. “Feature Selection with the Boruta Package.” Journal of Statistical Software 36 (11): 1–13. <https://doi.org/10.18637/jss.v036.i11>.
+Kursa, Miron B., and Witold R. Rudnicki. 2010. “Feature Selection with the Boruta Package.” Journal of Statistical Software 36 (11): 1–13. https://doi.org/10.18637/jss.v036.i11.
 
-Sing, T., Sander, O., Beerenwinkel, N., & Lengauer, T. (2005). ROCR: visualizing classifier performance in R. Bioinformatics (Oxford, England), 21(20), 3940–3941. <https://doi.org/10.1093/bioinformatics/bti623>.
+Sing, T., Sander, O., Beerenwinkel, N., & Lengauer, T. (2005). ROCR: visualizing classifier performance in R. Bioinformatics (Oxford, England), 21(20), 3940–3941. https://doi.org/10.1093/bioinformatics/bti623.
 
 If you use the `gseaAnalysis()` function in your work, please also cite:
 
-Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment analysis.” bioRxiv. <doi:10.1101/060012>, <http://biorxiv.org/content/early/2016/06/20/060012>.
+Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment analysis.” bioRxiv. doi:10.1101/060012, http://biorxiv.org/content/early/2016/06/20/060012.
 
-If you use the `gageAnalysis()` function in your work, please also cite:
+If you use the `gageAnalysis()` function in your work, please also cite:  
 
 Luo, Weijun, Friedman, Michael, Shedden, Kerby, Hankenson, Kurt, Woolf, Peter (2009). “GAGE: generally applicable gene set enrichment for pathway analysis.” BMC Bioinformatics, 10, 161.
 
 If you use the `goAnalysis()` function in your work, please also cite:
 
-Xu S, Hu E, Cai Y, Xie Z, Luo X, Zhan L, Tang W, Wang Q, Liu B, Wang R, Xie W, Wu T, Xie L, Yu G (2024). “Using clusterProfiler to characterize multiomics data.” Nature Protocols, 19(11), 3292-3320. <doi:10.1038/s41596-024-01020-z>. \# Session info
+Xu S, Hu E, Cai Y, Xie Z, Luo X, Zhan L, Tang W, Wang Q, Liu B, Wang R, Xie W, Wu T, Xie L, Yu G (2024). “Using clusterProfiler to characterize multiomics data.” Nature Protocols, 19(11), 3292-3320. doi:10.1038/s41596-024-01020-z. 
+# Session info
 
 ```{r sessionInfo}
 sessionInfo()
