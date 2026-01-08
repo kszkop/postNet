@@ -118,31 +118,31 @@ len <- lengthAnalysis(ptn = ptn,
 # Convert to PNG
 magick::image_read_pdf("Example_UTR5_boxplot_lengthAnalysis.pdf", density = 300) %>%
   magick::image_resize("3000x") %>%
-  magick::image_write("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
+  magick::image_write("Example_UTR5_boxplot_lengthAnalysis.png")
 
 magick::image_read_pdf("Example_UTR5_GC_content.pdf", density = 300) %>%
   magick::image_resize("3000x") %>%
-  magick::image_write("Figures/Example_UTR5_GC_content.png")
+  magick::image_write("Example_UTR5_GC_content.png")
 
 # Read each image
-img1 <- magick::image_read("Figures/Example_UTR5_boxplot_lengthAnalysis.png")
-img2 <- magick::image_read("Figures/Example_UTR5_GC_content.png")
+img1 <- magick::image_read("Example_UTR5_boxplot_lengthAnalysis.png")
+img2 <- magick::image_read("Example_UTR5_GC_content.png")
 
 # Append them horizontally
 combined <- magick::image_append(c(img1, img2), stack = FALSE)
 
 # Save combined image at high resolution
-magick::image_write(combined, path = "Figures/combined_UTR5_features.png")
+magick::image_write(combined, path = "combined_UTR5_features.png")
 
 ```
 
 ```{r gettingStartedEnumeratePNGS, echo=FALSE, fig.wide = TRUE, fig.cap="Comparisons of 5'UTR length and GC content between mRNAs belonging to regulated gene sets."}
-knitr::include_graphics("Figures/combined_UTR5_features.png")
+knitr::include_graphics("combined_UTR5_features.png")
 
 ```
 
 ```{r gettingStartedhidePlots, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
-unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf","Figures/Example_UTR5_boxplot_lengthAnalysis.png","Figures/Example_UTR5_GC_content.png"))
+unlink(c("Example_UTR5_boxplot_lengthAnalysis.pdf", "Example_UTR5_GC_content.pdf","Example_UTR5_boxplot_lengthAnalysis.png","Example_UTR5_GC_content.png"))
 ```
 
 **Step 3:** Changes in translation efficiency are modelled using the `featureIntegration()` function which performs stepwise regression to identify the collection of features that best explain the observed regulation. In this minimal example, a set of pre-calculated features is used including both *cis*-acting (enumerated mRNA features) and *trans*-acting (signatures of upstream regulatory pathways) factors. 
@@ -188,16 +188,16 @@ ptn <- featureIntegration(ptn = ptn,
 library(magick)
 image_read_pdf("omnibus_lm_translationUp_translationDown_network.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/omnibus_lm_translationUp_translationDown_network.png")
+  image_write("omnibus_lm_translationUp_translationDown_network.png")
 
 image_read_pdf("omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.png")
+  image_write("omnibus_lm_translationUp_translationDown_UTR5_SCSCGS_individually.png")
 
 ```
 
 ```{r gettingStartedFeatureIntNetworkPNG, echo=FALSE, fig.cap="Network plot of the results of the stepwise regression omnibus model."}
-knitr::include_graphics("Figures/omnibus_lm_translationUp_translationDown_network.png")
+knitr::include_graphics("omnibus_lm_translationUp_translationDown_network.png")
 
 ```
 
@@ -228,12 +228,12 @@ ptn <- plotFeaturesMap(ptn,
 library(magick)
 image_read_pdf("Example_UTR5_SCSCGS_featureUMAP.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_UTR5_SCSCGS_featureUMAP.png")
+  image_write("Example_UTR5_SCSCGS_featureUMAP.png")
 
 ```
 
 ```{r gettingStartedPlotFeaturesMapPNG, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) generated based on features identified in the omnibus model (left), with mRNAs containing SCSCGS motifs in the 5´UTR coloured (right)."}
-knitr::include_graphics("Figures/Example_UTR5_SCSCGS_featureUMAP.png")
+knitr::include_graphics("Example_UTR5_SCSCGS_featureUMAP.png")
 
 ```
 
@@ -611,39 +611,39 @@ The example below will compute a list (`len`) of the log2 length for each gene a
 # Convert to PNG
 image_read_pdf("Example_UTR5_ecdf_lengthAnalysis.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_UTR5_ecdf_lengthAnalysis.png")
+  image_write("Example_UTR5_ecdf_lengthAnalysis.png")
 
 image_read_pdf("Example_UTR3_ecdf_lengthAnalysis.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_UTR3_ecdf_lengthAnalysis.png")
+  image_write("Example_UTR3_ecdf_lengthAnalysis.png")
 
 image_read_pdf("Example_CDS_ecdf_lengthAnalysis.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_CDS_ecdf_lengthAnalysis.png")
+  image_write("Example_CDS_ecdf_lengthAnalysis.png")
 
 # Read each image
-img1 <- image_read("Figures/Example_UTR5_ecdf_lengthAnalysis.png")
-img2 <- image_read("Figures/Example_UTR3_ecdf_lengthAnalysis.png")
-img3 <- image_read("Figures/Example_CDS_ecdf_lengthAnalysis.png")
+img1 <- image_read("Example_UTR5_ecdf_lengthAnalysis.png")
+img2 <- image_read("Example_UTR3_ecdf_lengthAnalysis.png")
+img3 <- image_read("Example_CDS_ecdf_lengthAnalysis.png")
 
 # Append them horizontally
 combined <- image_append(c(img1, img2, img3), stack = FALSE)
 
 # Save combined image at high resolution
-image_write(combined, path = "Figures/combined_length.png")
+image_write(combined, path = "combined_length.png")
 
 
 ```
 
 ```{r lengthAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in Log2(Length) of mRNA sequence regions between different gene sets. 5'UTR (left), 3'UTR (middle), CDS (right). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can also be generated as either box plots, or violin plots"}
-knitr::include_graphics("Figures/combined_length.png")
+knitr::include_graphics("combined_length.png")
 
 ```
 
 ```{r lengthAnalysisHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("Example_UTR5_ecdf_lengthAnalysis.pdf", "Example_UTR3_ecdf_lengthAnalysis.pdf", "Example_CDS_ecdf_lengthAnalysis.pdf",
-         "Figures/Example_UTR5_ecdf_lengthAnalysis.png", "Figures/Example_UTR3_ecdf_lengthAnalysis.png",
-         "Figures/Example_CDS_ecdf_lengthAnalysis.png"))
+         "Example_UTR5_ecdf_lengthAnalysis.png", "Example_UTR3_ecdf_lengthAnalysis.png",
+         "Example_CDS_ecdf_lengthAnalysis.png"))
 ```
 
 ## Nucleotide content
@@ -674,39 +674,39 @@ The example below will compute a list (`GC_content`) of the percentage of GC con
 # Convert to PNG
 image_read_pdf("Example_UTR5_GC_content.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_UTR5_GC_content.png")
+  image_write("Example_UTR5_GC_content.png")
 
 image_read_pdf("Example_UTR3_GC_content.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_UTR3_GC_content.png")
+  image_write("Example_UTR3_GC_content.png")
 
 image_read_pdf("Example_CDS_GC_content.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_CDS_GC_content.png")
+  image_write("Example_CDS_GC_content.png")
 
 # Read each image
-img1 <- image_read("Figures/Example_UTR5_GC_content.png")
-img2 <- image_read("Figures/Example_UTR3_GC_content.png")
-img3 <- image_read("Figures/Example_CDS_GC_content.png")
+img1 <- image_read("Example_UTR5_GC_content.png")
+img2 <- image_read("Example_UTR3_GC_content.png")
+img3 <- image_read("Example_CDS_GC_content.png")
 
 # Append them horizontally
 combined <- image_append(c(img1, img2, img3), stack = FALSE)
 
 # Save combined image at high resolution
-image_write(combined, path = "Figures/combined_GC.png")
+image_write(combined, path = "combined_GC.png")
 
 
 ```
 
 ```{r contentAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Violin plots visualizing differences in the percentage of GC content of mRNA sequence regions between different gene sets. 5'UTR (left), 3'UTR (middle), CDS (right). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can also be generated as either box plots, or eCDFs"}
-knitr::include_graphics("Figures/combined_GC.png")
+knitr::include_graphics("combined_GC.png")
 
 ```
 
 ```{r contentAnalysisHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("Example_UTR5_GC_content.pdf", "Example_UTR3_GC_content.pdf", "Example_CDS_GC_content.pdf",
-         "Figures/Example_UTR5_GC_content.png", "Figures/Example_UTR3_GC_content.png",
-         "Figures/Example_CDS_GC_content.png"))
+         "Example_UTR5_GC_content.png", "Example_UTR3_GC_content.png",
+         "Example_CDS_GC_content.png"))
 ```
 
 In addition to calculating the percentage of GC content for each gene and sequence region (as above), the code below will return the GC content at the third codon position (GC3) for the coding sequence.  
@@ -787,12 +787,12 @@ The example below will compute a list (`FE`) of the folding energies for 5'UTR r
 # Convert to PNG
 image_read_pdf("Example_UTR5_boxplot_foldEnergyAnalysis.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_UTR5_boxplot_foldEnergyAnalysis.png")
+  image_write("Example_UTR5_boxplot_foldEnergyAnalysis.png")
 
 ```
 
 ```{r foldingEnergyPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Box plots visualizing differences in the folding energy of mRNA 5'UTRs between different gene sets. Statistical comparisons are made between translationally activated (light red), suppressed (dark red), and background (grey) gene sets. Visualizations can also be generated as either violin plots, or eCDFs"}
-knitr::include_graphics("Figures/Example_UTR5_boxplot_foldEnergyAnalysis.png")
+knitr::include_graphics("Example_UTR5_boxplot_foldEnergyAnalysis.png")
 
 ```
 
@@ -864,12 +864,12 @@ The example below will compute a list (`uORFs`) of the number of uORFs with cano
 # Convert to PNG
 image_read_pdf("Example_uORFs_strong.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_uORFs_strong.png")
+  image_write("Example_uORFs_strong.png")
 
 ```
 
 ```{r uorfAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Bar plot visualizing differences in the proportion of transcripts containing uORFs with canonical start codons in a strong Kozak context between different gene sets. Statistical comparisons are made between translationally activated (blue), and suppressed (red) gene sets."}
-knitr::include_graphics("Figures/Example_uORFs_strong.png")
+knitr::include_graphics("Example_uORFs_strong.png")
 
 ```
 
@@ -956,12 +956,12 @@ UTR5_SCSCGS_num <- contentMotifs(ptn = ptn,
 # Convert to PNG
 image_read_pdf("Example_UTR5_SCSCGS_content.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_UTR5_SCSCGS_content.png")
+  image_write("Example_UTR5_SCSCGS_content.png")
 
 ```
 
 ```{r contentMotifsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in the presence of the SCSCGS motif in the 5'UTR of different gene sets. Statistical comparisons are made between translationally activated (blue) and suppressed (red) gene sets. Background genes are shown in grey."}
-knitr::include_graphics("Figures/Example_UTR5_SCSCGS_content.png")
+knitr::include_graphics("Example_UTR5_SCSCGS_content.png")
 
 ```
 
@@ -1000,32 +1000,32 @@ In addition to the summary table, the example code above also generates plots co
 # Convert to PNG
 image_read_pdf("codon_translationUp_translationDown_codonUsage.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/codon_translationUp_translationDown_codonUsage.png")
+  image_write("codon_translationUp_translationDown_codonUsage.png")
 
 image_read_pdf("codon_translationUp_translationDown_averageFreq.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/codon_translationUp_translationDown_averageFreq.png")
+  image_write("codon_translationUp_translationDown_averageFreq.png")
 
 # Read each image
-img1 <- image_read("Figures/codon_translationUp_translationDown_codonUsage.png")
-img2 <- image_read("Figures/codon_translationUp_translationDown_averageFreq.png")
+img1 <- image_read("codon_translationUp_translationDown_codonUsage.png")
+img2 <- image_read("codon_translationUp_translationDown_averageFreq.png")
 
 # Append them horizontally
 combined <- image_append(c(img1, img2), stack = FALSE)
 
 # Save combined image at high resolution
-image_write(combined, path = "Figures/combined_codon_plots.png")
+image_write(combined, path = "combined_codon_plots.png")
 
 ```
 
 ```{r codonUsagePlotsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Scatter plots comparing average codon usage and frequency between gene sets of interest. Codons encoding the same amino acid are coloured and connected by lines."}
-knitr::include_graphics("Figures/combined_codon_plots.png")
+knitr::include_graphics("combined_codon_plots.png")
 
 ```
 
 ```{r codonUsagePlotsHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("codon_translationUp_translationDown_codonUsage.pdf", "codon_translationUp_translationDown_averageFreq.pdf",
-         "Figures/codon_translationUp_translationDown_codonUsage.png", "Figures/codon_translationUp_translationDown_averageFreq.png"))
+         "codon_translationUp_translationDown_codonUsage.png", "codon_translationUp_translationDown_averageFreq.png"))
 ```
 
 ### Codon usage indexes
@@ -1038,37 +1038,37 @@ Below are several examples produced by the example code above.
 # Convert to PNG
 image_read_pdf("codonCAI_index.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/codonCAI_index.png")
+  image_write("codonCAI_index.png")
 
 image_read_pdf("codonCBI_index.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/codonCBI_index.png")
+  image_write("codonCBI_index.png")
 
 image_read_pdf("codonFop_index.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/codonFop_index.png")
+  image_write("codonFop_index.png")
 
 # Read each image
-img1 <- image_read("Figures/codonCAI_index.png")
-img2 <- image_read("Figures/codonCBI_index.png")
-img3 <- image_read("Figures/codonFop_index.png")
+img1 <- image_read("codonCAI_index.png")
+img2 <- image_read("codonCBI_index.png")
+img3 <- image_read("codonFop_index.png")
 
 # Append them horizontally
 combined <- image_append(c(img1, img2, img3), stack = FALSE)
 
 # Save combined image at high resolution
-image_write(combined, path = "Figures/combined_indexes.png")
+image_write(combined, path = "combined_indexes.png")
 
 ```
 
 ```{r codonUsageIndexPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Violin plots of several codon usage indexes calculated by the codonUsage() function. Shown are several examples including CAI (left), CBI (middle), and Fop (right). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can also be generated as either box plots, or eCDFs"}
-knitr::include_graphics("Figures/combined_indexes.png")
+knitr::include_graphics("combined_indexes.png")
 
 ```
 
 ```{r codonUsageIndexHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("codonCAI_index.pdf", "codonCBI_index.pdf", "codonFop_index.pdf","codonL_aa_index.pdf","codontAI_index.pdf",
-         "Figures/codonCAI_index.png", "Figures/codonCBI_index.png","Figures/codonFop_index.png"))
+         "codonCAI_index.png", "codonCBI_index.png","codonFop_index.png"))
 ```
 
 ### Selecting enriched or depleted codons or amino acids
@@ -1101,32 +1101,32 @@ In the example below, enriched and depleted codons will be identified between tr
 # Convert to PNG
 image_read_pdf("codon_translationUp_translationDown_heatmap.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/codon_translationUp_translationDown_heatmap.png")
+  image_write("codon_translationUp_translationDown_heatmap.png")
 
 image_read_pdf("codontranslationUp_translationDowncodon_oddratio_vs_freq.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/codontranslationUp_translationDowncodon_oddratio_vs_freq.png")
+  image_write("codontranslationUp_translationDowncodon_oddratio_vs_freq.png")
 
 # Read each image
-img1 <- image_read("Figures/codon_translationUp_translationDown_heatmap.png")
-img2 <- image_read("Figures/codontranslationUp_translationDowncodon_oddratio_vs_freq.png")
+img1 <- image_read("codon_translationUp_translationDown_heatmap.png")
+img2 <- image_read("codontranslationUp_translationDowncodon_oddratio_vs_freq.png")
 
 # Append them horizontally
 combined <- image_append(c(img1, img2), stack = FALSE)
 
 # Save combined image at high resolution
-image_write(combined, path = "Figures/combined_codonSelection.png")
+image_write(combined, path = "combined_codonSelection.png")
 
 ```
 
 ```{r codonUsageSelectedPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Visualizations of differential codon usage between different gene sets of interest. A clustered heatmap of standardized residuals for each codon from a Chi-square test (left), and a plot of the log2 odds ratio for each codon between translationally activated and suppressed gene sets, vs. the average codon frequency. Those passing thresholds for enrichment or depletion between gene sets are highlighted in red and blue, respectively."}
-knitr::include_graphics("Figures/combined_codonSelection.png")
+knitr::include_graphics("combined_codonSelection.png")
 
 ```
 
 ```{r codonUsageSelectedHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("codon_translationUp_translationDown_heatmap.pdf", "codontranslationUp_translationDowncodon_oddratio_vs_freq.pdf",
-         "Figures/codon_translationUp_translationDown_heatmap.png", "Figures/codontranslationUp_translationDowncodon_oddratio_vs_freq.png"))
+         "codon_translationUp_translationDown_heatmap.png", "codontranslationUp_translationDowncodon_oddratio_vs_freq.png"))
 ```
 
 ### Enumerating selected codons or amino acids 
@@ -1163,32 +1163,32 @@ In the example below, codons identified as enriched or depleted between gene set
 # Convert to PNG
 image_read_pdf("features_Down_codonCalc.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/features_Down_codonCalc.png")
+  image_write("features_Down_codonCalc.png")
 
 image_read_pdf("features_Up_codonCalc.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/features_Up_codonCalc.png")
+  image_write("features_Up_codonCalc.png")
 
 # Read each image
-img1 <- image_read("Figures/features_Up_codonCalc.png")
-img2 <- image_read("Figures/features_Down_codonCalc.png")
+img1 <- image_read("features_Up_codonCalc.png")
+img2 <- image_read("features_Down_codonCalc.png")
 
 # Append them horizontally
 combined <- image_append(c(img1, img2), stack = FALSE)
 
 # Save combined image at high resolution
-image_write(combined, path = "Figures/combined_codonCalc.png")
+image_write(combined, path = "combined_codonCalc.png")
 
 ```
 
 ```{r codonCalcPNG, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in the frequency of enriched (left) and depleted (right) codons between gene sets. Statistical comparisons are made between translationally activated (blue), suppressed (red) gene sets, with background shown in grey. Visualizations can also be generated as either box plots, or violin plots."}
-knitr::include_graphics("Figures/combined_codonCalc.png")
+knitr::include_graphics("combined_codonCalc.png")
 
 ```
 
 ```{r codonCalcHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("features_Down_codonCalc.pdf", "features_Up_codonCalc.pdf",
-         "Figures/features_Down_codonCalc.png", "Figures/features_Up_codonCalc.png"))
+         "features_Down_codonCalc.png", "features_Up_codonCalc.png"))
 ```
 
 <a name="modelling"/>
@@ -1271,7 +1271,7 @@ In phase 1 of the analysis, each candidate feature is evaluated separately in un
 The results of these univariate models are summarized in an output table where for each feature, the *P*-value, and *FDR* are provided, along with the proportion of variance in the regulatory effect measurement that can be explained by that feature.
 
 ```{r univariatePNG, echo=FALSE, fig.wide = TRUE, fig.cap="Output of univariate linear models from featureIntegration."}
-knitr::include_graphics("Figures/univariate_models.png")
+knitr::include_graphics("univariate_models.png")
 ```
 
 The results of the univariate models are used to prioritize the features included in the second phase of stepwise regression modelling. 
@@ -1281,7 +1281,7 @@ The results of the univariate models are used to prioritize the features include
 In phase 2, starting with the feature that best explained changes in the regulatory effect from univariate models (in the example above this would be 5'UTR GC content), forward stepwise regression is performed by adding features to the model in an iterative fashion, keeping covariance assigned to the most influential feature (a rank-based greedy model). In each step, the best performing model (the feature with the strongest association with the regulatory effect) is retained, and features that fail to explain additional variance are discarded. Whether a feature is retained in the model is based on the size of the F-statistic, and a *P*-value below a selected threshold (by default < 0.05). The resulting omnibus model represents the smallest set of features that can explain the greatest proportion of variance in the regulatory effect measurement. This step both ranks features according to their relative importance, and reveals relationships between them.
 
 ```{r stepwisePNG, echo=FALSE, fig.wide = TRUE, fig.cap="Output of stepwise regression summarizing F-values at each step of modelling."}
-knitr::include_graphics("Figures/stepwise_regression.png")
+knitr::include_graphics("stepwise_regression.png")
 ```
 
 In the output table above, the F-statistics are summarized at each step, where features are iteratively added to the model. The table is coloured according to a "traffic-light" system, where cells marked in green indicate features that were significant and included in the final omnibus model. Cells marked in red/purple indicate features that did not improve the ability to explain additional variance in the regulatory effect measurement, and were therefore discarded from the model. For example, after the addition of CDS GC3 in step 2, the set of codons identified as enriched ("Codons_up") is dropped from the model (the F-statistic decreases from more than 204.6 to 1.3) as it is not able to significantly explain additional variance in the regulatory effect. Finally, cells marked in orange indicate a substantial change in the F-statistic for a given feature when another feature is added to the model (an increase or decrease of at least 50\%), indicating a relationship between features. For example, we can see a relationship between the 5'UTR SCSCGS motif and 5'UTR length, as the F-statistic for the motif decreased by ~88.5\% (from 132.5 to 15.2) between steps 3 and 4 when 5'UTR length was added to the model. These relationships can be explored in detail in the resulting network analyses, with correlations, and using UMAP visualizations (all described below). 
@@ -1289,7 +1289,7 @@ In the output table above, the F-statistics are summarized at each step, where f
 The features included in the final omnibus model are summarized in an output table:
 
 ```{r omnibusPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Summary table of features included in the final omnibus and adjusted models after forward stepwise regression."}
-knitr::include_graphics("Figures/omnibus_model.png")
+knitr::include_graphics("omnibus_model.png")
 ```
 
 Here, the total proportion of variance in the regulatory effect that can be explained by features included in the omnibus model is ~45%. The *P*-value for each feature from the stepwise regression model is provided, along with the variance explained. Note that since covariance is assigned to the most influential feature, the proportion of variance explained assigned to 5'UTR GC content is 30.4%, the same as in the univariate analysis. However, CDS GC3 content now explains 6.6% of the variance as opposed to 21.4% in the univariate analysis. This is because of the rank-based greedy nature of the model, as since 5'UTR GC and CDS GC3 content co-vary, this covariance is assigned to the more influential of the two features. This relationship is also apparent when examining the F-value table above, as there was a large decrease in the F-statistic for CDS GC3 between steps 1 and 2 indicating a relationship with 5'UTR GC.     
@@ -1305,7 +1305,7 @@ These adjusted values are useful when evaluating whether particular features ten
 In addition to the "traffic-light" colouring of the F-value table to highlight substantial relationships between features based on changes in F-value, when the `useCorel` parameter is `TRUE`, an additional table of Pearson's correlation coefficients between features will also be displayed. A threshold for the strength of association between features in order for correlation coefficients to be calculated can be provided using the `covarFilt` parameter. This threshold is based on an integer representing the absolute change in F-value. The default value is `20`, but this may not be appropriate for all datasets and research questions and users can adjust this to see more or fewer correlations (this is discussed further below for network visualizations). Note that the orange "traffic-light" highlighting indicating substantial relationships in the F-value table (Figure 14) is independent of the threshold set with `covarFilt`, and will always represent an increase or decrease in F-value of at least 50\%.
 
 ```{r correlationPNG, echo=FALSE, fig.wide = FALSE, fig.cap="Summary table of Pearson's correlation coefficients between features."}
-knitr::include_graphics("Figures/correlations_model.png")
+knitr::include_graphics("correlations_model.png")
 ```
 
 ### Running feature integration with forward stepwise linear regression
@@ -1364,12 +1364,12 @@ The network plot below displays the results of the example in the section above,
 # Convert to PNG
 image_read_pdf("Example_lm_translationUp_translationDown_network.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_lm_translationUp_translationDown_network.png")
+  image_write("Example_lm_translationUp_translationDown_network.png")
 
 ```
 
 ```{r networkPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Network visualization of the results of forward stepwise regression modelling. Nodes represent features that were selected in the omnibus model, with the size proportional to the total variance in the regulatory effect explained by that feature. Edges represent the Pearson correlation coefficient between features. Wider lines indicate stronger positive or negative correlations. Features without a node indicated in pink represent those that were not selected in the omnibus model, but correlate substantially with one or more features that were significant in the model."}
-knitr::include_graphics("Figures/Example_lm_translationUp_translationDown_network.png")
+knitr::include_graphics("Example_lm_translationUp_translationDown_network.png")
 
 ```
 
@@ -1411,12 +1411,12 @@ names(groupColour) <- c("UTR5","CDS", "UTR3","Pathway")
 # Convert to PNG
 image_read_pdf("Example_grouped_lm_translationUp_translationDown_network.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_grouped_lm_translationUp_translationDown_network.png")
+  image_write("Example_grouped_lm_translationUp_translationDown_network.png")
 
 ```
 
 ```{r networkGroupingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Network visualization of the results of forward stepwise regression modelling. Selected features are grouped according to which region of the mRNA they correspond to, as well as upstream regulatory pathways known to alter translation efficiency."}
-knitr::include_graphics("Figures/Example_grouped_lm_translationUp_translationDown_network.png")
+knitr::include_graphics("Example_grouped_lm_translationUp_translationDown_network.png")
 
 ```
 
@@ -1459,12 +1459,12 @@ In the first step, genes are divided into training (70\%) and validation (30\%) 
 # Convert to PNG
 image_read_pdf("Example_randomForest_translationUp_translationDown_featureImportance.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_randomForest_translationUp_translationDown_featureImportance.png")
+  image_write("Example_randomForest_translationUp_translationDown_featureImportance.png")
 
 ```
 
 ```{r featImpPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Boxplots of Z-Scores of Importance from feature selection using Boruta. Features coloured in green indicate retained features. Shadow feature metrics (randomly shuffled attributes) are indicated in blue."}
-knitr::include_graphics("Figures/Example_randomForest_translationUp_translationDown_featureImportance.png")
+knitr::include_graphics("Example_randomForest_translationUp_translationDown_featureImportance.png")
 
 ```
 
@@ -1480,12 +1480,12 @@ After performing feature selection, the Random Forest classification of genes in
 # Convert to PNG
 image_read_pdf("Example_randomForest_translationUp_translationDown_FinalModel.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_randomForest_translationUp_translationDown_FinalModel.png")
+  image_write("Example_randomForest_translationUp_translationDown_FinalModel.png")
 
 ```
 
 ```{r finalRFPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Final modelling results using Random Forest Classification. Left panel: Feature importance (mean decrease accuracy) for selected features included in the final model. Right panel: Receiver Operating Characteristic (ROC) curve for Random Forest classification of translationally activated vs. suppressed genes."}
-knitr::include_graphics("Figures/Example_randomForest_translationUp_translationDown_FinalModel.png")
+knitr::include_graphics("Example_randomForest_translationUp_translationDown_FinalModel.png")
 
 ```
 
@@ -1537,38 +1537,38 @@ Both implementations of `featureIntegration()` output PDF files with scatterplot
 # Convert to PNG
 image_read_pdf("Example_randomForest_translationUp_translationDown_UTR5_GC_individually.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_randomForest_translationUp_translationDown_UTR5_GC_individually.png")
+  image_write("Example_randomForest_translationUp_translationDown_UTR5_GC_individually.png")
 
 image_read_pdf("Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.png")
+  image_write("Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.png")
 
 image_read_pdf("Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.png")
+  image_write("Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.png")
 
 # Read each image
-img1 <- image_read("Figures/Example_randomForest_translationUp_translationDown_UTR5_GC_individually.png")
-img2 <- image_read("Figures/Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.png")
-img3 <- image_read("Figures/Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.png")
+img1 <- image_read("Example_randomForest_translationUp_translationDown_UTR5_GC_individually.png")
+img2 <- image_read("Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.png")
+img3 <- image_read("Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.png")
 
 # Append them horizontally
 combined <- image_append(c(img1, img2, img3), stack = FALSE)
 
 # Save combined image at high resolution
-image_write(combined, path = "Figures/combined_individual.png")
+image_write(combined, path = "combined_individual.png")
 
 ```
 
 ```{r IndFeatPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Individual feature visualizations. Scatterplots of 5'UTR GC content (left), 5'UTR SCSCGS motif content (middle), and signature of genes translationally activated by mTOR (right) versus translation efficiency (effM). Pearson's correlation coefficients, linear trend lines, and cubic smoothing splines indicated."}
-knitr::include_graphics("Figures/combined_individual.png")
+knitr::include_graphics("combined_individual.png")
 
 ```
 
 ```{r IndFeatHide, echo = FALSE, message = FALSE, results = 'hide', eval = TRUE}
 unlink(c("Example_randomForest_translationUp_translationDown_UTR5_GC_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.pdf",
-         "Figures/Example_randomForest_translationUp_translationDown_UTR5_GC_individually.png", "Figures/Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.png",
-         "Figures/Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Figures/Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.png", "Example_randomForest_translationUp_translationDown_CDS_GC3_individually.pdf", "Example_randomForest_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "Example_randomForest_translationUp_translationDown_Down_individually.pdf", "Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transDown_individually.pdf", "Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Example_randomForest_translationUp_translationDown_Guan_etal_2017_Tg1_transDown_individually.pdf", "Example_randomForest_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf", "Example_randomForest_translationUp_translationDown_pred_rocr.pdf", "Example_randomForest_translationUp_translationDown_uORFs_ATG_strong_individually.pdf", "Example_randomForest_translationUp_translationDown_Up_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR3_length_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR5_foldingEnergy_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR5_length_individually.pdf"))
+         "Example_randomForest_translationUp_translationDown_UTR5_GC_individually.png", "Example_randomForest_translationUp_translationDown_UTR5_SCSCGS_individually.png",
+         "Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.png", "Example_randomForest_translationUp_translationDown_CDS_GC3_individually.pdf", "Example_randomForest_translationUp_translationDown_Cockman_etal_2020_classicTOP_individually.pdf", "Example_randomForest_translationUp_translationDown_Down_individually.pdf", "Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transDown_individually.pdf", "Example_randomForest_translationUp_translationDown_Gandin_etal_2016_mTOR_transUp_individually.pdf", "Example_randomForest_translationUp_translationDown_Guan_etal_2017_Tg1_transDown_individually.pdf", "Example_randomForest_translationUp_translationDown_Guan_etal_2017_Tg1_transUp_individually.pdf", "Example_randomForest_translationUp_translationDown_pred_rocr.pdf", "Example_randomForest_translationUp_translationDown_uORFs_ATG_strong_individually.pdf", "Example_randomForest_translationUp_translationDown_Up_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR3_length_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR5_foldingEnergy_individually.pdf", "Example_randomForest_translationUp_translationDown_UTR5_length_individually.pdf"))
 ```
 
 <a name="networkPred"/>
@@ -1610,12 +1610,12 @@ In the example below, the Random Forest model trained in the example above will 
 # Convert to PNG
 image_read_pdf("Example_rocr.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_rocr.png")
+  image_write("Example_rocr.png")
 
 ```
 
 ```{r rfPredPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Receiver Operating Characteristic (ROC) curve for the Random Forest classification model trained in the example above, applied to a new simulated dataset of randomized genes to predict translationally activated vs. suppressed genes."}
-knitr::include_graphics("Figures/Example_rocr.png")
+knitr::include_graphics("Example_rocr.png")
 
 ```
 
@@ -1659,12 +1659,12 @@ ptn <- plotFeaturesMap(ptn = ptn,
 # Convert to PNG
 image_read_pdf("Example_UTR5_GC_featureUMAP.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_UTR5_GC_featureUMAP.png")
+  image_write("Example_UTR5_GC_featureUMAP.png")
 
 ```
 
 ```{r plotUMAPsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) generated based on features identified in the omnibus model using forward stepwise regression (left), with the 5'UTR GC content of mRNAs coloured (right)."}
-knitr::include_graphics("Figures/Example_UTR5_GC_featureUMAP.png")
+knitr::include_graphics("Example_UTR5_GC_featureUMAP.png")
 
 ```
 
@@ -1760,12 +1760,12 @@ GSEA results can be extracted from the `postNetData` object and plotted using th
 # Convert to PNG
 image_read_pdf("gsea_Set1.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/gsea_Set1.png")
+  image_write("gsea_Set1.png")
 
 ```
 
 ```{r GSEAplottingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A plot visualizing GSEA results for the enrichment of the gene Set1 in the example dataset."}
-knitr::include_graphics("Figures/gsea_Set1.png")
+knitr::include_graphics("gsea_Set1.png")
 
 ```
 
@@ -1881,12 +1881,12 @@ The results of the analysis can be retrieved using the `ptn_GO` function and vis
 # Convert to PNG
 image_read_pdf("Example_pooled_GOdotplot_BP.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_pooled_GOdotplot_BP.png")
+  image_write("Example_pooled_GOdotplot_BP.png")
 
 ```
 
 ```{r GOplottingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A dot plot visualizing GO term enrichment analysis results. Dot size corresponds to the ratio of genes included, to the total number of genes in the term."}
-knitr::include_graphics("Figures/Example_pooled_GOdotplot_BP.png")
+knitr::include_graphics("Example_pooled_GOdotplot_BP.png")
 
 ```
 
@@ -1930,12 +1930,12 @@ The example code below will load the set of signatures included with the package
 # Convert to PNG
 image_read_pdf("mTORsignatures_data_Example_signature_mTOR_sensitive_translation.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/mTORsignatures_data_Example_signature_mTOR_sensitive_translation.png")
+  image_write("mTORsignatures_data_Example_signature_mTOR_sensitive_translation.png")
 
 ```
 
 ```{r plotSignaturesPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDF of log2 fold changes in translation efficiency for signatures of mTOR-sensitive translation. Grey curve indicates the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates an increase compared to background, while shift to the left indicates a decrease."}
-knitr::include_graphics("Figures/mTORsignatures_data_Example_signature_mTOR_sensitive_translation.png")
+knitr::include_graphics("mTORsignatures_data_Example_signature_mTOR_sensitive_translation.png")
 
 ```
 
@@ -1970,12 +1970,12 @@ plotSignatures_ads(ads = ads,
 # Convert to PNG
 image_read_pdf("Example_ISRsignatures_data_Osmosis_1h_signature_ISR_activated.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/Example_ISRsignatures_data_Osmosis_1h_signature_ISR.png")
+  image_write("Example_ISRsignatures_data_Osmosis_1h_signature_ISR.png")
 
 ```
 
 ```{r plotSignaturesAdsPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Gene signature analysis starting from an anota2seqDataSet. Scatterplot of total vs. translated mRNA from an example anota2seq analysis with the location of genes belonging to signatures of interest coloured (left panel). Subsequent panels show the eCDFs of log2 fold changes in translation and buffering regulatory modes, as well as for translated and total mRNA for the signatures of interest. Grey curves indicate the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates an increase compared to background, while shift to the left indicates a decrease."}
-knitr::include_graphics("Figures/Example_ISRsignatures_data_Osmosis_1h_signature_ISR.png")
+knitr::include_graphics("Example_ISRsignatures_data_Osmosis_1h_signature_ISR.png")
 
 ```
 
@@ -2003,12 +2003,12 @@ signaturesHeatmap(ptn,
 # Convert to PNG
 image_read_pdf("ExampleSignatures_heatmap.pdf", density = 300) %>%
   image_resize("3000x") %>%
-  image_write("Figures/ExampleSignatures_heatmap.png")
+  image_write("ExampleSignatures_heatmap.png")
 
 ```
 
 ```{r plotSignaturesHeatmapPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="A heatmap of -log10(FDRs) for regulation of various gene signatures in the example dataset. Colours indicate the directionality of regulation."}
-knitr::include_graphics("Figures/ExampleSignatures_heatmap.png")
+knitr::include_graphics("ExampleSignatures_heatmap.png")
 
 ```
 
