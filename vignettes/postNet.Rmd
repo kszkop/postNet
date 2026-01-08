@@ -121,7 +121,7 @@ plot_content <- grDevices::recordPlot()
 
 grDevices::dev.off()
 
-gridExtra::grid.arrange(plot_len, plot_gc, ncol = 2)
+gridExtra::grid.arrange(plot_len, plot_content, ncol = 2)
 ```
 
 
