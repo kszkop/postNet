@@ -127,7 +127,7 @@ Kursa MB., Witold R. Rudnicki. (2010). “Feature Selection with the Boruta Pack
 }
 
 \examples{
-
+\donttest{
 # load and create example data:
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
@@ -154,4 +154,5 @@ Kursa MB., Witold R. Rudnicki. (2010). “Feature Selection with the Boruta Pack
                           analysis_type ="rf",
                           comparisons = list(c(1,2)))
                           
+}
 }
