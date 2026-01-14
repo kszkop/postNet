@@ -1,16 +1,16 @@
 setGeneric(
   "ptn_sequences",
-  function(x, region) standardGeneric("ptn_sequences")
+  function(ptn, region) standardGeneric("ptn_sequences")
 )
 setMethod(
   "ptn_sequences", "postNetData",
-  function(x, region) {
+  function(ptn, region) {
     check_region(region)
-    check_ptn(x)
+    check_ptn(ptn)
     if (length(region) > 1) {
       stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5', or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
-    tmpReg <- slot(x@annot, region)
+    tmpReg <- slot(ptn@annot, region)
     seqOut <- tmpReg@sequences
     return(seqOut)
   }
@@ -18,17 +18,17 @@ setMethod(
 
 setGeneric(
   "ptn_id",
-  function(x, region) standardGeneric("ptn_id")
+  function(ptn, region) standardGeneric("ptn_id")
 )
 setMethod(
   "ptn_id", "postNetData",
-  function(x, region) {
+  function(ptn, region) {
     check_region(region)
-    check_ptn(x)
+    check_ptn(ptn)
     if (length(region) > 1) {
       stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5', or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
-    tmpReg <- slot(x@annot, region)
+    tmpReg <- slot(ptn@annot, region)
     idOut <- tmpReg@id
     return(idOut)
   }
@@ -36,17 +36,17 @@ setMethod(
 
 setGeneric(
   "ptn_geneID",
-  function(x, region) standardGeneric("ptn_geneID")
+  function(ptn, region) standardGeneric("ptn_geneID")
 )
 setMethod(
   "ptn_geneID", "postNetData",
-  function(x, region) {
+  function(ptn, region) {
     check_region(region)
-    check_ptn(x)
+    check_ptn(ptn)
     if (length(region) > 1) {
       stop("The input for 'region' can only be one of: 'UTR3', 'CDS', 'UTR5', or alternatively 'CCDS' if codon analysis was performed using the CCDS annotation.")
     }
-    tmpReg <- slot(x@annot, region)
+    tmpReg <- slot(ptn@annot, region)
     geneIDOut <- tmpReg@geneID
     return(geneIDOut)
   }
@@ -54,97 +54,97 @@ setMethod(
 
 setGeneric(
   "ptn_dataIn",
-  function(x) standardGeneric("ptn_dataIn")
+  function(ptn) standardGeneric("ptn_dataIn")
 )
 setMethod(
   "ptn_dataIn", "postNetData",
-  function(x) {
-    check_ptn(x)
-    x@dataIn
+  function(ptn) {
+    check_ptn(ptn)
+    ptn@dataIn
   }
 )
 
 setGeneric(
   "ptn_geneList",
-  function(x) standardGeneric("ptn_geneList")
+  function(ptn) standardGeneric("ptn_geneList")
 )
 setMethod(
   "ptn_geneList", "postNetData",
-  function(x) {
-    check_ptn(x)
-    x@dataIn@geneList
+  function(ptn) {
+    check_ptn(ptn)
+    ptn@dataIn@geneList
   }
 )
 
 setGeneric(
   "ptn_background",
-  function(x) standardGeneric("ptn_background")
+  function(ptn) standardGeneric("ptn_background")
 )
 setMethod(
   "ptn_background", "postNetData",
-  function(x) {
-    check_ptn(x)
-    x@dataIn@background
+  function(ptn) {
+    check_ptn(ptn)
+    ptn@dataIn@background
   }
 )
 
 setGeneric(
   "ptn_effect",
-  function(x) standardGeneric("ptn_effect")
+  function(ptn) standardGeneric("ptn_effect")
 )
 setMethod(
   "ptn_effect", "postNetData",
-  function(x) {
-    check_ptn(x)
-    x@dataIn@effect
+  function(ptn) {
+    check_ptn(ptn)
+    ptn@dataIn@effect
   }
 )
 
 setGeneric(
   "ptn_colours",
-  function(x) standardGeneric("ptn_colours")
+  function(ptn) standardGeneric("ptn_colours")
 )
 setMethod(
   "ptn_colours", "postNetData",
-  function(x) {
-    check_ptn(x)
-    x@dataIn@colours
+  function(ptn) {
+    check_ptn(ptn)
+    ptn@dataIn@colours
   }
 )
 
 setGeneric(
   "ptn_species",
-  function(x) standardGeneric("ptn_species")
+  function(ptn) standardGeneric("ptn_species")
 )
 setMethod(
   "ptn_species", "postNetData",
-  function(x) {
-    check_ptn(x)
-    x@species
+  function(ptn) {
+    check_ptn(ptn)
+    ptn@species
   }
 )
 
 setGeneric(
   "ptn_version",
-  function(x) standardGeneric("ptn_version")
+  function(ptn) standardGeneric("ptn_version")
 )
 setMethod(
   "ptn_version", "postNetData",
-  function(x) {
-    check_ptn(x)
-    x@version
+  function(ptn) {
+    check_ptn(ptn)
+    ptn@version
   }
 )
 
 setGeneric(
   "ptn_selection",
-  function(x) standardGeneric("ptn_selection")
+  function(ptn) standardGeneric("ptn_selection")
 )
 setMethod(
   "ptn_selection", "postNetData",
-  function(x) {
-    check_ptn(x)
-    x@selection
+  function(ptn) {
+    check_ptn(ptn)
+    ptn@selection
   }
 )
 
@@ -189,14 +189,14 @@ setMethod(
 
 setGeneric(
   "ptn_codonAnalysis",
-  function(x) standardGeneric("ptn_codonAnalysis")
+  function(ptn) standardGeneric("ptn_codonAnalysis")
 )
 setMethod(
   "ptn_codonAnalysis", "postNetData",
-  function(x) {
-    check_ptn(x)
+  function(ptn) {
+    check_ptn(ptn)
 
-    tmpOut <- x@analysis@codons@codonAnalysis
+    tmpOut <- ptn@analysis@codons@codonAnalysis
     out <- s4_to_dataframe(tmpOut)
     return(out)
   }
@@ -204,28 +204,28 @@ setMethod(
 
 setGeneric(
   "ptn_codonSelection",
-  function(x, comparison) standardGeneric("ptn_codonSelection")
+  function(ptn, comparison) standardGeneric("ptn_codonSelection")
 )
 setMethod(
   "ptn_codonSelection", "postNetData",
-  function(x, comparison) {
-    check_ptn(x)
+  function(ptn, comparison) {
+    check_ptn(ptn)
 
-    out <- x@analysis@codons@codonSelection[[comparison]]
+    out <- ptn@analysis@codons@codonSelection[[comparison]]
     return(out)
   }
 )
 
 setGeneric(
   "ptn_features",
-  function(x) standardGeneric("ptn_features")
+  function(ptn) standardGeneric("ptn_features")
 )
 setMethod(
   "ptn_features", "postNetData",
-  function(x) {
-    check_ptn(x)
+  function(ptn) {
+    check_ptn(ptn)
 
-    out <- x@features
+    out <- ptn@features
     return(out)
   }
 )

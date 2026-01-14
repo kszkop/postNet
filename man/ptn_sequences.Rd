@@ -8,11 +8,11 @@
 }
 
 \usage{
-\S4method{ptn_sequences}{postNetData}(x, region)
+\S4method{ptn_sequences}{postNetData}(ptn, region)
 }
 
 \arguments{
-  \item{x}{A \linkS4class{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
 
   \item{region}{The sequence region to be accessed. Can be either: \code{"UTR5"}, \code{"CDS"}, or \code{"UTR3"}.

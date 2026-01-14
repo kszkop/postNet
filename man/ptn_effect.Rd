@@ -8,11 +8,11 @@
 }
 
 \usage{
-\S4method{ptn_effect}{postNetData}(x)
+\S4method{ptn_effect}{postNetData}(ptn)
 }
 
 \arguments{
-  \item{x}{A \linkS4class{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
 }
 

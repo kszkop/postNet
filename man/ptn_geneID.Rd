@@ -6,11 +6,11 @@
 \description{Retrieve the gene IDs for the reference annotation sequences from a \code{postNetData} object. The annotations for the different sequence regions (5'UTR, CDS, 3'UTR, and optionally CCDS) are lists of three character vectors ("id", "geneID", and "sequence"). The \code{ptn_geneID} function retrieves the gene IDs for sequences from the specified mRNA region. 
 }
 \usage{
-\S4method{ptn_geneID}{postNetData}(x, region)
+\S4method{ptn_geneID}{postNetData}(ptn, region)
 }
 
 \arguments{
-  \item{x}{A \linkS4class{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
 
   \item{region}{The sequence region from which to access the transcript IDs. Can be either: \code{"UTR5"}, \code{"CDS"}, or

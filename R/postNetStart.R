@@ -7,7 +7,6 @@ postNetStart <- function(ads = NULL,
                          geneListcolours = NULL,
                          customBg = NULL,
                          effectMeasure = NULL,
-                         selection = "random",
                          source,
                          version = NULL,
                          species = NULL,
@@ -17,11 +16,12 @@ postNetStart <- function(ads = NULL,
                          rna_gbff_file = NULL,
                          rna_fa_file = NULL,
                          genomic_gff_file = NULL,
+                         selection = "random",
+                         setSeed = NULL,
                          adjObj = NULL,
                          region_adj = NULL,
                          excl = FALSE,
-                         keepAll = FALSE,
-                         setSeed = NULL) {
+                         keepAll = FALSE) {
   #
   if (!is.null(ads) && !is.null(geneList)) {
     stop("Please provide either an anota2seq object or a gene list, not both.")

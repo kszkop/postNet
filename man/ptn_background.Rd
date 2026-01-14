@@ -6,11 +6,11 @@
 \description{The \code{background} slot holds a character vector of gene IDs used as the background in statistical comparisons performed in \pkg{postNet} analyses.
 }
 \usage{
-\S4method{ptn_background}{postNetData}(x)
+\S4method{ptn_background}{postNetData}(ptn)
 }
 
 \arguments{
-  \item{x}{A \linkS4class{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
 }
 

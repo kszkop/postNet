@@ -8,11 +8,11 @@
 }
 
 \usage{
-\S4method{ptn_geneList}{postNetData}(x)
+\S4method{ptn_geneList}{postNetData}(ptn)
 }
 
 \arguments{
-  \item{x}{a \code{postNetData} object.
+  \item{ptn}{a \code{postNetData} object.
   }
 }
 
