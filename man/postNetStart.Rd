@@ -330,16 +330,12 @@ annotation file. The \code{customFile} must be tab-delimited, with the headings:
 # easily retrieved with the use of ptn helper functions.
 
 # To extract reference annotation sequences for 5'UTRs from a postNetData object ptn:
- myUTR5seqs <- ptn_sequences(
-    x = ptn,
-    region = "UTR5"
- )
+ myUTR5seqs <- ptn_sequences(ptn,region = "UTR5")
 
  str(myUTR5seqs)
  
 # To extract the RefSeq annotation release version from postNetData object ptn (if using source = "load"):
- myVersion <- ptn_version(
-    x = ptn)
+ myVersion <- ptn_version(ptn)
 
  myVersion
 
