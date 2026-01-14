@@ -1,6 +1,7 @@
 exportPattern("^[^\\.]")
 
 import(dplyr)
+import(postNetParcel)
 importFrom(plyr,ldply)
 importFrom(Biostrings,reverseComplement)
 importFrom(Biostrings,DNAString)
