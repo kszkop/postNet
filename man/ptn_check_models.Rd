@@ -37,10 +37,10 @@ ptn_check_models(ptn, analysis_type)
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
                           pdfName = "omnibus", 
-                          regOnly = T, 
-                          allFeat = F,
+                          regOnly = TRUE, 
+                          allFeat = FALSE,
                           analysis_type = "lm",
-                          covarFilt = 10,
+                          covarFilt = 20,
                           comparisons = list(c(1,2)),
                           NetModelSel = "omnibus")
                           

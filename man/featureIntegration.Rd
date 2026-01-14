@@ -142,7 +142,7 @@ Kursa MB., Witold R. Rudnicki. (2010). “Feature Selection with the Boruta Pack
                           regOnly = TRUE, 
                           allFeat = FALSE,
                           analysis_type = "lm",
-                          covarFilt = 0,
+                          covarFilt = 20,
                           comparisons = list(c(1,2)),
                           NetModelSel = "omnibus")
                           
