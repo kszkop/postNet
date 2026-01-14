@@ -9,11 +9,11 @@ Retrieve the codons or amino acids that were selected as significantly enriched 
 }
 
 \usage{
-\S4method{ptn_codonSelection}{postNetData}(x, comparison)
+\S4method{ptn_codonSelection}{postNetData}(ptn, comparison)
 }
 
 \arguments{
-  \item{x}{A \linkS4class{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
 }
   \item{comparison}{An integer specifying which comparison to select results from. For example, \code{1} would
   select the first comparison specified in the \code{comparisons} parameter of the \link[postNet]{codonUsage} function.

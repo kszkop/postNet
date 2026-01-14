@@ -8,10 +8,10 @@
 }
 
 \usage{
-\S4method{ptn_motifGeneList}{postNetData}(x, region, geneList)
+\S4method{ptn_motifGeneList}{postNetData}(ptn, region, geneList)
 }
 \arguments{
-  \item{x}{A \linkS4class{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
   }
   \item{region}{A string specifying the sequence region of interest. This can be one of \code{"UTR5"},
   \code{"UTR3"}, or \code{"CDS"}.
