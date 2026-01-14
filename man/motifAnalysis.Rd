@@ -50,7 +50,7 @@ motifAnalysis(ptn,
 
 \details{The \code{motifAnalysis} function applies the \link[memes]{runStreme} function from the \link[memes]{memes} package. However, the MEME Suite of software tools must also be installed locally, and the path to the executables must be provided. The MEME Suite can be downloaded here: \url{https://meme-suite.org/meme/doc/download.html}. Installation instructions can be found here: \url{https://meme-suite.org/meme/doc/install.html?man_type=web}. 
 
-Motifs identified using \code{motifAnalysis} can be quantified and included in downstream \link[postNet]{featureIntegration} using the \link[postNet]{contentMotifs} function. Significantly enriched motifs can be extracted using the S4 method \link[postNet]{ptn_motifSelection} function, and \link[universalmotif]{universalmotif} results for each gene set included in \code{geneList} can be retrieved using the \link[postNet]{ptn_motifGeneList} function.   
+Motifs identified using \code{motifAnalysis} can be quantified and included in downstream \link[postNet]{featureIntegration} using the \link[postNet]{contentMotifs} function. Significantly enriched motifs can be extracted using the S4 method \link[postNet]{ptn_motifSelection} function, and \link[universalmotif]{universalmotif} results for each gene set included in \code{geneList} can be retrieved using the \link[postNet]{ptn_motifgeneList} function.   
 
 If you use the \code{motifAnalysis} function in your analysis, please appropriately cite the memes R package, The MEME Suite, and the STREME tool publications provided below. Licensing The MEME Suite is free for non-profit use. However, for-profit users should contact OIC-MEMESuite@ucsd.edu and purchase a license. See \url{http://meme-suite.org/doc/copyright.html} for details}
 
@@ -69,7 +69,7 @@ Nystrom SL, McKay DJ (2021). "Memes: A motif analysis environment in R using too
 \link[universalmotif]{universalmotif} \cr
 \link[postNet]{contentMotifs} \cr
 \link[postNet]{ptn_motifSelection} \cr
-\link[postNet]{ptn_motifGeneList}
+\link[postNet]{ptn_motifgeneList}
 }
 
 \examples{
@@ -97,7 +97,7 @@ Nystrom SL, McKay DJ (2021). "Memes: A motif analysis environment in R using too
  str(myMotifs)
 
 # Extract full motif results from one gene set of interest:                                
-  motifsTransUp <- ptn_motifGeneList(ptn = ptn,
+  motifsTransUp <- ptn_motifgeneList(ptn = ptn,
                                       region = "UTR5",
                                       geneList = "translationUp")
                                 

@@ -43,7 +43,7 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
 \seealso{
 \code{\link[postNet]{featureIntegration}} \cr
 \code{\link[randomForest]{randomForest}} \cr
-\code{\link[ROCR]{ROCR}}
+\code{\link[ROCR]{plot}}
 }
 
 \examples{

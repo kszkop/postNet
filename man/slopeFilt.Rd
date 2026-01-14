@@ -51,7 +51,7 @@ slopeFilt(ads,
 \code{\link[postNet]{gseaPlot}} \cr
 \code{\link[postNet]{gageAnalysis}} \cr
 \code{\link[postNet]{goAnalysis}} \cr
-\code{\link[postNet]{miRNAAnalysis}}
+\code{\link[postNet]{miRNAanalysis}}
 }
 
 \examples{

@@ -28,7 +28,7 @@ Objects of this class are typically created using the constructor function \code
 }
     \item{\code{features}:}{Object of class \code{"dataframeOrNULL"} with a \code{data.frame} containing the features for each gene (e.g., UTR lengths, GC content, codon or motif counts) that were used as input for stepwise regression and/or random forest models during \code{\link[postNet]{featureIntegration}} analysis.
 }
-    \item{\code{analysis}:}{Object of class \code{"postNetAnalysis"} storing the results from analysis functions including \code{codonUsage}, \code{motifAnalysis}, \code{gseaAnalysis}, \code{gageAnalysis}, \code{goAnalysis}, \code{miRNAAnalysis} and \code{featureIntegration}. Structured into nested S4 objects.
+    \item{\code{analysis}:}{Object of class \code{"postNetAnalysis"} storing the results from analysis functions including \code{codonUsage}, \code{motifAnalysis}, \code{gseaAnalysis}, \code{gageAnalysis}, \code{goAnalysis}, \code{miRNAanalysis} and \code{featureIntegration}. Structured into nested S4 objects.
 }
   }
 }
@@ -64,7 +64,7 @@ Objects of this class are typically created using the constructor function \code
 \link[postNet]{postNetStart} \cr
 \link[postNet]{motifAnalysis} \cr
 \link[postNet]{codonUsage} \cr
-\link[postNet]{miRNAAnalysis} \cr
+\link[postNet]{miRNAanalysis} \cr
 \link[postNet]{gseaAnalysis} \cr
 \link[postNet]{gageAnalysis} \cr
 \link[postNet]{goAnalysis} \cr
@@ -87,7 +87,7 @@ Objects of this class are typically created using the constructor function \code
 \link[postNet]{ptn_miRNA_analysis} \cr
 \link[postNet]{ptn_miRNA_to_gene} \cr
 \link[postNet]{ptn_model} \cr
-\link[postNet]{ptn_motifGeneList} \cr
+\link[postNet]{ptn_motifgeneList} \cr
 \link[postNet]{ptn_motifSelection} \cr
 \link[postNet]{ptn_networkGraph} \cr
 \link[postNet]{ptn_selectedFeatures} \cr

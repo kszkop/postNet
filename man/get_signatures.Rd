@@ -139,7 +139,7 @@ Wynshaw-Boris A, Topisirovic I, Larsson O, Hatzoglou M. A Unique ISR Program Det
 \seealso{
 \link[postNet]{plotSignatures} \cr
 \link[postNet]{plotSignatures_ads} \cr
-\link[postNet]{plotSignaturesHeatmap} \cr
+\link[postNet]{signaturesHeatmap} \cr
 \link[postNet]{signCalc}
 }
 
