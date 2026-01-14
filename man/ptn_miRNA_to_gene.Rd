@@ -39,6 +39,7 @@ Luo W., Friedman M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Appl
 }
 
 \examples{
+\dontrun{
 # load example data:
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
@@ -53,5 +54,6 @@ Luo W., Friedman M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Appl
  miRNAtargets <- ptn_miRNA_to_gene(ptn = ptn,
                     miRNAs = c("hsa-miR-138-5p", "hsa-miR-182-5p"))
  str(miRNAtargets)
+}
 }
 
