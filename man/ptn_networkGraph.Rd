@@ -1,4 +1,5 @@
 \name{ptn_networkGraph}
+\alias{ptn_networkGraph}
 \alias{ptn_networkGraph,postNetData-method}
 \title{Accessor for the \code{networkGraph} slot of a \code{postNetData} object
 }
@@ -7,7 +8,7 @@
 }
 
 \usage{
-ptn_networkGraph(ptn, comparison)
+\S4method{ptn_networkGraph}{postNetData}(ptn, comparison)
 }
 
 \arguments{
