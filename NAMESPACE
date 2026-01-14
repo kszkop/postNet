@@ -20,3 +20,5 @@ importFrom("stats", "IQR", "anova", "as.formula", "chisq.test",
                "wilcox.test")
 importFrom("utils", "combn", "download.file", "read.delim",
                "read.table", "tail", "write.table")
+importFrom("GenomicRanges","GRanges")
+importFrom("IRanges","IRanges")
