@@ -10,14 +10,14 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyLoad: true
 Depends: 
-  R (>= 4.4.0)
+  R (>= 4.4.0),
+  postNetParcel (>= 0.99.0)
 Imports:
   dplyr (>= 1.0.7),
   plyr (>= 1.8.9),
   pqsfinder (>= 2.8.0),
   Biostrings (>= 2.60.2),
   data.table (>= 1.14.6),
-  postNetParcel (>= 0.99.0),
   gridExtra (>= 2.3),
   curl (>= 4.3.1),
   seqinr (>= 4.2.8),
