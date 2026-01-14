@@ -1,5 +1,5 @@
 \name{ptn_networkGraph}
-\alias{ptn_networkGraph}
+\alias{ptn_networkGraph,postNetData-method}
 \title{Accessor for the \code{networkGraph} slot of a \code{postNetData} object
 }
 
@@ -11,7 +11,7 @@ ptn_networkGraph(ptn, comparison)
 }
 
 \arguments{
-  \item{x}{A \linkS4class{postNetData} object.
+  \item{ptn}{A \linkS4class{postNetData} object.
 }
   \item{comparison}{An integer specifying which comparison to select results from. For example, \code{1} would
   select the first comparison specified in the \code{comparisons} parameter of the \link[postNet]{featureIntegration} function.
