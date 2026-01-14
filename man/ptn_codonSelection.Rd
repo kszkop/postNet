@@ -9,7 +9,7 @@ Retrieve the codons or amino acids that were selected as significantly enriched 
 }
 
 \usage{
-ptn_codonSelection(x, comparison)
+\S4method{ptn_codonSelection}{postNetData}(x, comparison)
 }
 
 \arguments{
