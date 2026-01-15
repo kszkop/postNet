@@ -40,7 +40,7 @@ goAnalysis(ptn,
 
 Note that if using results from an \pkg{anota2seq} analysis, it is strongly recommended to first apply filtering using the \link[postNet]{slopeFilt} function to exclude genes with unrealistic regression slopes.
 }
-\value{An S4 \link[clusterProfiler]{enrichResult} object is stored in the analysis slot of the \code{postNetData} object for each category of GO terms assessed. In addition, the "results" slot of each \code{enrichResult} object is written to an Excel file. Separate Excel files are created for each \code{category}. 
+\value{An S4 \linkS4class[DOSE]{enrichResult-class} object is stored in the analysis slot of the \code{postNetData} object for each category of GO terms assessed. In addition, the "results" slot of each \code{enrichResult} object is written to an Excel file. Separate Excel files are created for each \code{category}. 
 }
 \references{
 See \link[clusterProfiler]{clusterProfiler} for full details of enrichment analysis implementation in R. \cr
