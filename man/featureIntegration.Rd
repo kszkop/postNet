@@ -80,7 +80,7 @@ The results of all three phases of the stepwise regression modelling are summari
  \itemize{ 
   \item \strong{Pre-modelling and feature selection}: Genes are first divided into training (70\%) and validation (30\%) sets. Modelling is performed and importance is calculated for all features included in the input. Feature selection is then performed using \code{\link[Boruta]{Boruta}} to identify all input features relevant to model performance. 
   
-  \item \strong{Final modelling}: Next, modelling using \code{\link[randomForest]{randomForest}} is repeated using the set of selected features. The performance of the model is assessed using Receiver Operating Characteristic (ROC) curves (implemented with \code{\link[ROCR]{plot}}), and feature importance from the final model is reported as Mean Decrease Accuracy (see \code{\link[randomForest]{importance}} for details), where higher values indicate more important features.   
+  \item \strong{Final modelling}: Next, modelling using \code{\link[randomForest]{randomForest}} is repeated using the set of selected features. The performance of the model is assessed using Receiver Operating Characteristic (ROC) curves (implemented with \code{\link[ROCR]{performance}}), and feature importance from the final model is reported as Mean Decrease Accuracy (see \code{\link[randomForest]{importance}} for details), where higher values indicate more important features.   
   }
 
 \strong{Feature inputs for modelling:} Many different types of features can be included in modelling with \code{featureIntegration}. From the postNet workflow, the outputs of the \code{\link[postNet]{lengthAnalysis}}, \code{\link[postNet]{contentAnalysis}}, \code{\link[postNet]{uorfAnalysis}}, \code{\link[postNet]{foldingEnergyAnalysis}}, \code{\link[postNet]{contentMotifs}}, and \code{\link[postNet]{codonCalc}} functions can be supplied directly as features. Gene signatures, such as those included with the package (see \code{\link[postNet]{humanSignatures}} or \code{\link[postNet]{mouseSignatures}}) can also be converted to feature inputs using the \code{\link[postNet]{signCalc}} function. In addition, custom feature inputs can be supplied depending on the application and research question.
@@ -116,7 +116,7 @@ Kursa MB., Witold R. Rudnicki. (2010). “Feature Selection with the Boruta Pack
 \seealso{
 \code{\link[Boruta]{Boruta}} \cr
 \code{\link[randomForest]{randomForest}} \cr
-\code{\link[ROCR]{plot}} \cr
+\code{\link[ROCR]{performance}} \cr
 \code{\link[postNet]{rfPred}} \cr
 \code{\link[postNet]{plotFeaturesMap}} \cr
 \code{\link[postNet]{ptn_model}} \cr
