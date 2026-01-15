@@ -65,7 +65,7 @@ codonUsage(ptn,
   \item{setSeed}{If \code{selection} is \code{"random"}, provide a single integer value to be used with \code{set.seed} 
   to ensure that the random isoform selection is reproducible between different runs of the \code{postNetStart} function. 
   Any integer can be provided (for example 123), however, the same value must be provided between different analyses for 
-  isoform selection to be reproducible. 
+  isoform selection to be reproducible.}
 }
 
 \details{In the first step of the analysis, for each gene set comparison, a Chi-square test is applied to assess significant differences in codon or AA usage. Then, for codons or AAs passing significance thresholds, the odds ratio for each desired comparison pair is calculated and plotted against the frequency. The codons or AAs of interest with differential usage between gene sets are usually identified as those with a high/low odds ratio and high frequency. Codons or AAs of interest can then be further assessed using the \link[postNet]{codonCalc} function (see example below). 
