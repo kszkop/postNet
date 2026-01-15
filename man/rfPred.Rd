@@ -72,7 +72,11 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
                                                 analysis_type = "rf", 
                                                 comparison = 1))
   
-# Prepare the predictive features. In this case the same list of input features will be used to predict as the new gene lists are taken from the same dataset the model was trained on. However, usually the input for the rfPred function would be taken from a postNetData object from a separate analysis on a distinct dataset.
+# Prepare the predictive features. In this case the same list of input features 
+# will be used to predict as the new gene lists are taken from 
+# the same dataset the model was trained on. However, usually the input 
+# for the rfPred function would be taken from a postNetData object 
+# from a separate analysis on a distinct dataset.
 
  newFeatures <- myFeatures[predFeatureNames] 
  

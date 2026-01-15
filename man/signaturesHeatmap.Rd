@@ -57,7 +57,8 @@ at the percentile specified.
 # load signature data:
  signatures <- get_signatures("human")
  
-# Examine the regulation of various transcripts sensitive to translational regulation by various pathways and factors 
+# Examine the regulation of various transcripts 
+# sensitive to translational regulation by various pathways and factors 
  signaturesHeatmap(ptn,
                   signatureList = signatures,
                   unit = 'FDR',

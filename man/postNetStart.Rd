@@ -334,7 +334,8 @@ annotation file. The \code{customFile} must be tab-delimited, with the headings:
 
  str(myUTR5seqs)
  
-# To extract the RefSeq annotation release version from postNetData object ptn (if using source = "load"):
+# To extract the RefSeq annotation release version 
+# from postNetData object ptn (if using source = "load"):
  myVersion <- ptn_version(ptn)
 
  myVersion

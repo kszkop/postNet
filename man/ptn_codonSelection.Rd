@@ -52,7 +52,8 @@ Retrieve the codons or amino acids that were selected as significantly enriched 
           plotType_index = "violin", 
           pdfName = 'codons')
           
-# Select codons of interest that were significantly enriched or depleted with high frequency, and the highest and lowest odds ratios
+# Select codons of interest that were significantly enriched or depleted 
+# with high frequency, and the highest and lowest odds ratios
  
  codons <- ptn_codonSelection(ptn, comparison = 1)
 }

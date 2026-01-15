@@ -83,7 +83,8 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
 # Example 1: Detect and quantify a given motif within 5'UTRs
 # ------------------------------------------------------------------
 
-# Detect and quantify a given motif within 5'UTRs, and compare between translationUp vs. translationDown genes
+# Detect and quantify a given motif within 5'UTRs, 
+# and compare between translationUp vs. translationDown genes
 
  UTR5_SGCSGCS_num <- contentMotifs(ptn = ptn, 
                                    motifsIn = "SGCSGCS",
@@ -119,7 +120,9 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
                       memePath = "/meme/bin", 
                       region = c("UTR3"))
 
-# Quantify the presence of these motifs in transcripts, and compare between translationUp vs. translationDown genes, adjusting for the length of the sequence.
+# Quantify the presence of these motifs in transcripts, 
+# and compare between  translationUp vs. translationDown genes, 
+# adjusting for the length of the sequence.
  
  UTR3_denovo_motifs <- contentMotifs(ptn = ptn, 
                                      motifsIn = ptn_motifSelection(ptn, region = "UTR3"),
@@ -137,8 +140,8 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
 # Example 3: Detect and quantify potential G-quadruplex-forming sequences
 # ------------------------------------------------------------------
 
-# Quantify the presence of G4 motifs in 5'UTR and CDS, and compare between translationUp vs. translationDown 
-# genes.
+# Quantify the presence of G4 motifs in 5'UTR and CDS, 
+# and compare between translationUp vs. translationDown genes.
  
  G4_UT5_CDS <- contentMotifs(ptn = ptn, 
                              motifsIn = "G4",

@@ -50,8 +50,11 @@ contentAnalysis(ptn,
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
  
-# Calculate the GC of the first 50 nucleotides of the 5'UTR for each gene, and compare between
-# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes:
+# Calculate the GC of the first 50 nucleotides of the 5'UTR for each gene, 
+# and compare between translationUp genes vs. background, 
+# translationDown genes vs. background, 
+# and translationUp vs. translationDown genes:
+
  content_UTR5_first50 <- contentAnalysis(ptn = ptn, 
                            region = c("UTR5"),
                            subregion = 50,

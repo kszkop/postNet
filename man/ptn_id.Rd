@@ -28,7 +28,8 @@ A character vector containing the transcript IDs corresponding to the reference 
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
-# Access the transcript IDs corresponding to the reference 5'UTR sequences from the postNetData object
+# Access the transcript IDs corresponding 
+# to the reference 5'UTR sequences from the postNetData object
   myTransIDs <- ptn_id(ptn, "UTR5")
   str(myTransIDs)
   

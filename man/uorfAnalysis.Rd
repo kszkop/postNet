@@ -63,8 +63,9 @@ plots with statistical comparisons between gene sets of interest when \code{unit
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
-# Identify uORFs with canonical start codons in a strong Kozak context, fully contained within 5'UTRs, 
-# and compare between translationUp vs. translationDown genes:
+# Identify uORFs with canonical start codons in a strong Kozak context, 
+# fully contained within 5'UTRs, and compare between 
+# translationUp vs. translationDown genes:
 
  uORFs <- uorfAnalysis(ptn = ptn,
                       comparisons = list(c(1, 2)),

@@ -56,9 +56,11 @@ plotSignatures(ptn,
 # load signature data:
  signatures <- get_signatures("human")
  
-# Examine the regulation of mTOR-sensitive transcripts in the regulatory effects stored in a postNetData object:
+# Examine the regulation of mTOR-sensitive transcripts 
+# in the regulatory effects stored in a postNetData object:
  plotSignatures(ptn = ptn,
-                signatureList = signatures[c("Gandin_etal_2016_mTOR_transUp", "Gandin_etal_2016_mTOR_transDown")],
+                signatureList = signatures[c("Gandin_etal_2016_mTOR_transUp", 
+                                          "Gandin_etal_2016_mTOR_transDown")],
                 signature_colours = c("red", "blue"), 
                 dataName = "Example_data",
                 generalName = "mTOR_sensitive_translation",

@@ -29,7 +29,8 @@ mRNA region.
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
-# Access the transcript IDs corresponding to the reference coding sequences (CDS) from the postNetData object:
+# Access the transcript IDs corresponding to the 
+# reference coding sequences (CDS) from the postNetData object:
   myGeneIDs <- ptn_geneID(ptn, "CDS")
   str(myGeneIDs)
   

@@ -134,12 +134,14 @@ dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: 
  codonResults <- ptn_codonAnalysis(ptn)  
  str(codonResults)
           
-# Select codons of interest that were significantly enriched or depleted with high frequency, and the highest and lowest odds ratios:
+# Select codons of interest that were significantly enriched 
+# or depleted with high frequency, and the highest and lowest odds ratios:
  
  codons <- ptn_codonSelection(ptn, comparison = 1)
  str(codons)
  
-# Count and plot eCDFs for sets of enriched/depleted codons, and compare between gene sets of interest:
+# Count and plot eCDFs for sets of enriched/depleted codons, 
+# and compare between gene sets of interest:
 
  codonCounts  <- codonCalc(ptn = ptn,
                           analysis = "codon", 

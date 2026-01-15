@@ -41,8 +41,10 @@ lengthAnalysis(ptn,
  data("postNetExample", package = "postNetParcel")
  ptn <- postNetExample$ptn
 
-# Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, and compare lengths between
-# translationUp genes vs. background, translationDown genes vs. background, and translationUp vs. translationDown genes:
+# Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene, 
+# and compare lengths between translationUp genes vs. background, 
+# translationDown genes vs. background, 
+# and translationUp vs. translationDown genes:
  len <- lengthAnalysis(ptn = ptn, 
                       region = c("UTR5","CDS","UTR3"), 
                       comparisons = list(c(0,1),c(0,2),c(1,2)),
