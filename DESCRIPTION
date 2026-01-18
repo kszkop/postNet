@@ -11,7 +11,6 @@ Encoding: UTF-8
 LazyLoad: true
 Depends: 
   R (>= 4.4.0),
-  postNetParcel (>= 0.99.0)
 Imports:
   dplyr (>= 1.0.7),
   plyr (>= 1.8.9),
