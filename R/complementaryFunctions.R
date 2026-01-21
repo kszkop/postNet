@@ -1777,6 +1777,21 @@ get_reference_data <- function(file) {
 }
 
 
+clear_cache <- function(cache_dir = NULL) {
+  if (is.null(cache_dir)) {
+    cache_dir <- tools::R_user_dir("postNet", which = "cache")
+  }
+  
+  bfc <- BiocFileCache::BiocFileCache(cache_dir, ask = FALSE)
+  info <- BiocFileCache::bfcinfo(bfc)
+  
+  if (nrow(info) > 0) {
+    BiocFileCache::bfcremove(bfc, info$rid)
+  }
+  
+  invisible(TRUE)
+}
+
 
 
 
