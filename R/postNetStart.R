@@ -270,11 +270,11 @@ postNetStart <- function(ads = NULL,
     #  version <- version[grep(versionInd, version)]
     #}
     if (species == "human") {
-      outDB <- get_reference_data(file = 'humanDB_refSeq.txt.gz')
+      outDB <- get_reference_data(file = 'humanDB_refSeq_v1.txt.gz')
       #outDB <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), "humanDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
     }
     if (species == "mouse") {
-      outDB <- get_reference_data(file = 'mouseDB_refSeq.txt.gz')
+      outDB <- get_reference_data(file = 'mouseDB_refSeq_v1.txt.gz')
       #outDB <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), "mouseDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
     }
   } else if (source == "custom") {
