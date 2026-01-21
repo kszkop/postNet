@@ -87,11 +87,11 @@ foldingEnergyAnalysis <- function(ptn,
     #
     for (reg in region) {
       if (species == "human") {
-        energyIn <- read.delim(system.file(paste("extdata/foldEnergies/human", version, sep = "/"), paste("humanDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "postNet"), stringsAsFactors = FALSE)
+        energyIn <- read.delim(system.file(paste("extdata/foldEnergies/human/","humanDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "postNet"), stringsAsFactors = FALSE)
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
       if (species == "mouse") {
-        energyIn <- read.delim(system.file(paste("extdata/foldEnergies/mouse", version, sep = "/"), paste("mouseDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "postNet"), stringsAsFactors = FALSE)
+        energyIn <- read.delim(system.file(paste("extdata/foldEnergies/mouse/","mouseDB_", reg, "_foldEnergy", ".txt.gz", sep = ""), package = "postNet"), stringsAsFactors = FALSE)
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
       feOutTmp <- runFE(energyIn = energyIn, ptn = ptn, residFE = residFE)
