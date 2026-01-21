@@ -1772,7 +1772,7 @@ get_reference_data <- function(file) {
 }
 
 
-clear_cache <- function(cache_dir = NULL) {
+clear_postNet_cache <- function(cache_dir = NULL) {
   if (is.null(cache_dir)) {
     cache_dir <- tools::R_user_dir("postNet", which = "cache")
   }

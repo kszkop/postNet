@@ -372,19 +372,12 @@ It is highly recommended to use reference sequence annotations that correspond t
 
 ### Loading in-built reference sequence annotations
 
-By default, `source = "load"` meaning `postNetStart()` will load one of the in-built reference sequence annotations provided with the package. This option is available when `species = "human"` or `"mouse"`, and several versions can be chosen from with the `version` parameter. All in-built annotations are based on different releases of NCBI RefSeq GRCh38 (human) and GRCm39 (mouse) genome assemblies and corresponding transcript annotations.     
+By default, `source = "load"` meaning `postNetStart()` will load one of the in-built reference sequence annotations provided with the package when it is first needed.The data are downloaded from the postNet GitHub releases and stored in a user-specific cache directory managed by BiocFileCache. Once cached, the reference data are reused in subsequent sessions and do not require re-downloading. This option is available when `species = "human"` or `"mouse"`. In-built annotations are based on  NCBI RefSeq GRCh38 (human) and GRCm39 (mouse) genome assemblies and corresponding transcript annotations.The following reference annotation versions are currently available:
 
-It is possible to check which RefSeq release versions have in-built annotations available within the package using the `checkAvailableVersions()` function.
+Human (RefSeq GRCh38): ver_40.202408
+Mouse (RefSeq GRCm39): ver_27.202402
 
-```{r RefSeqCheckVersions, eval=TRUE, echo=TRUE}
-
-# List RefSeq release versions of available annotations in the package
-checkAvailableVersions(species = "human")
-checkAvailableVersions(species = "mouse")
-
-```
-
-A `postNetData` object can then be initialized using the in-built reference sequence annotations, in this case using the RefSeq ver_40.202408 release version for human. Note that if no version is specified, the latest release will be used.
+A `postNetData` object can then be initialized using the in-built reference sequence annotations, in this case using the RefSeq ver_40.202408 release version for human.
 
 ```{r RefSeqLoad, eval=FALSE, echo=TRUE}
 
@@ -975,7 +968,11 @@ PostNet includes functionality for enumerating and comparing codon usage across 
 
 ### Generating a codon and amino acid count and frequency table 
 
-The `codonUsage()` function can be used to enumerate either codon or AA usage, specified with the `analysis` parameter. Analyses can be performed using the coding region of reference sequence annotations stored in the `postNetData` object. Alternatively, coding sequences can be either automatically created from the [NCBI Consensus CDS database](https://www.ncbi.nlm.nih.gov/projects/CCDS/CcdsBrowse.cgi) or loaded using the `annotType` and `sourceSeq` parameters. It is also possible to enumerate multiple codon combinations, for example dicodons, using the `codonN` parameter. Similarly to `contentAnalysis()` and `contentMotifs()`, it is also possible to select more specific sequence [sub-regions](#subregions) for analysis, for example to specifically examine the codon "ramp" downstream of the start codon [@Verma2019].  
+The `codonUsage()` function can be used to enumerate either codon or AA usage, specified with the `analysis` parameter. Analyses can be performed using the coding region of reference sequence annotations stored in the `postNetData` object. Alternatively, coding sequences can be either automatically created from the [NCBI Consensus CDS database](https://www.ncbi.nlm.nih.gov/projects/CCDS/CcdsBrowse.cgi) or loaded using the `annotType` and `sourceSeq` parameters. If loaded, the data are downloaded from the postNet GitHub releases and stored in a user-specific cache directory managed by BiocFileCache. Once cached, the reference data are reused in subsequent sessions and do not require re-downloading. This option is available when `species = "human"` or `"mouse"`.The following reference annotation versions are currently available:
+
+CCDS Release 25 (2022)
+
+It is also possible to enumerate multiple codon combinations, for example dicodons, using the `codonN` parameter. Similarly to `contentAnalysis()` and `contentMotifs()`, it is also possible to select more specific sequence [sub-regions](#subregions) for analysis, for example to specifically examine the codon "ramp" downstream of the start codon [@Verma2019].  
 
 The example below demonstrates an implementation of `codonUsage()` generating a summary table of codon counts and frequencies for all genes. Note that "frequency" corresponds to the number of codons relative to all codons in the gene, while "relative frequency" corresponds to the number of codons relative to all synonymous codons in the gene. This table can then be retrieved using the `ptn_codonAnalysis()` function. In this case, [statistical comparisons](#comparisons) will be performed between translationally activated and suppressed gene sets. 
 ```{r codonUsageTable, eval=TRUE, echo=TRUE}

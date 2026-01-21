@@ -6,8 +6,17 @@
   The \code{postNetStart} function is the first step in a \pkg{postNet} analysis workflow. It retrieves and compiles all necessary inputs and annotations into a \code{postNetData} S4 object, including:
     \itemize{
       \item Reference sequence annotations (5'UTR, CDS, 3'UTR), including in-built, custom, or retrieved directly 
-      from the NCBI RefSeq database. Optionally, UTR sequences can also be adjusted if more precise sequences are 
+      from the NCBI RefSeq database. By default, `source = "load"` meaning `postNetStart()` will load one of the in-built reference sequence annotations provided with the package when it is first needed.
+      The data are downloaded from the postNet GitHub releases and stored in a user-specific cache directory managed by BiocFileCache. Once cached, the reference data are reused in subsequent sessions and do not require re-downloading. 
+      This option is available when `species = "human"` or `"mouse"`. In-built annotations are based on  NCBI RefSeq GRCh38 (human) and GRCm39 (mouse) genome assemblies 
+      and corresponding transcript annotations.The following reference annotation versions are currently available:
+      
+      Human (RefSeq GRCh38): ver_40.202408
+      Mouse (RefSeq GRCm39): ver_27.202402
+
+      Optionally, UTR sequences can also be adjusted if more precise sequences are 
       available (e.g. from CAGE, QuantSeq, etc.)
+      
       \item Gene sets of interest (either from an \pkg{anota2seq} analysis by providing the \code{Anota2seqDataSet}
       object, or using custom gene lists of interest).
       \item A numeric regulation effect measurement (e.g., fold changes in gene expression or translation 
@@ -39,7 +48,6 @@
     ## ----------------------------
     source,
     species = NULL,
-    version = NULL,
     customFile = NULL,
     fastaFile = NULL,
     posFile = NULL,
@@ -96,9 +104,8 @@
   \item{source}{Select the source of the reference sequence annotations. Note that the gene/transcript annotations used in the \code{ads} or \code{geneList} should be the same as those used in the reference sequence annotations. This parameter can be set to:
    \describe{
      \item{\code{"load"}}{(Default) Load a pre-made RefSeq reference sequence annotation of the selected 
-         \code{species} and \code{version} included in \pkg{postNet}. Currently, this option is supported with
-         the \code{species} \code{"human"} and \code{"mouse"}. Available RefSeq versions can be checked using the
-         \code{\link[postNet]{checkAvailableVersions}} function.}
+         \code{species} included in \pkg{postNet}. Currently, this option is supported with
+         the \code{species} \code{"human"} and \code{"mouse"}.}
      \item{\code{"create"}}{Automatically download the most recent version of the RefSeq annotation files 
          from the NCBI database for the selected \code{species} and build a new reference sequence annotation locally.
          Currently, this option is supported with the \code{species} \code{"human"} and \code{"mouse"}.}
@@ -120,9 +127,6 @@
          by the options above, or with annotations other than those in the NCBI RefSeq database. The \code{customFile} provided must be 
          tab-delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq.}
    }
-}
-  \item{version}{If \code{source} is \code{"load"}, specify the RefSeq release version that should be used for the reference sequence annotations. Available versions can be checked using the \code{\link[postNet]{checkAvailableVersions}}
-function. If \code{NULL}, the most recent version is used for the specified \code{species}.
 }
   \item{species}{Select the species of interest. Currently, \code{"human"} and \code{"mouse"} are supported. This parameter is required unless \code{source} is \code{"custom"}.
 }

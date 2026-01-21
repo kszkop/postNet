@@ -9,7 +9,6 @@ postNetStart <- function(ads = NULL,
                          effectMeasure = NULL,
                          source,
                          species = NULL,
-                         version = NULL,
                          customFile = NULL,
                          fastaFile = NULL,
                          posFile = NULL,
@@ -272,10 +271,12 @@ postNetStart <- function(ads = NULL,
     if (species == "human") {
       outDB <- get_reference_data(file = 'humanDB_refSeq.txt.gz')
       #outDB <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), "humanDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
+      version <- 'ver_40.202408'
     }
     if (species == "mouse") {
       outDB <- get_reference_data(file = 'mouseDB_refSeq.txt.gz')
       #outDB <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), "mouseDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
+      version <- 'ver_27.202402'
     }
   } else if (source == "custom") {
     outDB <- read.delim(customFile, stringsAsFactors = FALSE)
