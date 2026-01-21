@@ -6,7 +6,17 @@
   
 ------------------------------------------------------------------------
 
-## Overview
+## Data for Post-transcriptional Network Modeling (postNet)
+
+postNetData provides curated datasets required by the postNet framework for post-transcriptional network modelling. The package includes reference transcript annotations. It is designed as a companion data enabling users to run postNet workflows without additional data preparation.
+
+Refseq versions:
+
+Human: ver_40.202408
+
+Mouse: ver_27.202402
+
+CCDS Release 25 (2022)
 
 ------------------------------------------------------------------------
 
