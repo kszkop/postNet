@@ -227,9 +227,9 @@ codonUsage <- function(ptn,
       stop("Currently, codon usage indexes are only available for 'human' or 'mouse'.")
     }
     if (species == "human") {
-      codind <- read.delim(system.file("extdata/indexes/human/", "IndexesHuman.txt", package = "postNetParcel"))
+      codind <- read.delim(system.file("extdata/indexes/human/", "IndexesHuman.txt", package = "postNet"))
     } else if (species == "mouse") {
-      codind <- read.delim(system.file("extdata/indexes/mouse/", "IndexesMouse.txt", package = "postNetParcel"))
+      codind <- read.delim(system.file("extdata/indexes/mouse/", "IndexesMouse.txt", package = "postNet"))
     } else {
       message("No available codon indexes for ", species)
     }
