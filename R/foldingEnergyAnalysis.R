@@ -78,7 +78,7 @@ foldingEnergyAnalysis <- function(ptn,
     #
     feOut <- list()
     # list existing species
-    currTmp <- list.files(system.file("extdata/foldEnergies/refseq/", package = "postNet"))
+    currTmp <- list.files(system.file("extdata/foldEnergies/", package = "postNet"))
 
     if (!species %in% currTmp) {
       stop("The 'load' option for 'sourceFE' is currently only available for human and mouse. Custom folding energies can be provided by specifying the \
