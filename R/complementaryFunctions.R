@@ -1753,25 +1753,20 @@ get_reference_data <- function(file) {
   
   #
   if (nrow(res) > 0) {
-    return(BiocFileCache::bfcrpath(bfc, rids = res$rid))
+    fileIn <- BiocFileCache::bfcrpath(bfc, rids = res$rid)
+  } else {
+    
+    if (!curl::has_internet()) {
+      stop(
+        "File not found in cache and no internet connection available.\n",
+        "Please connect to the internet once to download the data.",
+        call. = FALSE
+      )
+    }
+  
+    #
+    fileIn <- BiocFileCache::bfcrpath(bfc, rname = file,fpath = url)
   }
-  
-  #
-  if (!curl::has_internet()) {
-    stop(
-      "File not found in cache and no internet connection available.\n",
-      "Please connect to the internet once to download the data.",
-      call. = FALSE
-    )
-  }
-  
-  #
-  fileIn <- BiocFileCache::bfcrpath(
-    bfc,
-    rname = file,
-    fpath = url
-  )
-  
   annotIn <- read.delim(gzfile(fileIn),header = TRUE,stringsAsFactors = FALSE)
   return(annotIn)
 }
