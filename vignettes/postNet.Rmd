@@ -58,7 +58,7 @@ Here, we demonstrate a minimal example of the steps of a standard postNet analys
 library(postNet)
 
 # Load the vignette example data 
-data("postNetVignette", package = "postNetParcel")
+data("postNetVignette", package = "postNet")
 
 ```
 
