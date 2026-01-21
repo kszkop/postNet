@@ -26,7 +26,7 @@ mRNA region.
 \examples{
 
 # load and create example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
 
 # Access the transcript IDs corresponding to the 

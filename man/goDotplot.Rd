@@ -56,7 +56,7 @@ goDotplot(ptn,
 
  \dontrun{
 # load example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
 
 # Run GO term analysis:

@@ -61,7 +61,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 
 \examples{
 # load example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
 # Run GAGE:

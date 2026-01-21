@@ -47,7 +47,7 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
 \examples{
 
 # load and create example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
 # Prepare the list of pre-calculated features to be used in feature integration modelling:

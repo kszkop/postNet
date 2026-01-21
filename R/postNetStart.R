@@ -256,23 +256,26 @@ postNetStart <- function(ads = NULL,
       stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
     }
     # List existing species
-    currTmp <- list.files(system.file("extdata/annotation/refseq", package = "postNetParcel"))
-
+    #currTmp <- list.files(system.file("extdata/annotation/refseq", package = "postNetParcel"))
+    currTmp <- c('human','mouse')
+    
     if (!species %in% currTmp) {
       stop("This option is currently only available for species: 'human' and 'mouse'. Please use the 'custom' and 'customFile' parameters \ to provide annotations for other species.")
     }
 
-    if (is.null(version)) {
-      version <- checkAvailableVersions(species = species)
-      versionInd <- sub("^[^.]*.", "", version)
-      versionInd <- sort(versionInd, decreasing = TRUE)[1]
-      version <- version[grep(versionInd, version)]
-    }
+    #if (is.null(version)) {
+    #  version <- checkAvailableVersions(species = species)
+    #  versionInd <- sub("^[^.]*.", "", version)
+    #  versionInd <- sort(versionInd, decreasing = TRUE)[1]
+    #  version <- version[grep(versionInd, version)]
+    #}
     if (species == "human") {
-      outDB <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), "humanDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
+      outDB <- get_reference_data(file = 'humanDB_refSeq.txt.gz')
+      #outDB <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), "humanDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
     }
     if (species == "mouse") {
-      outDB <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), "mouseDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
+      outDB <- get_reference_data(file = 'mouseDB_refSeq.txt.gz')
+      #outDB <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), "mouseDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
     }
   } else if (source == "custom") {
     outDB <- read.delim(customFile, stringsAsFactors = FALSE)

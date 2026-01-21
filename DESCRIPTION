@@ -55,7 +55,10 @@ Imports:
   graphics,
   methods,
   stats,
-  utils
+  utils,
+  tools,
+  BiocFileCache,
+  curl
 Suggests: 
     knitr,
     rmarkdown,

@@ -140,7 +140,7 @@ Wynshaw-Boris A, Topisirovic I, Larsson O, Hatzoglou M. A Unique ISR Program Det
 
 \examples{
 # Load the mouse signatures 
- mouseSignatures <- postNet::get_signatures("mouse")
+ mouseSignatures <- get_signatures("mouse")
  str(mouseSignatures)
 
 }

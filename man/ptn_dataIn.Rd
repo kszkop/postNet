@@ -44,7 +44,7 @@
 \examples{
 
 # load and create example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
 
 # Access the input data (background, geneList, effect, colours) stored in the postNetData object:

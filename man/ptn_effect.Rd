@@ -22,7 +22,7 @@
 \examples{
 
 # load and create example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
 # Access the regulatory effect measurement stored in the postNetData object:

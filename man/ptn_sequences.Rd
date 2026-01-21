@@ -26,7 +26,7 @@ A character vector containing the reference annotation sequences corresponding t
 \examples{
 
 # load and create example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
 
 # Access the 5'UTR sequences from the postNetData object

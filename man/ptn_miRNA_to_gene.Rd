@@ -41,7 +41,7 @@ Luo W., Friedman M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Appl
 \examples{
 \dontrun{
 # load example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
 
 # Run GAGE miRNA target enrichment analysis:

@@ -223,7 +223,7 @@ annotation file. The \code{customFile} must be tab-delimited, with the headings:
 # -----------------------------------------------------------------------
 
 # load example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  
 # Genes of interest should be provided in a named list.
  myGenes <- postNetExample$geneList

@@ -109,7 +109,8 @@ codonUsage <- function(ptn,
       }
     } else if (sourceSeq == "load") {
       #
-      currTmp <- list.files(system.file("extdata/annotation/ccds", package = "postNet"))
+      #currTmp <- list.files(system.file("extdata/annotation/ccds", package = "postNet"))
+      currTmp <- c('human','mouse')
       #
       if (!species %in% currTmp) {
         stop("This option is currently only available for human and mouse. For analyses on other species or \
@@ -117,10 +118,12 @@ codonUsage <- function(ptn,
              sequences.")
       }
       if (species == "human") {
-        annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/human", sep = "/"), "humanDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE)
+        annotTmp <- get_reference_data(file = 'humanDB_ccds.txt.gz')
+        #annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/human", sep = "/"), "humanDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE)
       }
       if (species == "mouse") {
-        annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/mouse", sep = "/"), "mouseDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE) # }
+        annotTmp <- get_reference_data(file = 'mouseDB_ccds.txt.gz')
+        #annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/mouse", sep = "/"), "mouseDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE) # }
       }
       lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
       annotTmp$lenTmp <- lenTmp

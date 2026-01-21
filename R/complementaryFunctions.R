@@ -1727,11 +1727,56 @@ get_signatures <- function(species) {
     stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
   }
   # List existing species
-  currTmp <- list.files(system.file("extdata/signatures", package = "postNetParcel"))
+  currTmp <- list.files(system.file("extdata/signatures", package = "postNet"))
 
   if (!species %in% currTmp) {
     stop("This option is currently only available for species 'human' and 'mouse'. Please use the options 'custom' and 'customFile' in the postNetStart() function to provide annotations for other species.")
   }
 
-  signatures <- readRDS(system.file(paste("extdata/signatures", species, sep = "/"), paste(species, "Signatures.rds", sep = ""), package = "postNetParcel"))
+  signatures <- readRDS(system.file(paste("extdata/signatures", species, sep = "/"), paste(species, "Signatures.rds", sep = ""), package = "postNet"))
 }
+
+#
+get_reference_data <- function(file) {
+  #
+  cache_dir <- tools::R_user_dir("postNet", which = "cache")
+  bfc <- BiocFileCache::BiocFileCache(cache_dir, ask = FALSE)
+  
+  #
+  url <- paste0(
+    "https://github.com/kszkop/postNetData/releases/download/release_1/",
+    file
+  )
+  
+  #
+  res <- BiocFileCache::bfcquery(bfc, query = file, field = "rname")
+  
+  #
+  if (nrow(res) > 0) {
+    return(BiocFileCache::bfcrpath(bfc, rids = res$rid))
+  }
+  
+  #
+  if (!curl::has_internet()) {
+    stop(
+      "File not found in cache and no internet connection available.\n",
+      "Please connect to the internet once to download the data.",
+      call. = FALSE
+    )
+  }
+  
+  #
+  fileIn <- BiocFileCache::bfcrpath(
+    bfc,
+    rname = file,
+    fpath = url
+  )
+  
+  annotIn <- read.delim(gzfile(fileIn),header = TRUE,stringsAsFactors = FALSE)
+  return(annotIn)
+}
+
+
+
+
+

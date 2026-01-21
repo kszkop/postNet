@@ -58,7 +58,7 @@ The \code{plotFeaturesMap} function also returns an updated \code{postNetData} o
 \examples{
 
 # load and create example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
 # Prepare the list of pre-calculated features to be used in feature integration modelling 

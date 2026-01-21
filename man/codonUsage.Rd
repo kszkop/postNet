@@ -106,7 +106,7 @@ dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: 
 
 \examples{
 # load example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
 # Run codon usage analysis of single codons:

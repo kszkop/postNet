@@ -22,7 +22,7 @@
 \examples{
 
 # load and create example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
 
 # Access species of origin for the RefSeq annotation used to create the reference sequences

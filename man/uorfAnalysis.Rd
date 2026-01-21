@@ -60,7 +60,7 @@ plots with statistical comparisons between gene sets of interest when \code{unit
 
 \examples{
 # load example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
 
 # Identify uORFs with canonical start codons in a strong Kozak context, 

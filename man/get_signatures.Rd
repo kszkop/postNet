@@ -1,6 +1,6 @@
 \name{get_signatures}
 \alias{get_signatures}
-\title{Retrieve gene signatures provided in the postNetParcel}
+\title{Retrieve gene signatures provided in the postNet}
 
 \description{The \code{get_signatures} function retrieves gene signatures of interest provided with the package for the indicated species. 
 }

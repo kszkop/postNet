@@ -59,7 +59,7 @@ M. Zuker. Mfold web server for nucleic acid folding and hybridization prediction
 
 \examples{
 # load example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
 # Compare the folding energy of the 5'UTR for each gene between translationUp genes vs. background, 

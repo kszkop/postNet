@@ -6,7 +6,7 @@
 \description{This object contains example data for testing postNet functions, including lists of post-transcriptionally regulated genes, background gene sets, and log₂ fold changes in translation efficiency between two treatment conditions.
 }
 
-\usage{data(postNetExample, package='postNetParcel')}
+\usage{data(postNetExample, package='postNet')}
 
 \format{
   The format is:
@@ -112,7 +112,7 @@ Data available at GEO: GSE200097.
 }
 
 \examples{
-postNetExample <- data(postNetExample, package='postNetParcel')
+postNetExample <- data(postNetExample, package='postNet')
 str(postNetExample)
 }
 \keyword{datasets}

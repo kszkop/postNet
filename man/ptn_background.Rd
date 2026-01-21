@@ -24,7 +24,7 @@
 \examples{
 
 # load and create example data:
-  data("postNetExample", package = "postNetParcel")
+  data("postNetExample", package = "postNet")
   ptn <- postNetExample$ptn
 
 # Access the set of background genes used in postNet analyses

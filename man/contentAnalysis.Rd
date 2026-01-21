@@ -47,7 +47,7 @@ contentAnalysis(ptn,
 
 \examples{
 # load example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
 # Calculate the GC of the first 50 nucleotides of the 5'UTR for each gene, 

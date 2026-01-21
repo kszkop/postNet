@@ -6,7 +6,7 @@
 \description{This object contains example data to run a postNet analysis, including lists of post-transcriptionally regulated and background genes, and log2 fold changes in translation efficiency between two treatment conditions.
 }
 
-\usage{data(postNetVignette, package='postNetParcel')}
+\usage{data(postNetVignette, package='postNet')}
 
 \format{
   The format is:
@@ -78,7 +78,7 @@ Data available at GEO: GSE200097.
 }
 
 \examples{
-postNetVignette <- data(postNetVignette, package='postNetParcel')
+postNetVignette <- data(postNetVignette, package='postNet')
 str(postNetVignette)
 }
 \keyword{datasets}

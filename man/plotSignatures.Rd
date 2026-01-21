@@ -50,7 +50,7 @@ plotSignatures(ptn,
 
 \examples{
 # load example data:
- data("postNetExample", package = "postNetParcel")
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
 # load signature data:
