@@ -118,11 +118,11 @@ codonUsage <- function(ptn,
              sequences.")
       }
       if (species == "human") {
-        annotTmp <- get_reference_data(file = 'humanDB_ccds_v1.txt.gz')
+        annotTmp <- get_reference_data(file = 'humanDB_ccds.txt.gz')
         #annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/human", sep = "/"), "humanDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE)
       }
       if (species == "mouse") {
-        annotTmp <- get_reference_data(file = 'mouseDB_ccds_v1.txt.gz')
+        annotTmp <- get_reference_data(file = 'mouseDB_ccds.txt.gz')
         #annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/mouse", sep = "/"), "mouseDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE) # }
       }
       lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
