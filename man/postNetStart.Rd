@@ -348,7 +348,6 @@ annotation file. The \code{customFile} must be tab-delimited, with the headings:
 
 \seealso{
 \code{\link[anota2seq]{anota2seqRun}} for obtaining the anota2seq \code{ads} object. \cr
-\code{\link[postNet]{checkAvailableVersions}} to see the version numbers of the in-build reference sequence annotations. \cr
 \code{\link[postNet]{featureIntegration}} for requirements of postNet feature integration analysis.
 }
 
