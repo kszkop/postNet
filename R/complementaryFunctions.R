@@ -1744,7 +1744,8 @@ get_reference_data <- function(file) {
   
   #
   url <- paste0(
-    "https://github.com/kszkop/postNet/releases/download/referenceSeq_v1/",
+    #"https://github.com/kszkop/postNet/releases/download/referenceSeq_v1/",
+    "https://zenodo.org/records/18357379/files/",
     file
   )
   
