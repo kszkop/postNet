@@ -1746,7 +1746,6 @@ getLink <- function(url){
   return(linksTmp)
 }
 
-
 get_signatures <- function(species) {
   if (!is_valid_species(species)) {
     stop("Please specify a species. Currently, 'human' or 'mouse' are available).")

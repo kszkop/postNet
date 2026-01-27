@@ -114,8 +114,8 @@ plotSignatures <- function(ptn,
     xmax <- xlim[2]
   } else {
     IQRv <- stats::quantile(regData$effIn, 0.75) - stats::quantile(regData$effIn, 0.25)
-    xmin <- as.numeric(postNet::roundNice(stats::quantile(regData$effIn, 0.25) - 1.5 * IQRv, direction = "up"))
-    xmax <- as.numeric(postNet::roundNice(stats::quantile(regData$effIn, 0.75) + 1.5 * IQRv, direction = "up"))
+    xmin <- as.numeric(roundNice(stats::quantile(regData$effIn, 0.25) - 1.5 * IQRv, direction = "up"))
+    xmax <- as.numeric(roundNice(stats::quantile(regData$effIn, 0.75) + 1.5 * IQRv, direction = "up"))
   }
 
   xmid <- (xmin + xmax) / 2
