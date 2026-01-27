@@ -70,6 +70,6 @@ importFrom("stats", "IQR", "anova", "as.formula", "chisq.test",
                "reorder", "setNames", "smooth.spline", "start",
                "wilcox.test")
 importFrom("utils", "combn", "download.file", "read.delim",
-               "read.table", "tail", "write.table")
+               "read.table", "tail", "write.table", "data")
 importFrom("GenomicRanges","GRanges")
 importFrom("IRanges","IRanges")
