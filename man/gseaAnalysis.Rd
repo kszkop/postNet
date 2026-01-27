@@ -94,6 +94,7 @@ Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment anal
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".txt")
 
 # ------------------------------------------------------------------
 # Example 1: Running GSEA with a custom gene set
@@ -109,7 +110,7 @@ Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment anal
 # Run GSEA on custom gene sets:
  ptn <- gseaAnalysis(ptn = ptn,
                     geneSet = inSet,
-                    name = "Example")
+                    name = tmp)
 
 # Extract the significant enrichment results from the postNetData object:
  gseaOut <- ptn_GSEA(ptn, 

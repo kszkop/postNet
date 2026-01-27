@@ -49,6 +49,8 @@ plotSignatures(ptn,
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+ 
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -66,5 +68,5 @@ plotSignatures(ptn,
                 generalName = "mTOR_sensitive_translation",
                 xlim = c(-3, 3), 
                 tableCex = 1,
-                pdfName = "mTORsignatures")
+                pdfName = tmp)
 }

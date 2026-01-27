@@ -74,6 +74,7 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
 
 # load example data:
  data("postNetExample", package = "postNet")
@@ -92,7 +93,7 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
                                    comparisons = list(c(1,2)),
                                    dist = 1,
                                    unitOut = "number",
-                                   pdfName = "example",
+                                   pdfName = tmp,
                                    plotOut = TRUE)
                       
  str(UTR5_SGCSGCS_num)
