@@ -1747,7 +1747,6 @@ getLink <- function(url){
 }
 
 get_signatures <- function(species) {
-
   if (!is_valid_species(species)) {
     stop(
       "Please specify a species. Currently, 'human' or 'mouse' are available.",
@@ -1761,16 +1760,10 @@ get_signatures <- function(species) {
     mouse = "mouseSignatures",
     stop("Unsupported species.", call. = FALSE)
   )
-  
-  if (!exists(signName, where = asNamespace("postNet"), inherits = FALSE)) {
-    stop(
-      "Signature data for species '", species, "' is not available in the package.",
-      call. = FALSE
-    )
-  }
-  
+
   data(list = signName, package = "postNet", envir = environment())
   
+  #
   get(signName, envir = environment())
 }
 
