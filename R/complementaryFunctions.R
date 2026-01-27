@@ -1748,8 +1748,6 @@ getLink <- function(url){
 
 get_signatures <- function(species) {
 
-  signatures <- readRDS(system.file(paste("extdata/signatures", species, sep = "/"), paste(species, "Signatures.rds", sep = ""), package = "postNet"))
-  
   if (!is_valid_species(species)) {
     stop(
       "Please specify a species. Currently, 'human' or 'mouse' are available.",
