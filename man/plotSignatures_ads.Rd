@@ -63,6 +63,8 @@ plotSignatures_ads(ads,
 }
 
 \examples{
+
+\dontrun{
 # load example data:
  data("postNetExample", package = "postNet")
 
@@ -99,5 +101,6 @@ plotSignatures_ads(ads = ads,
                                scatterXY = 4,
                                tableCex = 0.65,
                                pdfName = "mTORsignatures")
+}
 
 }

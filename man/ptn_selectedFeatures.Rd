@@ -45,6 +45,7 @@ Witold R. Rudnicki M (2010). “Feature Selection with the Boruta Package.” Jo
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
 
 # load and create example data:
  data("postNetExample", package = "postNet")
