@@ -46,6 +46,8 @@ contentAnalysis(ptn,
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+ 
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -63,7 +65,7 @@ contentAnalysis(ptn,
                            contentIn = c("GC"),
                            plotOut = TRUE,
                            plotType = "ecdf",
-                           pdfName = "first50")
+                           pdfName = tmp)
                       
  str(content_UTR5_first50)
 }

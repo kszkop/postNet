@@ -47,6 +47,8 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+ 
 # load and create example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -59,7 +61,7 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
 # generate the final model that will be used to predict regulation in a new gene list.
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
-                          pdfName = "Example", 
+                          pdfName = tmp, 
                           analysis_type ="rf",
                           comparisons = list(c(1, 2)))
 
@@ -84,5 +86,5 @@ Liaw A, Wiener M (2002). “Classification and Regression by randomForest.” R 
               comparison = 1, 
               predGeneList = newGeneList, 
               predFeatures = newFeatures, 
-              pdfName = "Example" )
+              pdfName = tmp )
 }

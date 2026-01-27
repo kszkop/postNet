@@ -58,6 +58,8 @@ M. Zuker. Mfold web server for nucleic acid folding and hybridization prediction
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+ 
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -71,7 +73,7 @@ M. Zuker. Mfold web server for nucleic acid folding and hybridization prediction
                                plotType = "ecdf",
                                sourceFE = "load",
                                plotOut = TRUE,
-                               pdfName = "example")
+                               pdfName = tmp)
                       
  str(FE)
 }

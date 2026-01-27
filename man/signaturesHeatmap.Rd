@@ -50,6 +50,8 @@ at the percentile specified.
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+ 
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -62,5 +64,5 @@ at the percentile specified.
  signaturesHeatmap(ptn,
                   signatureList = signatures,
                   unit = 'FDR',
-                  pdfName = "mRNAtranslationSignatures")
+                  pdfName = tmp)
 }

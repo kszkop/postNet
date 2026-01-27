@@ -56,7 +56,8 @@ The \code{plotFeaturesMap} function also returns an updated \code{postNetData} o
 }
 
 \examples{
-
+ tmp <- tempfile(fileext = ".pdf")
+ 
 # load and create example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -68,7 +69,7 @@ The \code{plotFeaturesMap} function also returns an updated \code{postNetData} o
 # Run feature integration modelling using stepwise regression
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
-                          pdfName = "Example", 
+                          pdfName = tmp, 
                           regOnly = TRUE, 
                           allFeat = FALSE,
                           analysis_type = "lm",
@@ -87,5 +88,5 @@ The \code{plotFeaturesMap} function also returns an updated \code{postNetData} o
                         scaled = TRUE,
                         centered = TRUE,
                         remExtreme = 0.1,
-                        pdfName = "Example")
+                        pdfName = tmp)
 }

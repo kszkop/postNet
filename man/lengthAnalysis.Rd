@@ -37,6 +37,8 @@ lengthAnalysis(ptn,
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+ 
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -50,7 +52,7 @@ lengthAnalysis(ptn,
                       comparisons = list(c(0,1),c(0,2),c(1,2)),
                       plotOut = TRUE,
                       plotType = "boxplot",
-                      pdfName = "example")
+                      pdfName = tmp)
                       
  str(len)
 }

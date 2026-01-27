@@ -59,6 +59,8 @@ plots with statistical comparisons between gene sets of interest when \code{unit
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+ 
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -74,7 +76,7 @@ plots with statistical comparisons between gene sets of interest when \code{unit
                       onlyUTR5 = TRUE,
                       unitOut = "number",
                       plotOut = TRUE,
-                      pdfName = "example")
+                      pdfName = tmp)
                       
  str(uORFs)
 }
