@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_dataIn}
+\alias{ptn_dataIn}
 \alias{ptn_dataIn,postNetData-method}
 \title{Accessor for the "background", "geneList", "effect", and "colours" slots of a \code{postNetData} object
 }

@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_background}
+\alias{ptn_background}
 \alias{ptn_background,postNetData-method}
 \title{Accessor for the gene set used as background in a \code{postNetData} object
 }

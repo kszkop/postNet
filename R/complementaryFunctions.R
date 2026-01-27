@@ -1747,17 +1747,33 @@ getLink <- function(url){
 }
 
 get_signatures <- function(species) {
-  if (!is_valid_species(species)) {
-    stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
-  }
-  # List existing species
-  currTmp <- list.files(system.file("extdata/signatures", package = "postNet"))
-
-  if (!species %in% currTmp) {
-    stop("This option is currently only available for species 'human' and 'mouse'. Please use the options 'custom' and 'customFile' in the postNetStart() function to provide annotations for other species.")
-  }
 
   signatures <- readRDS(system.file(paste("extdata/signatures", species, sep = "/"), paste(species, "Signatures.rds", sep = ""), package = "postNet"))
+  
+  if (!is_valid_species(species)) {
+    stop(
+      "Please specify a species. Currently, 'human' or 'mouse' are available.",
+      call. = FALSE
+    )
+  }
+  
+  signName <- switch(
+    species,
+    human = "humanSignatures",
+    mouse = "mouseSignatures",
+    stop("Unsupported species.", call. = FALSE)
+  )
+  
+  if (!exists(signName, where = asNamespace("postNet"), inherits = FALSE)) {
+    stop(
+      "Signature data for species '", species, "' is not available in the package.",
+      call. = FALSE
+    )
+  }
+  
+  data(list = signName, package = "postNet", envir = environment())
+  
+  get(signName, envir = environment())
 }
 
 #

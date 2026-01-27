@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_species}
+\alias{ptn_species}
 \alias{ptn_species,postNetData-method}
 \title{Accessor for the "species" slot of a \code{postNetData} object
 }

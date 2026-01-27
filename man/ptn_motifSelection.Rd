@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_motifSelection}
+\alias{ptn_motifSelection}
 \alias{ptn_motifSelection,postNetData-method}
 \title{Accessor for the "motifSelection" slot of a \code{postNetData} object
 }

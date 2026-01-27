@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_id}
+\alias{ptn_id}
 \alias{ptn_id,postNetData-method}
 \title{Accessor for the transcript IDs in the "id" slot of a \code{postNetData} object
 }

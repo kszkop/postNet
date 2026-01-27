@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_version}
+\alias{ptn_version}
 \alias{ptn_version,postNetData-method}
 \title{Accessor for the RefSeq annotation release version from the "version" slot of a \code{postNetData} object
 }

@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_selection}
+\alias{ptn_selection}
 \alias{ptn_selection,postNetData-method}
 \title{Accessor for the isoform selection parameter from the "selection" slot of a \code{postNetData} object
 }

@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_features}
+\alias{ptn_features}
 \alias{ptn_features,postNetData-method}
 \title{Accessor for the \code{features} slot of a \code{postNetData} object
 }

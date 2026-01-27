@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_colours}
+\alias{ptn_colours}
 \alias{ptn_colours,postNetData-method}
 \title{Accessor for the "colours" slot of a \code{postNetData} object
 }

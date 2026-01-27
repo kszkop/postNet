@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_effect}
+\alias{ptn_effect}
 \alias{ptn_effect,postNetData-method}
 \title{Accessor for the regulatory effect measurement from the "effect" slot of a \code{postNetData} object
 }

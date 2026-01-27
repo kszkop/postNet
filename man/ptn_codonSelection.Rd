@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_codonSelection}
+\alias{ptn_codonSelection}
 \alias{ptn_codonSelection,postNetData-method}
 \title{Accessor for the "codonSelection" slot of a \code{postNetData} object
 }

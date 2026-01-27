@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_geneID}
+\alias{ptn_geneID}
 \alias{ptn_geneID,postNetData-method}
 \title{Accessor for the gene IDs in the "geneID" slot of a \code{postNetData} object
 }

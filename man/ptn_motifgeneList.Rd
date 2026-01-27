@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_motifGeneList}
+\alias{ptn_motifGeneList}
 \alias{ptn_motifGeneList,postNetData-method}
 \title{Accessor for the de novo motif analysis results for each gene set of interest in a \code{postNetData} object
 }
