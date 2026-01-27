@@ -49,11 +49,15 @@ codonCalc(ptn,
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+ 
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
 # Run codon usage analysis
+  
+
  ptn <- codonUsage(ptn = ptn, 
           annotType = "ptnCDS", 
           sourceSeq = "load", 
@@ -69,8 +73,8 @@ codonCalc(ptn,
           subregion = NULL, 
           subregionSel = NULL, 
           comparisons = list(c(1,2)), 
-          plotType_index = "violin", 
-          pdfName = "codons")
+          plotType_index = "violin",
+          pdfName = tmp)
           
 # Select codons of interest with high frequency, and the highest and lowest odds ratios
  codons <- ptn_codonSelection(ptn, comparison = 1)
@@ -81,6 +85,7 @@ codonCalc(ptn,
                           featsel = codons,
                           unit = "count", 
                           comparisons = list(c(1,2)),
+                          pdfName = tmp,
                           plotType = "ecdf")
                       
  str(codonCounts)

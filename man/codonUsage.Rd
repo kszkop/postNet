@@ -105,12 +105,13 @@ dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: 
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
 # Run codon usage analysis of single codons:
-
  ptn <- codonUsage(ptn = ptn, 
           annotType = "ptnCDS", 
           sourceSeq = "load", 
@@ -127,7 +128,7 @@ dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: 
           subregionSel = NULL, 
           comparisons = list(c(1,2)), 
           plotType_index = "violin", 
-          pdfName = "codons")
+          pdfName = tmp)
 
 # Access the full results of the analysis for each gene:
 
@@ -148,6 +149,7 @@ dos Reis M, Savva R, Wernisch L. Solving the riddle of codon usage preferences: 
                           featsel = codons,
                           unit = "count", 
                           comparisons = list(c(1,2)),
+                          pdfName = tmp,
                           plotType = "ecdf")
                       
  str(codonCounts)
