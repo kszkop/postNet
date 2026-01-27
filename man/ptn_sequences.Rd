@@ -1,5 +1,5 @@
-\docType{methods}
 \name{ptn_sequences}
+\alias{ptn_sequences}
 \alias{ptn_sequences,postNetData-method}
 \title{Accessor for the reference annotation sequences in the sequence annotation slots of a \code{postNetData} object
 }
