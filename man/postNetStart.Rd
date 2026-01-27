@@ -222,6 +222,8 @@ annotation file. The \code{customFile} must be tab-delimited, with the headings:
 
 \examples{
 
+ tmp <- tempfile(fileext = ".pdf")
+
 # -----------------------------------------------------------------------
 # Example 1: Using custom gene lists and background
 # -----------------------------------------------------------------------
@@ -271,12 +273,13 @@ annotation file. The \code{customFile} must be tab-delimited, with the headings:
     normalize = FALSE)
     
 # Run an anota2seq analysis:
-# Note that the quality control and residual outlier testing are not 
+# Note that the quality control and residual outlier testing or rvm are not 
 # performed to limit the running time of this example. For full details 
 # on running an analysis please see the anota2seq vignette and help manual.
  ads <- anota2seq::anota2seqRun(ads,
     performQC = FALSE, 
-    performROT = FALSE, 
+    performROT = FALSE,
+    useRVM = FALSE,
     useProgBar = FALSE)
 
 # This postNet analysis will allow identification of mRNA features, 

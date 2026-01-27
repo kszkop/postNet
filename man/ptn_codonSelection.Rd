@@ -29,6 +29,8 @@ Retrieve the codons or amino acids that were selected as significantly enriched 
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+ 
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -50,7 +52,7 @@ Retrieve the codons or amino acids that were selected as significantly enriched 
           subregionSel = NULL, 
           comparisons = list(c(1,2)), 
           plotType_index = "violin", 
-          pdfName = 'codons')
+          pdfName = tmp)
           
 # Select codons of interest that were significantly enriched or depleted 
 # with high frequency, and the highest and lowest odds ratios

@@ -25,6 +25,8 @@
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+ 
  # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -46,7 +48,7 @@
                     subregionSel = NULL, 
                     comparisons = list(c(1,2)), 
                     plotType_index = "violin", 
-                    pdfName = 'codons')
+                    pdfName = tmp)
   
   # Get the results of the codon usage analysis
   
