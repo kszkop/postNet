@@ -59,6 +59,9 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 
 }
 \examples{
+ tmp <- tempfile(fileext = ".xlxs")
+ tmp2 <- tempfile(fileext = ".pdf")
+ 
 # ------------------------------------------------------------------
 # Example 1: Running GO term analysis
 # ------------------------------------------------------------------
@@ -70,7 +73,7 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 # Run GO term analysis:
  ptn <- goAnalysis(ptn = ptn, 
                   category=c("BP"),
-                  name = "example")
+                  name = tmp)
 
 # Extract the significant enrichment results from the postNetData object:
  goOut <- ptn_GO(ptn, 
@@ -85,7 +88,7 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
           nCategories = 50, 
           pool = TRUE, 
           size = "geneRatio", 
-          pdfName = "example")
+          pdfName = tmp2)
           
 \dontrun{
 

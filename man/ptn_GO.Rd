@@ -65,6 +65,8 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".xlxs")
+ 
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -72,7 +74,7 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
 # Run GO term analysis:
  ptn <- goAnalysis(ptn = ptn, 
                   category=c("BP"),
-                  name = "example")
+                  name = tmp)
 
 # Extract the significant enrichment results from the postNetData object:
  goOut <- ptn_GO(ptn, 

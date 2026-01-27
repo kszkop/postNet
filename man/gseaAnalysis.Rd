@@ -95,6 +95,7 @@ Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment anal
 
 \examples{
  tmp <- tempfile(fileext = ".txt")
+ tmp2 <- tempfile(fileext = ".pdf")
 
 # ------------------------------------------------------------------
 # Example 1: Running GSEA with a custom gene set
@@ -119,7 +120,8 @@ Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment anal
  
 # Plot GSEA results:
  gseaPlot(ptn = ptn,
-          termNames = gseaOut$Term[1])
+          termNames = gseaOut$Term[1],
+          pdfName = tmp2)
           
 \dontrun{
 

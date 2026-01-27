@@ -25,6 +25,7 @@
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
 
 # load and create example data:
  data("postNetExample", package = "postNet")
@@ -37,7 +38,7 @@
 # Run feature integration modelling using forward stepwise regression:
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
-                          pdfName = "omnibus", 
+                          pdfName = tmp, 
                           regOnly = TRUE, 
                           allFeat = FALSE,
                           analysis_type = "lm",

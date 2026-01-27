@@ -256,6 +256,8 @@ annotation file. The \code{customFile} must be tab-delimited, with the headings:
    species = "human"
  )
 
+\dontrun{
+
 # -----------------------------------------------------------------------
 # Example 2: Using an anota2seq object with built-in RefSeq annotations
 # -----------------------------------------------------------------------
@@ -300,8 +302,6 @@ annotation file. The \code{customFile} must be tab-delimited, with the headings:
       source = "load",
       species = "human"
     )
-
-\dontrun{
 
 # -----------------------------------------------------------------------
 # Example 3: Creating annotation from local RefSeq files
