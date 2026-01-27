@@ -1722,6 +1722,31 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
   return(list(mainPlot = colVecPlot, legend = legendOut))
 }
 
+getLink <- function(url){
+  responseTmp <- tryCatch(
+    {
+      httr2::request(url) %>%
+        httr2::req_perform() %>%
+        httr2::resp_check_status()
+    },
+    error = function(e) {
+      cat("Failed to fetch the URL:", conditionMessage(e), "\n")
+      return(NULL)
+    }
+  )
+  if (is.null(responseTmp)) return(NULL)
+  
+  pageTmp <- httr2::resp_body_string(responseTmp) %>%
+    rvest::read_html()
+  
+  linksTmp <- pageTmp %>%
+    rvest::html_nodes("a") %>%
+    rvest::html_attr("href")
+  
+  return(linksTmp)
+}
+
+
 get_signatures <- function(species) {
   if (!is_valid_species(species)) {
     stop("Please specify a species. Currently, 'human' or 'mouse' are available).")
