@@ -1,0 +1,6 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^vignettes/.*\.jpg$
+^vignettes/.*\.pdf$
+^vignettes/.*\.txt$
+^vignettes/.*\.xlxs$                                                                                                                                                                                                                               
