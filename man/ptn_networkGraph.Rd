@@ -28,6 +28,8 @@
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
+
 # load and create example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn

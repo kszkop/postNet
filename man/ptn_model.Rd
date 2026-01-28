@@ -50,6 +50,7 @@ Kursa MB., Witold R. Rudnicki (2010). “Feature Selection with the Boruta Packa
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".pdf")
 
 # load and create example data:
  data("postNetExample", package = "postNet")
@@ -62,7 +63,7 @@ Kursa MB., Witold R. Rudnicki (2010). “Feature Selection with the Boruta Packa
 # Run feature integration modelling using forward stepwise regression:
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
-                          pdfName = "omnibus", 
+                          pdfName = tmp, 
                           regOnly = TRUE, 
                           allFeat = FALSE,
                           analysis_type = "lm",
