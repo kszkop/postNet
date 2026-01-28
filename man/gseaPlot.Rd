@@ -57,7 +57,7 @@ Mootha, V., Lindgren, C., Eriksson, KF. et al. PGC-1α-responsive genes involved
 }
 
 \examples{
- tmp <- tempfile(fileext = ".xlxs")
+ tmp <- tempfile(fileext = ".txt")
  tmp2 <- tempfile(fileext = ".pdf")
 
 # load example data:

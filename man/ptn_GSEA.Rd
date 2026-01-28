@@ -58,6 +58,8 @@ Mootha, V., Lindgren, C., Eriksson, KF. et al. PGC-1α-responsive genes involved
 }
 
 \examples{
+ tmp <- tempfile(fileext = ".txt")
+
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -68,7 +70,7 @@ Mootha, V., Lindgren, C., Eriksson, KF. et al. PGC-1α-responsive genes involved
 # Run GSEA on custom gene sets:
  ptn <- gseaAnalysis(ptn = ptn,
                     geneSet = inSet,
-                    name = 'example')
+                    name = tmp)
 
 # Extract enrichment results from the postNetData object with an FDR < 0.05:
  gseaOut <- ptn_GSEA(ptn, threshold=0.05)

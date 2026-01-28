@@ -25,7 +25,10 @@ ptn_check_models(ptn, analysis_type)
 \link[postNet]{ptn_model}
 }
 
-\examples{# load and create example data:
+\examples{
+ tmp <- tempfile(fileext = ".pdf")
+
+ # load and create example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
  
@@ -36,7 +39,7 @@ ptn_check_models(ptn, analysis_type)
 # Run feature integration modelling using stepwise regression
  ptn <- featureIntegration(ptn = ptn, 
                           features = myFeatures, 
-                          pdfName = "omnibus", 
+                          pdfName = tmp, 
                           regOnly = TRUE, 
                           allFeat = FALSE,
                           analysis_type = "lm",
