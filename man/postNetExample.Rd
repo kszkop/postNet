@@ -3,7 +3,7 @@
 \docType{data}
 \title{An example dataset for demonstrating the usage of postNet functions}
 
-\description{This object contains example data for testing postNet functions, including lists of post-transcriptionally regulated genes, background gene sets, and log₂ fold changes in translation efficiency between two treatment conditions.
+\description{This object contains example data for testing postNet functions, including lists of post-transcriptionally regulated genes, background gene sets, and log_2 fold changes in translation efficiency between two treatment conditions.
 }
 
 \usage{data(postNetExample, package='postNet')}
