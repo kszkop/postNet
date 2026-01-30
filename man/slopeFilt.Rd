@@ -56,8 +56,6 @@ slopeFilt(ads,
 
 \examples{
 
-\dontrun{
-
 # load example data:
  data("postNetExample", package = "postNet")
 
@@ -86,5 +84,4 @@ slopeFilt(ads,
                   contrastSel = 1)
                   
   str(filtOutGenes)
-}
 }

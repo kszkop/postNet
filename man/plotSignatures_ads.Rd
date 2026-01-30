@@ -64,7 +64,6 @@ plotSignatures_ads(ads,
 
 \examples{
 
-\dontrun{
 # load example data:
  data("postNetExample", package = "postNet")
 
@@ -90,7 +89,7 @@ plotSignatures_ads(ads,
  humanSignatures <- get_signatures("human")
  
 # Examine the regulation of mTOR-sensitive transcripts in the results of the anota2seq analysis 
-plotSignatures_ads(ads = ads,
+ plotSignatures_ads(ads = ads,
                                contrast = 1,
                                dataName = "Osmosis_1h",
                                signatureList = humanSignatures[c("Gandin_etal_2016_mTOR_transUp",
@@ -101,6 +100,5 @@ plotSignatures_ads(ads = ads,
                                scatterXY = 4,
                                tableCex = 0.65,
                                pdfName = "mTORsignatures")
-}
 
 }
