@@ -61,6 +61,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Ap
 }
 
 \examples{
+\dontrun{
 # ------------------------------------------------------------------
 # Example 1: Running GAGE with gene lists 
 # ------------------------------------------------------------------
@@ -82,7 +83,6 @@ Luo, W., Friedman, M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Ap
                                    # the threshold should be lowered. 
  str(gageOut)
 
-\dontrun{
 
 # ------------------------------------------------------------------
 # Example 2: Running GAGE requiring anota2seq analysis slope filtering

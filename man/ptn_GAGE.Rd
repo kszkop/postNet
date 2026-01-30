@@ -60,6 +60,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
 }
 
 \examples{
+\dontrun{
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
@@ -74,4 +75,5 @@ Luo, W., Friedman, M., Shedden K., Hankenson, K. and Woolf, P GAGE: Generally Ap
                     direction = "greater", 
                     threshold = 1)
  str(gageOut)
+}
 }
