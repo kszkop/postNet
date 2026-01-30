@@ -53,7 +53,7 @@ dataset.
         \item Data Source: Anota2seq analysis of microarray data deposited in GSE76766.   
         \item Analysis Method: Anota2seq algorithm (version 1.14.0). The following thresholds were applied within the anota2seqRun function: 
         maxPAdj = 0.15; deltaP = log2(1.2); deltaT = log2(1.2); deltaPT = log2(1.2); deltaTP = log2(1.2); maxSlopeTranslation = 2; 
-        minSlopeTranslation = −1; minSlopeBuffering = −2; maxSlopeBuffering = 1. Replicate was included in the anota2seq model using the ‘batchVec’ 
+        minSlopeTranslation = -1; minSlopeBuffering = -2; maxSlopeBuffering = 1. Replicate was included in the anota2seq model using the ‘batchVec’ 
         parameter to account for batch effects. 
         \item First Author, Last Author, Year:  Gandin, Topisirovic, 2016
         \item PMID: 27040916
