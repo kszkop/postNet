@@ -1,0 +1,70 @@
+Package: postNet
+Type: Package
+Title: Post-transcriptional network modeling
+Description: A tool that enables in silico identification, integration, and modeling of mRNA features that influence post-transcriptional regulation of gene expression at a transcriptome-wide scale.
+Version: 0.99.5
+Authors@R: c(person("Krzysztof", "Szkop", email = "krzysztof.szkop@gmail.com", role = c("aut","cre")),
+    person("Kathleen", "Watt", email = "watt.kathleen@gmail.com", role = "aut"),
+    person("Ola", "Larsson", email = "ola.larsson@ki.se", role = "aut"))
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyLoad: true
+Depends: 
+  R (>= 4.4.0),
+Imports:
+  dplyr (>= 1.0.7),
+  plyr (>= 1.8.9),
+  pqsfinder (>= 2.8.0),
+  Biostrings (>= 2.60.2),
+  data.table (>= 1.14.6),
+  gridExtra (>= 2.3),
+  seqinr (>= 4.2.8),
+  R.utils (>= 2.10.1),
+  reshape2 (>= 1.4.4),
+  vioplot (>= 0.3.6),
+  stringr (>= 1.4.0),
+  plotrix (>= 3.8.1),
+  gplots (>= 3.1.1),
+  ggplot2 (>= 3.3.4),
+  ggrepel (>= 0.9.1),
+  anota2seq (>= 1.14.0),
+  memes (>= 1.0.0),
+  GenomicRanges (>= 1.44.0),
+  IRanges (>= 2.40.1),
+  WriteXLS (>= 6.3.0),
+  randomForest (>= 4.7-1.1),
+  igraph (>= 1.3.5),
+  Boruta (>= 7.0.0),
+  ROCR (>= 1.0-11),
+  caret (>= 6.0-93),
+  msigdb (>= 1.6.0),
+  ExperimentHub (>= 2.6.0),
+  AnnotationHub (>= 3.6.0),
+  GSEABase (>= 1.60.0),
+  fgsea (>= 1.24.0),
+  org.Hs.eg.db (>= 3.16.0),
+  org.Mm.eg.db (>= 3.16.0),
+  RColorBrewer (>= 1.1-3),
+  httr2 (>= 1.2.2),
+  rvest (>= 1.0.3),
+  umap (>= 0.2.10.0),
+  clusterProfiler (>= 4.14.6),
+  gage (>= 2.56.0),
+  withr (>= 3.0.2),
+  grDevices,
+  graphics,
+  methods,
+  stats,
+  utils,
+  tools,
+  BiocFileCache,
+  curl
+Suggests: 
+    knitr,
+    rmarkdown,
+    BiocStyle,
+    pdftools (>= 3.6.0)
+biocViews: GeneExpression, GeneRegulation, Transcriptomics, RiboSeq, RNASeq, Sequencing, Annotation, Network, FeatureExtraction
+VignetteBuilder: knitr
+URL: https://github.com/kszkop/postNet
+BugReports: https://github.com/kszkop/postNet/issues

@@ -1,0 +1,37 @@
+\name{ptn_version}
+\alias{ptn_version}
+\alias{ptn_version,postNetData-method}
+\title{Accessor for the RefSeq annotation release version from the "version" slot of a \code{postNetData} object
+}
+
+\description{Retrieve the "version" slot from a \code{postNetData} object, which holds the release version number of the RefSeq annotations used to generate the reference sequences. Currently, this only applies when \code{source = 'load'} in the \link[postNet]{postNetStart} function. 
+}
+
+\usage{
+\S4method{ptn_version}{postNetData}(ptn)
+}
+
+\arguments{
+  \item{ptn}{A \linkS4class{postNetData} object.
+  }
+}
+
+\value{A character specifying the release version of the RefSeq annotations used to generate the reference sequences.
+}
+
+\examples{
+
+# load and create example data:
+ data("postNetExample", package = "postNet")
+ ptn <- postNetExample$ptn
+
+# Access version of the RefSeq annotation used to create the reference sequences
+  ptn_version(ptn)
+
+}
+
+\seealso{
+\code{\link[postNet]{postNetStart}} for details on selecting the appropriate reference sequence annotation versions. \cr
+\code{\link[postNet]{postNetData-class}}
+}
+
