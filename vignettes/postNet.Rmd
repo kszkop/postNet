@@ -58,7 +58,7 @@ Here, we demonstrate a minimal example of the steps of a standard postNet analys
 - Performing network analysis visualizing the independent and overlapping regulatory contribution of mRNA features, and finally
 - Exploring modelling results using UMAP visualizations.
 
-```{r load_package_data, eval=FALSE, echo=TRUE} 
+```{r load_package_data, eval=TRUE, echo=TRUE} 
 # Load the package 
 library(postNet)
 
@@ -68,17 +68,18 @@ data("postNetVignette", package = "postNet")
 ```
 
 **Step 1:** A `postNetData` object containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency derived from ribosome profiling and RNA-seq comparing cells responding to osmotic stress against controls [@Krokowski2022]), and reference mRNA sequence annotations is initialized using the `postNetStart()` function.   
-```{r gettingStartedInput, eval=FALSE, echo=TRUE}
+```{r gettingStartedInput, eval=TRUE, echo=TRUE}
 # Prepare custom gene lists and regulatory effect measurement:
- myGenes <- postNetVignette$geneList
-
+  myGenes <- postNetVignette$geneList
+ str(myGenes)
   myBg <- postNetVignette$background
-
+ str(myBg)
   myEffect <- postNetVignette$effect
+ str(myEffect)
  
 ```
 
-```{r gettingStartedInitialize, eval=FALSE, echo=TRUE, results='hide'}
+```{r gettingStartedInitialize, eval=TRUE, echo=TRUE, results='hide'}
 # Initialize a postNetData object:
 ptn <- postNetStart(
    geneList = myGenes,
@@ -95,7 +96,7 @@ ptn <- postNetStart(
 
 **Step 2:** mRNA features that may influence post-transcriptional regulation of gene expression are enumerated. In this minimal example, the length and nucleotide content of 5'UTR regions are calculated and compared between gene sets. However, numerous other features across all sequence regions can be examined (see [Analysis of mRNA sequence features](#mRNAfeatures)). These analyses allow both statistical comparisons of mRNA features between gene sets of interest, and generate outputs that can be used to assess the contribution of a given mRNA feature to the observed regulatory effect in the modelling step. 
 
-```{r gettingStartedEnumerate, eval=FALSE, echo=TRUE}
+```{r gettingStartedEnumerate, eval=TRUE, echo=TRUE}
 # Quantify the length and nucleotide content of the 5'UTR and compare between regulated gene sets 
  len <- lengthAnalysis(ptn = ptn, 
                       region = c("UTR5"), 
@@ -103,6 +104,7 @@ ptn <- postNetStart(
                       plotOut = TRUE,
                       plotType = 'boxplot',
                       pdfName = "Example")
+str(len)
  
  content_UTR5 <- contentAnalysis(ptn = ptn, 
                            region = c("UTR5"),
@@ -111,11 +113,12 @@ ptn <- postNetStart(
                            plotOut = TRUE,
                            plotType = "ecdf",
                            pdfName = "Example")
+str(content_UTR5)
 
 ```
 
 
-```{r gettingStartedEnumeratePNGS, echo=FALSE, fig.cap="Comparisons of 5'UTR length and GC content between mRNAs belonging to regulated gene sets."}
+```{r gettingStartedEnumeratePNGS, eval=TRUE, echo=FALSE, fig.cap="Comparisons of 5'UTR length and GC content between mRNAs belonging to regulated gene sets."}
 knitr::include_graphics("Figures/Figure1.png")
 
 ```
@@ -159,14 +162,51 @@ ptn <- featureIntegration(ptn = ptn,
 
 ```
 
-```{r gettingStartedFeatureIntNetworkPNG, echo=FALSE, fig.cap="Network plot of the results of the stepwise regression omnibus model."}
+```{r gettingStartedFeatureInt2, eval=TRUE, echo=FALSE, include=FALSE}
+# Prepare the list of pre-calculated features to be used in modelling  (for example, 
+# the 'len' and 'content_UTR' variables defined in the previous step can be included) 
+features <- postNetVignette$features
+str(features)
+
+# Signatures of trans-acting factors can also be included, and some are provided with the package
+humanSignatures <- get_signatures(species = 'human')
+str(humanSignatures)
+
+# Signatures can be converted into feature inputs using the signCalc function
+trans_signatures <- signCalc(ptn, humanSignatures)
+
+# Compile the final feature input:
+features <- c(features, trans_signatures)
+
+# Group the features according to category (optional)
+group = c("UTR5", "UTR3", "UTR5","CDS", "UTR5", "UTR5", "UTR5", "CDS", "CDS", 
+          rep("Pathway", 2), "UTR5", rep("Pathway", 2))
+groupColour = c('#834b62','#6699cc','#e9724c','#fff299')
+names(groupColour) <- c("UTR5","CDS", "UTR3","Pathway")
+
+# Run feature integration modelling using forward stepwise regression
+ptn <- featureIntegration(ptn = ptn, 
+                          features = features, 
+                          pdfName = "omnibus", 
+                          regOnly = TRUE, 
+                          allFeat = FALSE,
+                          analysis_type = "lm",
+                          covarFilt = 20,
+                          comparisons = list(c(1,2)),
+                          lmfeatGroup = group,
+                          lmfeatGroupColour = groupColour,
+                          NetModelSel = 'omnibus')
+
+```
+
+```{r gettingStartedFeatureIntNetworkPNG, eval=TRUE, echo=FALSE, fig.cap="Network plot of the results of the stepwise regression omnibus model."}
 knitr::include_graphics("Figures/Figure2.png")
 
 ```
 
 **Step 4:** The `plotFeaturesMap()` function is used to visualize the relationship between translation efficiency and different features that were identified in the modelling step as significantly contributing to the observed post-transcriptional regulation. These visualizations are also useful for exploring the overlaps between different features within the same mRNAs.  
 
-```{r gettingStartedPlotFeaturesMap, eval=FALSE, echo=TRUE}
+```{r gettingStartedPlotFeaturesMap, eval=TRUE, echo=TRUE}
 
 ptn <- plotFeaturesMap(ptn,
                 regOnly = TRUE,
@@ -182,7 +222,7 @@ ptn <- plotFeaturesMap(ptn,
 
 ```
 
-```{r gettingStartedPlotFeaturesMapPNG, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) generated based on features identified in the omnibus model (left), with mRNAs containing SCSCGS motifs in the 5´UTR coloured (right)."}
+```{r gettingStartedPlotFeaturesMapPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) generated based on features identified in the omnibus model (left), with mRNAs containing SCSCGS motifs in the 5´UTR coloured (right)."}
 knitr::include_graphics("Figures/Figure3.png")
 ```
 
@@ -214,21 +254,24 @@ For each gene provided as part of a gene set of interest or background set, you 
 
 The example below illustrates the set-up of a postNet analysis allowing identification of mRNA features and statistical comparisons between sets of translationally activated and suppressed genes, as well as modelling and network analysis to identify features associated with changes in translational regulation and their interdependence.  
 
-```{r postNetStartGeneList, eval=FALSE, echo=TRUE}
+```{r postNetStartGeneList, eval=TRUE, echo=TRUE}
 
 # Genes of interest should be provided in a named list.
  myGenes <- postNetVignette$geneList
+ str(myGenes)
  
 # All gene IDs in the list should be present in the background.
  myBg <- postNetVignette$background
+ str(myBg)
  
 # The regulatory effect measurement must be named with the same gene IDs
 # present in the background (or the gene list if no custom background is provided).
  myEffect <- postNetVignette$effect
+ str(myEffect)
  
 ```
 
-```{r postNetStartGeneListInit, eval=FALSE, echo=TRUE, results = 'hide'}
+```{r postNetStartGeneListInit, eval=TRUE, echo=TRUE, results = 'hide'}
 # Initialize the postNetData object with custom gene lists:
  ptn <- postNetStart(
    geneList = myGenes,
@@ -261,7 +304,7 @@ The regulatory effect measurement is taken directly from the `Anota2seqDataSet` 
 When an `Anota2seqDataSet` is supplied, the appropriate background gene set, and colours for each gene list will be automatically retrieved.  
 
 The example below illustrates the set-up of a postNet analysis using the output of *anota2seq*, `ads`.  
-```{r GetAds, eval=FALSE, echo=TRUE, results = 'hide', warning = FALSE}
+```{r GetAds, eval=TRUE, echo=TRUE, results = 'hide', warning = FALSE}
 
 # Initialize Anota2seqDataSet using example data (see anota2seq vignette for details)
  ads <- anota2seq::anota2seqDataSetFromMatrix(
@@ -284,7 +327,7 @@ The example below illustrates the set-up of a postNet analysis using the output 
 
 This postNet analysis will allow identification of mRNA features and comparison between translationally activated and suppressed genes, as well as buffered (total mRNA up and down) genes from contrast 1. Feature integration and network analysis will model the fold changes in translation efficiency from contrast 1. Note that in this example, if the buffering gene sets are included in modelling comparisons, the regulatory effect measurement values for these genes will be the fold changes in translation efficiency.   
 
-```{r postNetStartAds, eval=FALSE, echo=TRUE, results = 'hide'}
+```{r postNetStartAds, eval=TRUE, echo=TRUE, results = 'hide'}
 
 # Initialize the postNetData object:
   ptn_withAds <- postNetStart(
@@ -460,7 +503,7 @@ Numerous sequencing approaches are available to specifically map UTRs, such as n
 
 Custom UTR sequences will replace UTRs in an existing annotation file when using the `adjObj` and `region_adj` parameters of the `postNetStart()` function. A list of custom sequences must be provided, specifying which UTR region(s) should be replaced. If custom UTR sequences are available for some, but not all genes in the existing sequence annotation, whether genes and isoforms without custom sequences are kept or discarded from the analysis can be controlled using the `excl` parameter. The `keepAll` parameter can also be used to control how custom UTR isoform sequences are stored for genes with multiple isoforms.        
 
-```{r AdjObj, eval=FALSE, echo=TRUE}
+```{r AdjObj, eval=TRUE, echo=TRUE}
 
 # Create the adjObj list with custom 5'UTR sequences to replace those in the loaded annotation file
 myUTR5seqs <- ptn_sequences(ptn, "UTR5")
@@ -520,7 +563,7 @@ The length of different mRNA sequence regions can have important implications fo
 
 The example below will compute a list (`len`) of the log2 length for each gene and sequence region, and produce three PDF files with eCDFs and statistics comparing the length of each sequence region between gene sets and background.   
 
-```{r lengthAnalysisBoxplot, eval=FALSE, echo=TRUE}
+```{r lengthAnalysisBoxplot, eval=TRUE, echo=TRUE}
 
 # Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene,
 # and compare lengths between translationUp genes vs. background, 
@@ -531,10 +574,11 @@ The example below will compute a list (`len`) of the log2 length for each gene a
                       plotOut = TRUE,
                       plotType = 'ecdf',
                       pdfName = "Example")
+ str(len)
 
 ```
 
-```{r lengthAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in Log2(Length) of mRNA sequence regions between different gene sets. 5'UTR (left), 3'UTR (middle), CDS (right). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can also be generated as either box plots, or violin plots"}
+```{r lengthAnalysisPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in Log2(Length) of mRNA sequence regions between different gene sets. 5'UTR (left), 3'UTR (middle), CDS (right). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can also be generated as either box plots, or violin plots"}
 knitr::include_graphics("Figures/Figure4.png")
 ```
 
@@ -545,7 +589,7 @@ Nucleotide content is associated with the post-transcriptional fate of mRNAs. Fo
 The `contentIn` parameter is used to specify one or more nucleotide(s) or nucleotide combinations to quantify. These can be any selection or combination of A, T, G, or C. For example `c("GC")` to obtain the combined percentage of G and C, or `c("G", "C")` to obtain the individual percentages. Within the coding sequence, it may also be of interest to calculate nucleotide content at specific codon positions, for example the GC content at the 3rd codon position ("GC3") is often used as an indicator of codon bias [@Aota1986]. For this reason, when the input for the `region` parameter includes `"CDS"`, nucleotide content at specific codon positions can also be quantified by supplying the nucleotide or combination of nucleotides, along with the codon position to be examined (1, 2, or 3). For example, `c("GC3")` calculates percentage of GC content in the third codon position, while `c("A12")` would provide the percentage of A content in the first and second codon positions.   
 
 The example below will compute a list (`GC_content`) of the percentage of GC content for each gene and sequence region, and produce three PDF files with violin plots and statistics comparing the GC content of each sequence region between gene sets and background.   
-```{r contentAnalysisGCviolin, eval=FALSE, echo=TRUE}
+```{r contentAnalysisGCviolin, eval=TRUE, echo=TRUE}
 
 # Calculate the GC content of each sequence region for each gene, and compare between
 # translationUp genes vs. background, translationDown genes vs. background, and 
@@ -559,12 +603,12 @@ The example below will compute a list (`GC_content`) of the percentage of GC con
                            pdfName = "Example")
 ```
 
-```{r contentAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Violin plots visualizing differences in the percentage of GC content of mRNA sequence regions between different gene sets. 5'UTR (left), 3'UTR (middle), CDS (right). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can also be generated as either box plots, or eCDFs"}
+```{r contentAnalysisPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Violin plots visualizing differences in the percentage of GC content of mRNA sequence regions between different gene sets. 5'UTR (left), 3'UTR (middle), CDS (right). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can also be generated as either box plots, or eCDFs"}
 knitr::include_graphics("Figures/Figure5.png")
 ```
 
 In addition to calculating the percentage of GC content for each gene and sequence region (as above), the code below will return the GC content at the third codon position (GC3) for the coding sequence.  
-```{r contentAnalysisGC3, eval=FALSE, echo=TRUE}
+```{r contentAnalysisGC3, eval=TRUE, echo=TRUE}
 
 # Calculate the GC of each sequence region for each gene, as well as the GC3 content of
 # the coding region and compare between translationUp genes vs. background, translationDown 
@@ -576,6 +620,7 @@ In addition to calculating the percentage of GC content for each gene and sequen
                            plotOut = TRUE,
                            plotType = "violin",
                            pdfName = "Example")
+str(GC_content)
                       
 ```
 
@@ -618,7 +663,7 @@ To use custom free energy values with the `customFileFE` parameter, the user mus
 The `residFE` parameter also offers the option of correcting the folding energies for the length of the sequences, which may sometimes be desirable to facilitate comparisons between gene sets. Here, instead of Δ*G*, the values returned are the residuals from the linear model: FE ~ log2(sequence region length). Note that if folding energies will be used in downstream modelling analysis with `featureIntegration()`, consideration should be given to the `residFE` parameter. If the length of the sequence regions will also be included in modelling, it is not recommended to correct the folding energies for the sequence length.
 
 The example below will compute a list (`FE`) of the folding energies for 5'UTR regions, and produce a PDF file with box plots and statistics comparing the folding energy between regulated gene sets and background. 
-```{r foldingEnergyBoxplot, eval=FALSE, echo=TRUE}
+```{r foldingEnergyBoxplot, eval=TRUE, echo=TRUE}
 
 # Compare the folding energy of the 5'UTRs between translationUp 
 # genes vs. background, translationDown genes vs. background, 
@@ -631,9 +676,10 @@ The example below will compute a list (`FE`) of the folding energies for 5'UTR r
                                sourceFE = "load",
                                plotOut = TRUE,
                                pdfName = "Example")
+ str(FE)
 ```
 
-```{r foldingEnergyPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Box plots visualizing differences in the folding energy of mRNA 5'UTRs between different gene sets. Statistical comparisons are made between translationally activated (light red), suppressed (dark red), and background (grey) gene sets. Visualizations can also be generated as either violin plots, or eCDFs"}
+```{r foldingEnergyPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Box plots visualizing differences in the folding energy of mRNA 5'UTRs between different gene sets. Statistical comparisons are made between translationally activated (light red), suppressed (dark red), and background (grey) gene sets. Visualizations can also be generated as either violin plots, or eCDFs"}
 knitr::include_graphics("Figures/Figure6.png")
 ```
 
@@ -680,7 +726,7 @@ Some uORFs are completely contained within the 5'UTR, as is the case for the uOR
 Finally, in addition to quantifying the number of uORFs for a given transcript, it is also often of interest to know the positions in the sequence where the uORFs occur. The `unitOut` parameter can be used to specify whether the number, or coordinates (nucleotide position of the start and stop codons) of the detected uORFs will be returned. 
 
 The example below will compute a list (`uORFs`) of the number of uORFs with canonical start codons in a strong Kozak context for each gene, and produce a PDF file with a bar plot and statistics comparing between gene sets.   
-```{r uorfAnalysis, eval=FALSE, echo=TRUE}
+```{r uorfAnalysis, eval=TRUE, echo=TRUE}
 
 # Identify all uORFs with canonical start codons in a strong Kozak context (including
 # those not fully contained within 5'UTRs, and compare 
@@ -694,10 +740,11 @@ The example below will compute a list (`uORFs`) of the number of uORFs with cano
                       unitOut = "number",
                       plotOut = TRUE,
                       pdfName = 'Example')
+ str(uORFs)
 
 ```
 
-```{r uorfAnalysisPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Bar plot visualizing differences in the proportion of transcripts containing uORFs with canonical start codons in a strong Kozak context between different gene sets. Statistical comparisons are made between translationally activated (blue), and suppressed (red) gene sets."}
+```{r uorfAnalysisPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Bar plot visualizing differences in the proportion of transcripts containing uORFs with canonical start codons in a strong Kozak context between different gene sets. Statistical comparisons are made between translationally activated (blue), and suppressed (red) gene sets."}
 knitr::include_graphics("Figures/Figure7.png")
 ```
 
@@ -748,12 +795,12 @@ It is important to note that the `contentMotifs()` function uses a more strict m
 
 The example below will compute a list (`UTR5_SCSCGS_num`) of the number of SCSCGS in the 5'UTR for each gene, and produce a PDF file with an eCDF plot and statistics comparing enrichment of the motif between gene sets. A second list (`UTR5_SCSCGS_pos`) will contain the coordinates of the positions of the motifs within the 5'UTR for each gene.    
 
-```{r contentMotifs, eval=FALSE, echo=TRUE}
+```{r contentMotifs, eval=TRUE, echo=TRUE}
 
 # Detect and quantify a given motif within 5'UTRs, and compare between translationUp vs. 
 # translationDown genes
 
-UTR5_SCSCGS_num <- contentMotifs(ptn = ptn, 
+ UTR5_SCSCGS_num <- contentMotifs(ptn = ptn, 
                         motifsIn = "SCSCGS",
                         region = c("UTR5"), 
                         comparisons = list(c(1,2)),
@@ -761,6 +808,7 @@ UTR5_SCSCGS_num <- contentMotifs(ptn = ptn,
                         unitOut = "number",
                         pdfName = "Example",
                         plotOut = TRUE)
+ str(UTR5_SCSCGS_num)
 
  # Now find the coordinates of positions where the motif occurs in 5'UTRs
  
@@ -770,10 +818,11 @@ UTR5_SCSCGS_num <- contentMotifs(ptn = ptn,
                         comparisons = list(c(1,2)),
                         dist = 1,
                         unitOut = "position")
+ str(UTR5_SCSCGS_pos$UTR5_SCSCGS[1:3])
  
 ```
 
-```{r contentMotifsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in the presence of the SCSCGS motif in the 5'UTR of different gene sets. Statistical comparisons are made between translationally activated (blue) and suppressed (red) gene sets. Background genes are shown in grey."}
+```{r contentMotifsPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in the presence of the SCSCGS motif in the 5'UTR of different gene sets. Statistical comparisons are made between translationally activated (blue) and suppressed (red) gene sets. Background genes are shown in grey."}
 knitr::include_graphics("Figures/Figure8.png")
 
 ```
@@ -809,7 +858,7 @@ The example below demonstrates an implementation of `codonUsage()` generating a 
 
 In addition to the summary table, the example code above also generates plots comparing the average codon usage and frequency between the gene sets of interest specified by the `comparisons` parameter.
 
-```{r codonUsagePlotsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Scatter plots comparing average codon usage and frequency between gene sets of interest. Codons encoding the same amino acid are coloured and connected by lines."}
+```{r codonUsagePlotsPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Scatter plots comparing average codon usage and frequency between gene sets of interest. Codons encoding the same amino acid are coloured and connected by lines."}
 knitr::include_graphics("Figures/Figure9.png")
 
 ```
@@ -852,7 +901,7 @@ In the example below, enriched and depleted codons will be identified between tr
  
 ```
 
-```{r codonUsageSelectedPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Visualizations of differential codon usage between different gene sets of interest. A clustered heatmap of standardized residuals for each codon from a Chi-square test (left), and a plot of the log2 odds ratio for each codon between translationally activated and suppressed gene sets, vs. the average codon frequency. Those passing thresholds for enrichment or depletion between gene sets are highlighted in red and blue, respectively."}
+```{r codonUsageSelectedPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Visualizations of differential codon usage between different gene sets of interest. A clustered heatmap of standardized residuals for each codon from a Chi-square test (left), and a plot of the log2 odds ratio for each codon between translationally activated and suppressed gene sets, vs. the average codon frequency. Those passing thresholds for enrichment or depletion between gene sets are highlighted in red and blue, respectively."}
 knitr::include_graphics("Figures/Figure11.png")
 
 ```
@@ -882,7 +931,7 @@ In the example below, codons identified as enriched or depleted between gene set
                           plotType = "ecdf")
 ```
 
-```{r codonCalcPNG, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in the frequency of enriched (left) and depleted (right) codons between gene sets. Statistical comparisons are made between translationally activated (blue), suppressed (red) gene sets, with background shown in grey. Visualizations can also be generated as either box plots, or violin plots."}
+```{r codonCalcPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in the frequency of enriched (left) and depleted (right) codons between gene sets. Statistical comparisons are made between translationally activated (blue), suppressed (red) gene sets, with background shown in grey. Visualizations can also be generated as either box plots, or violin plots."}
 knitr::include_graphics("Figures/Figure12.png")
 ```
 
@@ -911,14 +960,15 @@ In addition to *cis*-acting features, it is also possible to include features de
 In general, features that can be included in modelling can be either numeric, or categorical. Numeric features can be both continuous (for example, sequence region nucleotide content or length), or discrete (for example, the number of uORFs in 5'UTRs). Categorical features can also be included by converting to binary variables. This is useful for evaluating gene signatures in relation to regulatory outcomes, but can also be applied in many scenarios where mRNA can be divided into two classes (for example those with a certain property would be coded as 1, while those without would be coded as 0, etc.). It is also possible to supply categorical features with a directionality. For example, a feature that can be increased, decreased, or unchanged could be coded as 1, -1, or 0 for each gene to be included in modelling. 
 
 Any gene signature constituting a list of genes, including those provided with the package (stored in the `humanSignatures` and `mouseSignatures` objects) can be converted to feature inputs compatible with modelling using the `signCalc()` function. In the example code below, signatures of mTOR and ISR-sensitive translation, as well as mRNAs known to contain classical TOP motifs will be converted into binary variables that can be used as feature inputs in `featureIntegration()` modelling.
-```{r signCalc, eval=FALSE, echo=TRUE}
+```{r signCalc, eval=TRUE, echo=TRUE}
 
 # load the signatures provided with the package:
  data('humanSignatures')
+ str(humanSignatures)
 
 # Convert the gene signatures to a binary format for featureIntegration:
  signatureFeatures <- signCalc(ptn = ptn, signatures = humanSignatures)
-
+ str(signatureFeatures)
 ```
 
 ### Highly correlated variables and general features 
@@ -961,7 +1011,7 @@ In phase 1 of the analysis, each candidate feature is evaluated separately in un
 
 The results of these univariate models are summarized in an output table where for each feature, the *P*-value, and *FDR* are provided, along with the proportion of variance in the regulatory effect measurement that can be explained by that feature.
 
-```{r univariatePNG, echo=FALSE, fig.wide = TRUE, fig.cap="Output of univariate linear models from featureIntegration."}
+```{r univariatePNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="Output of univariate linear models from featureIntegration."}
 knitr::include_graphics("Figures/Figure13.png")
 ```
 
@@ -971,14 +1021,14 @@ The results of the univariate models are used to prioritize the features include
 
 In phase 2, starting with the feature that best explained changes in the regulatory effect from univariate models (in the example above this would be 5'UTR GC content), forward stepwise regression is performed by adding features to the model in an iterative fashion, keeping covariance assigned to the most influential feature (a rank-based greedy model). In each step, the best performing model (the feature with the strongest association with the regulatory effect) is retained, and features that fail to explain additional variance are discarded. Whether a feature is retained in the model is based on the size of the F-statistic, and a *P*-value below a selected threshold (by default < 0.05). The resulting omnibus model represents the smallest set of features that can explain the greatest proportion of variance in the regulatory effect measurement. This step both ranks features according to their relative importance, and reveals relationships between them.
 
-```{r stepwisePNG, echo=FALSE, fig.wide = TRUE, fig.cap="Output of stepwise regression summarizing F-values at each step of modelling."}
+```{r stepwisePNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="Output of stepwise regression summarizing F-values at each step of modelling."}
 knitr::include_graphics("Figures/Figure14.png")
 ```
 
 In the output table above, the F-statistics are summarized at each step, where features are iteratively added to the model. The table is coloured according to a "traffic-light" system, where cells marked in green indicate features that were significant and included in the final omnibus model. Cells marked in red/purple indicate features that did not improve the ability to explain additional variance in the regulatory effect measurement, and were therefore discarded from the model. For example, after the addition of CDS GC3 in step 2, the set of codons identified as enriched ("Codons_up") is dropped from the model (the F-statistic decreases from more than 204.6 to 1.3) as it is not able to significantly explain additional variance in the regulatory effect. Finally, cells marked in orange indicate a substantial change in the F-statistic for a given feature when another feature is added to the model (an increase or decrease of at least 50\%), indicating a relationship between features. For example, we can see a relationship between the 5'UTR SCSCGS motif and 5'UTR length, as the F-statistic for the motif decreased by ~88.5\% (from 132.5 to 15.2) between steps 3 and 4 when 5'UTR length was added to the model. These relationships can be explored in detail in the resulting network analyses, with correlations, and using UMAP visualizations (all described below). 
 
 The features included in the final omnibus model are summarized in an output table:
-```{r omnibusPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Summary table of features included in the final omnibus and adjusted models after forward stepwise regression."}
+```{r omnibusPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Summary table of features included in the final omnibus and adjusted models after forward stepwise regression."}
 knitr::include_graphics("Figures/Figure15.png")
 ```
 
@@ -994,7 +1044,7 @@ These adjusted values are useful when evaluating whether particular features ten
 
 In addition to the "traffic-light" colouring of the F-value table to highlight substantial relationships between features based on changes in F-value, when the `useCorel` parameter is `TRUE`, an additional table of Pearson's correlation coefficients between features will also be displayed. A threshold for the strength of association between features in order for correlation coefficients to be calculated can be provided using the `covarFilt` parameter. This threshold is based on an integer representing the absolute change in F-value. The default value is `20`, but this may not be appropriate for all datasets and research questions and users can adjust this to see more or fewer correlations (this is discussed further below for network visualizations). Note that the orange "traffic-light" highlighting indicating substantial relationships in the F-value table (Figure 14) is independent of the threshold set with `covarFilt`, and will always represent an increase or decrease in F-value of at least 50\%.
 
-```{r correlationPNG, echo=FALSE, fig.wide = FALSE, fig.cap="Summary table of Pearson's correlation coefficients between features."}
+```{r correlationPNG, eval=TRUE,echo=FALSE, fig.wide = FALSE, fig.cap="Summary table of Pearson's correlation coefficients between features."}
 knitr::include_graphics("Figures/Figure16.png")
 ```
 
@@ -1048,7 +1098,7 @@ Finally, some features may not be significant in the omnibus model but have subs
 
 The network plot below displays the results of the example in the section above, where by default, `NetModelSel = "omnibus"`, `useCorel = TRUE`, and `covarFilt = 20`. 
 
-```{r networkPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Network visualization of the results of forward stepwise regression modelling. Nodes represent features that were selected in the omnibus model, with the size proportional to the total variance in the regulatory effect explained by that feature. Edges represent the Pearson correlation coefficient between features. Wider lines indicate stronger positive or negative correlations. Features without a node indicated in pink represent those that were not selected in the omnibus model, but correlate substantially with one or more features that were significant in the model."}
+```{r networkPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Network visualization of the results of forward stepwise regression modelling. Nodes represent features that were selected in the omnibus model, with the size proportional to the total variance in the regulatory effect explained by that feature. Edges represent the Pearson correlation coefficient between features. Wider lines indicate stronger positive or negative correlations. Features without a node indicated in pink represent those that were not selected in the omnibus model, but correlate substantially with one or more features that were significant in the model."}
 knitr::include_graphics("Figures/Figure17.png")
 
 ```
@@ -1083,7 +1133,7 @@ names(groupColour) <- c("UTR5","CDS", "UTR3","Pathway")
 ```
 
 
-```{r networkGroupingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Network visualization of the results of forward stepwise regression modelling. Selected features are grouped according to which region of the mRNA they correspond to, as well as upstream regulatory pathways known to alter translation efficiency."}
+```{r networkGroupingPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Network visualization of the results of forward stepwise regression modelling. Selected features are grouped according to which region of the mRNA they correspond to, as well as upstream regulatory pathways known to alter translation efficiency."}
 knitr::include_graphics("Figures/Figure18.png")
 
 ```
@@ -1117,7 +1167,7 @@ In addition to forward stepwise regression, the `featureIntegration()` function 
 
 In the first step, genes are divided into training (70\%) and validation (30\%) sets. A pre-modelling step is carried out where the Breiman's Random Forest algorithm [@Liaw2002; @Breiman2019] is applied to perform supervised classification of genes into regulatory classes. Next, feature selection is performed using [Boruta](https://CRAN.R-project.org/package=Boruta) [@Kursa2010]. Boruta uses feature importance measurements from Random Forest classification to iteratively select features based on the comparison of importance attributes to randomly shuffled "shadow" attributes. This feature selection process finds all relevant features associated with the prediction, meaning features may be redundant with others already selected (see the [Boruta Vignette](https://cran.r-project.org/web/packages/Boruta/vignettes/inahurry.pdf) for details). Although not directly comparable, this differs somewhat in principle from forward stepwise regression modelling, where features will only be selected if they independently explain a proportion of variance in the regulatory effect beyond what is explained by other features in the model. In this example, in agreement with forward stepwise regression modelling, 5'UTR GC content is found to be the most important feature predicting post-transcriptional regulation in this context.   
 
-```{r featImpPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Boxplots of Z-Scores of Importance from feature selection using Boruta. Features coloured in green indicate retained features. Shadow feature metrics (randomly shuffled attributes) are indicated in blue."}
+```{r featImpPNG, echo=FALSE,eval=TRUE, fig.wide = TRUE, fig.cap="Boxplots of Z-Scores of Importance from feature selection using Boruta. Features coloured in green indicate retained features. Shadow feature metrics (randomly shuffled attributes) are indicated in blue."}
 knitr::include_graphics("Figures/Figure19.png")
 
 ```
@@ -1126,7 +1176,7 @@ knitr::include_graphics("Figures/Figure19.png")
 
 After performing feature selection, the Random Forest classification of genes into different regulatory classes is repeated using the refined set of retained features. The performance of the model is assessed using Receiver Operating Characteristic (ROC) curves (implemented with [ROCR](https://CRAN.R-project.org/package=ROCR)) [@Sing2005]. The ROC curve plots the rate of false positives against the rate of true positives and provides several metrics to evaluate the predictive power of the model. The area under the curve (AUC) describes the probability of ranking a randomly selected positive higher than a randomly selected negative. Also provided are the sensitivity (true positive rate), and the specificity (true negative rate). The feature importance from the final model is also reported as Mean Decreased Accuracy (see [randomForest](https://CRAN.R-project.org/package=randomForest) for details), where higher values indicate more important features.
 
-```{r finalRFPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Final modelling results using Random Forest Classification. Left panel: Feature importance (mean decrease accuracy) for selected features included in the final model. Right panel: Receiver Operating Characteristic (ROC) curve for Random Forest classification of translationally activated vs. suppressed genes."}
+```{r finalRFPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="Final modelling results using Random Forest Classification. Left panel: Feature importance (mean decrease accuracy) for selected features included in the final model. Right panel: Receiver Operating Characteristic (ROC) curve for Random Forest classification of translationally activated vs. suppressed genes."}
 knitr::include_graphics("Figures/Figure20.png")
 
 ```
@@ -1170,7 +1220,7 @@ The results of the modelling will be stored in the `postNetData` object, and a s
 Both implementations of `featureIntegration()` output PDF files with scatterplots for each individual feature identified in either the final stepwise regression or Random Forest models. The Pearson's correlation coefficient between the feature and regulatory effect (two-sided test) is displayed, along with the linear trend line and cubic smoothing spline (allowing assessment of linearity). For binary features, these metrics are not displayed.
 
 
-```{r IndFeatPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Individual feature visualizations. Scatterplots of 5'UTR GC content (left), 5'UTR SCSCGS motif content (middle), and signature of genes translationally activated by mTOR (right) versus translation efficiency (effM). Pearson's correlation coefficients, linear trend lines, and cubic smoothing splines indicated."}
+```{r IndFeatPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="Individual feature visualizations. Scatterplots of 5'UTR GC content (left), 5'UTR SCSCGS motif content (middle), and signature of genes translationally activated by mTOR (right) versus translation efficiency (effM). Pearson's correlation coefficients, linear trend lines, and cubic smoothing splines indicated."}
 knitr::include_graphics("Figures/Figure21.png")
 
 ```
@@ -1212,7 +1262,7 @@ In the example below, the Random Forest model trained in the example above will 
 
 ```
 
-```{r rfPredPNG, echo=FALSE, fig.wide = TRUE, fig.cap="Receiver Operating Characteristic (ROC) curve for the Random Forest classification model trained in the example above, applied to a new simulated dataset of randomized genes to predict translationally activated vs. suppressed genes."}
+```{r rfPredPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="Receiver Operating Characteristic (ROC) curve for the Random Forest classification model trained in the example above, applied to a new simulated dataset of randomized genes to predict translationally activated vs. suppressed genes."}
 knitr::include_graphics("Figures/Figure22.png")
 
 ```
@@ -1248,7 +1298,7 @@ ptn <- plotFeaturesMap(ptn = ptn,
 
 ```
 
-```{r plotUMAPsPNG, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) generated based on features identified in the omnibus model using forward stepwise regression (left), with the 5'UTR GC content of mRNAs coloured (right)."}
+```{r plotUMAPsPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) generated based on features identified in the omnibus model using forward stepwise regression (left), with the 5'UTR GC content of mRNAs coloured (right)."}
 knitr::include_graphics("Figures/Figure23.png")
 
 ```
@@ -1265,7 +1315,7 @@ In addition to tools for identifying and enumerating sequence features of mRNA a
 
 When performing GSEA, GAGE, or GO term analysis using the output of an *anota2seq* analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is because the slopes fitted by the *anota2seq* APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering (or offsetting). Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended. The `slopeFilt` function identifies these genes with unrealistic slopes, allowing them to be removed from downstream analyses. Note that in high-quality datasets few genes will require slope filtering, but filtering thresholds can be adjusted with the `minSlope` and `maxSlope` parameters. 
 
-```{r slopeFilt, eval=FALSE, echo=TRUE}
+```{r slopeFilt, eval=TRUE, echo=TRUE}
 
 # Get the genes to be filtered out of downstream enrichment analyses 
 # using the buffering regulatory mode:
@@ -1307,7 +1357,7 @@ The code below provides an example of how to run GSEA analysis on genes ranked a
 ```
 
 In addition to the collections in MSigDB, GSEA can also be run using custom gene sets using the `geneSet` parameter.
-```{r GSEAcustom, eval=FALSE, echo=TRUE}
+```{r GSEAcustom, eval=TRUE, echo=TRUE}
 
 # Create example custom gene sets for GSEA:
 set1 <- sample(myGenes[[1]], 100)
@@ -1322,7 +1372,7 @@ inSet <- list(Set1 = set1, Set2 = set2)
 ```
 
 GSEA results can be extracted from the `postNetData` object and plotted using the `ptn_GSEA()` and `gseaPlot` functions.  
-```{r GSEAplotting, eval=FALSE, echo=TRUE}
+```{r GSEAplotting, eval=TRUE, echo=TRUE}
 
 # Extract the significant enrichment results from the postNetData object:
  gseaOut <- ptn_GSEA(ptn, 
@@ -1333,7 +1383,7 @@ GSEA results can be extracted from the `postNetData` object and plotted using th
           termNames = gseaOut$Term[1])
 ```
 
-```{r GSEAplottingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A plot visualizing GSEA results for the enrichment of the gene Set1 in the example dataset."}
+```{r GSEAplottingPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="A plot visualizing GSEA results for the enrichment of the gene Set1 in the example dataset."}
 knitr::include_graphics("Figures/Figure24.png")
 
 ```
@@ -1452,7 +1502,7 @@ The results of the analysis can be retrieved using the `ptn_GO` function and vis
           pdfName = "Example")
 ```
 
-```{r GOplottingPNG, echo=FALSE, fig.wide = TRUE, fig.cap="A dot plot visualizing GO term enrichment analysis results. Dot size corresponds to the ratio of genes included, to the total number of genes in the term."}
+```{r GOplottingPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="A dot plot visualizing GO term enrichment analysis results. Dot size corresponds to the ratio of genes included, to the total number of genes in the term."}
 knitr::include_graphics("Figures/Figure25.png")
 
 ```
@@ -1472,7 +1522,7 @@ Several gene signatures relevant to post-transcriptional regulation are included
 When starting from custom gene lists and regulatory effect measurement the regulation of gene signatures can be assessed using the `plotSignatures` function. All signatures supplied to the `signatureList` parameter will be included on the same plot, where the background gene set is indicated in grey.
 
 The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by mTOR signalling. 
-```{r plotSignatures, eval=FALSE, echo=TRUE, message = FALSE, results = 'hide'}
+```{r plotSignatures, eval=TRUE, echo=TRUE, message = FALSE, results = 'hide'}
 
 # load human signature data:
  data("humanSignatures")
@@ -1489,7 +1539,7 @@ The example code below will load the set of signatures included with the package
                                pdfName = "mTORsignatures")
 ```
 
-```{r plotSignaturesPNG, eval=FALSE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDF of log2 fold changes in translation efficiency for signatures of mTOR-sensitive translation. Grey curve indicates the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates an increase compared to background, while shift to the left indicates a decrease."}
+```{r plotSignaturesPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDF of log2 fold changes in translation efficiency for signatures of mTOR-sensitive translation. Grey curve indicates the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates an increase compared to background, while shift to the left indicates a decrease."}
 knitr::include_graphics("Figures/Figure26.png")
 
 ```
@@ -1499,7 +1549,7 @@ knitr::include_graphics("Figures/Figure26.png")
 When starting from the results of an *anota2seq* analysis, gene signatures can be assessed using the `plotSignatures_ads` function. The key difference from the custom gene list workflow is that instead of providing the `postNetData` object, the `anota2seqDataSet` object (the `ads` parameter) must be provided instead. Four eCDFs will be generated examining the distribution of log2 fold changes in total mRNA, polysome-associated mRNA (or ribosome-protected fragments; RPFs), translation, and buffering (also known as offsetting) for each gene signature provided. In addition to eCDFs, a scatter plot of total mRNA versus polysome-associated mRNA will also be generated, with the genes corresponding to the signatures provided coloured. 
 
 The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by activation of the integrated stress response with thapsigargin. Note that a very minimal example dataset was used to illustrate the *anota2seq* workflow, so very few genes are present in the outputs.   
-```{r plotSignaturesAds, eval=FALSE, echo=TRUE, results='hide', warning = FALSE}
+```{r plotSignaturesAds, eval=TRUE, echo=TRUE, results='hide', warning = FALSE}
 
 # Examine the regulation of ISR-sensitive transcripts in the results of an anota2seq analysis:
 plotSignatures_ads(ads = ads,
@@ -1517,7 +1567,7 @@ plotSignatures_ads(ads = ads,
 
 ```
 
-```{r plotSignaturesAdsPNG, eval=FALSE, echo=FALSE, fig.wide = TRUE, fig.cap="Gene signature analysis starting from an anota2seqDataSet. Scatterplot of total vs. translated mRNA from an example anota2seq analysis with the location of genes belonging to signatures of interest coloured (left panel). Subsequent panels show the eCDFs of log2 fold changes in translation and buffering regulatory modes, as well as for translated and total mRNA for the signatures of interest. Grey curves indicate the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates an increase compared to background, while shift to the left indicates a decrease."}
+```{r plotSignaturesAdsPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Gene signature analysis starting from an anota2seqDataSet. Scatterplot of total vs. translated mRNA from an example anota2seq analysis with the location of genes belonging to signatures of interest coloured (left panel). Subsequent panels show the eCDFs of log2 fold changes in translation and buffering regulatory modes, as well as for translated and total mRNA for the signatures of interest. Grey curves indicate the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates an increase compared to background, while shift to the left indicates a decrease."}
 knitr::include_graphics("Figures/Figure27.png")
 
 ```
@@ -1527,7 +1577,7 @@ knitr::include_graphics("Figures/Figure27.png")
 Finally, it is also possible to generate a heatmap comparing the regulation of multiple gene signatures in your dataset of interest using the `signaturesHeatmap` function. The values displayed in the heatmap are specified using the `unit` parameter, and can either be based on significance or the magnitude of the regulation for each given gene signature. For significance, the values displayed in the heatmap are obtained from a two-sided Wilcoxon Rank Sum test comparing the regulatory effect measurement values for the gene signature of interest against the background. P-values are corrected for multiple testing using the Benjamini & Hochberg method, and the -log10(FDR) value is multiplied by either 1 or -1 corresponding to up- or down-regulation of the gene signature compared to background, respectively. For magnitude, the values displayed in the heatmap are obtained by taking the difference between the eCDFs of the regulatory effect measurements for the gene signature and the background, at the percentile specified.
 
 The example code below will examine the regulation of all gene signatures included with the package, based on the significance and directionality of the regulation.  
-```{r plotSignaturesHeatmap, eval=FALSE, echo=TRUE, results='hide'}
+```{r plotSignaturesHeatmap, eval=TRUE, echo=TRUE, results='hide'}
 
 # Examine the regulation of all gene signatures:
 signaturesHeatmap(ptn,
@@ -1538,7 +1588,7 @@ signaturesHeatmap(ptn,
 
 ```
 
-```{r plotSignaturesHeatmapPNG, eval=FALSE, echo=FALSE, fig.wide = TRUE, fig.cap="A heatmap of -log10(FDRs) for regulation of various gene signatures in the example dataset. Colours indicate the directionality of regulation."}
+```{r plotSignaturesHeatmapPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="A heatmap of -log10(FDRs) for regulation of various gene signatures in the example dataset. Colours indicate the directionality of regulation."}
 knitr::include_graphics("Figures/Figure28.png")
 
 ```

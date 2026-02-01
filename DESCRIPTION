@@ -63,7 +63,8 @@ Suggests:
     knitr,
     rmarkdown,
     BiocStyle,
-    pdftools (>= 3.6.0)
+    pdftools (>= 3.6.0),
+    magick (>= 2.9.0)
 biocViews: GeneExpression, GeneRegulation, Transcriptomics, RiboSeq, RNASeq, Sequencing, Annotation, Network, FeatureExtraction
 VignetteBuilder: knitr
 URL: https://github.com/kszkop/postNet
