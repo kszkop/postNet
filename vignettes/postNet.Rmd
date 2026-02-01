@@ -304,7 +304,7 @@ The regulatory effect measurement is taken directly from the `Anota2seqDataSet` 
 When an `Anota2seqDataSet` is supplied, the appropriate background gene set, and colours for each gene list will be automatically retrieved.  
 
 The example below illustrates the set-up of a postNet analysis using the output of *anota2seq*, `ads`.  
-```{r GetAds, eval=TRUE, echo=TRUE, results = 'hide', warning = FALSE}
+```{r GetAds, eval=TRUE, echo=TRUE, include=FALSE, results = 'hide', warning = FALSE}
 
 # Initialize Anota2seqDataSet using example data (see anota2seq vignette for details)
  ads <- anota2seq::anota2seqDataSetFromMatrix(
