@@ -63,11 +63,15 @@ plotSignatures_ads(ads,
 }
 
 \examples{
+local({
+  oldwd <- getwd()
+  on.exit(setwd(oldwd), add = TRUE)
+  setwd(tempdir())
+  
+  # load example data:
+  data("postNetExample", package = "postNet")
 
-# load example data:
- data("postNetExample", package = "postNet")
-
-# Initialize Anota2seqDataSet (see anota2seq vignette for details)
+ # Initialize Anota2seqDataSet (see anota2seq vignette for details)
  ads <- anota2seq::anota2seqDataSetFromMatrix(
     dataP = postNetExample$ads_data$dataP,
     dataT = postNetExample$ads_data$dataT,
@@ -76,20 +80,20 @@ plotSignatures_ads(ads,
     dataType = "RNAseq",
     normalize = FALSE)
     
-# Run an anota2seq analysis:
-# Note that the quality control and residual outlier testing are not 
-# performed to limit the running time of this example. For full details 
-# on running an analysis please see the anota2seq vignette and help manual.
- ads <- anota2seq::anota2seqRun(ads,
+  # Run an anota2seq analysis:
+  # Note that the quality control and residual outlier testing are not 
+  # performed to limit the running time of this example. For full details 
+  # on running an analysis please see the anota2seq vignette and help manual.
+  ads <- anota2seq::anota2seqRun(ads,
     performQC = FALSE, 
     performROT = FALSE, 
     useProgBar = FALSE)
     
-# load signature data:
- humanSignatures <- get_signatures("human")
+  # load signature data:
+  humanSignatures <- get_signatures("human")
  
-# Examine the regulation of mTOR-sensitive transcripts in the results of the anota2seq analysis 
- plotSignatures_ads(ads = ads,
+  # Examine the regulation of mTOR-sensitive transcripts in the results of the anota2seq analysis 
+  plotSignatures_ads(ads = ads,
                                contrast = 1,
                                dataName = "Osmosis_1h",
                                signatureList = humanSignatures[c("Gandin_etal_2016_mTOR_transUp",
@@ -100,5 +104,5 @@ plotSignatures_ads(ads,
                                scatterXY = 4,
                                tableCex = 0.65,
                                pdfName = "mTORsignatures")
-
+})
 }
