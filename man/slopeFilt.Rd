@@ -55,12 +55,15 @@ slopeFilt(ads,
 }
 
 \examples{
+local({
+  oldwd <- getwd()
+  on.exit(setwd(oldwd), add = TRUE)
+  setwd(tempdir())
+  # load example data:
+  data("postNetExample", package = "postNet")
 
-# load example data:
- data("postNetExample", package = "postNet")
-
-# Initialize Anota2seqDataSet (see anota2seq vignette for details)
- ads <- anota2seq::anota2seqDataSetFromMatrix(
+  # Initialize Anota2seqDataSet (see anota2seq vignette for details)
+  ads <- anota2seq::anota2seqDataSetFromMatrix(
     dataP = postNetExample$ads_data$dataP,
     dataT = postNetExample$ads_data$dataT,
     phenoVec = postNetExample$ads_data$phenoVec,
@@ -68,20 +71,21 @@ slopeFilt(ads,
     dataType = "RNAseq",
     normalize = FALSE)
     
-# Run an anota2seq analysis:
-# Note that the quality control and residual outlier testing are not 
-# performed to limit the running time of this example. For full details 
-# on running an analysis please see the anota2seq vignette and help manual.
- ads <- anota2seq::anota2seqRun(ads,
+  # Run an anota2seq analysis:
+  # Note that the quality control and residual outlier testing are not 
+  # performed to limit the running time of this example. For full details 
+  # on running an analysis please see the anota2seq vignette and help manual.
+  ads <- anota2seq::anota2seqRun(ads,
     performQC = FALSE, 
     performROT = FALSE, 
     useProgBar = FALSE)
 
-# Get the genes to be filtered out of downstream enrichment analyses 
-# using the buffering regulatory mode:
- filtOutGenes <- slopeFilt(ads,
+  # Get the genes to be filtered out of downstream enrichment analyses 
+  # using the buffering regulatory mode:
+  filtOutGenes <- slopeFilt(ads,
                   regulationGen = "buffering",
                   contrastSel = 1)
                   
   str(filtOutGenes)
+})
 }
