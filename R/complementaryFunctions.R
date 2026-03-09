@@ -1601,26 +1601,24 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
 getLink <- function(url){
   responseTmp <- tryCatch(
     {
-      httr2::request(url) %>%
-        httr2::req_perform() %>%
+      httr2::request(url) |>
+        httr2::req_headers(Accept = "text/html") |>
+        httr2::req_perform() |>
         httr2::resp_check_status()
     },
     error = function(e) {
-      cat("Failed to fetch the URL:", conditionMessage(e), "\n")
+      message("Failed to fetch the URL: ", conditionMessage(e))
       return(NULL)
     }
   )
   if (is.null(responseTmp)) return(NULL)
   
-  pageTmp <- httr2::resp_body_string(responseTmp) %>%
-    rvest::read_html()
-  
-  linksTmp <- pageTmp %>%
-    rvest::html_nodes("a") %>%
+  httr2::resp_body_string(responseTmp) |>
+    rvest::read_html() |>
+    rvest::html_elements("a") |>
     rvest::html_attr("href")
-  
-  return(linksTmp)
 }
+
 
 get_signatures <- function(species) {
   if (!is_valid_species(species)) {
