@@ -22,7 +22,7 @@ signaturesHeatmap <- function(ptn,
   regData <- data.frame(geneSymb = names(effIn))
   regData$effIn <- as.numeric(effIn)
 
-  ## calculate metric for each signature
+  #
   percOut <- as.numeric()
   if (unit == "FDR") {
     fdrOut <- as.numeric()
@@ -51,7 +51,7 @@ signaturesHeatmap <- function(ptn,
     percOut[sign] <- percentileDiff
 
     if (unit == "FDR") {
-      # wilcox test
+      #
       pval <- as.numeric(wilcox.test(as.numeric(regData[regData$signature == names(signatureList)[sign], ]$effIn), as.numeric(regData[regData$signature == "bkg", ]$effIn), exact = FALSE, alternative = "two.sided")[3])
       if (pval == 0) {
         pval <- 1e-300

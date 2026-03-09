@@ -33,13 +33,13 @@ goAnalysis <- function(ptn,
     warning("All genes in the background gene set are regulated. Please check that you are using an appropriate background set.")
   }
 
-  # filter for slopes if indicated
+  #
   if (!is.null(genesSlopeFiltOut)) {
     bg <- bg[!bg %in% genesSlopeFiltOut]
     res <- lapply(res, function(x) x[!x %in% genesSlopeFiltOut])
   }
 
-  # Convert to Entrez ID
+  # 
   bg_entrezID <- convertSymbolToEntrezID(geneList = bg, species = species)
   res_entrezID <- lapply(res, function(x) convertSymbolToEntrezID(geneList = x, species = species))
 
@@ -88,7 +88,7 @@ goAnalysis <- function(ptn,
         resOut[[names(GoLists)[i]]] <- resTmp
       }
     }
-    # remove counts below 10 and recalculate adjp and reformat
+    #
     for (i in 1:length(resOut)) {
       tabTmp <- resOut[[i]]@result
       #

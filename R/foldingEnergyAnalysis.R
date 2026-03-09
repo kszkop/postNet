@@ -77,7 +77,7 @@ foldingEnergyAnalysis <- function(ptn,
     check_region(region)
     #
     feOut <- list()
-    # list existing species
+    #
     currTmp <- list.files(system.file("extdata/foldEnergies/", package = "postNet"))
 
     if (!species %in% currTmp) {
@@ -103,7 +103,7 @@ foldingEnergyAnalysis <- function(ptn,
           stop("There are no regulated genes in your input. Please check the input or run without indicating 'regulation' and 'comparisons'.")
         }
         colOut <- colPlot(ptn)
-        # Plot
+        # 
         pdf(ifelse(is.null(pdfName), paste(reg, plotType, "foldEnergyAnalysis.pdf", sep = "_"), paste(pdfName, reg, plotType, "foldEnergyAnalysis.pdf", sep = "_")), width = 8, height = 8, useDingbats = FALSE)
         ylabel <- ifelse(isTRUE(residFE), "Residuals (FE ~ Length)", "Folding Energy")
         plotPostNet(resOut, colOut, comparisons, ylabel = ylabel, plotType = plotType)

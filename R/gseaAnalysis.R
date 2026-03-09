@@ -21,31 +21,7 @@ gseaAnalysis <- function(ptn,
   if (maxSize <= minSize) {
     stop("'maxSize' must be greater than 'minSize'.")
   }
-  #
-  #
-  # if(!is.null(ads)){
-  #  tmpAds <- anota2seq::anota2seqGetOutput(ads,
-  #                                          analysis = regulationGen,
-  #                                          output = "full",
-  #                                          selContrast = contrastSel,
-  #                                          getRVM = TRUE)
-  #  #
-  #  if (!is.null(genesSlopeFiltOut)) {
-  #    tmpAdsFilt <- tmpAds[!row.names(tmpAds) %in% genesSlopeFiltOut, ]
-  #  }  else {
-  #    tmpAdsFilt <- tmpAds
-  #  }
-  #  #
-  #  tmpP <- tmpAdsFilt[, "apvRvmP"]
-  #  tmpEff <- tmpAdsFilt[, "apvEff"]
-  # rankedRVMP <- rank(-log10(tmpP) * sign(tmpEff))
-  #  rankIn <- tmpEff[order(tmpEff,decreasing = T)]
-  # } else if (!is.null(rankIn)){
-  #  rankIn <- rankIn[order(rankIn,decreasing = T)]
-  # } else {
-  #  stop("No anota2seq object or ranks provided")
-  # }
-  #
+
   effTmp <- ptn_effect(ptn)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut]
@@ -68,7 +44,6 @@ gseaAnalysis <- function(ptn,
     msigdbOut <- msigdb::appendKEGG(msigdbOut, version = versionTmp)
     #
 
-    # Start with hallmark
     collectionTmp <- msigdb::subsetCollection(msigdbOut, collection = collection, subcollection = subcollection)
     if (!is.null(subsetNames)) {
       collectionTmp <- collectionTmp[names(collectionTmp) %in% subsetNames]
@@ -80,7 +55,7 @@ gseaAnalysis <- function(ptn,
   }
   resOut <- fgsea::fgsea(pathways = geneSet_ids, stat = rankIn, minSize = minSize, maxSize = maxSize)
 
-  # format output
+  #
   resOut$Count <- unlist(lapply(resOut$leadingEdge, length))
   colnames(resOut) <- c("Term", "pvalue", "adjusted_pvalue", "log2err", "ES", "NES", "Size", "Genes", "Count")
   resOut <- resOut[, c(1, 5, 6, 4, 9, 7, 2, 3, 8)]
@@ -88,7 +63,7 @@ gseaAnalysis <- function(ptn,
   gseaOut$Genes <- sapply(gseaOut$Genes, function(x) paste(x, collapse = ":"))
 
   nameTmp <- ifelse(!is.null(name), paste(name, "gseaAnalysis", sep = "_"), "gseaAnalysis")
-  data.table::fwrite(gseaOut, file = paste(nameTmp, ".txt", sep = ""), sep = "\t") # , sep2=c("", ":", ""))
+  data.table::fwrite(gseaOut, file = paste(nameTmp, ".txt", sep = ""), sep = "\t") 
   #
   ptn@analysis@GSEA <- gseaOut
   #

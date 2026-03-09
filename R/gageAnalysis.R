@@ -1,5 +1,5 @@
 gageAnalysis <- function(ptn,
-                         category, # To choose from (gene ontologies) 'BP', 'CC', 'MF' or 'KEGG'
+                         category,
                          genesSlopeFiltOut = NULL,
                          maxSize = 500,
                          minSize = 10) {
@@ -51,9 +51,6 @@ gageAnalysis <- function(ptn,
     if (sel == "KEGG") {
       pathwayKegg <- gage::kegg.gsets(species = species, id.type = "entrez")
       pathwaysIn <- pathwayKegg$kg.sets
-      # for(pw in 1:length(pathwaysIn)){
-      #  pathwaysIn[[pw]] <- convertEntrezIDToSymbol(pathwaysIn[[pw]],species = species)
-      # }
     } else {
       if (!exists("pathwayGO")) {
         pathwayGO <- gage::go.gsets(species = species, id.type = "EG")
@@ -81,8 +78,6 @@ gageAnalysis <- function(ptn,
       tmpGenes <- glist[glist %in% names(rankIn)]
       if (length(tmpGenes) > 0) {
         tmpGenes_conv <- names(convTab)[match(as.character(tmpGenes), convTab)]
-        # tmpGenes_conv <- convertEntrezIDToSymbol(pathwaysIn[[pw]], species = species)
-        # AnnotationDbi::mapIds(x = org.Hs.eg.db, keys = as.character(glist), column="SYMBOL", keytype="ENTREZID")
       } else {
         tmpGenes_conv <- NA
       }

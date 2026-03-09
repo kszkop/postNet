@@ -37,7 +37,7 @@ plotSignatures <- function(ptn,
   if (any(duplicated(unlist(signatureList)))) {
     cat("There are some genes that overlap between signatures. Separate backgrounds will be used for each gene signature.")
 
-    ## collect signatures
+    #
     for (i in 1:length(signatureList)) {
       regData[, 2 + i] <- "bkg"
       regData[, 2 + i][regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]

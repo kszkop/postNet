@@ -59,13 +59,10 @@ codonCalc <- function(ptn,
     if (featNameTmp == 0) {
       stop("The input for 'featSel' must be a named list.")
     }
-    # if(is.null(featselName)){
-    #  featNameTmp <- paste("codon",names(featsel)[i],sep="_")
-    # }
+
     #
     regName <- names(featsel[i])
     nameTmp <- ifelse(is.null(pdfName), paste("features", regName, "codonCalc.pdf", sep = "_"), paste(pdfName, "features", regName, "codonCalc.pdf", sep = "_"))
-    # nameOut <- paste(dirTmp,nameTmp, sep='/')
     nameOut <- nameTmp
     #
     if (analysis == "codon") {
@@ -98,7 +95,6 @@ codonCalc <- function(ptn,
       pdf(nameOut, width = 8, height = 8, useDingbats = FALSE)
       ylabel <- paste("codon usage(", unit, ")", sep = "")
       plotPostNet(resOut, colOut, comparisons, ylabel = ylabel, plotType = plotType)
-      # paste("codon usage(", unit, ")","\n", featNameTmp, ":" ,paste(featTmp,collapse=','),sep='')
       dev.off()
     }
   }

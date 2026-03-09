@@ -4,7 +4,6 @@ goDotplot <- function(ptn,
                       category,
                       pool = TRUE,
                       termSel = NULL,
-                      # colours = NULL,
                       nCategories = 10,
                       size = "Count",
                       pdfName = NULL) {
@@ -46,7 +45,7 @@ goDotplot <- function(ptn,
         goDf <- goDf[1:nCategories, ]
       }
 
-      # to plot
+      #
       goDf$log10fdr <- -log10(goDf$p.adjust)
 
       #
@@ -61,12 +60,12 @@ goDotplot <- function(ptn,
       names(colOut) <- names(ptn@dataIn@geneList)
       #
       if (all(goDf$scale == floor(goDf$scale))) {
-        # Integer scale values
+        #
         size_breaks <- pretty(range(goDf$scale, na.rm = TRUE), n = 4)
         size_breaks <- size_breaks[size_breaks == floor(size_breaks)]
         size_limits <- range(size_breaks, na.rm = TRUE)
       } else {
-        # Decimal scale values between 0 and 1
+        # 
         rng <- range(goDf$scale, na.rm = TRUE)
         step <- 0.05 # finer step for better resolution in small ranges
 
@@ -93,8 +92,7 @@ goDotplot <- function(ptn,
         ggplot2::xlab("-log10 FDR") +
         ggplot2::scale_x_continuous(limits = c(0, NA)) +
         ggplot2::ylab(" ")
-      #+
-      # ggplot2::ggtitle(paste(names(goIn)[i],sel, sep='_'))
+      #
       plot(pOut)
       dev.off()
     } else {
@@ -117,7 +115,7 @@ goDotplot <- function(ptn,
           if (nCategories < nrow(goDf)) {
             goDf <- goDf[1:nCategories, ]
           }
-          # to plot
+          #
           goDf$log10fdr <- -log10(goDf$p.adjust)
 
           #
@@ -131,16 +129,15 @@ goDotplot <- function(ptn,
           colOut <- colPlot(ptn)[-1]
           names(colOut) <- names(ptn_geneList(ptn))
           #
-          # Determine breaks and limits for the size scale
           if (all(goDf$scale == floor(goDf$scale))) {
-            # Integer scale values
+            #
             size_breaks <- pretty(range(goDf$scale, na.rm = TRUE), n = 4)
             size_breaks <- size_breaks[size_breaks == floor(size_breaks)]
             size_limits <- range(size_breaks, na.rm = TRUE)
           } else {
-            # Decimal scale values between 0 and 1
+            # 
             rng <- range(goDf$scale, na.rm = TRUE)
-            step <- 0.05 # finer step for better resolution in small ranges
+            step <- 0.05 
 
             min_val <- floor(rng[1] / step) * step
             max_val <- ceiling(rng[2] / step) * step
@@ -153,7 +150,6 @@ goDotplot <- function(ptn,
           par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
           pOut <- ggplot2::ggplot(goDf, ggplot2::aes(x = log10fdr, y = reorder(Description, log10fdr), size = scale)) +
             ggplot2::geom_point(color = colOut[names(goIn)[i]]) +
-            #  ggplot2::scale_color_manual(values = colOut[names(goIn)[i]]) +
             ggplot2::theme_bw() +
             ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = "dashed", linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(), panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, "cm")) +
             ggplot2::xlab("-log10 FDR") +

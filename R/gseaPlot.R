@@ -23,30 +23,7 @@ gseaPlot <- function(ptn,
   }
   #
   rankIn <- effIn[order(effIn, decreasing = TRUE)]
-  # if(!is.null(ads)){
-  #  tmpAds <- anota2seq::anota2seqGetOutput(ads,
-  #                                          analysis = regulationGen,
-  #                                          output = "full",
-  #                                          selContrast = contrastSel,
-  #                                          getRVM = TRUE)
-  #  #
-  #  if (!is.null(genesSlopeFiltOut)) {
-  #    tmpAdsFilt <- tmpAds[!row.names(tmpAds) %in% genesSlopeFiltOut, ]
-  #  }  else {
-  #    tmpAdsFilt <- tmpAds
-  #  }
-  #  #
-  #  tmpP <- tmpAdsFilt[, "apvRvmP"]
-  #  tmpEff <- tmpAdsFilt[, "apvEff"]
-  #  #rankedRVMP <- rank(-log10(tmpP) * sign(tmpEff))
-  #  rankIn <- tmpEff[order(tmpEff,decreasing = T)]
-  # } else if (!is.null(rankIn)){
-  #  rankIn <- rankIn[order(rankIn,decreasing = T)]
-  # } else {
-  #  stop("No anota2seq object or ranks provided")
-  # }
-  #
-  #
+  
   rnk <- rank(-rankIn)
   ord <- order(rnk)
   statsAdj <- rankIn[ord]
@@ -56,7 +33,7 @@ gseaPlot <- function(ptn,
   for (tname in termNames) {
     termTmp <- tname
     pathGenes <- unlist(strsplit(as.character(gseaOut[gseaOut$Term %in% termTmp, ]$Genes), ":"))
-    # pathGenes<- unname(as.vector(na.omit(match(pathGenes, names(statsAdj)))))
+
     pathGenes <- match(pathGenes, names(statsAdj))
     pathGenes <- sort(pathGenes)
     gseaRes <- fgsea::calcGseaStat(statsAdj, selectedStats = pathGenes, returnAllExtremes = TRUE)

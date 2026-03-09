@@ -64,7 +64,6 @@ plotFeaturesMap <- function(ptn,
   #
   if (isTRUE(regOnly)) {
     resOut <- resQuant(qvec = ptn_effect(ptn), ptn = ptn)
-    # for (i in 1:length(comparisons)) {
     if (names(resOut)[1] == "background") {
       compTmp <- comparisons[[1]] + 1
     } else {
@@ -80,7 +79,6 @@ plotFeaturesMap <- function(ptn,
     featuresCluster <- featuresSel
   }
   if (isTRUE(scaled)) {
-    # save <- featuresCluster
     featuresCluster <- scale(na.omit(featuresCluster), center = centered, scale = scaled)
   } else {
     featuresCluster <- na.omit(featuresCluster)
@@ -90,8 +88,6 @@ plotFeaturesMap <- function(ptn,
   fmapRes <- fmapResOut <- as.data.frame(fmapRes$layout)
   colnames(fmapRes) <- colnames(fmapResOut) <- c("UMAP1", "UMAP2")
   fmapRes$Gene <- rownames(featuresCluster)
-
-  # Plot selected features
 
   effTmp <- ptn_effect(ptn)
   eff <- effTmp[match(row.names(fmapRes), names(effTmp))]

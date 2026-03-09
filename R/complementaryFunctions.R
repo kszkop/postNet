@@ -36,7 +36,7 @@ anota2seqGetDirectedRegulations <- function(ads) {
   return(regModeList)
 }
 
-### For gff
+###
 getAttributeField <- function(x, field, attrsep = ";") {
   s <- strsplit(x, split = attrsep, fixed = TRUE)
   sapply(s, function(atts) {
@@ -70,7 +70,6 @@ gffRead <- function(gffFile, nrows = -1) {
     "found", nrow(gff), "rows with classes:",
     paste(sapply(gff, class), collapse = ", "), "\n"
   )
-  # stopifnot(!anyis.na(gff$start)), !anyis.na(gff$end)))
   return(gff)
 }
 
@@ -81,7 +80,7 @@ extGff <- function(gff) {
   gff$geneID <- getAttributeField(gff$attributes, "gene")
   gff <- with(gff, cbind(gff, reshape2::colsplit(gff$transID_ver, pattern = "\\.", names = c("transID", "version"))))
   bed <- data.frame(id = gff$transID, chr = gff$seqname, strand = gff$strand, start = gff$start, end = gff$end, transVer = gff$version, geneID = gff$geneID)
-  # Extract only protein coding
+  # 
   bed <- bed[grepl("NM_", bed$id), ]
   bed <- bed[grepl("NC_", bed$chr), ]
   bed <- subset(bed, !duplicated(id))
@@ -93,13 +92,11 @@ extGff <- function(gff) {
 gSel <- function(annot, ads, customBg, geneList) {
   if (!is.null(ads)) {
     bg <- row.names(ads@dataP)
-    # if(!is.null(geneList)){
-    #  bg <- unique(c(bg, as.character(unlist(geneList))))
-    # }
+
     annotOut <- annot[annot$geneID %in% bg, ]
   } else {
     if (!is.null(customBg)) {
-      # add here to be sure that all genelist are in bg
+      # 
       bg <- customBg
       if (!is.null(geneList)) {
         bg <- unique(c(bg, as.character(unlist(geneList))))
@@ -112,21 +109,12 @@ gSel <- function(annot, ads, customBg, geneList) {
   return(annotOut)
 }
 
-regSel <- function(annot, region) { # , ext=FALSE){
+regSel <- function(annot, region) {
   nc <- grep(region, colnames(annot))
   #
   seqTmp <- annot[, nc]
   lenTmp <- as.numeric(sapply(seqTmp, function(x) length(seqinr::s2c(x))))
   #
-  # if(isTRUE(ext)){
-  #  seq <- list()
-  #  seq[[1]] <- annot$CDS_seq
-  #  seq[[2]] <- annot$UTR3_seq
-  #  extSeq <- combSeq(seqIn = seq)
-  #  extSeq <- unlist(extSeq)
-  #  #
-  #  annotOut <- cbind(annot[,c(1:2)], seqTmp,lenTmp,extSeq)
-  # } else {
   annotOut <- cbind(annot[, c(1:2)], seqTmp, lenTmp)
   # }
   #
@@ -134,7 +122,7 @@ regSel <- function(annot, region) { # , ext=FALSE){
 }
 
 isoSel <- function(annot, method, setSeed = NULL) {
-  # Select per gene level
+  # 
   if (method == "shortest") {
     annotOut <- as.data.frame(annot %>% group_by(geneID) %>% dplyr::slice(which.min(lenTmp)))
   } else if (method == "longest") {
@@ -188,9 +176,6 @@ adjustSeq <- function(annot,
     if (isTRUE(excl)) {
       annotTmp <- annotTmp[annotTmp$id %in% names(adjObj_temp), ]
     }
-    # remove these that are not in annotation but in adjustment
-    # toRemove <- setdiff(names(adjObj_temp), annotTmp$id)
-    # adjObj_temp <- adjObj_temp[!names(adjObj_temp) %in% toRemove]
     #
     if (length(adjObj_temp) == 0) {
       stop("None of the entries in the provided sequence adjustment vector are present in the existing annotation.")
@@ -209,7 +194,7 @@ resSel <- function(ads = NULL,
                    contrast,
                    geneList) {
   resOut <- list()
-  # Extract all results
+  # 
   if (!is.null(ads)) {
     results <- anota2seqGetDirectedRegulations(ads)
     #
@@ -240,12 +225,12 @@ resSel <- function(ads = NULL,
 
 getBg <- function(ads = NULL, customBg = NULL, geneList = NULL) {
   bgOut <- list()
-  # Extract all results
+  #
   if (!is.null(ads)) {
     bgOut <- row.names(ads@dataP)
   } else {
     if (!is.null(customBg)) {
-      # add here to be sure that all genelist are in bg
+      # 
       bgOut <- customBg
       if (!is.null(geneList)) {
         tmpDiff <- setdiff(as.character(unlist(geneList)), bgOut)
@@ -261,15 +246,15 @@ getBg <- function(ads = NULL, customBg = NULL, geneList = NULL) {
 }
 
 check_id_type <- function(id) {
-  # Check if the ID is purely numeric (likely an Entrez ID)
+  # 
   if (grepl("^[0-9]+$", id)) {
     return("entrezID")
   }
-  # Check if the ID is alphabetic or alphanumeric (likely a GeneID)
+  # 
   else if (grepl("^[A-Za-z0-9]+$", id)) {
     return("geneID")
   }
-  # If it doesn't match either, return unknown
+  # 
   else {
     return("unknown")
   }
@@ -350,24 +335,22 @@ addStats <- function(comparisons, plotType, resOut, coloursOut) {
     pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], exact = FALSE, alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
     #
     if (plotType == "boxplot" | plotType == "violin") {
-      # yposTmp <- #range(as.numeric(unlist(resOut)))[2]#ifelse(range(as.numeric(unlist(resOut)))[2] <= 1, 1.1,range(as.numeric(unlist(resOut)))[2]+ j*1)
 
       rect(xleft = compTmp[1], xright = compTmp[2], ybottom = j - 1, ytop = j - 1, lwd = 2)
       #
-      # text(sum(compTmp) / 2, ifelse(range(as.numeric(unlist(resOut)))[2] <= 1,yposTmp + 0.05,yposTmp + 1), pvalTmp, cex = 0.75)
       text(sum(compTmp) / 2, j - 0.5, pvalTmp, cex = 0.75)
     } else if (plotType == "ecdf") {
       tableOut[j, 1] <- paste(names(resOut)[compTmp[2]], "vs", names(resOut)[compTmp[1]], sep = " ")
       tableOut[j, 2] <- pvalTmp
 
-      # Calculate percentiles
+      # 
       tmpBg <- sort(resOut[[compTmp[1]]])
       ecdfBg <- 1:length(tmpBg) / length(tmpBg)
       bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
       bg_05 <- tmpBg[which(ecdfBg >= 0.5)[1]]
       bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
 
-      # Calculate percentiles for second and difference from background
+      # 
       tmpSign <- sort(resOut[[compTmp[2]]])
       ecdfSign <- 1:length(tmpSign) / length(tmpSign)
       tableOut[j, 3] <- format(tmpSign[which(ecdfSign >= 0.25)[1]] - bg_025, digits = 2)
@@ -424,8 +407,6 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
 
     par(mar = c(8, 8, 0, 0), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
     plot(1, max(ylimTmp2_1, ylimTmp2_2), xlim = xlimTmp, ylim = ylimTmp, xaxt = "n", type = "n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
-    # vioplot::vioplot(dataTmp,type="n",xaxt = "n", yaxt = "n", xlab = "", ylab = "", main = "", lwd = 1, bty = "n", font = 2, frame.plot = FALSE)
-
     #
     if (ylabel == "Length (Log2 scale)") {
       axis(side = 2, font = 2, las = 2, lwd = 2, at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2), labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000))
@@ -434,7 +415,6 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
       axis(side = 2, font = 2, las = 2, lwd = 2)
       mtext(side = 2, line = 5, ylabel, col = "black", font = 2, cex = 1.7, at = mean(ylimTmp))
     }
-    # text(1:length(resOut), par("usr")[3] - 0.45, labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
     text(1:length(resOut), par("usr")[3] - 0.05 * diff(par("usr")[3:4]), labels = names(resOut), xpd = NA, cex = 0.9, srt = 45, adj = 1)
 
     #
@@ -462,8 +442,6 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
       }
     }
   } else if (plotType == "ecdf") {
-    # xlim_min <- roundNice(as.numeric(quantile(as.numeric(unlist(resOut)), 0.01)),direction='down')
-    # xlim_max <- roundNice(as.numeric(quantile(as.numeric(unlist(resOut)), 0.99)),direction='up')
 
     par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
     plot(ecdf(resOut[[1]]), col = colOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", font = 2) # , yaxt = "none", xlim = c(xlim_min, xlim_max), xaxt = "none")
@@ -471,8 +449,6 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
     mtext(side = 1, line = 4, ylabel, col = "black", font = 2, cex = 1.2)
     mtext(side = 2, line = 3, "Fn(x)", col = "black", font = 2, cex = 1.2)
 
-    # axis(side = 1, seq(xlim_min, xlim_max, 1), font = 2, lwd = 2)
-    # axis(side = 2, seq(0, 1, 0.2), font = 2, las = 2, lwd = 2)
     for (i in 2:length(resOut)) {
       lines(ecdf(resOut[[i]]), col = colOut[i], main = "", xlab = "", verticals = TRUE, do.p = FALSE, lwd = 4)
     }
@@ -494,7 +470,7 @@ is_by_3 <- function(seqs) {
   all(sapply(seqs, function(x) length(seqinr::c2s(x)) %% 3 == 0))
 }
 
-# calculate desired content
+#
 calc_content <- function(x, nuc) {
   contTmp <- stringr::str_count(x, nuc)
   contentOut <- contTmp / stringr::str_length(x) * 100
@@ -560,21 +536,15 @@ calc_motif <- function(x, motifIn, dist, unit) {
   #
   motOut <- seqinr::words.pos(motifIn, seqTmp)
   if (length(motOut) > 0) {
-    # Check overlapping and collapse them
-    # gROut <- GenomicRanges::reduce(GenomicRanges::GRanges(seqnames='tmp', ranges=IRanges::IRanges(start=motOut,end=motOut)),min.gapwidth=len)
-    #
     dtTmp <- data.table::data.table(start = motOut, end = motOut)
     data.table::setorder(dtTmp, start)
     dtTmp[, group := cumsum(c(1, diff(start) > len))]
     dtTmp <- dtTmp[, .(start = min(start), end = max(end)), by = group]
 
     if (unit == "number") {
-      # nMot <- length(gROut)
       nMot <- nrow(dtTmp)
     } else if (unit == "position") {
       nMot <- list()
-      # nMot[["start"]] <- as.numeric(start(gROut@ranges))
-      # nMot[["end"]] <- as.numeric(end(gROut@ranges)) + lenTmp - 1
       nMot[["start"]] <- as.numeric(dtTmp$start)
       nMot[["end"]] <- as.numeric(dtTmp$end) + lenTmp - 1
     }
@@ -593,8 +563,6 @@ calc_g4 <- function(x, min_score, unit) {
       nMot <- nrow(predTmp@elementMetadata)
     } else if (unit == "position") {
       nMot <- list()
-      # nMot[["start"]] <- as.numeric(start(gROut@ranges))
-      # nMot[["end"]] <- as.numeric(end(gROut@ranges)) + lenTmp - 1
       nMot[["start"]] <- as.numeric(predTmp@ranges@start)
       nMot[["end"]] <- as.numeric(predTmp@ranges@start) + as.numeric(predTmp@ranges@width) - 1
     }
@@ -605,11 +573,11 @@ calc_g4 <- function(x, min_score, unit) {
 }
 
 
-# convert IUPAC code
+# 
 convertIUPAC <- function(motif) {
   #
   tmpConv <- toupper(motif)
-  # Improve one day
+  #
   tmpConv <- gsub("N", "[ACGT]", tmpConv)
   tmpConv <- gsub("U", "T", tmpConv)
   tmpConv <- gsub("R", "[AG]", tmpConv)
@@ -639,11 +607,11 @@ motifLenCalc <- function(motif) {
 }
 
 
-# prepprotein
+# 
 replaceProtAmbig <- function(motif) {
   #
   tmpConv <- toupper(motif)
-  # Improve one day
+  # 
   tmpConv <- gsub("X", "[ACDEFGHIKLMNPQRSTVWY]", tmpConv)
   #
   return(tmpConv)
@@ -686,29 +654,10 @@ codonCount <- function(seq, gene, codonN = 1) {
   return(tmpCodon)
 }
 
-
-# divide_3 <- function(stringIn) {
-#  # Check if the string length is divisible by 3
-#  if (nchar(stringIn) %% 3 != 0) {
-#    stop("The length of the string is not divisible by 3.")
-#  }
-#  #
-#  tmpChar <- strsplit(stringIn, "")[[1]]
-#  #
-#  tmpLen <- nchar(stringIn)
 #
-##  # Divide the string into groups of three
-#  out <- sapply(seq(1, tmpLen, by = 3), function(i) {
-#    paste(tmpChar[i:min(i+2, tmpLen)], collapse = "")
-#  })
-#
-#  return(out)
-# }
-
-#
-statOnDf <- function(df, # dataframe with summed codon counts for each regulation
-                     regs, # regulations you want to be tested (only 2 i.e. trans Up vs trans Down)
-                     analysis # codon or AA
+statOnDf <- function(df, 
+                     regs, 
+                     analysis
 ) {
   #
   oddRatioOut <- list()
@@ -716,9 +665,7 @@ statOnDf <- function(df, # dataframe with summed codon counts for each regulatio
   uniqAA <- unique(as.character(df$AA))
 
   if (analysis == "codon") {
-    # df$p.value <- 1
-    ##
-    ## Create a list that holds all the 2*2 tables on which the fisher test is performed
+
     fisherList <- rep(list(NA), length(unique(df$codon)))
     testList <- rep(list(NA), length(unique(df$codon)))
     names(testList) <- names(fisherList) <- unique(df$codon)
@@ -729,17 +676,17 @@ statOnDf <- function(df, # dataframe with summed codon counts for each regulatio
       #
       codons <- as.character(df$codon[df$AA == uniqAA[AAind]])
 
-      # Check if the AA has 2 codons
+      # 
       if (length(codons) > 1) {
         for (cod in 1:length(codons)) {
           codTmp <- codons[cod]
           c_codTmp <- tmpDf[tmpDf$codon == codTmp, regs]
-          # calculate all that are not in that one
+          # 
           r_codTmp <- apply(tmpDf[!tmpDf$codon == codTmp, regs], 2, sum)
           #
           fisherIn <- rbind(c_codTmp, r_codTmp)
 
-          ## do the fisher test on 2 codons
+          ## 
           fisherOut <- fisher.test(fisherIn)
           #
           oddRatioOut[[codTmp]] <- as.numeric(fisherOut$estimate)
@@ -756,11 +703,11 @@ statOnDf <- function(df, # dataframe with summed codon counts for each regulatio
     for (AAi in 1:length(uniqAA)) {
       AATmp <- uniqAA[AAi]
       c_codTmp <- df[df$AA == AATmp, regs]
-      # calculate all that are not in that one
+      # 
       r_codTmp <- colSums(df[df$AA != AATmp, regs])
 
       fisherIn <- rbind(c_codTmp, r_codTmp)
-      ## do the fisher test on 2 codons
+      ##
       fisherOut <- fisher.test(fisherIn)
 
       #
@@ -772,22 +719,10 @@ statOnDf <- function(df, # dataframe with summed codon counts for each regulatio
   return(oddRatioOut)
 }
 
-
-# roundNice <- function(x, nice=c(1,2,4,5,6,8,10), direction) {
-#     if(length(x) != 1) stop("'x' must be of length 1")
-#     if(direction == 'up'){
-#      10^floor(log10(x)) * nice[[which(x <= 10^floor(log10(x)) * nice)[[1]]]]
-#     } else if (direction == 'down'){
-#       10^floor(log10(x))
-#     } else {
-#       stop('wrong input for rounding function')
-#     }
-# }
-
 roundNice <- function(x, nice = c(1, 2, 4, 5, 6, 8, 10), direction) {
   if (length(x) != 1) stop("'x' must be of length 1")
 
-  # Handling the sign of the input
+  # 
   sign_x <- sign(x)
   x_abs <- abs(x)
 
@@ -818,10 +753,10 @@ calc_uORF <- function(seqTmp, ext, context, unit) {
   nTmpStart <- as.numeric()
   nTmpStop <- as.numeric()
   #
-  # Look for ATG in context in 5UTR
+  #
   startOut <- seqinr::words.pos(context, seqTmp) + 3
   if (length(startOut) > 0) {
-    # Look for stop in 5UTR or full transcript
+    #
     if (!is.null(ext)) {
       seqTmp2 <- seqinr::c2s(c(seqinr::s2c(seqTmp), seqinr::s2c(ext)))
     } else {
@@ -830,22 +765,17 @@ calc_uORF <- function(seqTmp, ext, context, unit) {
     #
     stopOut <- seqinr::words.pos("TAA|TAG|TGA", seqTmp2)
     #
-    # stopOut <- stopOut + 2
     if (length(stopOut) > 0) {
       #
       for (i in 1:length(startOut)) {
-        # Remove if stop is before start
+        # 
         stopTmp <- stopOut[which((stopOut - startOut[i]) > 0)]
         #
         potORF <- stopTmp - startOut[i]
-        # check in frame
+        # 
         inFrameCheck <- potORF %% 3
-        # Take first stop in frame
+        # 
         stopTmp <- stopTmp[which(inFrameCheck == 0)]
-        # if maybe postition needed
-        # if(length(stopOut)>0){
-        #  stopOut <- min(stopOut)+2
-        # }
         #
         if (length(stopTmp) > 0) {
           nTmpStart[i] <- startOut[i]
@@ -883,10 +813,7 @@ convertSymbolToEntrezID <- function(geneList,
   symbols <- geneList
   if (length(symbols) > 0) {
     geneListEntrezID <- unique(na.omit(as.character(unlist(symbol2id[intersect(names(symbol2id), unique(symbols))]))))
-    # identifiersWithNoEntrezID <- c(identifiersWithNoEntrezID, setdiff(unique(symbols), names(symbol2id)))
   }
-
-  # if some element of the list have become empty (empty gene signature) because none of the symbols have an entrezid
 
   if (length(geneListEntrezID) == 0) {
     stop("None of the provided gene symbols could be converted to entrezIDs. Please check the gene identifiers.")
@@ -908,10 +835,7 @@ convertEntrezIDToSymbol <- function(entrezIDList,
   entrezIDs <- entrezIDList
   if (length(entrezIDs) > 0) {
     geneList <- unique(na.omit(as.character(unlist(id2symb[intersect(names(id2symb), unique(entrezIDs))]))))
-    # identifiersWithNoEntrezID <- c(identifiersWithNoEntrezID, setdiff(unique(symbols), names(symbol2id)))
   }
-
-  # if some element of the list have become empty (empty gene signature) because none of the symbols have an entrezid
 
   if (length(geneList) == 0) {
     stop("None of the provided entrezIDs could be converted to gene symbols. Please check the identifiers.")
@@ -972,12 +896,12 @@ printDup <- function(dupIn) {
   }
 }
 
-# For nodes sizes:
+# 
 rescale <- function(x, a, b, c, d) {
   c + (x - a) / (b - a) * (d - c)
 }
 
-# If the names are long, wrap them up
+#
 wrapNames <- function(s, w) {
   as.character(sapply(s, FUN = function(x) {
     paste(strwrap(x, width = w), collapse = "\n")
@@ -1024,7 +948,7 @@ extractRegSeq <- function(annotSeq) {
   }
   annotOut$CDS_seq <- seqSel
 
-  # 3UTR
+  #
   seqSel <- as.character()
   for (i in 1:nrow(annotSeq)) {
     seqTmp <- annotSeq$seq[i]
@@ -1040,7 +964,7 @@ extractRegSeq <- function(annotSeq) {
 }
 
 
-# Convert to dpn
+# 
 generateOut <- function(x, tmpList) {
   if (length(tmpList[[x]]) > 0) {
     tmpPos <- paste(names(tmpList[[x]]), collapse = "\t")
@@ -1085,18 +1009,9 @@ prepFeatures <- function(ptn,
   if (!is_valid_named_list(features)) {
     stop("The input for 'features' should be a named list of numeric vectors.")
   }
-  # effM <- ptn_eff(ptn)
-  # if(!is_numeric_vector(ptn_eff(ptn))){
-  #  stop("'effectMeasure' should be a numeric vector")
-  # }
   #
   featureNames <- names(features)
-  # featuresTmp <- append(features, list(effM))
-  # featuresTmp <- unname(featuresTmp)
-
-  # tmpDf <- data.frame(t(plyr::ldply(featuresTmp, rbind,.id = NULL)))
   tmpDf <- data.frame(t(plyr::ldply(features, rbind, .id = NULL)))
-  # colnames(tmpDf) <- c(featureNames,'effM')
   colnames(tmpDf) <- featureNames
 
   datOut <- na.omit(tmpDf)
@@ -1134,7 +1049,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   fval <- list()
   pval <- list()
 
-  # Univariate
+  # 
   models <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
     anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dataIn))
   })
@@ -1279,14 +1194,14 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   }
   #
   colours[which(tmp_pval > stepP)] <- "#B14D8E"
-  # colours <- colours[apply(colours, 1, function(x) any(x != "white")), ]
+  #
   linkIn[which(abs(linkIn) < covarFilt)] <- NA
   if (all(is.na(linkIn))) {
     message("None of the associations between features passed the threshold set by 'covarFilt'.")
   }
   row.names(linkIn) <- row.names(tmp_fval)
   #
-  tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black"))) # ,colhead=list(fg_params=list(rot=90,hjust=0, y=0)))
+  tt1 <- gridExtra::ttheme_default(core = list(fg_params = list(fontface = c(rep("plain", ncol(tb1Out)))), bg_params = list(fill = colours, col = "black")))
   tg1 <- gridExtra::tableGrob(tb1Out, theme = tt1)
   #
   stepWiseout <- new("postNetStepWise",
@@ -1315,26 +1230,6 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
     varExplIndepend[i] <- round((tmpM[nrow(tmpM) - 1, 2] / sum(tmpM$`Sum Sq`)) * 100, 2)
   }
   names(varExplIndepend) <- bestSel
-
-  #
-  # varExplIndepend2 <- numeric()
-  #
-  # if (length(presel) > 0) {
-  #  step1sel <- namesDf$newNames[-presel]
-  # } else {
-  #  step1sel <- namesDf$newNames
-  # }
-  # for (i in 1:length(step1sel)) {
-  #  tmpFeat2 <- step1sel[i]
-  #  restFeat2 <- step1sel[-i]
-  #
-  #  design2 <- as.formula(paste(paste("effM", paste(restFeat2, collapse = " + "), sep = "~"), tmpFeat2, sep = "+"))
-  #  tmpM2 <- anova(lm(design2, data = dataIn))
-  #
-  #  varExplIndepend2[i] <- round((tmpM2[nrow(tmpM2) - 1, 2] / sum(tmpM2$`Sum Sq`)) * 100, 2)
-  # }
-  # names(varExplIndepend2) <- step1sel
-
   #
   tb2out <- data.frame(Features = namesDf$originalNames[match(bestSel, namesDf$newNames)], Pvalue = format(varExpl$`Pr(>F)`[1:length(bestSel)], scientific = TRUE, digits = 2), VarianceExplained_Omnibus = as.numeric(varExpldepend), VarianceExplained_Adjusted = as.numeric(varExplIndepend))
   tg2 <- gridExtra::tableGrob(tb2out, rows = NULL)
@@ -1352,16 +1247,6 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   tb3out <- tb3out[with(tb3out, order(-tb3out$VarianceExplained_Univariate)), ]
 
   tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
-
-  #
-  # tb4out <- data.frame(Features = namesDf$originalNames[match(names(varExplIndepend2), namesDf$newNames)], VarianceExplained_IndependentAll = as.numeric(varExplIndepend2))
-  # tb4out <- tb4out[with(tb4out, order(-tb4out$VarianceExplained_IndependentAll)), ]
-  # tg4 <- gridExtra::tableGrob(tb4out, rows = NULL)
-
-  # pdf(paste(nameOut, "varexpl_independAll.pdf", sep = "_") , width = dim(tg4)[2] + dim(tg4)[2] + 4, height = dim(tg4)[1] / 2, useDingbats = FALSE)
-  # gridExtra::grid.arrange(tg4, ncol = 1, nrow = 1)
-  # dev.off()
-
   #
   linkOut <- list()
   for (i in 2:ncol(linkIn)) {
@@ -1424,7 +1309,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   nodeOut <- nodeOut[, c(3, 2, 1)]
   nodeOut$varexpl <- 1
 
-  # other tgat are connected but not significant
+  #
   if (nrow(linkOut) > 0) {
     addAll <- data.frame(ID = unique(c(linkOut$from, linkOut$to)), VarianceExplained = 0)
     addAll$Features <- namesDf$originalNames[match(addAll$ID, namesDf$newNames)]
@@ -1438,9 +1323,9 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   } else {
     nodeOutAll <- nodeOut
   }
-  # create igraph object
+  # 
   net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed = FALSE)
-  # rescale to size ans other attributes
+  #
   lsize <- rescale(igraph::V(net)$VarianceExplained, 0, 100, 0, 75)
   lsize[which(lsize > 0)] <- lsize[which(lsize > 0)] + 2
   igraph::V(net)$size <- lsize
@@ -1466,7 +1351,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   colrs <- rep("white", nrow(nodeOutAll))
   colrs[which(nodeOutAll$direct == "plus")] <- coloursIn[1]
   colrs[which(nodeOutAll$direct == "minus")] <- coloursIn[2]
-  igraph::V(net)$color <- colrs # colrs[igraph::V(net)]
+  igraph::V(net)$color <- colrs 
 
   if (length(igraph::E(net)$weight) > 0) {
     if (isTRUE(useCorel)) {
@@ -1511,7 +1396,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
 
   par(bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 0.9, cex.main = 1.9, cex.lab = 1.5)
   par(mar = c(2, 5, 1, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
-  plot(net, vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "black", edge.curved = FALSE, rescale = FALSE, layout = layOut) # ,shape = "sphere")#,layoutCalc(net, n = 2))
+  plot(net, vertex.label.font = 2, vertex.label.cex = 1, vertex.frame.color = "black", edge.curved = FALSE, rescale = FALSE, layout = layOut)
 
   if (!is.null(lmfeatGroup)) {
     for (group in unique(igraph::V(net)$Group)) {
@@ -1540,17 +1425,10 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
       text_x <- group_center[1] + x_radius * 0.75
       text_y <- group_center[2] + y_radius * 0.75
 
-      # Add group label at the calculated text position
+      # 
       text(x = text_x, y = text_y, labels = paste(sum(igraph::V(net)$VarianceExplained[which(igraph::V(net)$Group == group)]), "%", sep = ""), col = lmfeatGroupColour[names(lmfeatGroupColour) == group], cex = 1.25, font = 2, pos = 4)
       legend("topright", bty = "n", unique(names(lmfeatGroupColour)), title = "Groups", text.col = unique(lmfeatGroupColour), title.col = "grey30")
     }
-
-    # varexplTmp <- as.numeric()
-    # for (i in 1:length(unique(igraph::V(net)$Group))) {
-    #  varexplTmp[i] <- sum(igraph::V(net)$VarianceExplained[which(igraph::V(net)$Group == unique(igraph::V(net)$Group)[i])])
-    # }
-    # names(varexplTmp)<- unique(igraph::V(net)$Group)
-    # legend(1, 1, paste(varexplTmp, '%',sep=''), cex=1.25, text.col=lmfeatGroupColour, bty = 'n')
   }
 
   par(mar = c(5, 5, 0, 5), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
@@ -1609,10 +1487,8 @@ plotScatterInd <- function(set1, set2 = NULL, orgName, coloursIn, nameOut) {
   }
   #
   mtext(side = 2, line = 3, "effM", col = "black", font = 2, cex = 1.7)
-  # axis(side = 2, seq(-ylim, ylim, 2), font = 2, las = 2, lwd = 2)
 
   mtext(side = 1, line = 4, orgName, col = "black", font = 2, cex = 1.7, at = (xlim_min + xlim_max) / 2)
-  # axis(side = 1, seq(xlim_min, xlim_max, ifelse((xlim_max - xlim_min) / 5 >= 0, roundUpNice((xlim_max - xlim_min) / 5), -roundUpNice(abs((xlim_max - xlim_min) / 5)))), font = 2, lwd = 2)
   #
   if (!is_binary(set[, 1])) {
     if (length(unique(set[, 1])) > 2 & IQR(set[, 1]) > 0) {
@@ -1686,7 +1562,7 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
       ggplot2::theme_bw() +
       ggplot2::theme(legend.position = "none")
 
-    # keep original legend
+    #
     tmpLeg <- data.frame(x = 1, y = 1, colVec = seq(min(colVec), max(colVec), length.out = 100))
 
     colVecLeg <- ggplot2::ggplot(tmpLeg, ggplot2::aes(x = x, y = y, color = colVec)) +
@@ -1769,25 +1645,17 @@ get_signatures <- function(species) {
 
 #
 get_reference_data <- function(file) {
-  #
   cache_dir <- tools::R_user_dir("postNet", which = "cache")
   bfc <- BiocFileCache::BiocFileCache(cache_dir, ask = FALSE)
   
   #
-  url <- paste0(
-    #"https://github.com/kszkop/postNet/releases/download/referenceSeq_v1/",
-    "https://zenodo.org/records/18357379/files/",
-    file
-  )
+  url <- paste0("https://zenodo.org/records/18357379/files/", file)
   
-  #
   res <- BiocFileCache::bfcquery(bfc, query = file, field = "rname")
   
-  #
   if (nrow(res) > 0) {
     fileIn <- BiocFileCache::bfcrpath(bfc, rids = res$rid)
   } else {
-    
     if (!curl::has_internet()) {
       stop(
         "File not found in cache and no internet connection available.\n",
@@ -1795,11 +1663,19 @@ get_reference_data <- function(file) {
         call. = FALSE
       )
     }
-  
-    #
-    fileIn <- BiocFileCache::bfcrpath(bfc, rname = file,fpath = url)
+    
+    fileIn <- tryCatch(
+      {
+        rid <- BiocFileCache::bfcadd(bfc, rname = file, fpath = url)
+        BiocFileCache::bfcrpath(bfc, rid)
+      },
+      error = function(e) {
+        stop("Failed to download or cache file: ", e$message)
+      }
+    )
   }
-  annotIn <- read.delim(gzfile(fileIn),header = TRUE,stringsAsFactors = FALSE)
+
+  annotIn <- read.delim(gzfile(fileIn), header = TRUE, stringsAsFactors = FALSE)
   return(annotIn)
 }
 

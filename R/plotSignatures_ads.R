@@ -39,7 +39,7 @@ plotSignatures_ads <- function(ads,
     stop("Please provide a numeric value for 'scatterXY' to indicate range of the x and y axes of the fold change scatter plot.")
   }
 
-  ## apvEff of effect
+  ##
   regData <- data.frame(geneSymb = rownames(ads@dataP))
 
   regData$totalApvEff <- ads@totalmRNA@apvStatsRvm[[contrast]][, "apvEff"]
@@ -47,7 +47,7 @@ plotSignatures_ads <- function(ads,
   regData$buffApvEff <- ads@buffering@apvStatsRvm[[contrast]][, "apvEff"]
   regData$translationApvEff <- ads@translation@apvStatsRvm[[contrast]][, "apvEff"]
 
-  # Select for scatter
+  # 
   if (is.null(scatterXY)) {
     scatterXY <- roundNice(max(abs(c(range(regData$totalApvEff), range(regData$polyApvEff)))), direction = "up")
   }
@@ -58,34 +58,25 @@ plotSignatures_ads <- function(ads,
   abline(v = 0)
   abline(h = 0)
 
-  # Check whether gene list overlap
+  # 
   if (any(duplicated(unlist(signatureList)))) {
     cat("There are some genes that overlap between signatures. Separate backgrounds will be used for each gene signature.")
-    ## collect signatures
+    ## 
     for (i in 1:length(signatureList)) {
       regData[, 5 + i] <- "bkg"
       regData[, 5 + i][regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]
-      # plot
+      # 
       points(regData$totalApvEff[regData[, 5 + i] == names(signatureList)[i]], regData$polyApvEff[regData[, 5 + i] == names(signatureList)[i]], col = signature_colours[i], pch = 16, cex = 1.7)
     }
   } else {
     regData$signature <- "bkg"
     for (i in 1:length(signatureList)) {
       regData$signature[regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]
-      # plot
+      #
       points(regData$totalApvEff[regData$signature == names(signatureList)[i]], regData$polyApvEff[regData$signature == names(signatureList)[i]], col = signature_colours[i], pch = 16, cex = 1.7)
     }
   }
   #
-  # if(!is.null(signatureListAdd)){
-  #  regData$signatureAdd  <- 'bkg'
-  # }
-  # if(!is.null(signatureListAdd)){
-  #  for(i in 1:length(signatureListAdd)){
-  #    regData$signatureAdd[regData$geneSymb %in% signatureListAdd[[i]]] <- signatureListAddNames[i]
-  #  }
-  # }
-
   for (eff in 5:2) {
     ## Calculate statistics
     tableOut <- matrix(NA, nrow = length(signNames), ncol = 5)
@@ -95,7 +86,7 @@ plotSignatures_ads <- function(ads,
     if (any(duplicated(unlist(signatureList)))) {
       tmpBgOut <- list()
       for (i in 1:length(signatureList)) {
-        # Calculate percentiles for Background
+        # 
         tmpBg <- sort(as.numeric(regData[regData[, (5 + i)] == "bkg", ][, eff]))
         ecdfBg <- 1:length(tmpBg) / length(tmpBg)
         bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
@@ -106,7 +97,7 @@ plotSignatures_ads <- function(ads,
         #
         tableOut[i, 2] <- format(as.numeric(wilcox.test(as.numeric(regData[regData[, (5 + i)] == signNames[i], ][, eff]), as.numeric(regData[regData[, (5 + i)] == "bkg", ][, eff]), alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
 
-        # Calculate percentiles for signatures and difference from background
+        # 
         tmpSign <- sort(as.numeric(regData[regData[, (5 + i)] == signNames[i], ][, eff]))
         ecdfSign <- 1:length(tmpSign) / length(tmpSign)
 
@@ -115,7 +106,7 @@ plotSignatures_ads <- function(ads,
         tableOut[i, 5] <- format(tmpSign[which(ecdfSign >= 0.75)[1]] - bg_075, digits = 2)
         #
       }
-      # Plot ecdfs
+      # 
       if (!is.null(xlim)) {
         xmin <- xlim[1]
         xmax <- xlim[2]
@@ -132,18 +123,18 @@ plotSignatures_ads <- function(ads,
       }
       plotrix::addtable2plot(xmin - abs((xmin * 0.1)), 1.05, tableOut, bty = "n", display.rownames = FALSE, hlines = FALSE, vlines = TRUE, title = "", cex = tableCex, bg = signature_colours, xpad = 0.2, ypad = 1.4)
     } else {
-      # Calculate percentiles for Background
+      # 
       tmpBg <- sort(as.numeric(regData[regData$signature == "bkg", ][, eff]))
       ecdfBg <- 1:length(tmpBg) / length(tmpBg)
       bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
       bg_05 <- tmpBg[which(ecdfBg >= 0.5)[1]]
       bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
 
-      # Calculate Wilcoxon pvalue
+      # 
       for (i in 1:length(signatureList)) {
         tableOut[i, 2] <- format(as.numeric(wilcox.test(as.numeric(regData[regData$signature == signNames[i], ][, eff]), as.numeric(regData[regData$signature == "bkg", ][, eff]), alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
 
-        # Calculate percentiles for signatures and difference from background
+        # 
         tmpSign <- sort(as.numeric(regData[regData$signature == signNames[i], ][, eff]))
         ecdfSign <- 1:length(tmpSign) / length(tmpSign)
 
@@ -151,7 +142,7 @@ plotSignatures_ads <- function(ads,
         tableOut[i, 4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
         tableOut[i, 5] <- format(tmpSign[which(ecdfSign >= 0.75)[1]] - bg_075, digits = 2)
       }
-      # Plot ecdfs
+      # 
       if (!is.null(xlim)) {
         xmin <- xlim[1]
         xmax <- xlim[2]
@@ -167,14 +158,6 @@ plotSignatures_ads <- function(ads,
       }
       plotrix::addtable2plot(xmin - abs((xmin * 0.1)), 1.05, tableOut, bty = "n", display.rownames = FALSE, hlines = FALSE, vlines = TRUE, title = "", cex = tableCex, bg = signature_colours, xpad = 0.2, ypad = 1.4)
     }
-    # if(!is.null(signatureListAddNames)){
-    #  legend(xmin,0.9,fill=coloursAdd,border=coloursAdd,'Regulated',bty='n',cex=1.3)
-    # }
-    # if(!is.null(signatureListAdd)){
-    #  for(i in 1:length(signatureListAdd)){
-    #    lines(ecdf(as.numeric(regData[regData$signatureAdd==signatureListAddNames[i],][,eff])),col=coloursAdd[i],main='',xlab='',verticals=TRUE, do.p=FALSE,lwd=1,lty='dashed')
-    #  }
-    # }
   }
   dev.off()
 }

@@ -373,18 +373,6 @@ ptn_GAGE <- function(ptn,
   }
 }
 
-# ptn_check_comparisons <- function(ptn, analysis_type){
-# check_ptn(ptn)
-#  check_analysis_type(analysis_type)
-#
-#  tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
-#  if(is.null(tmpIn)){
-#    stop(paste('Please run ', analysis_type, ' analysis first', sep=''))
-#  } else {
-#    print(names(tmpIn))
-#  }
-# }
-
 ptn_check_models <- function(ptn, analysis_type) {
   check_ptn(ptn)
   check_analysis_type(analysis_type)

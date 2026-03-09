@@ -73,26 +73,26 @@ postNetStart <- function(ads = NULL,
       stop("The input for 'keepAll' must be logical: TRUE or FALSE.")
     }
   }
-  # Check available species for the 'create' source
+  # 
   if (source == "create") {
     if (!is_valid_species(species)) {
       stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
     }
-    #### Download files
+    #
     if (species == "human"
     ) {
       url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/"
 
       version <- gsub('/','',getLink(url)[grepl("GCF_000001405", getLink(url))])
 
-      # Again for the files
+      # 
       url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current", version, sep = "/")
 
       fna <- getLink(url)[grepl("_rna.fna.gz", getLink(url))]
       gbff <- getLink(url)[grepl("_rna.gbff.gz", getLink(url))]
       gff <- getLink(url)[grepl("_genomic.gff.gz", getLink(url))]
 
-      # Download may require more than default timeout, so increase this within the function
+      # 
       opts <- options(timeout = max(1000, getOption("timeout")))
       on.exit(options(opts))
 
@@ -106,14 +106,14 @@ postNetStart <- function(ads = NULL,
 
       version <- gsub('/','',getLink(url)[grepl("GCF_000001635", getLink(url))])
       
-      # Again for the files
+      #
       url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current", version, sep = "/")
     
       fna <- getLink(url)[grepl("_rna.fna.gz", getLink(url))]
       gbff <- getLink(url)[grepl("_rna.gbff.gz", getLink(url))]
       gff <- getLink(url)[grepl("_genomic.gff.gz", getLink(url))]
 
-      # Download may require more than default timeout, so increase this within the function
+      # 
       opts <- options(timeout = max(1000, getOption("timeout")))
       on.exit(options(opts))
 
@@ -125,7 +125,7 @@ postNetStart <- function(ads = NULL,
     R.utils::gunzip("customFasta.fa.gz")
     R.utils::gunzip("GeneRef.gff.gz")
 
-    # Reformat sequence data
+    # 
     seqs <- seqinr::read.fasta(file = "customFasta.fa", seqtype = "AA")
     seqs <- data.frame(
       id = sub("\\..*", "", names(seqs)),
@@ -134,16 +134,16 @@ postNetStart <- function(ads = NULL,
       stringsAsFactors = FALSE
     )
 
-    # Determine the appropriate Perl script based on species
+    # 
     perl_script <- switch(species,
       "human" = "AnnotFromgbff_human.pl",
       "mouse" = "AnnotFromgbff_mouse.pl"
     )
-    # Run the Perl script
+    #
     command <- paste("perl", paste(system.file("perl", package = "postNet"), "/", perl_script, sep = ""), sep = " ")
     system(command)
 
-    # Read and merge annotation data
+    # 
     annot <- read.delim("customAnnot.txt", stringsAsFactors = FALSE)
     colnames(annot) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
 
@@ -161,7 +161,7 @@ postNetStart <- function(ads = NULL,
     if (!is_valid_species(species)) {
       stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
     }
-    # Unzip the source files
+    # 
     source_files_tmp <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
     source_files <- gsub(".gz", "", source_files_tmp)
     filenames <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
@@ -170,7 +170,7 @@ postNetStart <- function(ads = NULL,
       file.rename(source_files[i], filenames[i])
     }
 
-    # Reformat sequence data
+    # 
     seqs <- seqinr::read.fasta(file = "customFasta.fa", seqtype = "AA")
     seqs <- data.frame(
       id = sub("\\..*", "", names(seqs)),
@@ -179,24 +179,22 @@ postNetStart <- function(ads = NULL,
       stringsAsFactors = FALSE
     )
 
-    # Run the Perl script (adjust as needed)
-    # Determine the appropriate Perl script based on species
     perl_script <- switch(species,
       "human" = "AnnotFromgbff_human.pl",
       "mouse" = "AnnotFromgbff_mouse.pl"
     )
-    # Run the Perl script
+    # 
     command <- paste("perl", paste(system.file("perl", package = "postNet"), "/", perl_script, sep = ""), sep = " ")
     system(command)
 
-    # Read and merge annotation data
+    # 
     annot <- read.delim("customAnnot.txt", stringsAsFactors = FALSE)
     colnames(annot) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
 
     annotSeq <- merge(annot, seqs, by = "id")
     annotSeq <- extractRegSeq(annotSeq)
 
-    # Extract info from the GFF file
+    # 
     gff <- gffRead("GeneRef.gff")
     bed <- extGff(gff)
 
@@ -205,7 +203,7 @@ postNetStart <- function(ads = NULL,
 
     write.table(outDB, file = "customDB.txt", col.names = TRUE, row.names = FALSE, sep = "\t", quote = FALSE)
 
-    # Remove the copied input files
+    # 
     filesToRm <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
     for (i in 1:length(filesToRm)) {
       if (file.exists(filesToRm[i])) {
@@ -216,28 +214,18 @@ postNetStart <- function(ads = NULL,
     if (!is_valid_species(species)) {
       stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
     }
-    # List existing species
-    #currTmp <- list.files(system.file("extdata/annotation/refseq", package = "postNetParcel"))
     currTmp <- c('human','mouse')
     
     if (!species %in% currTmp) {
       stop("This option is currently only available for species: 'human' and 'mouse'. Please use the 'custom' and 'customFile' parameters \ to provide annotations for other species.")
     }
 
-    #if (is.null(version)) {
-    #  version <- checkAvailableVersions(species = species)
-    #  versionInd <- sub("^[^.]*.", "", version)
-    #  versionInd <- sort(versionInd, decreasing = TRUE)[1]
-    #  version <- version[grep(versionInd, version)]
-    #}
     if (species == "human") {
       outDB <- get_reference_data(file = 'humanDB_refSeq.txt.gz')
-      #outDB <- read.delim(system.file(paste("extdata/annotation/refseq/human", version, sep = "/"), "humanDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
       version <- 'ver_40.202408'
     }
     if (species == "mouse") {
       outDB <- get_reference_data(file = 'mouseDB_refSeq.txt.gz')
-      #outDB <- read.delim(system.file(paste("extdata/annotation/refseq/mouse", version, sep = "/"), "mouseDB.txt.gz", package = "postNetParcel"), stringsAsFactors = FALSE)
       version <- 'ver_27.202402'
     }
   } else if (source == "custom") {
@@ -258,24 +246,24 @@ postNetStart <- function(ads = NULL,
     annotSeq <- merge(posTmp, seqs, by = "id")
     annotSeq <- extractRegSeq(annotSeq)
 
-    # Path to ftp refSeq db
+    #
     if (is.null(genomic_gff_file)) {
       if (!is_valid_species(species)) {
         stop("Please specify a species. Currently, 'human' or 'mouse' are available. For use with other species annotations, please use the 'custom' parameter, \ and provide an annotation file using the 'customFile' parameter.")
       }
-      #### Get the most recent release
+      #
       if (species == "human"
       ) {
         url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/"
         
         version <- gsub('/','',getLink(url)[grepl("GCF_000001405", getLink(url))])
 
-        # Get the genomic gff file
+        # 
         url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current", version, sep = "/")
 
         gff <- getLink(url)[grepl("_genomic.gff.gz", getLink(url))]
         
-        # Download may require more than default timeout, so increase this within the function
+        #
         opts <- options(timeout = max(1000, getOption("timeout")))
         on.exit(options(opts))
         
@@ -287,12 +275,12 @@ postNetStart <- function(ads = NULL,
 
         version <- gsub('/','',getLink(url)[grepl("GCF_000001635", getLink(url))])
 
-        # Again for the files
+        # 
         url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current", version, sep = "/")
 
         gff <- getLink(url)[grepl("_genomic.gff.gz", getLink(url))]
 
-        # Download may require more than default timeout, so increase this within the function
+        # 
         opts <- options(timeout = max(1000, getOption("timeout")))
         on.exit(options(opts))
 
@@ -302,7 +290,7 @@ postNetStart <- function(ads = NULL,
       R.utils::gunzip("GeneRef.gff.gz")
       gff <- gffRead("GeneRef.gff")
 
-      # Remove the gff file
+      # 
       filesToRm <- c("GeneRef.gff")
       if (file.exists(filesToRm)) {
         file.remove(filesToRm)
@@ -364,17 +352,10 @@ postNetStart <- function(ads = NULL,
   ##
   genesIn <- resSel(ads = ads, regulation = regulation, contrast = contrast, geneList = geneList)
 
-  # if(length(intersect(outDB$geneID, as.character(unlist(genesIn))))==0){
-  #  stop('Annotation geneIDs are not compatibile with gene IDs in the provided gene list/anota2seq object')
-  # }
   if (length(setdiff(as.character(unlist(genesIn)), outDB$geneID)) > 0) {
     warning(paste("There are ", length(setdiff(as.character(unlist(genesIn)), outDB$geneID)), " genes in the geneList or anota2seq object that are not present in the selected annotation. ", sep = ""))
   }
 
-  # add here to check numbers of genes
-  # if(length(resOut)==0){
-  #  stop('There are no regulated genes. Check the input or run without indicating regulation and comparisons')
-  # }
 
   coloursIn <- coloursSel(ads = ads, genesIn = genesIn, geneList = geneList, geneListcolours = geneListcolours)
   effIn <- effectSel(ads = ads, regulationGen = regulationGen, contrastSel = contrastSel, effectMeasure = effectMeasure)
@@ -397,7 +378,7 @@ postNetStart <- function(ads = NULL,
     miRNA = NULL
   )
 
-  # initialize the postNet
+  # 
   postNetData <- new("postNetData",
     version = version,
     species = species,

@@ -100,22 +100,22 @@ check_comparisons <- function(obj) {
 }
 
 is_valid_named_list <- function(obj) {
-  # Check if the object is NULL
+  # 
   if (is.null(obj)) {
     return(FALSE)
   }
 
-  # Check if the object is a list
+  # 
   if (!is.list(obj)) {
     return(FALSE)
   }
 
-  # Check if the list has names
+  # 
   if (is.null(names(obj)) || any(names(obj) == "")) {
     return(FALSE)
   }
 
-  # Check if each element in the list is a numeric vector
+  # 
   for (item in obj) {
     if (!is.numeric(item) || !is.vector(item)) {
       return(FALSE)
@@ -138,28 +138,28 @@ check_number <- function(x) {
 
 
 is_named_list_of_named_numeric_vectors <- function(x) {
-  # Check if the input is a list
+  # 
   if (!is.list(x)) {
     return(FALSE)
   }
 
-  # Check if the list is named (all elements have names)
+  # 
   if (is.null(names(x)) || any(names(x) == "")) {
     return(FALSE)
   }
 
-  # Check if each element is a named numeric vector
+  # 
   for (element in x) {
     if (!is.numeric(element) || is.null(names(element)) || any(names(element) == "")) {
       return(FALSE)
     }
   }
 
-  # If all checks pass, return TRUE
+  # 
   return(TRUE)
 }
 
-# Function to validate the source input
+# 
 check_source <- function(source) {
   valid_sources <- c("create", "createFromSourceFiles", "load", "custom", "createFromFasta")
   if (!(source %in% valid_sources)) {
@@ -167,7 +167,7 @@ check_source <- function(source) {
   }
 }
 
-# Function to validate the source input
+# 
 checkSourceFE <- function(sourceFE) {
   valid_sourcesFE <- c("load", "custom")
   if (!(sourceFE %in% valid_sourcesFE)) {
@@ -187,7 +187,7 @@ check_DNAsequence <- function(contentIn) {
   if (!is.character(contentIn)) {
     stop("The input for 'contentIn' must be a named list of character vectors with DNA nucleotide sequences.")
   }
-  pattern <- "^[ACGTacgt]+[123]*$" # "^[ACGTacgt]+$"
+  pattern <- "^[ACGTacgt]+[123]*$" 
 
   if (!all(grepl(pattern, contentIn))) {
     stop("The entries provided in 'contentIn' do not appear to all be DNA sequences. Please check that the sequences are correct. It must be a nucleotide string followed by digits 1, 2, or 3 (e.g., 'GC', 'GC2', 'ACGT123').")
@@ -255,7 +255,7 @@ is_motifs <- function(motifsIn) {
   return(FALSE)
 }
 
-# Function to validate specific input parameters
+# 
 check_input <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile, fastaFile) {
   check_source(source)
   if (source == "createFromSourceFiles") {
@@ -318,20 +318,6 @@ checkDirectory <- function(path) {
   }
 }
 
-# checkcodSource <- function(codSource) {
-#  valid_codSource <- c("sequence", "riboseq")
-#  if (is.null(codSource)) {
-#    stop("'codSource' cannot be null.")
-#  } else {
-#    # Convert to lowercase
-#    codSource <- tolower(codSource)
-#
-#    if (!(codSource %in% valid_codSource)) {
-#      stop("Invalid codSource. Allowed 'codSource' are 'sequence' or 'riboseq'.")
-#    }
-#  }
-# }
-
 check_codonIn <- function(codonIn) {
   #
   required_elements <- c("geneID", "codon", "AA", "count", "frequency", "AACountPerGene", "relative_frequency")
@@ -342,12 +328,12 @@ check_codonIn <- function(codonIn) {
 
 
 check_codons <- function(featsel) {
-  # Check if input is a named list
+  #
   if (!is.list(featsel) || is.null(names(featsel)) || any(names(featsel) == "")) {
     stop("The input for 'featsel' must be a named list.")
   }
 
-  # Define a vector of all possible codons
+  # 
   all_codons <- c(
     "AAA", "AAC", "AAG", "AAT", "ACA", "ACC", "ACG", "ACT", "AGA", "AGC",
     "AGG", "AGT", "ATA", "ATC", "ATG", "ATT", "CAA", "CAC", "CAG", "CAT",
@@ -358,9 +344,8 @@ check_codons <- function(featsel) {
     "TTA", "TTC", "TTG", "TTT"
   )
 
-  # Check if all elements of featSel (values in the named list) are valid codons
+  # 
   all(sapply(featsel, function(codons) {
-    # Ensure that each codon in the vector is valid
     all(codons %in% all_codons)
   }))
 }

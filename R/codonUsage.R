@@ -48,7 +48,7 @@ codonUsage <- function(ptn,
         ccdsSeq <- seqinr::read.fasta("CCDS_nucleotide_human.fna", seqtype = "AA")
         unlink("CCDS_nucleotide_human.fna")
 
-        # Below, I just exclude these duplicated sequences
+        #
         ccdsSeq <- ccdsSeq[!duplicated(sapply(strsplit(names(ccdsSeq), "\\|"), function(x) x[1]))]
 
         ccdsSeq <- data.frame(id = sub("\\..*", "", names(ccdsSeq)), CDS_seq = t(as.data.frame(lapply(ccdsSeq, function(x) paste(x, collapse = "")))), row.names = NULL, stringsAsFactors = FALSE)
@@ -85,7 +85,7 @@ codonUsage <- function(ptn,
         ccdsSeq <- seqinr::read.fasta("CCDS_nucleotide_mouse.fna", seqtype = "AA")
         unlink("CCDS_nucleotide_mouse.fna")
 
-        # Below, I just exclude these duplicated sequences
+        #
         ccdsSeq <- ccdsSeq[!duplicated(sapply(strsplit(names(ccdsSeq), "\\|"), function(x) x[1]))]
 
         ccdsSeq <- data.frame(id = sub("\\..*", "", names(ccdsSeq)), CDS_seq = t(as.data.frame(lapply(ccdsSeq, function(x) paste(x, collapse = "")))), row.names = NULL, stringsAsFactors = FALSE)
@@ -109,7 +109,6 @@ codonUsage <- function(ptn,
       }
     } else if (sourceSeq == "load") {
       #
-      #currTmp <- list.files(system.file("extdata/annotation/ccds", package = "postNet"))
       currTmp <- c('human','mouse')
       #
       if (!species %in% currTmp) {
@@ -119,11 +118,9 @@ codonUsage <- function(ptn,
       }
       if (species == "human") {
         annotTmp <- get_reference_data(file = 'humanDB_ccds.txt.gz')
-        #annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/human", sep = "/"), "humanDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE)
       }
       if (species == "mouse") {
         annotTmp <- get_reference_data(file = 'mouseDB_ccds.txt.gz')
-        #annotTmp <- read.delim(system.file(paste("extdata/annotation/ccds/mouse", sep = "/"), "mouseDB_ccds.txt.gz", package = "postNet"), stringsAsFactors = FALSE) # }
       }
       lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
       annotTmp$lenTmp <- lenTmp
@@ -185,7 +182,7 @@ codonUsage <- function(ptn,
     seqTmp <- ptn_sequences(ptn, region = "CDS")
     names(seqTmp) <- ptn_geneID(ptn, region = "CDS")
   }
-  # remove last codon (stop codon)
+  #
   seqTmp <- remove_last3(seqTmp)
   #
   if (!is.null(subregion)) {
@@ -220,7 +217,7 @@ codonUsage <- function(ptn,
     relative_frequency = codonAll$relative_frequency
   )
 
-  # indexes
+  #
   if (analysis == "codon" & codonN == 1) {
     species <- ptn_species(ptn)
     if (!is_valid_species(species)) {
@@ -234,7 +231,7 @@ codonUsage <- function(ptn,
       message("No available codon indexes for ", species)
     }
 
-    # indexes
+    # 
     indNames <- c("CAI", "CBI", "Fop", "tAI", "L_aa")
 
     for (ind in indNames) {
@@ -358,10 +355,10 @@ codonUsage <- function(ptn,
     resIn <- compOut1[compTmp]
     resIn <- do.call(rbind, resIn)
 
-    # Remove columns with all zeros
+    # 
     resIn <- resIn[, colSums(resIn) > 0]
 
-    # Check if resIn has at least one positive entry
+    # 
     if (all(resIn <= 0)) {
       stop("The contingency table (codon or AA counts by geneset) must have at least one positive entry \
            for the Chi-squared test to be performed.")
@@ -379,7 +376,7 @@ codonUsage <- function(ptn,
       }
     }
 
-    # Check if resIn has at least one positive entry
+    # 
     if (all(resIn <= 0)) {
       stop("The contingency table (codon or AA counts by geneset) must have at least one positive entry \
            for the Chi-squared test to be performed.")
@@ -520,9 +517,6 @@ codonUsage <- function(ptn,
         mtext(side = 2, line = 3, "frequency ", col = "black", font = 2, cex = 1.7)
         mtext(side = 1, line = 3, "log2(Odds Ratio)", col = "black", font = 2, cex = 1.7, at = 0)
 
-        # axis(side = 2, seq(0, roundNice(range(sumFreq)[2], direction='up'), ifelse(roundNice(range(sumFreq)[2],direction='up') > 10, 10, 1)), font = 2, las = 2, lwd = 2)
-        # axis(side = 1, seq(-xlimT, xlimT, 1), font = 2, lwd = 2)
-
         indUp <- as.numeric(which(statOut >= 0))
         statOut_up <- statOut[indUp]
         sumFreq_up <- sumFreq[indUp]
@@ -571,9 +565,6 @@ codonUsage <- function(ptn,
 
         mtext(side = 2, line = 3, "frequency ", col = "black", font = 2, cex = 1.7)
         mtext(side = 1, line = 3, "log2(Odds Ratio)", col = "black", font = 2, cex = 1.7, at = 0)
-
-        # axis(side = 2, seq(0, roundNice(range(sumFreq)[2], direction='up'), ifelse(roundNice(range(sumFreq)[2],direction='up') > 10, 10, 1)), font = 2, las = 2, lwd = 2)
-        # axis(side = 1, seq(-xlimT, xlimT, 1), font = 2, lwd = 2)
 
         indUp <- as.numeric(which(statOut >= 0))
         statOut_up <- statOut[indUp]

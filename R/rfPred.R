@@ -28,7 +28,7 @@ rfPred <- function(ptn,
   predFeaturesNames <- names(predFeatures)
   tmpDf <- data.frame(t(plyr::ldply(predFeatures, rbind, .id = NULL)))
   colnames(tmpDf) <- predFeaturesNames
-  # Keep only selFeat
+  #
   tmpDf <- tmpDf[, colnames(tmpDf) %in% selFeat]
 
   featIn <- na.omit(tmpDf)
@@ -51,11 +51,9 @@ rfPred <- function(ptn,
   predValid <- stats::predict(modelIn, featInSel, type = "prob")
   #
   perf <- ROCR::prediction(predValid[, 2], as.numeric(featInSel$reg))
-  # 1. Area under curve
-  # auc = ROCR::performance(perf, "auc")
-  # 2. True Positive and Negative Rate
+
   predOut <- ROCR::performance(perf, "tpr", "fpr")
-  # 3. Plot the ROC curve
+  # 
   pdf(ifelse(is.null(pdfName), "rocr.pdf", paste(pdfName, "_rocr.pdf", sep = "")), width = 8, height = 8, useDingbats = FALSE)
   plot(predOut, main = paste("ROC Curve for Random Forest \n Accuracy: ", round(as.numeric(caret::confusionMatrix(predValidc, featInSel$reg)[[3]][1]), 3), sep = ""), col = "firebrick1", lwd = 3, xlab = "", ylab = "", )
   abline(a = 0, b = 1, lwd = 2, lty = 2, col = "gray")
@@ -66,6 +64,5 @@ rfPred <- function(ptn,
   text(0.8, 0.1, font = 2, cex = 1.7, paste("Specificity: ", round(caret::confusionMatrix(predValidc, featInSel$reg)[[4]][2], 2), sep = ""))
   dev.off()
 
-  # ptn@analysis@featureIntegration@rf@prediction <- perf
   return(ptn)
 }
