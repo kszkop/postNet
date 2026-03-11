@@ -83,7 +83,7 @@ extGff <- function(gff) {
   #
   bed <- bed[grepl("NM_", bed$id), ]
   bed <- bed[grepl("NC_", bed$chr), ]
-  bed <- subset(bed, !duplicated(id))
+  bed <- bed[!duplicated(bed$id), ]
   #
   return(bed)
 }
