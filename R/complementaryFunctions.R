@@ -1601,22 +1601,25 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
 getLink <- function(url){
   responseTmp <- tryCatch(
     {
-      httr2::request(url) |>
-        httr2::req_headers(Accept = "text/html") |>
-        httr2::req_perform() |>
+      httr2::request(url) %>%
+        httr2::req_perform() %>%
         httr2::resp_check_status()
     },
     error = function(e) {
-      message("Failed to fetch the URL: ", conditionMessage(e))
+      cat("Failed to fetch the URL:", conditionMessage(e), "\n")
       return(NULL)
     }
   )
   if (is.null(responseTmp)) return(NULL)
   
-  httr2::resp_body_string(responseTmp) |>
-    rvest::read_html() |>
-    rvest::html_elements("a") |>
+  pageTmp <- httr2::resp_body_string(responseTmp) %>%
+    rvest::read_html()
+  
+  linksTmp <- pageTmp %>%
+    rvest::html_nodes("a") %>%
     rvest::html_attr("href")
+  
+  return(linksTmp)
 }
 
 

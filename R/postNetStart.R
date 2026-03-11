@@ -83,43 +83,61 @@ postNetStart <- function(ads = NULL,
     ) {
       url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/"
 
-      version <- gsub('/','',getLink(url)[grepl("GCF_000001405", getLink(url))])
-
-      # 
-      url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current", version, sep = "/")
-
-      fna <- getLink(url)[grepl("_rna.fna.gz", getLink(url))]
-      gbff <- getLink(url)[grepl("_rna.gbff.gz", getLink(url))]
-      gff <- getLink(url)[grepl("_genomic.gff.gz", getLink(url))]
+      links_current <- getLink(url)
+      
+      if (is.null(links_current)) stop("Could not read current release directory")
+      
+      version <- gsub(
+        "/",
+        "",
+        links_current[grepl("GCF_000001405", links_current)]
+      )
+      
+      url_version <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current", version, sep = "/")
+      
+      links_version <- getLink(url_version)
+      if (is.null(links_version)) stop("Could not read version directory")
+      
+      fna <- links_version[grepl("_rna\\.fna\\.gz$", links_version)]
+      gbff <- links_version[grepl("_rna\\.gbff\\.gz$", links_version)]
+      gff <- links_version[grepl("_genomic\\.gff\\.gz$", links_version)]
 
       # 
       opts <- options(timeout = max(1000, getOption("timeout")))
       on.exit(options(opts))
 
-      download.file(paste(url, fna, sep = ""), destfile = "customFasta.fa.gz")
-      download.file(paste(url, gbff, sep = ""), destfile = "customAnnot.gbff.gz")
-      download.file(paste(url, gff, sep = ""), destfile = "GeneRef.gff.gz")
+      download.file(paste(url_version, fna, sep = "/"), destfile = "customFasta.fa.gz")
+      download.file(paste(url_version, gbff, sep = "/"), destfile = "customAnnot.gbff.gz")
+      download.file(paste(url_version, gff, sep = "/"), destfile = "GeneRef.gff.gz")
     }
 
     if (species == "mouse") {
       url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/"
-
-      version <- gsub('/','',getLink(url)[grepl("GCF_000001635", getLink(url))])
+      
+      links_current <- getLink(url)
+      
+      if (is.null(links_current)) stop("Could not read current release directory")
+      
+      version <- gsub(
+        "/",
+        "",
+        links_current[grepl("GCF_000001635", links_current)]
+      )
       
       #
-      url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current", version, sep = "/")
+      url_version <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current", version, sep = "/")
     
-      fna <- getLink(url)[grepl("_rna.fna.gz", getLink(url))]
-      gbff <- getLink(url)[grepl("_rna.gbff.gz", getLink(url))]
-      gff <- getLink(url)[grepl("_genomic.gff.gz", getLink(url))]
+      fna <- links_version[grepl("_rna\\.fna\\.gz$", links_version)]
+      gbff <- links_version[grepl("_rna\\.gbff\\.gz$", links_version)]
+      gff <- links_version[grepl("_genomic\\.gff\\.gz$", links_version)]
 
       # 
       opts <- options(timeout = max(1000, getOption("timeout")))
       on.exit(options(opts))
 
-      download.file(paste(url, fna, sep = ""), destfile = "customFasta.fa.gz")
-      download.file(paste(url, gbff, sep = ""), destfile = "customAnnot.gbff.gz")
-      download.file(paste(url, gff, sep = ""), destfile = "GeneRef.gff.gz")
+      download.file(paste(url_version, fna, sep = "/"), destfile = "customFasta.fa.gz")
+      download.file(paste(url_version, gbff, sep = "/"), destfile = "customAnnot.gbff.gz")
+      download.file(paste(url_version, gff, sep = "/"), destfile = "GeneRef.gff.gz")
     }
     R.utils::gunzip("customAnnot.gbff.gz")
     R.utils::gunzip("customFasta.fa.gz")
@@ -256,35 +274,52 @@ postNetStart <- function(ads = NULL,
       ) {
         url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/"
         
-        version <- gsub('/','',getLink(url)[grepl("GCF_000001405", getLink(url))])
+        links_current <- getLink(url)
+        if (is.null(links_current)) stop("Could not read current release directory")
+
+        version <- gsub(
+          "/",
+          "",
+          links_current[grepl("GCF_000001405", links_current)]
+        )
 
         # 
-        url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current", version, sep = "/")
-
-        gff <- getLink(url)[grepl("_genomic.gff.gz", getLink(url))]
+        url_version <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current", version, sep = "/")
         
+        links_version <- getLink(url_version)
+        if (is.null(links_version)) stop("Could not read version directory")
+        
+        gff <- links_version[grepl("_genomic\\.gff\\.gz", links_version)]
         #
         opts <- options(timeout = max(1000, getOption("timeout")))
         on.exit(options(opts))
         
-        download.file(paste(url, gff, sep = ""), destfile = "GeneRef.gff.gz")
+        download.file(paste(url_version, gff, sep = "/"), destfile = "GeneRef.gff.gz")
       }
 
       if (species == "mouse") {
         url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/"
 
-        version <- gsub('/','',getLink(url)[grepl("GCF_000001635", getLink(url))])
+        links_current <- getLink(url)
+        if (is.null(links_current)) stop("Could not read current release directory")
+
+        version <- gsub(
+          "/",
+          "",
+          links_current[grepl("GCF_000001635", links_current)]
+        )
 
         # 
-        url <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current", version, sep = "/")
-
-        gff <- getLink(url)[grepl("_genomic.gff.gz", getLink(url))]
+        url_version <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current", version, sep = "/")
+        if (is.null(links_version)) stop("Could not read version directory")
+        
+        gff <- links_version[grepl("_genomic\\.gff\\.gz", links_version)]
 
         # 
         opts <- options(timeout = max(1000, getOption("timeout")))
         on.exit(options(opts))
 
-        download.file(paste(url, gff, sep = ""), destfile = "GeneRef.gff.gz")
+        download.file(paste(url_version, gff, sep = "/"), destfile = "GeneRef.gff.gz")
       }
 
       R.utils::gunzip("GeneRef.gff.gz")
@@ -315,7 +350,7 @@ postNetStart <- function(ads = NULL,
     stop("The gene IDs in the annotation are not compatible with gene IDs in the background.")
   }
   if (length(setdiff(customBg, outDB$geneID)) > 0) {
-    warning(paste("There are ", length(setdiff(customBg, outDB$geneID)), " genes in the background that are not present in the selected annotation.", sep = ""))
+    warning("There are ", length(setdiff(customBg, outDB$geneID)), " genes in the background that are not present in the selected annotation.")
   }
 
   #
@@ -353,7 +388,7 @@ postNetStart <- function(ads = NULL,
   genesIn <- resSel(ads = ads, regulation = regulation, contrast = contrast, geneList = geneList)
 
   if (length(setdiff(as.character(unlist(genesIn)), outDB$geneID)) > 0) {
-    warning(paste("There are ", length(setdiff(as.character(unlist(genesIn)), outDB$geneID)), " genes in the geneList or anota2seq object that are not present in the selected annotation. ", sep = ""))
+    warning("There are ", length(setdiff(as.character(unlist(genesIn)), outDB$geneID)), " genes in the geneList or anota2seq object that are not present in the selected annotation. ")
   }
 
 
