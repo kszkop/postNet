@@ -65,7 +65,7 @@ goDotplot <- function(ptn,
         size_breaks <- size_breaks[size_breaks == floor(size_breaks)]
         size_limits <- range(size_breaks, na.rm = TRUE)
       } else {
-        # 
+        #
         rng <- range(goDf$scale, na.rm = TRUE)
         step <- 0.05 # finer step for better resolution in small ranges
 
@@ -135,9 +135,9 @@ goDotplot <- function(ptn,
             size_breaks <- size_breaks[size_breaks == floor(size_breaks)]
             size_limits <- range(size_breaks, na.rm = TRUE)
           } else {
-            # 
+            #
             rng <- range(goDf$scale, na.rm = TRUE)
-            step <- 0.05 
+            step <- 0.05
 
             min_val <- floor(rng[1] / step) * step
             max_val <- ceiling(rng[2] / step) * step

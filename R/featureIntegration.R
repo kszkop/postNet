@@ -60,7 +60,7 @@ featureIntegration <- function(ptn,
   namesDf <- data.frame(originalNames = colnames(ptn_features(ptn))[1:ncol(dataTmp) - 1], newNames = colnames(dataTmp)[1:ncol(dataTmp) - 1], stringsAsFactors = FALSE)
   #
   resOut <- resQuant(qvec = ptn_effect(ptn), ptn = ptn)
-  
+
   ######
   if (analysis_type == "lm") {
     #
@@ -166,18 +166,18 @@ featureIntegration <- function(ptn,
       dataTmpSel <- dataTmpSel[!is.na(dataTmpSel$reg), ]
       dataTmpSel$reg <- as.factor(dataTmpSel$reg)
       #
-      # 
+      #
       train <- sample(nrow(dataTmpSel), 0.7 * nrow(dataTmpSel), replace = FALSE)
       TrainSet <- dataTmpSel[train, ]
       TrainSet$reg <- as.factor(TrainSet$reg)
       ValidSet <- dataTmpSel[-train, ]
       ValidSet$reg <- as.factor(ValidSet$reg)
-      # 
+      #
       model1 <- randomForest::randomForest(reg ~ ., data = TrainSet, importance = TRUE, ntree = 500)
 
       #
       model1Imp <- Boruta::Boruta(reg ~ ., data = TrainSet, doTrace = 0, maxRuns = 500, pValue = 0.001)
-      # 
+      #
       featComf <- row.names(Boruta::attStats(model1Imp))[which(as.character(Boruta::attStats(model1Imp)[, 6]) == "Confirmed")]
       #
       pdf(paste(nameOut, "featureImportance.pdf", sep = "_"), width = 8, height = 8, useDingbats = FALSE)
@@ -192,18 +192,18 @@ featureIntegration <- function(ptn,
       tmpNames <- names(sort(sapply(tmp, median)))
       addNames <- c("shadowMin", "shadowMax", "shadowMean")
 
-      # 
+      #
       coloursN <- rep("black", length(tmpNames))
       coloursN[tmpNames %in% addNames] <- "firebrick1"
       axis(side = 1, at = 1:length(tmpNames), labels = FALSE, font = 2, lwd = 2, las = 2, cex.axis = 0.5, tck = -0.005)
       text(1:length(tmpNames), par("usr")[3] - 1.05, labels = tmpNames, col = coloursN, srt = 45, adj = 1, cex = 0.55, xpd = NA)
       dev.off()
 
-      # 
+      #
       TrainSet <- TrainSet[, colnames(TrainSet) %in% c(featComf, "reg")]
       ValidSet <- ValidSet[, colnames(ValidSet) %in% c(featComf, "reg")]
 
-      # 
+      #
       model2 <- randomForest::randomForest(reg ~ ., data = TrainSet, importance = TRUE, ntree = 500)
       #
       varImpIn <- sort(randomForest::importance(model2)[, 3], decreasing = TRUE)
@@ -225,7 +225,7 @@ featureIntegration <- function(ptn,
       auc <- ROCR::performance(perf, "auc")
       #
       predOut <- ROCR::performance(perf, "tpr", "fpr")
-      # 
+      #
       plot(predOut, main = paste("ROC Curve for Random Forest \n AUC: ", round(auc@y.values[[1]], 3), sep = ""), col = "firebrick1", lwd = 3, xlab = "", ylab = "", )
       abline(a = 0, b = 1, lwd = 2, lty = 2, col = "gray")
 
@@ -272,7 +272,7 @@ featureIntegration <- function(ptn,
         plotScatterInd(set1 = setSel1, set2 = setSel2, orgName = feat, coloursIn = coloursTmp, nameOut = nameOut)
       }
     }
-    # 
+    #
     ptn@analysis@featureIntegration[["rf"]] <- compOut
   } else {
     stop("Please provide correct input for 'analysis_type'. Choose either 'lm' for forward stepwise linear regression, or 'rf' for Random Forest.")

@@ -100,22 +100,22 @@ check_comparisons <- function(obj) {
 }
 
 is_valid_named_list <- function(obj) {
-  # 
+  #
   if (is.null(obj)) {
     return(FALSE)
   }
 
-  # 
+  #
   if (!is.list(obj)) {
     return(FALSE)
   }
 
-  # 
+  #
   if (is.null(names(obj)) || any(names(obj) == "")) {
     return(FALSE)
   }
 
-  # 
+  #
   for (item in obj) {
     if (!is.numeric(item) || !is.vector(item)) {
       return(FALSE)
@@ -138,28 +138,28 @@ check_number <- function(x) {
 
 
 is_named_list_of_named_numeric_vectors <- function(x) {
-  # 
+  #
   if (!is.list(x)) {
     return(FALSE)
   }
 
-  # 
+  #
   if (is.null(names(x)) || any(names(x) == "")) {
     return(FALSE)
   }
 
-  # 
+  #
   for (element in x) {
     if (!is.numeric(element) || is.null(names(element)) || any(names(element) == "")) {
       return(FALSE)
     }
   }
 
-  # 
+  #
   return(TRUE)
 }
 
-# 
+#
 check_source <- function(source) {
   valid_sources <- c("create", "createFromSourceFiles", "load", "custom", "createFromFasta")
   if (!(source %in% valid_sources)) {
@@ -167,7 +167,7 @@ check_source <- function(source) {
   }
 }
 
-# 
+#
 checkSourceFE <- function(sourceFE) {
   valid_sourcesFE <- c("load", "custom")
   if (!(sourceFE %in% valid_sourcesFE)) {
@@ -187,7 +187,7 @@ check_DNAsequence <- function(contentIn) {
   if (!is.character(contentIn)) {
     stop("The input for 'contentIn' must be a named list of character vectors with DNA nucleotide sequences.")
   }
-  pattern <- "^[ACGTacgt]+[123]*$" 
+  pattern <- "^[ACGTacgt]+[123]*$"
 
   if (!all(grepl(pattern, contentIn))) {
     stop("The entries provided in 'contentIn' do not appear to all be DNA sequences. Please check that the sequences are correct. It must be a nucleotide string followed by digits 1, 2, or 3 (e.g., 'GC', 'GC2', 'ACGT123').")
@@ -255,7 +255,7 @@ is_motifs <- function(motifsIn) {
   return(FALSE)
 }
 
-# 
+#
 check_input <- function(source, customFile, rna_gbff_file, rna_fa_file, genomic_gff_file, posFile, fastaFile) {
   check_source(source)
   if (source == "createFromSourceFiles") {
@@ -333,7 +333,7 @@ check_codons <- function(featsel) {
     stop("The input for 'featsel' must be a named list.")
   }
 
-  # 
+  #
   all_codons <- c(
     "AAA", "AAC", "AAG", "AAT", "ACA", "ACC", "ACG", "ACT", "AGA", "AGC",
     "AGG", "AGT", "ATA", "ATC", "ATG", "ATT", "CAA", "CAC", "CAG", "CAT",
@@ -344,7 +344,7 @@ check_codons <- function(featsel) {
     "TTA", "TTC", "TTG", "TTT"
   )
 
-  # 
+  #
   all(sapply(featsel, function(codons) {
     all(codons %in% all_codons)
   }))

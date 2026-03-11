@@ -39,7 +39,7 @@ goAnalysis <- function(ptn,
     res <- lapply(res, function(x) x[!x %in% genesSlopeFiltOut])
   }
 
-  # 
+  #
   bg_entrezID <- convertSymbolToEntrezID(geneList = bg, species = species)
   res_entrezID <- lapply(res, function(x) convertSymbolToEntrezID(geneList = x, species = species))
 

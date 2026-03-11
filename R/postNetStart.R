@@ -73,7 +73,7 @@ postNetStart <- function(ads = NULL,
       stop("The input for 'keepAll' must be logical: TRUE or FALSE.")
     }
   }
-  # 
+  #
   if (source == "create") {
     if (!is_valid_species(species)) {
       stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
@@ -84,25 +84,25 @@ postNetStart <- function(ads = NULL,
       url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/"
 
       links_current <- getLink(url)
-      
+
       if (is.null(links_current)) stop("Could not read current release directory")
-      
+
       version <- gsub(
         "/",
         "",
         links_current[grepl("GCF_000001405", links_current)]
       )
-      
+
       url_version <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current", version, sep = "/")
-      
+
       links_version <- getLink(url_version)
       if (is.null(links_version)) stop("Could not read version directory")
-      
+
       fna <- links_version[grepl("_rna\\.fna\\.gz$", links_version)]
       gbff <- links_version[grepl("_rna\\.gbff\\.gz$", links_version)]
       gff <- links_version[grepl("_genomic\\.gff\\.gz$", links_version)]
 
-      # 
+      #
       opts <- options(timeout = max(1000, getOption("timeout")))
       on.exit(options(opts))
 
@@ -113,25 +113,25 @@ postNetStart <- function(ads = NULL,
 
     if (species == "mouse") {
       url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/"
-      
+
       links_current <- getLink(url)
-      
+
       if (is.null(links_current)) stop("Could not read current release directory")
-      
+
       version <- gsub(
         "/",
         "",
         links_current[grepl("GCF_000001635", links_current)]
       )
-      
+
       #
       url_version <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current", version, sep = "/")
-    
+
       fna <- links_version[grepl("_rna\\.fna\\.gz$", links_version)]
       gbff <- links_version[grepl("_rna\\.gbff\\.gz$", links_version)]
       gff <- links_version[grepl("_genomic\\.gff\\.gz$", links_version)]
 
-      # 
+      #
       opts <- options(timeout = max(1000, getOption("timeout")))
       on.exit(options(opts))
 
@@ -143,7 +143,7 @@ postNetStart <- function(ads = NULL,
     R.utils::gunzip("customFasta.fa.gz")
     R.utils::gunzip("GeneRef.gff.gz")
 
-    # 
+    #
     seqs <- seqinr::read.fasta(file = "customFasta.fa", seqtype = "AA")
     seqs <- data.frame(
       id = sub("\\..*", "", names(seqs)),
@@ -152,16 +152,16 @@ postNetStart <- function(ads = NULL,
       stringsAsFactors = FALSE
     )
 
-    # 
+    #
     perl_script <- switch(species,
       "human" = "AnnotFromgbff_human.pl",
       "mouse" = "AnnotFromgbff_mouse.pl"
     )
     #
-    command <- paste("perl", paste(system.file("perl", package = "postNet"), "/", perl_script, sep = ""), sep = " ")
-    system(command)
+    script_path <- file.path(system.file("perl", package = "postNet"), perl_script)
+    system2("perl", args = script_path)
 
-    # 
+    #
     annot <- read.delim("customAnnot.txt", stringsAsFactors = FALSE)
     colnames(annot) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
 
@@ -179,7 +179,7 @@ postNetStart <- function(ads = NULL,
     if (!is_valid_species(species)) {
       stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
     }
-    # 
+    #
     source_files_tmp <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
     source_files <- gsub(".gz", "", source_files_tmp)
     filenames <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
@@ -188,7 +188,7 @@ postNetStart <- function(ads = NULL,
       file.rename(source_files[i], filenames[i])
     }
 
-    # 
+    #
     seqs <- seqinr::read.fasta(file = "customFasta.fa", seqtype = "AA")
     seqs <- data.frame(
       id = sub("\\..*", "", names(seqs)),
@@ -201,18 +201,18 @@ postNetStart <- function(ads = NULL,
       "human" = "AnnotFromgbff_human.pl",
       "mouse" = "AnnotFromgbff_mouse.pl"
     )
-    # 
-    command <- paste("perl", paste(system.file("perl", package = "postNet"), "/", perl_script, sep = ""), sep = " ")
-    system(command)
+    #
+    script_path <- file.path(system.file("perl", package = "postNet"), perl_script)
+    system2("perl", args = script_path)
 
-    # 
+    #
     annot <- read.delim("customAnnot.txt", stringsAsFactors = FALSE)
     colnames(annot) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
 
     annotSeq <- merge(annot, seqs, by = "id")
     annotSeq <- extractRegSeq(annotSeq)
 
-    # 
+    #
     gff <- gffRead("GeneRef.gff")
     bed <- extGff(gff)
 
@@ -221,7 +221,7 @@ postNetStart <- function(ads = NULL,
 
     write.table(outDB, file = "customDB.txt", col.names = TRUE, row.names = FALSE, sep = "\t", quote = FALSE)
 
-    # 
+    #
     filesToRm <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
     for (i in 1:length(filesToRm)) {
       if (file.exists(filesToRm[i])) {
@@ -232,19 +232,19 @@ postNetStart <- function(ads = NULL,
     if (!is_valid_species(species)) {
       stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
     }
-    currTmp <- c('human','mouse')
-    
+    currTmp <- c("human", "mouse")
+
     if (!species %in% currTmp) {
       stop("This option is currently only available for species: 'human' and 'mouse'. Please use the 'custom' and 'customFile' parameters \ to provide annotations for other species.")
     }
 
     if (species == "human") {
-      outDB <- get_reference_data(file = 'humanDB_refSeq.txt.gz')
-      version <- 'ver_40.202408'
+      outDB <- get_reference_data(file = "humanDB_refSeq.txt.gz")
+      version <- "ver_40.202408"
     }
     if (species == "mouse") {
-      outDB <- get_reference_data(file = 'mouseDB_refSeq.txt.gz')
-      version <- 'ver_27.202402'
+      outDB <- get_reference_data(file = "mouseDB_refSeq.txt.gz")
+      version <- "ver_27.202402"
     }
   } else if (source == "custom") {
     outDB <- read.delim(customFile, stringsAsFactors = FALSE)
@@ -273,7 +273,7 @@ postNetStart <- function(ads = NULL,
       if (species == "human"
       ) {
         url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/"
-        
+
         links_current <- getLink(url)
         if (is.null(links_current)) stop("Could not read current release directory")
 
@@ -283,17 +283,17 @@ postNetStart <- function(ads = NULL,
           links_current[grepl("GCF_000001405", links_current)]
         )
 
-        # 
+        #
         url_version <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current", version, sep = "/")
-        
+
         links_version <- getLink(url_version)
         if (is.null(links_version)) stop("Could not read version directory")
-        
+
         gff <- links_version[grepl("_genomic\\.gff\\.gz", links_version)]
         #
         opts <- options(timeout = max(1000, getOption("timeout")))
         on.exit(options(opts))
-        
+
         download.file(paste(url_version, gff, sep = "/"), destfile = "GeneRef.gff.gz")
       }
 
@@ -309,13 +309,13 @@ postNetStart <- function(ads = NULL,
           links_current[grepl("GCF_000001635", links_current)]
         )
 
-        # 
+        #
         url_version <- paste("https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current", version, sep = "/")
         if (is.null(links_version)) stop("Could not read version directory")
-        
+
         gff <- links_version[grepl("_genomic\\.gff\\.gz", links_version)]
 
-        # 
+        #
         opts <- options(timeout = max(1000, getOption("timeout")))
         on.exit(options(opts))
 
@@ -325,7 +325,7 @@ postNetStart <- function(ads = NULL,
       R.utils::gunzip("GeneRef.gff.gz")
       gff <- gffRead("GeneRef.gff")
 
-      # 
+      #
       filesToRm <- c("GeneRef.gff")
       if (file.exists(filesToRm)) {
         file.remove(filesToRm)
@@ -413,7 +413,7 @@ postNetStart <- function(ads = NULL,
     miRNA = NULL
   )
 
-  # 
+  #
   postNetData <- new("postNetData",
     version = version,
     species = species,

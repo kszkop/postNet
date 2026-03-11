@@ -23,7 +23,7 @@ gseaPlot <- function(ptn,
   }
   #
   rankIn <- effIn[order(effIn, decreasing = TRUE)]
-  
+
   rnk <- rank(-rankIn)
   ord <- order(rnk)
   statsAdj <- rankIn[ord]

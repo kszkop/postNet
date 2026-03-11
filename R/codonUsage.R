@@ -59,7 +59,7 @@ codonUsage <- function(ptn,
         lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
         annotTmp$lenTmp <- lenTmp
         #
-        annotSel <- isoSel(annot = annotTmp, method = ptn_selection(ptn), setSeed = setSeed )
+        annotSel <- isoSel(annot = annotTmp, method = ptn_selection(ptn), setSeed = setSeed)
         colnames(annotSel)[1:3] <- c("id", "geneID", "CDS_seq")
         #
         annot <- new("postNetRegion",
@@ -109,7 +109,7 @@ codonUsage <- function(ptn,
       }
     } else if (sourceSeq == "load") {
       #
-      currTmp <- c('human','mouse')
+      currTmp <- c("human", "mouse")
       #
       if (!species %in% currTmp) {
         stop("This option is currently only available for human and mouse. For analyses on other species or \
@@ -117,10 +117,10 @@ codonUsage <- function(ptn,
              sequences.")
       }
       if (species == "human") {
-        annotTmp <- get_reference_data(file = 'humanDB_ccds.txt.gz')
+        annotTmp <- get_reference_data(file = "humanDB_ccds.txt.gz")
       }
       if (species == "mouse") {
-        annotTmp <- get_reference_data(file = 'mouseDB_ccds.txt.gz')
+        annotTmp <- get_reference_data(file = "mouseDB_ccds.txt.gz")
       }
       lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) length(seqinr::s2c(x))))
       annotTmp$lenTmp <- lenTmp
@@ -231,7 +231,7 @@ codonUsage <- function(ptn,
       message("No available codon indexes for ", species)
     }
 
-    # 
+    #
     indNames <- c("CAI", "CBI", "Fop", "tAI", "L_aa")
 
     for (ind in indNames) {
@@ -355,10 +355,10 @@ codonUsage <- function(ptn,
     resIn <- compOut1[compTmp]
     resIn <- do.call(rbind, resIn)
 
-    # 
+    #
     resIn <- resIn[, colSums(resIn) > 0]
 
-    # 
+    #
     if (all(resIn <= 0)) {
       stop("The contingency table (codon or AA counts by geneset) must have at least one positive entry \
            for the Chi-squared test to be performed.")
@@ -376,7 +376,7 @@ codonUsage <- function(ptn,
       }
     }
 
-    # 
+    #
     if (all(resIn <= 0)) {
       stop("The contingency table (codon or AA counts by geneset) must have at least one positive entry \
            for the Chi-squared test to be performed.")

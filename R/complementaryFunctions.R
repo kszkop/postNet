@@ -80,7 +80,7 @@ extGff <- function(gff) {
   gff$geneID <- getAttributeField(gff$attributes, "gene")
   gff <- with(gff, cbind(gff, reshape2::colsplit(gff$transID_ver, pattern = "\\.", names = c("transID", "version"))))
   bed <- data.frame(id = gff$transID, chr = gff$seqname, strand = gff$strand, start = gff$start, end = gff$end, transVer = gff$version, geneID = gff$geneID)
-  # 
+  #
   bed <- bed[grepl("NM_", bed$id), ]
   bed <- bed[grepl("NC_", bed$chr), ]
   bed <- subset(bed, !duplicated(id))
@@ -96,7 +96,7 @@ gSel <- function(annot, ads, customBg, geneList) {
     annotOut <- annot[annot$geneID %in% bg, ]
   } else {
     if (!is.null(customBg)) {
-      # 
+      #
       bg <- customBg
       if (!is.null(geneList)) {
         bg <- unique(c(bg, as.character(unlist(geneList))))
@@ -122,18 +122,23 @@ regSel <- function(annot, region) {
 }
 
 isoSel <- function(annot, method, setSeed = NULL) {
-  # 
+  #
   if (method == "shortest") {
     annotOut <- as.data.frame(annot %>% group_by(geneID) %>% dplyr::slice(which.min(lenTmp)))
   } else if (method == "longest") {
     annotOut <- as.data.frame(annot %>% group_by(geneID) %>% dplyr::slice(which.max(lenTmp)))
   } else {
     sampler <- function() {
-      annot %>%  dplyr::group_by(geneID) %>% dplyr::slice_sample(n = 1)
+      annot %>%
+        dplyr::group_by(geneID) %>%
+        dplyr::slice_sample(n = 1)
     }
     annotOut <- as.data.frame(
-      if (is.null(setSeed)) sampler()
-      else withr::with_seed(setSeed, sampler())
+      if (is.null(setSeed)) {
+        sampler()
+      } else {
+        withr::with_seed(setSeed, sampler())
+      }
     )
   }
   return(annotOut)
@@ -194,7 +199,7 @@ resSel <- function(ads = NULL,
                    contrast,
                    geneList) {
   resOut <- list()
-  # 
+  #
   if (!is.null(ads)) {
     results <- anota2seqGetDirectedRegulations(ads)
     #
@@ -230,7 +235,7 @@ getBg <- function(ads = NULL, customBg = NULL, geneList = NULL) {
     bgOut <- row.names(ads@dataP)
   } else {
     if (!is.null(customBg)) {
-      # 
+      #
       bgOut <- customBg
       if (!is.null(geneList)) {
         tmpDiff <- setdiff(as.character(unlist(geneList)), bgOut)
@@ -246,20 +251,19 @@ getBg <- function(ads = NULL, customBg = NULL, geneList = NULL) {
 }
 
 check_id_type <- function(id) {
-  # 
+  #
   if (grepl("^[0-9]+$", id)) {
     return("entrezID")
   }
-  # 
+  #
   else if (grepl("^[A-Za-z0-9]+$", id)) {
     return("geneID")
   }
-  # 
+  #
   else {
     return("unknown")
   }
 }
-
 
 
 coloursSel <- function(ads, genesIn, geneList, geneListcolours) {
@@ -335,7 +339,6 @@ addStats <- function(comparisons, plotType, resOut, coloursOut) {
     pvalTmp <- format(as.numeric(wilcox.test(resOut[[compTmp[1]]], resOut[[compTmp[2]]], exact = FALSE, alternative = "two.sided")[3]), scientific = TRUE, digits = 2)
     #
     if (plotType == "boxplot" | plotType == "violin") {
-
       rect(xleft = compTmp[1], xright = compTmp[2], ybottom = j - 1, ytop = j - 1, lwd = 2)
       #
       text(sum(compTmp) / 2, j - 0.5, pvalTmp, cex = 0.75)
@@ -343,14 +346,14 @@ addStats <- function(comparisons, plotType, resOut, coloursOut) {
       tableOut[j, 1] <- paste(names(resOut)[compTmp[2]], "vs", names(resOut)[compTmp[1]], sep = " ")
       tableOut[j, 2] <- pvalTmp
 
-      # 
+      #
       tmpBg <- sort(resOut[[compTmp[1]]])
       ecdfBg <- 1:length(tmpBg) / length(tmpBg)
       bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
       bg_05 <- tmpBg[which(ecdfBg >= 0.5)[1]]
       bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
 
-      # 
+      #
       tmpSign <- sort(resOut[[compTmp[2]]])
       ecdfSign <- 1:length(tmpSign) / length(tmpSign)
       tableOut[j, 3] <- format(tmpSign[which(ecdfSign >= 0.25)[1]] - bg_025, digits = 2)
@@ -442,7 +445,6 @@ plotPostNet <- function(resOut, colOut, comparisons, ylabel, plotType) {
       }
     }
   } else if (plotType == "ecdf") {
-
     par(mar = c(5, 5, 8, 4), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.4, cex.main = 1.7, cex.lab = 1.3)
     plot(ecdf(resOut[[1]]), col = colOut[1], main = "", xlab = "", ylab = "", verticals = TRUE, do.p = FALSE, lwd = 3, bty = "n", font = 2) # , yaxt = "none", xlim = c(xlim_min, xlim_max), xaxt = "none")
 
@@ -573,7 +575,7 @@ calc_g4 <- function(x, min_score, unit) {
 }
 
 
-# 
+#
 convertIUPAC <- function(motif) {
   #
   tmpConv <- toupper(motif)
@@ -607,11 +609,11 @@ motifLenCalc <- function(motif) {
 }
 
 
-# 
+#
 replaceProtAmbig <- function(motif) {
   #
   tmpConv <- toupper(motif)
-  # 
+  #
   tmpConv <- gsub("X", "[ACDEFGHIKLMNPQRSTVWY]", tmpConv)
   #
   return(tmpConv)
@@ -655,17 +657,15 @@ codonCount <- function(seq, gene, codonN = 1) {
 }
 
 #
-statOnDf <- function(df, 
-                     regs, 
-                     analysis
-) {
+statOnDf <- function(df,
+                     regs,
+                     analysis) {
   #
   oddRatioOut <- list()
   #
   uniqAA <- unique(as.character(df$AA))
 
   if (analysis == "codon") {
-
     fisherList <- rep(list(NA), length(unique(df$codon)))
     testList <- rep(list(NA), length(unique(df$codon)))
     names(testList) <- names(fisherList) <- unique(df$codon)
@@ -676,17 +676,17 @@ statOnDf <- function(df,
       #
       codons <- as.character(df$codon[df$AA == uniqAA[AAind]])
 
-      # 
+      #
       if (length(codons) > 1) {
         for (cod in 1:length(codons)) {
           codTmp <- codons[cod]
           c_codTmp <- tmpDf[tmpDf$codon == codTmp, regs]
-          # 
+          #
           r_codTmp <- apply(tmpDf[!tmpDf$codon == codTmp, regs], 2, sum)
           #
           fisherIn <- rbind(c_codTmp, r_codTmp)
 
-          ## 
+          ##
           fisherOut <- fisher.test(fisherIn)
           #
           oddRatioOut[[codTmp]] <- as.numeric(fisherOut$estimate)
@@ -703,7 +703,7 @@ statOnDf <- function(df,
     for (AAi in 1:length(uniqAA)) {
       AATmp <- uniqAA[AAi]
       c_codTmp <- df[df$AA == AATmp, regs]
-      # 
+      #
       r_codTmp <- colSums(df[df$AA != AATmp, regs])
 
       fisherIn <- rbind(c_codTmp, r_codTmp)
@@ -722,7 +722,7 @@ statOnDf <- function(df,
 roundNice <- function(x, nice = c(1, 2, 4, 5, 6, 8, 10), direction) {
   if (length(x) != 1) stop("'x' must be of length 1")
 
-  # 
+  #
   sign_x <- sign(x)
   x_abs <- abs(x)
 
@@ -768,13 +768,13 @@ calc_uORF <- function(seqTmp, ext, context, unit) {
     if (length(stopOut) > 0) {
       #
       for (i in 1:length(startOut)) {
-        # 
+        #
         stopTmp <- stopOut[which((stopOut - startOut[i]) > 0)]
         #
         potORF <- stopTmp - startOut[i]
-        # 
+        #
         inFrameCheck <- potORF %% 3
-        # 
+        #
         stopTmp <- stopTmp[which(inFrameCheck == 0)]
         #
         if (length(stopTmp) > 0) {
@@ -896,7 +896,7 @@ printDup <- function(dupIn) {
   }
 }
 
-# 
+#
 rescale <- function(x, a, b, c, d) {
   c + (x - a) / (b - a) * (d - c)
 }
@@ -964,7 +964,7 @@ extractRegSeq <- function(annotSeq) {
 }
 
 
-# 
+#
 generateOut <- function(x, tmpList) {
   if (length(tmpList[[x]]) > 0) {
     tmpPos <- paste(names(tmpList[[x]]), collapse = "\t")
@@ -1049,7 +1049,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   fval <- list()
   pval <- list()
 
-  # 
+  #
   models <- lapply(colnames(dataIn)[-length(colnames(dataIn))], function(x) {
     anova(lm(substitute(effM ~ i, list(i = as.name(x))), data = dataIn))
   })
@@ -1323,7 +1323,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   } else {
     nodeOutAll <- nodeOut
   }
-  # 
+  #
   net <- igraph::graph.data.frame(linkOut, nodeOutAll, directed = FALSE)
   #
   lsize <- rescale(igraph::V(net)$VarianceExplained, 0, 100, 0, 75)
@@ -1351,7 +1351,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   colrs <- rep("white", nrow(nodeOutAll))
   colrs[which(nodeOutAll$direct == "plus")] <- coloursIn[1]
   colrs[which(nodeOutAll$direct == "minus")] <- coloursIn[2]
-  igraph::V(net)$color <- colrs 
+  igraph::V(net)$color <- colrs
 
   if (length(igraph::E(net)$weight) > 0) {
     if (isTRUE(useCorel)) {
@@ -1425,7 +1425,7 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
       text_x <- group_center[1] + x_radius * 0.75
       text_y <- group_center[2] + y_radius * 0.75
 
-      # 
+      #
       text(x = text_x, y = text_y, labels = paste(sum(igraph::V(net)$VarianceExplained[which(igraph::V(net)$Group == group)]), "%", sep = ""), col = lmfeatGroupColour[names(lmfeatGroupColour) == group], cex = 1.25, font = 2, pos = 4)
       legend("topright", bty = "n", unique(names(lmfeatGroupColour)), title = "Groups", text.col = unique(lmfeatGroupColour), title.col = "grey30")
     }
@@ -1449,8 +1449,6 @@ runLM <- function(dataIn, namesDf, allFeat, useCorel, covarFilt, nameOut, NetMod
   )
   return(lmOut)
 }
-
-
 
 
 plotScatterInd <- function(set1, set2 = NULL, orgName, coloursIn, nameOut) {
@@ -1598,7 +1596,7 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
   return(list(mainPlot = colVecPlot, legend = legendOut))
 }
 
-getLink <- function(url){
+getLink <- function(url) {
   responseTmp <- tryCatch(
     {
       httr2::request(url) %>%
@@ -1610,15 +1608,17 @@ getLink <- function(url){
       return(NULL)
     }
   )
-  if (is.null(responseTmp)) return(NULL)
-  
+  if (is.null(responseTmp)) {
+    return(NULL)
+  }
+
   pageTmp <- httr2::resp_body_string(responseTmp) %>%
     rvest::read_html()
-  
+
   linksTmp <- pageTmp %>%
     rvest::html_nodes("a") %>%
     rvest::html_attr("href")
-  
+
   return(linksTmp)
 }
 
@@ -1630,16 +1630,15 @@ get_signatures <- function(species) {
       call. = FALSE
     )
   }
-  
-  signName <- switch(
-    species,
+
+  signName <- switch(species,
     human = "humanSignatures",
     mouse = "mouseSignatures",
     stop("Unsupported species.", call. = FALSE)
   )
 
   data(list = signName, package = "postNet", envir = environment())
-  
+
   #
   get(signName, envir = environment())
 }
@@ -1648,12 +1647,12 @@ get_signatures <- function(species) {
 get_reference_data <- function(file) {
   cache_dir <- tools::R_user_dir("postNet", which = "cache")
   bfc <- BiocFileCache::BiocFileCache(cache_dir, ask = FALSE)
-  
+
   #
   url <- paste0("https://zenodo.org/records/18357379/files/", file)
-  
+
   res <- BiocFileCache::bfcquery(bfc, query = file, field = "rname")
-  
+
   if (nrow(res) > 0) {
     fileIn <- BiocFileCache::bfcrpath(bfc, rids = res$rid)
   } else {
@@ -1664,7 +1663,7 @@ get_reference_data <- function(file) {
         call. = FALSE
       )
     }
-    
+
     fileIn <- tryCatch(
       {
         rid <- BiocFileCache::bfcadd(bfc, rname = file, fpath = url)
@@ -1685,17 +1684,13 @@ clear_postNet_cache <- function(cache_dir = NULL) {
   if (is.null(cache_dir)) {
     cache_dir <- tools::R_user_dir("postNet", which = "cache")
   }
-  
+
   bfc <- BiocFileCache::BiocFileCache(cache_dir, ask = FALSE)
   info <- BiocFileCache::bfcinfo(bfc)
-  
+
   if (nrow(info) > 0) {
     BiocFileCache::bfcremove(bfc, info$rid)
   }
-  
+
   invisible(TRUE)
 }
-
-
-
-

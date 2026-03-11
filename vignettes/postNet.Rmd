@@ -16,19 +16,20 @@ bibliography: vignette_references.bib
 ---
 
 ```{r setup, echo=FALSE, results="hide"}
-knitr::opts_chunk$set(tidy = FALSE,
-                      cache = FALSE,
-                      fig.path = "vignettes/",
-                      dev = "png",
-                      message = FALSE, 
-                      error = FALSE, 
-                      warning = TRUE)
+knitr::opts_chunk$set(
+  tidy = FALSE,
+  cache = FALSE,
+  fig.path = "vignettes/",
+  dev = "png",
+  message = FALSE,
+  error = FALSE,
+  warning = TRUE
+)
 
 suppressPackageStartupMessages({
   library(dplyr)
   library(data.table)
 })
-
 ```
 
 # Introduction
@@ -59,80 +60,79 @@ Here, we demonstrate a minimal example of the steps of a standard postNet analys
 - Exploring modelling results using UMAP visualizations.
 
 ```{r load_package_data, eval=TRUE, echo=TRUE} 
-# Load the package 
+# Load the package
 library(postNet)
 
-# Load the vignette example data 
+# Load the vignette example data
 data("postNetVignette", package = "postNet")
-
 ```
 
 **Step 1:** A `postNetData` object containing regulated gene sets of interest along with the background set, a regulatory effect measurement (in this case, log2 fold changes in translation efficiency derived from ribosome profiling and RNA-seq comparing cells responding to osmotic stress against controls [@Krokowski2022]), and reference mRNA sequence annotations is initialized using the `postNetStart()` function.   
 ```{r gettingStartedInput, eval=TRUE, echo=TRUE}
 # Prepare custom gene lists and regulatory effect measurement:
-  myGenes <- postNetVignette$geneList
- str(myGenes)
-  myBg <- postNetVignette$background
- str(myBg)
-  myEffect <- postNetVignette$effect
- str(myEffect)
- 
+myGenes <- postNetVignette$geneList
+str(myGenes)
+myBg <- postNetVignette$background
+str(myBg)
+myEffect <- postNetVignette$effect
+str(myEffect)
 ```
 
 ```{r gettingStartedInitialize, eval=TRUE, echo=TRUE, results='hide'}
 # Initialize a postNetData object:
 ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#FC9272","#99000D"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
-
+  geneList = myGenes,
+  geneListcolours = c("#FC9272", "#99000D"),
+  customBg = myBg,
+  effectMeasure = myEffect,
+  selection = "random",
+  setSeed = 123,
+  source = "load",
+  species = "human"
+)
 ```
 
 **Step 2:** mRNA features that may influence post-transcriptional regulation of gene expression are enumerated. In this minimal example, the length and nucleotide content of 5'UTR regions are calculated and compared between gene sets. However, numerous other features across all sequence regions can be examined (see [Analysis of mRNA sequence features](#mRNAfeatures)). These analyses allow both statistical comparisons of mRNA features between gene sets of interest, and generate outputs that can be used to assess the contribution of a given mRNA feature to the observed regulatory effect in the modelling step. 
 
 ```{r gettingStartedEnumerate, eval=TRUE, echo=TRUE}
-# Quantify the length and nucleotide content of the 5'UTR and compare between regulated gene sets 
- len <- lengthAnalysis(ptn = ptn, 
-                      region = c("UTR5"), 
-                      comparisons = list(c(0,1),c(0,2),c(1,2)),
-                      plotOut = TRUE,
-                      plotType = 'boxplot',
-                      pdfName = "Example")
+# Quantify the length and nucleotide content of the 5'UTR and compare between regulated gene sets
+len <- lengthAnalysis(
+  ptn = ptn,
+  region = c("UTR5"),
+  comparisons = list(c(0, 1), c(0, 2), c(1, 2)),
+  plotOut = TRUE,
+  plotType = "boxplot",
+  pdfName = "Example"
+)
 str(len)
- 
- content_UTR5 <- contentAnalysis(ptn = ptn, 
-                           region = c("UTR5"),
-                           comparisons = list(c(0,1),c(0,2),c(1,2)), 
-                           contentIn = c("GC"),
-                           plotOut = TRUE,
-                           plotType = "ecdf",
-                           pdfName = "Example")
-str(content_UTR5)
 
+content_UTR5 <- contentAnalysis(
+  ptn = ptn,
+  region = c("UTR5"),
+  comparisons = list(c(0, 1), c(0, 2), c(1, 2)),
+  contentIn = c("GC"),
+  plotOut = TRUE,
+  plotType = "ecdf",
+  pdfName = "Example"
+)
+str(content_UTR5)
 ```
 
 
 ```{r gettingStartedEnumeratePNGS, eval=TRUE, echo=FALSE, fig.cap="Comparisons of 5'UTR length and GC content between mRNAs belonging to regulated gene sets."}
 knitr::include_graphics("Figures/Figure1.png")
-
 ```
 
 **Step 3:** Changes in translation efficiency are modelled using the `featureIntegration()` function which performs stepwise regression to identify the collection of features that best explain the observed regulation. In this minimal example, a set of pre-calculated features is used including both *cis*-acting (enumerated mRNA features) and *trans*-acting (signatures of upstream regulatory pathways) factors. 
 
 ```{r gettingStartedFeatureInt, eval=FALSE, echo=TRUE}
-# Prepare the list of pre-calculated features to be used in modelling  (for example, 
-# the 'len' and 'content_UTR' variables defined in the previous step can be included) 
+# Prepare the list of pre-calculated features to be used in modelling  (for example,
+# the 'len' and 'content_UTR' variables defined in the previous step can be included)
 features <- postNetVignette$features
 str(features)
 
 # Signatures of trans-acting factors can also be included, and some are provided with the package
-humanSignatures <- get_signatures(species = 'human')
+humanSignatures <- get_signatures(species = "human")
 str(humanSignatures)
 
 # Signatures can be converted into feature inputs using the signCalc function
@@ -142,34 +142,37 @@ trans_signatures <- signCalc(ptn, humanSignatures)
 features <- c(features, trans_signatures)
 
 # Group the features according to category (optional)
-group = c("UTR5", "UTR3", "UTR5","CDS", "UTR5", "UTR5", "UTR5", "CDS", "CDS", 
-          rep("Pathway", 2), "UTR5", rep("Pathway", 2))
-groupColour = c('#834b62','#6699cc','#e9724c','#fff299')
-names(groupColour) <- c("UTR5","CDS", "UTR3","Pathway")
+group <- c(
+  "UTR5", "UTR3", "UTR5", "CDS", "UTR5", "UTR5", "UTR5", "CDS", "CDS",
+  rep("Pathway", 2), "UTR5", rep("Pathway", 2)
+)
+groupColour <- c("#834b62", "#6699cc", "#e9724c", "#fff299")
+names(groupColour) <- c("UTR5", "CDS", "UTR3", "Pathway")
 
 # Run feature integration modelling using forward stepwise regression
-ptn <- featureIntegration(ptn = ptn, 
-                          features = features, 
-                          pdfName = "omnibus", 
-                          regOnly = TRUE, 
-                          allFeat = FALSE,
-                          analysis_type = "lm",
-                          covarFilt = 20,
-                          comparisons = list(c(1,2)),
-                          lmfeatGroup = group,
-                          lmfeatGroupColour = groupColour,
-                          NetModelSel = 'omnibus')
-
+ptn <- featureIntegration(
+  ptn = ptn,
+  features = features,
+  pdfName = "omnibus",
+  regOnly = TRUE,
+  allFeat = FALSE,
+  analysis_type = "lm",
+  covarFilt = 20,
+  comparisons = list(c(1, 2)),
+  lmfeatGroup = group,
+  lmfeatGroupColour = groupColour,
+  NetModelSel = "omnibus"
+)
 ```
 
 ```{r gettingStartedFeatureInt2, eval=TRUE, echo=FALSE, include=FALSE}
-# Prepare the list of pre-calculated features to be used in modelling  (for example, 
-# the 'len' and 'content_UTR' variables defined in the previous step can be included) 
+# Prepare the list of pre-calculated features to be used in modelling  (for example,
+# the 'len' and 'content_UTR' variables defined in the previous step can be included)
 features <- postNetVignette$features
 str(features)
 
 # Signatures of trans-acting factors can also be included, and some are provided with the package
-humanSignatures <- get_signatures(species = 'human')
+humanSignatures <- get_signatures(species = "human")
 str(humanSignatures)
 
 # Signatures can be converted into feature inputs using the signCalc function
@@ -179,47 +182,49 @@ trans_signatures <- signCalc(ptn, humanSignatures)
 features <- c(features, trans_signatures)
 
 # Group the features according to category (optional)
-group = c("UTR5", "UTR3", "UTR5","CDS", "UTR5", "UTR5", "UTR5", "CDS", "CDS", 
-          rep("Pathway", 2), "UTR5", rep("Pathway", 2))
-groupColour = c('#834b62','#6699cc','#e9724c','#fff299')
-names(groupColour) <- c("UTR5","CDS", "UTR3","Pathway")
+group <- c(
+  "UTR5", "UTR3", "UTR5", "CDS", "UTR5", "UTR5", "UTR5", "CDS", "CDS",
+  rep("Pathway", 2), "UTR5", rep("Pathway", 2)
+)
+groupColour <- c("#834b62", "#6699cc", "#e9724c", "#fff299")
+names(groupColour) <- c("UTR5", "CDS", "UTR3", "Pathway")
 
 # Run feature integration modelling using forward stepwise regression
-ptn <- featureIntegration(ptn = ptn, 
-                          features = features, 
-                          pdfName = "omnibus", 
-                          regOnly = TRUE, 
-                          allFeat = FALSE,
-                          analysis_type = "lm",
-                          covarFilt = 20,
-                          comparisons = list(c(1,2)),
-                          lmfeatGroup = group,
-                          lmfeatGroupColour = groupColour,
-                          NetModelSel = 'omnibus')
-
+ptn <- featureIntegration(
+  ptn = ptn,
+  features = features,
+  pdfName = "omnibus",
+  regOnly = TRUE,
+  allFeat = FALSE,
+  analysis_type = "lm",
+  covarFilt = 20,
+  comparisons = list(c(1, 2)),
+  lmfeatGroup = group,
+  lmfeatGroupColour = groupColour,
+  NetModelSel = "omnibus"
+)
 ```
 
 ```{r gettingStartedFeatureIntNetworkPNG, eval=TRUE, echo=FALSE, fig.cap="Network plot of the results of the stepwise regression omnibus model."}
 knitr::include_graphics("Figures/Figure2.png")
-
 ```
 
 **Step 4:** The `plotFeaturesMap()` function is used to visualize the relationship between translation efficiency and different features that were identified in the modelling step as significantly contributing to the observed post-transcriptional regulation. These visualizations are also useful for exploring the overlaps between different features within the same mRNAs.  
 
 ```{r gettingStartedPlotFeaturesMap, eval=TRUE, echo=TRUE}
-
 ptn <- plotFeaturesMap(ptn,
-                regOnly = TRUE,
-                comparisons = list(c(1,2)),
-                featSel = names(ptn_selectedFeatures(ptn, 
-                                               analysis_type = "lm",
-                                               comparison = 1)),
-                remBinary = TRUE,
-                featCol = "UTR5_SCSCGS",
-                scaled = FALSE,
-                remExtreme = 0.1,
-                pdfName = 'Example')
-
+  regOnly = TRUE,
+  comparisons = list(c(1, 2)),
+  featSel = names(ptn_selectedFeatures(ptn,
+    analysis_type = "lm",
+    comparison = 1
+  )),
+  remBinary = TRUE,
+  featCol = "UTR5_SCSCGS",
+  scaled = FALSE,
+  remExtreme = 0.1,
+  pdfName = "Example"
+)
 ```
 
 ```{r gettingStartedPlotFeaturesMapPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) generated based on features identified in the omnibus model (left), with mRNAs containing SCSCGS motifs in the 5´UTR coloured (right)."}
@@ -255,35 +260,32 @@ For each gene provided as part of a gene set of interest or background set, you 
 The example below illustrates the set-up of a postNet analysis allowing identification of mRNA features and statistical comparisons between sets of translationally activated and suppressed genes, as well as modelling and network analysis to identify features associated with changes in translational regulation and their interdependence.  
 
 ```{r postNetStartGeneList, eval=TRUE, echo=TRUE}
-
 # Genes of interest should be provided in a named list.
- myGenes <- postNetVignette$geneList
- str(myGenes)
- 
+myGenes <- postNetVignette$geneList
+str(myGenes)
+
 # All gene IDs in the list should be present in the background.
- myBg <- postNetVignette$background
- str(myBg)
- 
+myBg <- postNetVignette$background
+str(myBg)
+
 # The regulatory effect measurement must be named with the same gene IDs
 # present in the background (or the gene list if no custom background is provided).
- myEffect <- postNetVignette$effect
- str(myEffect)
- 
+myEffect <- postNetVignette$effect
+str(myEffect)
 ```
 
 ```{r postNetStartGeneListInit, eval=TRUE, echo=TRUE, results = 'hide'}
 # Initialize the postNetData object with custom gene lists:
- ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#FC9272","#99000D"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   selection = "random",
-   setSeed = 123,
-   source = "load", 
-   species = "human"
- )
-
+ptn <- postNetStart(
+  geneList = myGenes,
+  geneListcolours = c("#FC9272", "#99000D"),
+  customBg = myBg,
+  effectMeasure = myEffect,
+  selection = "random",
+  setSeed = 123,
+  source = "load",
+  species = "human"
+)
 ```
 
 ## Initializing a postNetData object using an Anota2seqDataSet object
@@ -305,42 +307,42 @@ When an `Anota2seqDataSet` is supplied, the appropriate background gene set, and
 
 The example below illustrates the set-up of a postNet analysis using the output of *anota2seq*, `ads`.  
 ```{r GetAds, eval=TRUE, echo=TRUE, include=FALSE, results = 'hide', warning = FALSE}
-
 # Initialize Anota2seqDataSet using example data (see anota2seq vignette for details)
- ads <- anota2seq::anota2seqDataSetFromMatrix(
-    dataP = postNetVignette$ads_data$dataP,
-    dataT = postNetVignette$ads_data$dataT,
-    phenoVec = postNetVignette$ads_data$phenoVec,
-    batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
-    dataType = "RNAseq",
-    normalize = FALSE)
-    
+ads <- anota2seq::anota2seqDataSetFromMatrix(
+  dataP = postNetVignette$ads_data$dataP,
+  dataT = postNetVignette$ads_data$dataT,
+  phenoVec = postNetVignette$ads_data$phenoVec,
+  batchVec = c(1, 2, 3, 4, 1, 2, 3, 4),
+  dataType = "RNAseq",
+  normalize = FALSE
+)
+
 # Run an anota2seq analysis:
-# Note that the quality control and residual outlier testing are not 
-# performed to limit the running time of this example. For full details 
+# Note that the quality control and residual outlier testing are not
+# performed to limit the running time of this example. For full details
 # on running an analysis please see the anota2seq vignette and help manual.
- ads <- anota2seq::anota2seqRun(ads,
-    performQC = FALSE, 
-    performROT = FALSE, 
-    useProgBar = FALSE)
+ads <- anota2seq::anota2seqRun(ads,
+  performQC = FALSE,
+  performROT = FALSE,
+  useProgBar = FALSE
+)
 ```
 
 This postNet analysis will allow identification of mRNA features and comparison between translationally activated and suppressed genes, as well as buffered (total mRNA up and down) genes from contrast 1. Feature integration and network analysis will model the fold changes in translation efficiency from contrast 1. Note that in this example, if the buffering gene sets are included in modelling comparisons, the regulatory effect measurement values for these genes will be the fold changes in translation efficiency.   
 
 ```{r postNetStartAds, eval=TRUE, echo=TRUE, results = 'hide'}
-
 # Initialize the postNetData object:
-  ptn_withAds <- postNetStart(
-      ads = ads,
-      regulation = c("translationUp","translationDown","bufferingmRNAUp","bufferingmRNADown"),
-      contrast = c(1,1,1,1),
-      regulationGen = "translation",
-      contrastSel = 1,
-      selection = "random",
-      setSeed = 123,   # ensures reproducibility of random isoform selection
-      source = "load",
-      species = "human"
-    )
+ptn_withAds <- postNetStart(
+  ads = ads,
+  regulation = c("translationUp", "translationDown", "bufferingmRNAUp", "bufferingmRNADown"),
+  contrast = c(1, 1, 1, 1),
+  regulationGen = "translation",
+  contrastSel = 1,
+  selection = "random",
+  setSeed = 123, # ensures reproducibility of random isoform selection
+  source = "load",
+  species = "human"
+)
 ```
 
 ## Reference sequence annotations
@@ -359,7 +361,6 @@ Mouse (RefSeq GRCm39): ver_27.202402
 A `postNetData` object can then be initialized using the in-built reference sequence annotations, in this case using the RefSeq ver_40.202408 release version for human.
 
 ```{r RefSeqLoad, eval=FALSE, echo=TRUE}
-
 # Prepare custom gene lists and regulatory effect measurement using example data:
 myGenes <- postNetVignette$geneList
 myBg <- postNetVignette$background
@@ -367,15 +368,14 @@ myEffect <- postNetVignette$effect
 
 # Initialize a postNetData object using in-built annotations for human:
 ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#FC9272","#99000D"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   source = "load", 
-   species = "human",
-   version = "ver_40.202408"
- )
-
+  geneList = myGenes,
+  geneListcolours = c("#FC9272", "#99000D"),
+  customBg = myBg,
+  effectMeasure = myEffect,
+  source = "load",
+  species = "human",
+  version = "ver_40.202408"
+)
 ```
 
 ### Retrieving or constructing reference sequence annotations from the NCBI RefSeq database
@@ -385,69 +385,63 @@ In addition to the in-built annotations, it is also possible to either retrieve 
 By specifying `source = "create"` in `postNetStart()`, annotation files from the most recent RefSeq release version for the indicated species will be automatically downloaded and used to construct a new reference sequence annotation locally. Note that downloads may take several minutes, and files will be stored in the working directory. Using this option requires an internet connection.
 
 ```{r RefSeqCreate, eval=FALSE, echo=TRUE}
-
 # Initialize a postNetData object creating new RefSeq reference sequence annotations for human:
 ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#FC9272","#99000D"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   source = "create", 
-   species = "human",
- )
-
+  geneList = myGenes,
+  geneListcolours = c("#FC9272", "#99000D"),
+  customBg = myBg,
+  effectMeasure = myEffect,
+  source = "create",
+  species = "human",
+)
 ```
 
 Alternatively, two additional offline methods are available to construct reference sequence annotations if files have already been downloaded from [RefSeq](https://www.ncbi.nlm.nih.gov/refseq/) and are available locally. This can be done by specifying `source = "createFromSourceFiles"` in `postNetStart()`, and providing the RNA GBFF ("rna.gbff"), RNA FASTA ("rna.fna"), and genomic GFF ("genomic.gff") files. These files must be provided using the `rna_gbff_file`, `rna_fa_file`, and `genomic_gff_file` parameters of `postNetStart()`.    
 
 ```{r RefSeqCreateFromSourceFiles, eval=FALSE, echo=TRUE}
-
-#  The required RefSeq annotation files downloaded from the NCBI database will 
+#  The required RefSeq annotation files downloaded from the NCBI database will
 #  have the following naming:
 #  - "example_rna.gbff.gz"
 #  - "example_rna.fa.gz"
 #  - "example_genomic.gff.gz"
 
-# Initialize a postNetData object creating a new RefSeq reference sequence annotation 
+# Initialize a postNetData object creating a new RefSeq reference sequence annotation
 # from source files:
 ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#FC9272","#99000D"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   source = "createFromSourceFiles",
-   species = "human",
-   rna_gbff_file = "example_rna.gbff.gz",
-   rna_fa_file = "example_rna.fa.gz",
-   genomic_gff_file = "example_genomic.gff.gz"
- )
-
+  geneList = myGenes,
+  geneListcolours = c("#FC9272", "#99000D"),
+  customBg = myBg,
+  effectMeasure = myEffect,
+  source = "createFromSourceFiles",
+  species = "human",
+  rna_gbff_file = "example_rna.gbff.gz",
+  rna_fa_file = "example_rna.fa.gz",
+  genomic_gff_file = "example_genomic.gff.gz"
+)
 ```
 
 For added flexibility in defining sequence regions, it is also possible to assemble reference sequence annotations from a FASTA file using `source = "createFromFasta"` in `postNetStart()`. This option requires that a FASTA file be provided using the `fastaFile` parameter, along with an additional file specifying the coordinates of the mRNA sequence regions (provided with the `posFile` parameter). This position file must be tab delimited and have columns indicating the transcript id, 5'UTR length, end of the coding sequence, and the total transcript length (see example below). Optionally, a genomic GFF file can also be provided using the `genomic_gff_file` parameter. However, if no GFF is provided the latest version for the indicated species will be automatically downloaded from the RefSeq database.  
 
 ```{r RefSeqCreateFromFasta, eval=FALSE, echo=TRUE}
-
 # An example of the required format for the posFile parameter ("positions.txt"):
 # id	UTR5_len	cds_stop	total_length
 # NM_000014	70	4495	4610
 # NM_000015	70	943	1285
 # NM_000016	79	1345	2261
 
-# Initialize a postNetData object creating a new RefSeq reference sequence annotation 
+# Initialize a postNetData object creating a new RefSeq reference sequence annotation
 # from source files:
 ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#FC9272","#99000D"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   source = "createFromFasta",
-   species = "human",
-   fastaFile = "_rna.fa.gz",
-   posFile  = "positions.txt",
-   genomic_gff_file = "_genomic.gff.gz"
- )
-
+  geneList = myGenes,
+  geneListcolours = c("#FC9272", "#99000D"),
+  customBg = myBg,
+  effectMeasure = myEffect,
+  source = "createFromFasta",
+  species = "human",
+  fastaFile = "_rna.fa.gz",
+  posFile = "positions.txt",
+  genomic_gff_file = "_genomic.gff.gz"
+)
 ```
 
 ### Using custom reference sequence annotations
@@ -457,22 +451,20 @@ The transcriptome is highly diverse, with mRNA isoform expression patterns varyi
 Custom reference sequence annotations can be used with the `postNetStart()` function and may be desirable in cases when working with data from species not currently supported by the options described above, with annotations other than those in the NCBI RefSeq database, or if sequences have been experimentally determined. A pre-prepared reference sequence annotation file can be provided using the `customFile` parameter. This file must be tab delimited and contain the columns: transcriptID, geneID, UTR5_seq, CDS_seq, and UTR3_seq. 
 
 ```{r RefSeqCustom, eval=FALSE, echo=TRUE}
-
 # An example of the required format for the customFile parameter ("customSequences.txt"):
 # id	geneID	UTR5_seq	CDS_seq	UTR3_seq
 # NM_000014	A2M	GGGACCAG...	ATGGGGAA...	AGACCACA...
 
 # Initialize a postNetData object with a custom reference sequence annotation file:
 ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#FC9272","#99000D"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   source = "custom",
-   species = NULL,
-   customFile = "customSequences.txt"
- )
-
+  geneList = myGenes,
+  geneListcolours = c("#FC9272", "#99000D"),
+  customBg = myBg,
+  effectMeasure = myEffect,
+  source = "custom",
+  species = NULL,
+  customFile = "customSequences.txt"
+)
 ```
 
 ### Selecting transcript isoforms
@@ -482,19 +474,17 @@ Using sequence annotations provided with the package or built from the RefSeq da
 Although it is also possible to perform isoform-level analyses of mRNA features with `postNet` by supplying custom sequence annotations as described above, careful consideration should be given to the approach used when analyzing isoform versus gene-level data. If differential regulation of unique isoforms can be confidently quantified, it may be possible to treat these similarly to gene-level data when performing `featureIntegration()` modelling. However, it should be considered that including multiple isoforms for the same genes that contain shared sequences may have confounding effects, giving results that may be misleading or difficult to interpret. An alternative option is to enumerate mRNA features at the isoform level, and then summarize these at the gene-level prior to modelling [@Watt2025].     
 
 ```{r IsoformSel, eval=FALSE, echo=TRUE}
-
 # Initialize a postNetData object with reproducible random mRNA isoform selection:
 ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#FC9272","#99000D"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   source = "load",
-   species = "human",
-   selection = "random",
-   setSeed = 123
- )
-
+  geneList = myGenes,
+  geneListcolours = c("#FC9272", "#99000D"),
+  customBg = myBg,
+  effectMeasure = myEffect,
+  source = "load",
+  species = "human",
+  selection = "random",
+  setSeed = 123
+)
 ```
 
 ### Adjusting UTR sequence annotations
@@ -504,36 +494,32 @@ Numerous sequencing approaches are available to specifically map UTRs, such as n
 Custom UTR sequences will replace UTRs in an existing annotation file when using the `adjObj` and `region_adj` parameters of the `postNetStart()` function. A list of custom sequences must be provided, specifying which UTR region(s) should be replaced. If custom UTR sequences are available for some, but not all genes in the existing sequence annotation, whether genes and isoforms without custom sequences are kept or discarded from the analysis can be controlled using the `excl` parameter. The `keepAll` parameter can also be used to control how custom UTR isoform sequences are stored for genes with multiple isoforms.        
 
 ```{r AdjObj, eval=TRUE, echo=TRUE}
-
 # Create the adjObj list with custom 5'UTR sequences to replace those in the loaded annotation file
 myUTR5seqs <- ptn_sequences(ptn, "UTR5")
 myIDd <- ptn_id(ptn, "UTR5")
 names(myUTR5seqs) <- myIDd
-customUTR5s <-  list(UTR5 = myUTR5seqs)
+customUTR5s <- list(UTR5 = myUTR5seqs)
 str(customUTR5s)
-
 ```
  
 ```{r AdjustUTRs, eval=FALSE, echo=TRUE}
-
 # Initialize a postNetData object with custom 5'UTR sequences, replacing the 5'UTR sequences
-# in the loaded annotation file with custom ones where available, and discarding all isoforms 
+# in the loaded annotation file with custom ones where available, and discarding all isoforms
 # without custom sequences. Genes with no custom sequence will retain all isoforms from the original annotation:
 ptn <- postNetStart(
-   geneList = myGenes,
-   geneListcolours = c("#FC9272","#99000D"),
-   customBg = myBg,
-   effectMeasure = myEffect,
-   source = "load",
-   species = "human",
-   selection = "random",
-   setSeed = 123,
-   adjObj = customUTR5s,
-   region_adj = "UTR5",
-   excl = FALSE,
-   keepAll = FALSE
- )
-
+  geneList = myGenes,
+  geneListcolours = c("#FC9272", "#99000D"),
+  customBg = myBg,
+  effectMeasure = myEffect,
+  source = "load",
+  species = "human",
+  selection = "random",
+  setSeed = 123,
+  adjObj = customUTR5s,
+  region_adj = "UTR5",
+  excl = FALSE,
+  keepAll = FALSE
+)
 ```
  
  <a name="mRNAfeatures"/>
@@ -564,18 +550,18 @@ The length of different mRNA sequence regions can have important implications fo
 The example below will compute a list (`len`) of the log2 length for each gene and sequence region, and produce three PDF files with eCDFs and statistics comparing the length of each sequence region between gene sets and background.   
 
 ```{r lengthAnalysisBoxplot, eval=TRUE, echo=TRUE}
-
 # Calculate the length of the 5'UTR, 3'UTR and coding sequence for each gene,
-# and compare lengths between translationUp genes vs. background, 
+# and compare lengths between translationUp genes vs. background,
 # translationDown genes vs. background, and translationUp vs. translationDown genes
- len <- lengthAnalysis(ptn = ptn, 
-                      region = c("UTR5","CDS","UTR3"), 
-                      comparisons = list(c(0,1),c(0,2),c(1,2)),
-                      plotOut = TRUE,
-                      plotType = 'ecdf',
-                      pdfName = "Example")
- str(len)
-
+len <- lengthAnalysis(
+  ptn = ptn,
+  region = c("UTR5", "CDS", "UTR3"),
+  comparisons = list(c(0, 1), c(0, 2), c(1, 2)),
+  plotOut = TRUE,
+  plotType = "ecdf",
+  pdfName = "Example"
+)
+str(len)
 ```
 
 ```{r lengthAnalysisPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in Log2(Length) of mRNA sequence regions between different gene sets. 5'UTR (left), 3'UTR (middle), CDS (right). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can also be generated as either box plots, or violin plots"}
@@ -590,17 +576,18 @@ The `contentIn` parameter is used to specify one or more nucleotide(s) or nucleo
 
 The example below will compute a list (`GC_content`) of the percentage of GC content for each gene and sequence region, and produce three PDF files with violin plots and statistics comparing the GC content of each sequence region between gene sets and background.   
 ```{r contentAnalysisGCviolin, eval=TRUE, echo=TRUE}
-
 # Calculate the GC content of each sequence region for each gene, and compare between
-# translationUp genes vs. background, translationDown genes vs. background, and 
+# translationUp genes vs. background, translationDown genes vs. background, and
 # translationUp vs. translationDown genes
- GC_content <- contentAnalysis(ptn = ptn, 
-                           region = c("UTR5","CDS","UTR3"),
-                           comparisons = list(c(0,1),c(0,2),c(1,2)), 
-                           contentIn = c("GC"),
-                           plotOut = TRUE,
-                           plotType = "violin",
-                           pdfName = "Example")
+GC_content <- contentAnalysis(
+  ptn = ptn,
+  region = c("UTR5", "CDS", "UTR3"),
+  comparisons = list(c(0, 1), c(0, 2), c(1, 2)),
+  contentIn = c("GC"),
+  plotOut = TRUE,
+  plotType = "violin",
+  pdfName = "Example"
+)
 ```
 
 ```{r contentAnalysisPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Violin plots visualizing differences in the percentage of GC content of mRNA sequence regions between different gene sets. 5'UTR (left), 3'UTR (middle), CDS (right). Statistical comparisons are made between translationally activated (blue), suppressed (red), and background (grey) gene sets. Visualizations can also be generated as either box plots, or eCDFs"}
@@ -609,47 +596,49 @@ knitr::include_graphics("Figures/Figure5.png")
 
 In addition to calculating the percentage of GC content for each gene and sequence region (as above), the code below will return the GC content at the third codon position (GC3) for the coding sequence.  
 ```{r contentAnalysisGC3, eval=TRUE, echo=TRUE}
-
 # Calculate the GC of each sequence region for each gene, as well as the GC3 content of
-# the coding region and compare between translationUp genes vs. background, translationDown 
+# the coding region and compare between translationUp genes vs. background, translationDown
 # genes vs. background, and translationUp vs. translationDown genes
- GC3_content <- contentAnalysis(ptn = ptn, 
-                           region = c("CDS"),
-                           comparisons = list(c(0,1),c(0,2),c(1,2)), 
-                           contentIn = c("GC3"),
-                           plotOut = TRUE,
-                           plotType = "violin",
-                           pdfName = "Example")
+GC3_content <- contentAnalysis(
+  ptn = ptn,
+  region = c("CDS"),
+  comparisons = list(c(0, 1), c(0, 2), c(1, 2)),
+  contentIn = c("GC3"),
+  plotOut = TRUE,
+  plotType = "violin",
+  pdfName = "Example"
+)
 str(GC_content)
-                      
 ```
 
 Finally, the code below provides an example of how the `subregion` and `subregionSel` parameters can be used to quantify the percentage of G content in the first and last 15 nucleotides of the 5'UTR. 
 ```{r contentAnalysisSubregion, eval=FALSE, echo=TRUE}
-
-# Calculate the G content of the first and last 15 nucleotides of the 5'UTR for each gene, and 
-# compare between translationUp genes vs. background, translationDown genes vs. background, and 
+# Calculate the G content of the first and last 15 nucleotides of the 5'UTR for each gene, and
+# compare between translationUp genes vs. background, translationDown genes vs. background, and
 # translationUp vs. translationDown genes
- content_UTR5_first15 <- contentAnalysis(ptn = ptn, 
-                           region = c("UTR5"),
-                           subregion = 15,
-                           subregionSel = "select",
-                           comparisons = list(c(0,1),c(0,2),c(1,2)), 
-                           contentIn = c("G"),
-                           plotOut = TRUE,
-                           plotType = "ecdf",
-                           pdfName = "Example_First15utr5")
+content_UTR5_first15 <- contentAnalysis(
+  ptn = ptn,
+  region = c("UTR5"),
+  subregion = 15,
+  subregionSel = "select",
+  comparisons = list(c(0, 1), c(0, 2), c(1, 2)),
+  contentIn = c("G"),
+  plotOut = TRUE,
+  plotType = "ecdf",
+  pdfName = "Example_First15utr5"
+)
 
-content_UTR5_last15 <- contentAnalysis(ptn = ptn, 
-                           region = c("UTR5"),
-                           subregion = -15,
-                           subregionSel = "select",
-                           comparisons = list(c(0,1),c(0,2),c(1,2)), 
-                           contentIn = c("G"),
-                           plotOut = TRUE,
-                           plotType = "ecdf",
-                           pdfName = "Example_Last15utr5")
-                      
+content_UTR5_last15 <- contentAnalysis(
+  ptn = ptn,
+  region = c("UTR5"),
+  subregion = -15,
+  subregionSel = "select",
+  comparisons = list(c(0, 1), c(0, 2), c(1, 2)),
+  contentIn = c("G"),
+  plotOut = TRUE,
+  plotType = "ecdf",
+  pdfName = "Example_Last15utr5"
+)
 ```
 
 ## Folding energy
@@ -664,19 +653,20 @@ The `residFE` parameter also offers the option of correcting the folding energie
 
 The example below will compute a list (`FE`) of the folding energies for 5'UTR regions, and produce a PDF file with box plots and statistics comparing the folding energy between regulated gene sets and background. 
 ```{r foldingEnergyBoxplot, eval=TRUE, echo=TRUE}
-
-# Compare the folding energy of the 5'UTRs between translationUp 
-# genes vs. background, translationDown genes vs. background, 
-# and translationUp vs. translationDown genes. 
- FE <- foldingEnergyAnalysis(ptn = ptn,
-                               region=c("UTR5"),
-                               comparisons = list(c(0,1),c(0,2),c(1,2)),
-                               residFE = FALSE, 
-                               plotType = "boxplot",
-                               sourceFE = "load",
-                               plotOut = TRUE,
-                               pdfName = "Example")
- str(FE)
+# Compare the folding energy of the 5'UTRs between translationUp
+# genes vs. background, translationDown genes vs. background,
+# and translationUp vs. translationDown genes.
+FE <- foldingEnergyAnalysis(
+  ptn = ptn,
+  region = c("UTR5"),
+  comparisons = list(c(0, 1), c(0, 2), c(1, 2)),
+  residFE = FALSE,
+  plotType = "boxplot",
+  sourceFE = "load",
+  plotOut = TRUE,
+  pdfName = "Example"
+)
+str(FE)
 ```
 
 ```{r foldingEnergyPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Box plots visualizing differences in the folding energy of mRNA 5'UTRs between different gene sets. Statistical comparisons are made between translationally activated (light red), suppressed (dark red), and background (grey) gene sets. Visualizations can also be generated as either violin plots, or eCDFs"}
@@ -685,7 +675,6 @@ knitr::include_graphics("Figures/Figure6.png")
 
 In the example code below, a custom file with pre-calculated folding energies is provided for 5'UTR sequences.
 ```{r foldingEnergyCustom, eval=FALSE, echo=TRUE}
-
 # An example of the required input format for the customFile parameter ("custom_UTR5FE.txt"):
 # id	fold_energy	length
 # NM_018117	-16.3	34
@@ -693,18 +682,19 @@ In the example code below, a custom file with pre-calculated folding energies is
 # NM_001003891	-28.4	81
 # NM_021107	-120.14	350
 
-# Compare the folding energy of the 5'UTR for each gene between translationUp genes vs. background, 
-# translationDown genes vs. background, and translationUp vs. translationDown genes. 
- customFE <- foldingEnergyAnalysis(ptn = ptn,
-                               region = c("UTR5"),
-                               comparisons = list(c(0,1),c(0,2),c(1,2)),
-                               residFE = FALSE, 
-                               plotType = 'violin',
-                               sourceFE = "custom",
-                               customFileFE = "~/Path/To/CustomFile/custom_UTR5FE.txt",
-                               plotOut = TRUE,
-                               pdfName = 'Example_customFE')
- 
+# Compare the folding energy of the 5'UTR for each gene between translationUp genes vs. background,
+# translationDown genes vs. background, and translationUp vs. translationDown genes.
+customFE <- foldingEnergyAnalysis(
+  ptn = ptn,
+  region = c("UTR5"),
+  comparisons = list(c(0, 1), c(0, 2), c(1, 2)),
+  residFE = FALSE,
+  plotType = "violin",
+  sourceFE = "custom",
+  customFileFE = "~/Path/To/CustomFile/custom_UTR5FE.txt",
+  plotOut = TRUE,
+  pdfName = "Example_customFE"
+)
 ```
 
 ## Upstream open reading frames
@@ -727,21 +717,21 @@ Finally, in addition to quantifying the number of uORFs for a given transcript, 
 
 The example below will compute a list (`uORFs`) of the number of uORFs with canonical start codons in a strong Kozak context for each gene, and produce a PDF file with a bar plot and statistics comparing between gene sets.   
 ```{r uorfAnalysis, eval=TRUE, echo=TRUE}
-
 # Identify all uORFs with canonical start codons in a strong Kozak context (including
-# those not fully contained within 5'UTRs, and compare 
+# those not fully contained within 5'UTRs, and compare
 # between translationUp vs. translationDown genes
 
- uORFs <- uorfAnalysis(ptn = ptn,
-                      comparisons = list(c(1,2)),
-                      startCodon = "ATG",
-                      KozakContext = c("strong"),
-                      onlyUTR5 = FALSE,
-                      unitOut = "number",
-                      plotOut = TRUE,
-                      pdfName = 'Example')
- str(uORFs)
-
+uORFs <- uorfAnalysis(
+  ptn = ptn,
+  comparisons = list(c(1, 2)),
+  startCodon = "ATG",
+  KozakContext = c("strong"),
+  onlyUTR5 = FALSE,
+  unitOut = "number",
+  plotOut = TRUE,
+  pdfName = "Example"
+)
+str(uORFs)
 ```
 
 ```{r uorfAnalysisPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Bar plot visualizing differences in the proportion of transcripts containing uORFs with canonical start codons in a strong Kozak context between different gene sets. Statistical comparisons are made between translationally activated (blue), and suppressed (red) gene sets."}
@@ -760,25 +750,29 @@ The `motifAnalysis()` function returns an updated `postNetData` object where res
 
 In the example below, *de novo* motifs enriched in translationally activated and suppressed gene sets compared to background will be identified for all sequence regions. Motifs passing an enrichment p-value threshold of 0.05 will be extracted, along with the full motif analysis results for the translationally activated gene set. 
 ```{r motifAnalysis, eval=FALSE, echo=TRUE}
-
 # Note that as users must provide the path to the MEME Suite executables. An example of
-# how to run this function is provided below, and can be updated with the correct memePath argument. 
+# how to run this function is provided below, and can be updated with the correct memePath argument.
 
- ptn <- motifAnalysis(ptn = ptn, 
-                     stremeThreshold = 0.05,
-                     minwidth = 6,
-                     memePath = "/meme/bin", 
-                     region = c('UTR5','CDS','UTR3'))
+ptn <- motifAnalysis(
+  ptn = ptn,
+  stremeThreshold = 0.05,
+  minwidth = 6,
+  memePath = "/meme/bin",
+  region = c("UTR5", "CDS", "UTR3")
+)
 
 # Extract the significantly enriched motifs:
- denovo_UTR5motifs <- ptn_motifSelection(ptn = ptn,
-                                region = 'UTR5')
-                                
-# Extract full motif results from one gene set of interest:                                
- denovo_UTR5motifs_TransUp <- ptn_motifGeneList(ptn = ptn,
-                                      region = 'UTR5',
-                                      geneList = 'translationUp')
-                                
+denovo_UTR5motifs <- ptn_motifSelection(
+  ptn = ptn,
+  region = "UTR5"
+)
+
+# Extract full motif results from one gene set of interest:
+denovo_UTR5motifs_TransUp <- ptn_motifGeneList(
+  ptn = ptn,
+  region = "UTR5",
+  geneList = "translationUp"
+)
 ```
 
 ## Motif enumeration
@@ -796,35 +790,36 @@ It is important to note that the `contentMotifs()` function uses a more strict m
 The example below will compute a list (`UTR5_SCSCGS_num`) of the number of SCSCGS in the 5'UTR for each gene, and produce a PDF file with an eCDF plot and statistics comparing enrichment of the motif between gene sets. A second list (`UTR5_SCSCGS_pos`) will contain the coordinates of the positions of the motifs within the 5'UTR for each gene.    
 
 ```{r contentMotifs, eval=TRUE, echo=TRUE}
-
-# Detect and quantify a given motif within 5'UTRs, and compare between translationUp vs. 
+# Detect and quantify a given motif within 5'UTRs, and compare between translationUp vs.
 # translationDown genes
 
- UTR5_SCSCGS_num <- contentMotifs(ptn = ptn, 
-                        motifsIn = "SCSCGS",
-                        region = c("UTR5"), 
-                        comparisons = list(c(1,2)),
-                        dist = 1,
-                        unitOut = "number",
-                        pdfName = "Example",
-                        plotOut = TRUE)
- str(UTR5_SCSCGS_num)
+UTR5_SCSCGS_num <- contentMotifs(
+  ptn = ptn,
+  motifsIn = "SCSCGS",
+  region = c("UTR5"),
+  comparisons = list(c(1, 2)),
+  dist = 1,
+  unitOut = "number",
+  pdfName = "Example",
+  plotOut = TRUE
+)
+str(UTR5_SCSCGS_num)
 
- # Now find the coordinates of positions where the motif occurs in 5'UTRs
- 
- UTR5_SCSCGS_pos <- contentMotifs(ptn = ptn, 
-                        motifsIn = "SCSCGS",
-                        region = c("UTR5"), 
-                        comparisons = list(c(1,2)),
-                        dist = 1,
-                        unitOut = "position")
- str(UTR5_SCSCGS_pos$UTR5_SCSCGS[1:3])
- 
+# Now find the coordinates of positions where the motif occurs in 5'UTRs
+
+UTR5_SCSCGS_pos <- contentMotifs(
+  ptn = ptn,
+  motifsIn = "SCSCGS",
+  region = c("UTR5"),
+  comparisons = list(c(1, 2)),
+  dist = 1,
+  unitOut = "position"
+)
+str(UTR5_SCSCGS_pos$UTR5_SCSCGS[1:3])
 ```
 
 ```{r contentMotifsPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in the presence of the SCSCGS motif in the 5'UTR of different gene sets. Statistical comparisons are made between translationally activated (blue) and suppressed (red) gene sets. Background genes are shown in grey."}
 knitr::include_graphics("Figures/Figure8.png")
-
 ```
 
 
@@ -845,22 +840,23 @@ The example below demonstrates an implementation of `codonUsage()` generating a 
 ```{r codonUsageTable, eval=FALSE, echo=TRUE}
 # Examine the composition of all genes:
 
- ptn <- codonUsage(ptn = ptn, 
-          annotType = "ptnCDS", 
-          sourceSeq = "load", 
-          analysis = "codon", 
-          codonN = 1,
-          comparisons = list(c(1,2)))
+ptn <- codonUsage(
+  ptn = ptn,
+  annotType = "ptnCDS",
+  sourceSeq = "load",
+  analysis = "codon",
+  codonN = 1,
+  comparisons = list(c(1, 2))
+)
 
-# Retrieve the codon usage summary table                     
- codonUsageTable <- ptn_codonAnalysis(ptn)
+# Retrieve the codon usage summary table
+codonUsageTable <- ptn_codonAnalysis(ptn)
 ```
 
 In addition to the summary table, the example code above also generates plots comparing the average codon usage and frequency between the gene sets of interest specified by the `comparisons` parameter.
 
 ```{r codonUsagePlotsPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Scatter plots comparing average codon usage and frequency between gene sets of interest. Codons encoding the same amino acid are coloured and connected by lines."}
 knitr::include_graphics("Figures/Figure9.png")
-
 ```
 
 ### Codon usage indexes
@@ -881,29 +877,28 @@ The `codonUsage()` function can also be used to identify enriched or depleted co
 In the example below, enriched and depleted codons will be identified between translationally activated and suppressed gene sets. These are defined as those with an adjusted p-value less than 0.01 in a Chi-square test, and are within the top 30\% of enrichment or depletion based on odds ratios and average frequencies.  
 
 ```{r codonUsageSelected, eval=FALSE, echo=TRUE}
-
 # Identify enriched and depleted codons between
 # translationally activated and suppressed genes
 
- codonUsage(ptn = ptn, 
-          annotType = "ptnCDS", 
-          sourceSeq = "load", 
-          analysis = "codon", 
-          codonN = 1, 
-          pAdj = 0.01, 
-          plotHeatmap = TRUE, 
-          thresOddsUp = 0.3, 
-          thresFreqUp = 0.3, 
-          thresOddsDown = 0.3, 
-          thresFreqDown = 0.3, 
-          comparisons = list(c(1,2)), 
-          pdfName = 'Example')
- 
+codonUsage(
+  ptn = ptn,
+  annotType = "ptnCDS",
+  sourceSeq = "load",
+  analysis = "codon",
+  codonN = 1,
+  pAdj = 0.01,
+  plotHeatmap = TRUE,
+  thresOddsUp = 0.3,
+  thresFreqUp = 0.3,
+  thresOddsDown = 0.3,
+  thresFreqDown = 0.3,
+  comparisons = list(c(1, 2)),
+  pdfName = "Example"
+)
 ```
 
 ```{r codonUsageSelectedPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Visualizations of differential codon usage between different gene sets of interest. A clustered heatmap of standardized residuals for each codon from a Chi-square test (left), and a plot of the log2 odds ratio for each codon between translationally activated and suppressed gene sets, vs. the average codon frequency. Those passing thresholds for enrichment or depletion between gene sets are highlighted in red and blue, respectively."}
 knitr::include_graphics("Figures/Figure11.png")
-
 ```
 
 ### Enumerating selected codons or amino acids 
@@ -914,21 +909,23 @@ Codons or AAs to examine are specified using the `featsel` parameter, and the ou
 
 In the example below, codons identified as enriched or depleted between gene sets based on Chi-square and odds ratio analyses are enumerated for each gene, and these are compared between translationally activated and suppressed gene sets.  
 ```{r codonCalc, eval=FALSE, echo=TRUE}
-
 # Select codons of interest with high frequency, and the highest and lowest odds ratios
-# between translationally activated and suppressed genes 
- 
- codons <- ptn_codonSelection(ptn, 
-                              comparison = 1)
+# between translationally activated and suppressed genes
+
+codons <- ptn_codonSelection(ptn,
+  comparison = 1
+)
 
 # Calculate and plot eCDFs of codon frequencies, and compare between gene sets
 
- codonCounts  <- codonCalc(ptn = ptn,
-                          analysis = "codon", 
-                          featsel = codons,
-                          unit = "freq", 
-                          comparisons = list(c(1,2)),
-                          plotType = "ecdf")
+codonCounts <- codonCalc(
+  ptn = ptn,
+  analysis = "codon",
+  featsel = codons,
+  unit = "freq",
+  comparisons = list(c(1, 2)),
+  plotType = "ecdf"
+)
 ```
 
 ```{r codonCalcPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDFs visualizing differences in the frequency of enriched (left) and depleted (right) codons between gene sets. Statistical comparisons are made between translationally activated (blue), suppressed (red) gene sets, with background shown in grey. Visualizations can also be generated as either box plots, or violin plots."}
@@ -961,14 +958,13 @@ In general, features that can be included in modelling can be either numeric, or
 
 Any gene signature constituting a list of genes, including those provided with the package (stored in the `humanSignatures` and `mouseSignatures` objects) can be converted to feature inputs compatible with modelling using the `signCalc()` function. In the example code below, signatures of mTOR and ISR-sensitive translation, as well as mRNAs known to contain classical TOP motifs will be converted into binary variables that can be used as feature inputs in `featureIntegration()` modelling.
 ```{r signCalc, eval=TRUE, echo=TRUE}
-
 # load the signatures provided with the package:
- data('humanSignatures')
- str(humanSignatures)
+data("humanSignatures")
+str(humanSignatures)
 
 # Convert the gene signatures to a binary format for featureIntegration:
- signatureFeatures <- signCalc(ptn = ptn, signatures = humanSignatures)
- str(signatureFeatures)
+signatureFeatures <- signCalc(ptn = ptn, signatures = humanSignatures)
+str(signatureFeatures)
 ```
 
 ### Highly correlated variables and general features 
@@ -987,16 +983,17 @@ Features that will be included in modelling are passed to the `featureIntegratio
 
 In the example code below, a list of input features for modelling is compiled using the outputs of previous steps of the analysis.
 ```{r createFeaturesList, eval=FALSE, echo=TRUE}
-
 # Compile a list of features:
- myFeatureList <- c(len[c(1,3)], 
-                    GC_content[c(1)], 
-                    GC3_content, 
-                    FE[c(1)], 
-                    uORFs, 
-                    UTR5_SCSCGS_num, 
-                    codonCounts, 
-                    signatureFeatures)
+myFeatureList <- c(
+  len[c(1, 3)],
+  GC_content[c(1)],
+  GC3_content,
+  FE[c(1)],
+  uORFs,
+  UTR5_SCSCGS_num,
+  codonCounts,
+  signatureFeatures
+)
 
 # Check that the elements of the list are named:
 ```
@@ -1057,33 +1054,33 @@ By default, only the set of input features that are significantly associated wit
 In the example code below the three phases of modelling will be performed using the list of input features defined above. In this analysis, only the sets of regulated genes will be included, comparing translationally activated and suppressed genes. Those features passing the *FDR* threshold of 0.05 in univariate models will be included in stepwise regression.   
 
 ```{r runLM, eval=FALSE, echo=TRUE}
-
 # Run feature integration modelling using forward stepwise regression
- ptn <- featureIntegration(ptn = ptn, 
-                          features = myFeatureList, 
-                          pdfName = "Example", 
-                          regOnly = TRUE, 
-                          allFeat = FALSE,
-                          analysis_type = "lm",
-                          comparisons = list(c(1,2)))
-
+ptn <- featureIntegration(
+  ptn = ptn,
+  features = myFeatureList,
+  pdfName = "Example",
+  regOnly = TRUE,
+  allFeat = FALSE,
+  analysis_type = "lm",
+  comparisons = list(c(1, 2))
+)
 ```
 
 The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "FinalModel" will contain the summary tables shown above in Figures 13-16. It is possible to retrieve the full results from each phase of modelling using the `ptn_model()` function, as well as the set of features that were selected in the omnibus model that significantly explain changes in the regulatory effect with `ptn_selectedFeatures()`. Furthermore, if modelling using multiple pairwise comparisons was performed, you can check which modelling results are available using the `ptn_check_models()` function. See the example code below:  
 
 ```{r retrieveLM, eval=FALSE, echo=TRUE}
-
 # Check which models are available in the postNetData object
- ptn_check_models(ptn = ptn, analysis_type = "lm")
+ptn_check_models(ptn = ptn, analysis_type = "lm")
 
 # Extract the set of significant features selected in the omnibus model
- selectedFeaturesLM <- ptn_selectedFeatures(ptn = ptn, 
-                                            analysis_type = "lm", 
-                                            comparison = 1) 
- 
-# Retrieve the stepwise regression results (other options include "stepwiseModel" and "finalModel"):
- univariateModel <- ptn_model(ptn, analysis_type = "lm", model = "univariateModel", comparison = 1) 
+selectedFeaturesLM <- ptn_selectedFeatures(
+  ptn = ptn,
+  analysis_type = "lm",
+  comparison = 1
+)
 
+# Retrieve the stepwise regression results (other options include "stepwiseModel" and "finalModel"):
+univariateModel <- ptn_model(ptn, analysis_type = "lm", model = "univariateModel", comparison = 1)
 ```
 
 The other PDF files produced will contain the network visualization of the features included in the modelling, as well is plots of individual features, described below.    
@@ -1100,7 +1097,6 @@ The network plot below displays the results of the example in the section above,
 
 ```{r networkPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Network visualization of the results of forward stepwise regression modelling. Nodes represent features that were selected in the omnibus model, with the size proportional to the total variance in the regulatory effect explained by that feature. Edges represent the Pearson correlation coefficient between features. Wider lines indicate stronger positive or negative correlations. Features without a node indicated in pink represent those that were not selected in the omnibus model, but correlate substantially with one or more features that were significant in the model."}
 knitr::include_graphics("Figures/Figure17.png")
-
 ```
 
 When many features are selected in the stepwise regression modelling or when there are many substantial correlations between features, it may be desirable to organize the network plots to be more easily interpreted. The `lmfeatGroup` and `lmfeatGroupColour` parameters can be used to group features in space, and assign coloured circles to the groupings. For example, it is possible to organize the layout of features in the network plot according to regions of the mRNA sequence they are found in. However, grouping is highly customizable and can be tailored to the dataset and biological context. 
@@ -1108,42 +1104,43 @@ When many features are selected in the stepwise regression modelling or when the
 In the example below, the same feature integration modelling as above will be performed adding grouping variables and colours to the network plot. Note that the total proportion of variance explained by the group of features is also displayed on the network plot for each category. 
 ```{r networkGroupingLM, eval=FALSE, echo=TRUE}
 # Examine the input features
- names(myFeatureList) 
- 
-# Make a vector to assign groups to each feature according to categories: 
-group = c("UTR5", "UTR3", "UTR5","CDS", "UTR5", "UTR5", "UTR5", "CDS", "CDS", 
-          rep("Pathway", 2), "UTR5", rep("Pathway", 2))
+names(myFeatureList)
+
+# Make a vector to assign groups to each feature according to categories:
+group <- c(
+  "UTR5", "UTR3", "UTR5", "CDS", "UTR5", "UTR5", "UTR5", "CDS", "CDS",
+  rep("Pathway", 2), "UTR5", rep("Pathway", 2)
+)
 
 # Assign colours to each grouping category:
-groupColour = c('#834b62','#6699cc','#e9724c','#fff299')
-names(groupColour) <- c("UTR5","CDS", "UTR3","Pathway")
+groupColour <- c("#834b62", "#6699cc", "#e9724c", "#fff299")
+names(groupColour) <- c("UTR5", "CDS", "UTR3", "Pathway")
 
 
 # Run feature integration modelling using forward stepwise regression
- ptn <- featureIntegration(ptn = ptn, 
-                          features = myFeatureList, 
-                          pdfName = "Example_grouped", 
-                          regOnly = TRUE, 
-                          allFeat = FALSE,
-                          analysis_type = "lm",
-                          comparisons = list(c(1,2)),
-                          lmfeatGroup = group,
-                          lmfeatGroupColour = groupColour)
-
+ptn <- featureIntegration(
+  ptn = ptn,
+  features = myFeatureList,
+  pdfName = "Example_grouped",
+  regOnly = TRUE,
+  allFeat = FALSE,
+  analysis_type = "lm",
+  comparisons = list(c(1, 2)),
+  lmfeatGroup = group,
+  lmfeatGroupColour = groupColour
+)
 ```
 
 
 ```{r networkGroupingPNG,eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Network visualization of the results of forward stepwise regression modelling. Selected features are grouped according to which region of the mRNA they correspond to, as well as upstream regulatory pathways known to alter translation efficiency."}
 knitr::include_graphics("Figures/Figure18.png")
-
 ```
 
 Finally, in addition to producing a PDF file, the results of the network analysis are stored in the `postNetData` object as an [igraph](https://CRAN.R-project.org/package=igraph) object [@Csárdi2006; @Antonov2023; @Csárdi2025], and can be retrieved using the `ptn_networkGraph` function. See the example code below: 
 
 ```{r retrieveNetworkLM, eval=FALSE, echo=TRUE}
-
 # Retrieve the network graph of the results of the stepwise regression omnibus model:
- networkGraph <- ptn_networkGraph(ptn, comparison = 1) 
+networkGraph <- ptn_networkGraph(ptn, comparison = 1)
 ```
 
 ## Feature integration with Random Forest classification
@@ -1151,16 +1148,16 @@ Finally, in addition to producing a PDF file, the results of the network analysi
 In addition to forward stepwise regression, the `featureIntegration()` function can also apply Breiman's Random Forest algorithm (as implemented in the [randomForest](https://CRAN.R-project.org/package=randomForest) package [@Liaw2002]) to classify genes according to their regulation, and identify features associated with regulatory classes. Unlike with forward stepwise regression modelling, the relationships between features will not necessarily be revealed using feature selection and Random Forest classification, and network analysis cannot be implemented. However, Random Forest classifiers can be constructed and trained in one dataset, and then applied to predict post-transcriptional regulation in new contexts using the selected features. Random Forest classification with `featureIntegration()` is implemented in two steps described below.  
 
 ```{r runRF, eval=FALSE, echo=FALSE}
-
 # Run feature integration modelling using Random Forest classification
- ptn <- featureIntegration(ptn = ptn, 
-                          features = myFeatureList, 
-                          pdfName = "Example", 
-                          regOnly = TRUE, 
-                          allFeat = FALSE,
-                          analysis_type = "rf",
-                          comparisons = list(c(1,2)))
-
+ptn <- featureIntegration(
+  ptn = ptn,
+  features = myFeatureList,
+  pdfName = "Example",
+  regOnly = TRUE,
+  allFeat = FALSE,
+  analysis_type = "rf",
+  comparisons = list(c(1, 2))
+)
 ```
 
 ### Pre-modelling and feature selection
@@ -1169,7 +1166,6 @@ In the first step, genes are divided into training (70\%) and validation (30\%) 
 
 ```{r featImpPNG, echo=FALSE,eval=TRUE, fig.wide = TRUE, fig.cap="Boxplots of Z-Scores of Importance from feature selection using Boruta. Features coloured in green indicate retained features. Shadow feature metrics (randomly shuffled attributes) are indicated in blue."}
 knitr::include_graphics("Figures/Figure19.png")
-
 ```
 
 ### Final modelling
@@ -1178,7 +1174,6 @@ After performing feature selection, the Random Forest classification of genes in
 
 ```{r finalRFPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="Final modelling results using Random Forest Classification. Left panel: Feature importance (mean decrease accuracy) for selected features included in the final model. Right panel: Receiver Operating Characteristic (ROC) curve for Random Forest classification of translationally activated vs. suppressed genes."}
 knitr::include_graphics("Figures/Figure20.png")
-
 ```
 
 ### Running feature integration with Random Forest classification
@@ -1186,33 +1181,33 @@ knitr::include_graphics("Figures/Figure20.png")
 The `featureIntegration()` function can also be used to implement Random Forest classification. To do so, the function is run as described above changing the input for the `analysis_type` parameter to `rf`. In the example code below, a Random Forest classification model will predict membership of regulated genes to translationally activated or suppressed categories using the list of input features defined above. 
 
 ```{r runningRF, eval=FALSE, echo=TRUE}
-
 # Run feature integration modelling using Random Forest classification:
- ptn <- featureIntegration(ptn = ptn, 
-                          features = myFeatureList, 
-                          pdfName = "Example", 
-                          regOnly = TRUE, 
-                          allFeat = FALSE,
-                          analysis_type = "rf",
-                          comparisons = list(c(1,2)))
-
+ptn <- featureIntegration(
+  ptn = ptn,
+  features = myFeatureList,
+  pdfName = "Example",
+  regOnly = TRUE,
+  allFeat = FALSE,
+  analysis_type = "rf",
+  comparisons = list(c(1, 2))
+)
 ```
 
 The results of the modelling will be stored in the `postNetData` object, and a series of PDFs will be produced. The PDF with the suffix "featureImportance.pdf" will contain a summary plot of feature importance from the feature selection step (Figure 19). The PDF with the suffix "FinalModel" will contain a summary of the feature importance for the selected features retained in the final model, as well as the ROC curve evaluating the performance of the model predictions (Figure 20). As for the forward stepwise regression implementation, it is possible to retrieve the full results from each step of modelling using the `ptn_model()` function, as well as the set of features that were retained during feature selection using `ptn_selectedFeatures()`. See the example code below:  
 
 ```{r retrieveRF, eval=FALSE, echo=TRUE}
-
 # Check which models are available in the postNetData object:
- ptn_check_models(ptn = ptn, analysis_type = "rf")
+ptn_check_models(ptn = ptn, analysis_type = "rf")
 
 # Extract the set of selected features and their importance:
- selectedFeaturesRF <- ptn_selectedFeatures(ptn = ptn, 
-                                            analysis_type = "rf", 
-                                            comparison = 1) 
- 
-# Retrieve the final model results (other options include "preModel" or "borutaModel"): 
- finalModel <- ptn_model(ptn, analysis_type = "rf", model = "finalModel", comparison = 1) 
+selectedFeaturesRF <- ptn_selectedFeatures(
+  ptn = ptn,
+  analysis_type = "rf",
+  comparison = 1
+)
 
+# Retrieve the final model results (other options include "preModel" or "borutaModel"):
+finalModel <- ptn_model(ptn, analysis_type = "rf", model = "finalModel", comparison = 1)
 ```
 
 ## Individual feature visualizations
@@ -1222,7 +1217,6 @@ Both implementations of `featureIntegration()` output PDF files with scatterplot
 
 ```{r IndFeatPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="Individual feature visualizations. Scatterplots of 5'UTR GC content (left), 5'UTR SCSCGS motif content (middle), and signature of genes translationally activated by mTOR (right) versus translation efficiency (effM). Pearson's correlation coefficients, linear trend lines, and cubic smoothing splines indicated."}
 knitr::include_graphics("Figures/Figure21.png")
-
 ```
 
 <a name="networkPred"/>
@@ -1236,35 +1230,35 @@ Running `rfPred()` requires a `postNetData` object that already contains a train
 In the example below, the Random Forest model trained in the example above will be applied to a new simulated dataset created by randomly sampling the original data. Note that in this example, due to the randomization, the model is expected to have poor predictive power. 
 
 ```{r rfPred, eval=FALSE, echo=TRUE}
+# Simulate a new gene list by randomly sampling genes from the existing background:
+newGenes <- sample(postNetVignette$background, size = 100)
+newGeneList <- list(translationUp = newGenes[1:50], translationDown = newGenes[51:100])
 
-# Simulate a new gene list by randomly sampling genes from the existing background: 
- newGenes <- sample(postNetVignette$background, size = 100)
- newGeneList <- list(translationUp = newGenes[1:50], translationDown = newGenes[51:100]) 
- 
 # Select the features that were used to train the final Random Forest model in the original dataset:
- predFeatureNames <- names(ptn_selectedFeatures(ptn, 
-                                                analysis_type = "rf", 
-                                                comparison = 1))
-  
-# Prepare the predictive features. In this case the same list of input features will be used 
-# to predict as the new gene lists are taken from the same dataset the model was trained on. 
-# However, usually the input for the rfPred() function would be taken from a postNetData 
+predFeatureNames <- names(ptn_selectedFeatures(ptn,
+  analysis_type = "rf",
+  comparison = 1
+))
+
+# Prepare the predictive features. In this case the same list of input features will be used
+# to predict as the new gene lists are taken from the same dataset the model was trained on.
+# However, usually the input for the rfPred() function would be taken from a postNetData
 # object from a separate analysis on a distinct dataset.
 
- newFeatures <- myFeatureList[predFeatureNames] 
+newFeatures <- myFeatureList[predFeatureNames]
 
 # Evaluate the model in the new simulated dataset:
- ptn <- rfPred(ptn = ptn, 
-              comparison = 1, 
-              predGeneList = newGeneList, 
-              predFeatures = newFeatures, 
-              pdfName = "Example" )
-
+ptn <- rfPred(
+  ptn = ptn,
+  comparison = 1,
+  predGeneList = newGeneList,
+  predFeatures = newFeatures,
+  pdfName = "Example"
+)
 ```
 
 ```{r rfPredPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="Receiver Operating Characteristic (ROC) curve for the Random Forest classification model trained in the example above, applied to a new simulated dataset of randomized genes to predict translationally activated vs. suppressed genes."}
 knitr::include_graphics("Figures/Figure22.png")
-
 ```
 
 <a name="UMAPvis"/>
@@ -1281,26 +1275,26 @@ UMAP is sensitive to input parameters and data pre-processing [@Huang2022]. Ther
 
 In the example below, the set of features identified using forward stepwise regression modelling will be used to generate a UMAP embedding. PDF files will be generated with the regulatory effect and the values for 5'UTR GC content overlaid. The resulting UMAP coordinates are stored in the `featuresMap` slot of the `postNetData` object.   
 ```{r plotUMAPs, eval=FALSE, echo=TRUE}
-
 # Plot UMAP visualizations using the features identified in stepwise regression modelling
-ptn <- plotFeaturesMap(ptn = ptn,
-                        regOnly = TRUE,
-                        comparisons = list(c(1,2)),
-                        featSel = c(names(ptn_selectedFeatures(ptn, 
-                                               analysis_type = "lm",
-                                               comparison = 1))),
-                        featCol = c("UTR5_GC"), 
-                        remBinary = TRUE,
-                        scaled = FALSE,
-                        centered = TRUE,
-                        remExtreme = 0.1,
-                        pdfName = "Example")
-
+ptn <- plotFeaturesMap(
+  ptn = ptn,
+  regOnly = TRUE,
+  comparisons = list(c(1, 2)),
+  featSel = c(names(ptn_selectedFeatures(ptn,
+    analysis_type = "lm",
+    comparison = 1
+  ))),
+  featCol = c("UTR5_GC"),
+  remBinary = TRUE,
+  scaled = FALSE,
+  centered = TRUE,
+  remExtreme = 0.1,
+  pdfName = "Example"
+)
 ```
 
 ```{r plotUMAPsPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="UMAP visualizing changes in translation efficiency (Effect) generated based on features identified in the omnibus model using forward stepwise regression (left), with the 5'UTR GC content of mRNAs coloured (right)."}
 knitr::include_graphics("Figures/Figure23.png")
-
 ```
 
 <a name="enrichmentAnalysis"/>
@@ -1316,13 +1310,12 @@ In addition to tools for identifying and enumerating sequence features of mRNA a
 When performing GSEA, GAGE, or GO term analysis using the output of an *anota2seq* analysis, it is often necessary to filter the input genes and log2 fold changes for the "translation" and "buffering" regulatory modes prior to performing enrichment analyses. This is because the slopes fitted by the *anota2seq* APV models can sometimes have unrealistic values, or suggest unlikely translational regulation, impacting the analysis of changes in translation or translational buffering (or offsetting). Filtering out genes with these unrealistic slopes is especially important for GSEA and GAGE analyses, which rely on rankings. For analyses relying on hypergeometric tests, such as GO term enrichment, the impact of filtering on the analysis is likely to be more negligible. However, slope filtering is still recommended. The `slopeFilt` function identifies these genes with unrealistic slopes, allowing them to be removed from downstream analyses. Note that in high-quality datasets few genes will require slope filtering, but filtering thresholds can be adjusted with the `minSlope` and `maxSlope` parameters. 
 
 ```{r slopeFilt, eval=TRUE, echo=TRUE}
-
-# Get the genes to be filtered out of downstream enrichment analyses 
+# Get the genes to be filtered out of downstream enrichment analyses
 # using the buffering regulatory mode:
- filtOutGenes <- slopeFilt(ads,
-                  regulationGen = "buffering",
-                  contrastSel = 1)
-                
+filtOutGenes <- slopeFilt(ads,
+  regulationGen = "buffering",
+  contrastSel = 1
+)
 ```
 
 The output of the `slopeFilt()` function can be directly supplied to downstream enrichment analysis functions using the `genesSlopeFiltOut` parameter.  
@@ -1333,59 +1326,64 @@ PostNet performs Gene Set Enrichment Analysis (GSEA) [@Mootha2003; @Subramanian2
 
 The code below provides an example of how to run GSEA analysis on genes ranked according to log2 fold changes in translation efficiency, using specific gene set terms from the MSigDB. If you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in both the `gseaAnalysis()` and `gseaPlot()` functions.  
 ```{r GSEAmsigDB, eval=FALSE, echo=TRUE}
-
 # If using a GSEA collection from MSigDB, check the available versions:
- version <- msigdb::getMsigdbVersions()
+version <- msigdb::getMsigdbVersions()
 
 # Retrieve the MSigDB data for "human":
- msigdbOut <- msigdb::getMsigdb(org = "hs", 
-                                id = "SYM", 
-                                version = version[1])
+msigdbOut <- msigdb::getMsigdb(
+  org = "hs",
+  id = "SYM",
+  version = version[1]
+)
 
 # Check the available collections or subcollections:
- msigdb::listCollections(msigdbOut)
- msigdb::listSubCollections(msigdbOut)
- 
+msigdb::listCollections(msigdbOut)
+msigdb::listSubCollections(msigdbOut)
+
 # Run GSEA on the C5 collection with GO:BP and specific terms:
- ptn <- gseaAnalysis(ptn = ptn,
-                    collection = "c5",
-                    subcollection = "GO:BP",
-                    subsetNames = c("GOBP_CELL-CELL_SIGNALING_BY_WNT",
-                    "GOBP_ENDOCYTOSIS"),
-                    name = "c5_Example")
- 
+ptn <- gseaAnalysis(
+  ptn = ptn,
+  collection = "c5",
+  subcollection = "GO:BP",
+  subsetNames = c(
+    "GOBP_CELL-CELL_SIGNALING_BY_WNT",
+    "GOBP_ENDOCYTOSIS"
+  ),
+  name = "c5_Example"
+)
 ```
 
 In addition to the collections in MSigDB, GSEA can also be run using custom gene sets using the `geneSet` parameter.
 ```{r GSEAcustom, eval=TRUE, echo=TRUE}
-
 # Create example custom gene sets for GSEA:
 set1 <- sample(myGenes[[1]], 100)
 set2 <- sample(myGenes[[2]], 100)
 inSet <- list(Set1 = set1, Set2 = set2)
 
 # Run GSEA on custom gene sets:
- ptn <- gseaAnalysis(ptn = ptn,
-                    geneSet = inSet,
-                    name = 'Example')
-
+ptn <- gseaAnalysis(
+  ptn = ptn,
+  geneSet = inSet,
+  name = "Example"
+)
 ```
 
 GSEA results can be extracted from the `postNetData` object and plotted using the `ptn_GSEA()` and `gseaPlot` functions.  
 ```{r GSEAplotting, eval=TRUE, echo=TRUE}
-
 # Extract the significant enrichment results from the postNetData object:
- gseaOut <- ptn_GSEA(ptn, 
-                     threshold = 0.05)
- 
- # Plot GSEA results:
- gseaPlot(ptn = ptn,
-          termNames = gseaOut$Term[1])
+gseaOut <- ptn_GSEA(ptn,
+  threshold = 0.05
+)
+
+# Plot GSEA results:
+gseaPlot(
+  ptn = ptn,
+  termNames = gseaOut$Term[1]
+)
 ```
 
 ```{r GSEAplottingPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="A plot visualizing GSEA results for the enrichment of the gene Set1 in the example dataset."}
 knitr::include_graphics("Figures/Figure24.png")
-
 ```
 
 ## GAGE analysis with a postNetData object
@@ -1396,17 +1394,18 @@ The results of the analysis can be retrieved using the `ptn_GAGE` function. As G
  
 The example code below performs GAGE analysis using the "MF" GO term category, and extracts terms that are significantly associated with increased log2 fold changes in translation efficiency. Note that if you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in the `gageAnalysis()` function.   
 ```{r GAGEanalysis, eval=FALSE, echo=TRUE}
-
 # Run GAGE:
- ptn <- gageAnalysis(ptn,
-                    category = "MF")
+ptn <- gageAnalysis(ptn,
+  category = "MF"
+)
 
 # Extract the significant enrichment results from the postNetData object:
- gageOut <- ptn_GAGE(ptn = ptn,
-                    category = "MF",
-                    direction = "greater", 
-                    threshold = 0.05)
- 
+gageOut <- ptn_GAGE(
+  ptn = ptn,
+  category = "MF",
+  direction = "greater",
+  threshold = 0.05
+)
 ```
 
 ## microRNA target enrichment analysis with a postNetData object
@@ -1421,34 +1420,33 @@ After the appropriate filtering has been applied, GAGE is implemented to identif
 
 The example code below performs GAGE miRNA target enrichment analysis using human mRNA-miRNA target predictions. Target predictions are filtered according to both the CWCS and the Aggregate PCT in this example, but these may vary depending on what the user is interested in. Note that if you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in the `miRNAanalysis()` function.   
 ```{r miRNAanalysis, eval=FALSE, echo=TRUE}
-
-# An example of the required format for the input for miRNATargetScanFile 
+# An example of the required format for the input for miRNATargetScanFile
 # parameter ("miRNA_predictions_hsa.txt"):
 
-# Transcript.ID	Gene.Symbol	miRNA.family	Species.ID	Total.num.conserved.sites	
-# Number.of.conserved.8mer.sites	Number.of.conserved.7mer.m8.sites	
-# Number.of.conserved.7mer.1a.sites	Total.num.nonconserved.sites	
-# Number.of.nonconserved.8mer.sites	Number.of.nonconserved.7mer.m8.sites 
-# Number.of.nonconserved.7mer.1a.sites	#Number.of.6mer.sites	Representative.miRNA	
-# Total.context...score	Cumulative.weighted.context...score	# Aggregate.PCT	
-# Predicted.occupancy...low.miRNA	Predicted.occupancy...high.miRNA	
+# Transcript.ID	Gene.Symbol	miRNA.family	Species.ID	Total.num.conserved.sites
+# Number.of.conserved.8mer.sites	Number.of.conserved.7mer.m8.sites
+# Number.of.conserved.7mer.1a.sites	Total.num.nonconserved.sites
+# Number.of.nonconserved.8mer.sites	Number.of.nonconserved.7mer.m8.sites
+# Number.of.nonconserved.7mer.1a.sites	#Number.of.6mer.sites	Representative.miRNA
+# Total.context...score	Cumulative.weighted.context...score	# Aggregate.PCT
+# Predicted.occupancy...low.miRNA	Predicted.occupancy...high.miRNA
 # Predicted.occupancy...transfected.miRNA
-# ENST00000055682.6	KIAA2022	UGGCACU	9606	3	0	0	3	0	0	0	0	0	
-    # hsa-miR-183-5p.2	-0.604	-0.604	1	0.0807	0.5089	1.8669
-# ENST00000207157.3	TBX15	UGGCACU	9606	1	1	0	0	0	0	0	0	1	
-    # hsa-miR-183-5p.2	-0.589	-0.552	1	0.1287	0.5218	0.8900
-# ENST00000215832.6	MAPK1	ACAGUAC	9606	2	0	1	1	3	0	2	1	3	
-    # hsa-miR-101-3p.1	-0.509	-0.279	1	0.0244	0.1671	0.8723
+# ENST00000055682.6	KIAA2022	UGGCACU	9606	3	0	0	3	0	0	0	0	0
+# hsa-miR-183-5p.2	-0.604	-0.604	1	0.0807	0.5089	1.8669
+# ENST00000207157.3	TBX15	UGGCACU	9606	1	1	0	0	0	0	0	0	1
+# hsa-miR-183-5p.2	-0.589	-0.552	1	0.1287	0.5218	0.8900
+# ENST00000215832.6	MAPK1	ACAGUAC	9606	2	0	1	1	3	0	2	1	3
+# hsa-miR-101-3p.1	-0.509	-0.279	1	0.0244	0.1671	0.8723
 
 # Note that this target prediction file has been filtered to include only human miRNA ('hsa')
 
 # Run GAGE miRNA target enrichment analysis:
-  ptn <- miRNAanalysis(ptn,
-                     genesSlopeFiltOut = filtOutGenes, 
-                     miRNATargetScanFile = 'miRNA_predictions_hsa.txt',
-                     contextScore = -0.2,
-                     Pct = 0.7)
-
+ptn <- miRNAanalysis(ptn,
+  genesSlopeFiltOut = filtOutGenes,
+  miRNATargetScanFile = "miRNA_predictions_hsa.txt",
+  contextScore = -0.2,
+  Pct = 0.7
+)
 ```
 
 After running the analysis, the results can be retrieved using either the `ptn_miRNA_analysis`, or `ptn_miRNA_to_gene` functions. 
@@ -1457,18 +1455,20 @@ The `ptn_miRNA_analysis` function will return the results of the GAGE analysis. 
 
 The `ptn_miRNA_to_gene` function will return the lists of genes that are predicted to be targeted by the miRNA passing the filtering threshold set by `contextScore` and `Pct` parameters. These may be desirable if you plan to include specific miRNA in modelling analyses using the `featureIntegration()` function. These gene lists can be converted to signatures using the `signCalc()` function and be included as features in the models. 
 ```{r miRNAanalysisResults, eval=FALSE, echo=TRUE}
-
 # Extract the significant miRNA target enrichment results from the postNetData object:
- miRNAout <- ptn_miRNA_analysis(ptn = ptn,
-                    direction = "less", 
-                    threshold = 0.05)
-                    
+miRNAout <- ptn_miRNA_analysis(
+  ptn = ptn,
+  direction = "less",
+  threshold = 0.05
+)
+
 # Extract the lists of genes for miRNA that were found to have targets significantly
 # enriched in the downregulated gene set of interest:
 
- miRNAtargets <- ptn_miRNA_to_gene(ptn = ptn,
-                    miRNAs = c('hsa-miR-138-5p','hsa-miR-182-5p'))
- 
+miRNAtargets <- ptn_miRNA_to_gene(
+  ptn = ptn,
+  miRNAs = c("hsa-miR-138-5p", "hsa-miR-182-5p")
+)
 ```
 
 ## GO term analysis with a postNetData object
@@ -1477,34 +1477,35 @@ Gene Ontology (GO) term enrichment analysis can also be performed using the gene
 
 The example code below performs GO term enrichment analysis using the "BP" GO term category, and "KEGG" pathways. Note that if you are using the results of an *anota2seq* analysis, it would also be necessary to perform [slope filtering](#slopeFiltering), and supply the output using the `genesSlopeFiltOut` parameter in the `goAnalysis()` function.  
 ```{r GOanalysis, eval=FALSE, echo=TRUE}
-
 # Run GO term analysis using a postNetData object:
- ptn <- goAnalysis(ptn = ptn, 
-                  category = c("BP"), # Note that multiple terms can be run simultaneously
-                  name = "Example")
-
+ptn <- goAnalysis(
+  ptn = ptn,
+  category = c("BP"), # Note that multiple terms can be run simultaneously
+  name = "Example"
+)
 ```
 
 The results of the analysis can be retrieved using the `ptn_GO` function and visualized using the `goDotplot()` function. The `pool` parameter of the `goDotplot` function controls if separate plots will be generated for each gene list of interest, or whether results for all gene lists will be pooled into a single plot. It is also possible to specify which terms will be plotted using the `termSel` parameter. Finally, the metric used to determine the size of the dot for each enriched term can be controlled using the `size` parameter to reflect either the number of genes that were included in the enriched term, or the ratio of genes included to total number of genes in the term.     
 ```{r GOplotting, eval=FALSE, echo=TRUE}
-
 # Extract the significant enrichment results for Biological Process:
- goOut <- ptn_GO(ptn, 
-                 category = "BP", 
-                 geneList = 'translationUp', 
-                 threshold = 0.05)
+goOut <- ptn_GO(ptn,
+  category = "BP",
+  geneList = "translationUp",
+  threshold = 0.05
+)
 
 # Plot GO term analysis results:
- goDotplot(ptn = ptn, 
-          category = "BP", 
-          pool = TRUE, 
-          size = "geneRatio", 
-          pdfName = "Example")
+goDotplot(
+  ptn = ptn,
+  category = "BP",
+  pool = TRUE,
+  size = "geneRatio",
+  pdfName = "Example"
+)
 ```
 
 ```{r GOplottingPNG, eval=TRUE,echo=FALSE, fig.wide = TRUE, fig.cap="A dot plot visualizing GO term enrichment analysis results. Dot size corresponds to the ratio of genes included, to the total number of genes in the term."}
 knitr::include_graphics("Figures/Figure25.png")
-
 ```
 
 ## Analysis of gene signatures using eCDFs
@@ -1523,25 +1524,27 @@ When starting from custom gene lists and regulatory effect measurement the regul
 
 The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by mTOR signalling. 
 ```{r plotSignatures, eval=TRUE, echo=TRUE, message = FALSE, results = 'hide'}
-
 # load human signature data:
- data("humanSignatures")
- 
-# Examine the regulation of mTOR-sensitive transcripts 
- plotSignatures(ptn = ptn,
-                               signatureList = humanSignatures[c("Gandin_etal_2016_mTOR_transUp",
-                                                                 "Gandin_etal_2016_mTOR_transDown")],
-                               signature_colours = c("red","blue"), 
-                               dataName = "Example",
-                               generalName = "mTOR_sensitive_translation",
-                               xlim = c(-3,3), 
-                               tableCex = 0.7,
-                               pdfName = "mTORsignatures")
+data("humanSignatures")
+
+# Examine the regulation of mTOR-sensitive transcripts
+plotSignatures(
+  ptn = ptn,
+  signatureList = humanSignatures[c(
+    "Gandin_etal_2016_mTOR_transUp",
+    "Gandin_etal_2016_mTOR_transDown"
+  )],
+  signature_colours = c("red", "blue"),
+  dataName = "Example",
+  generalName = "mTOR_sensitive_translation",
+  xlim = c(-3, 3),
+  tableCex = 0.7,
+  pdfName = "mTORsignatures"
+)
 ```
 
 ```{r plotSignaturesPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="eCDF of log2 fold changes in translation efficiency for signatures of mTOR-sensitive translation. Grey curve indicates the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates an increase compared to background, while shift to the left indicates a decrease."}
 knitr::include_graphics("Figures/Figure26.png")
-
 ```
 
 ### Assessing gene signature regulation from the *anota2seq* object workflow
@@ -1550,26 +1553,26 @@ When starting from the results of an *anota2seq* analysis, gene signatures can b
 
 The example code below will load the set of signatures included with the package, and assess the regulation of the signatures for genes whose translation is either activated or suppressed by activation of the integrated stress response with thapsigargin. Note that a very minimal example dataset was used to illustrate the *anota2seq* workflow, so very few genes are present in the outputs.   
 ```{r plotSignaturesAds, eval=TRUE, echo=TRUE, results='hide', warning = FALSE}
-
 # Examine the regulation of ISR-sensitive transcripts in the results of an anota2seq analysis:
-plotSignatures_ads(ads = ads,
-                               contrast = 1,
-                               dataName = "Osmosis_1h",
-                               signatureList = humanSignatures[c("Guan_etal_2017_Tg1_transUp",
-                                                                 "Guan_etal_2017_Tg1_transDown")],
-                               generalName = c("ISR_activated", "ISR_suppressed"),
-                               signature_colours = c("red","blue"), 
-                               xlim = c(-3,3), 
-                               scatterXY = 4,
-                               tableCex = 1,
-                               pdfName = 'Example_ISRsignatures')
-
-
+plotSignatures_ads(
+  ads = ads,
+  contrast = 1,
+  dataName = "Osmosis_1h",
+  signatureList = humanSignatures[c(
+    "Guan_etal_2017_Tg1_transUp",
+    "Guan_etal_2017_Tg1_transDown"
+  )],
+  generalName = c("ISR_activated", "ISR_suppressed"),
+  signature_colours = c("red", "blue"),
+  xlim = c(-3, 3),
+  scatterXY = 4,
+  tableCex = 1,
+  pdfName = "Example_ISRsignatures"
+)
 ```
 
 ```{r plotSignaturesAdsPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="Gene signature analysis starting from an anota2seqDataSet. Scatterplot of total vs. translated mRNA from an example anota2seq analysis with the location of genes belonging to signatures of interest coloured (left panel). Subsequent panels show the eCDFs of log2 fold changes in translation and buffering regulatory modes, as well as for translated and total mRNA for the signatures of interest. Grey curves indicate the background gene set. Wilcoxon p-values and differences between the distributions at each quantile are indicated. A shift to the right indicates an increase compared to background, while shift to the left indicates a decrease."}
 knitr::include_graphics("Figures/Figure27.png")
-
 ```
 
 ### Generating gene signature regulation heatmaps
@@ -1578,19 +1581,16 @@ Finally, it is also possible to generate a heatmap comparing the regulation of m
 
 The example code below will examine the regulation of all gene signatures included with the package, based on the significance and directionality of the regulation.  
 ```{r plotSignaturesHeatmap, eval=TRUE, echo=TRUE, results='hide'}
-
 # Examine the regulation of all gene signatures:
 signaturesHeatmap(ptn,
-                  signatureList = humanSignatures,
-                  unit = 'FDR',
-                  pdfName = "ExampleSignatures")
-
-
+  signatureList = humanSignatures,
+  unit = "FDR",
+  pdfName = "ExampleSignatures"
+)
 ```
 
 ```{r plotSignaturesHeatmapPNG, eval=TRUE, echo=FALSE, fig.wide = TRUE, fig.cap="A heatmap of -log10(FDRs) for regulation of various gene signatures in the example dataset. Colours indicate the directionality of regulation."}
 knitr::include_graphics("Figures/Figure28.png")
-
 ```
 
 

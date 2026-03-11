@@ -63,7 +63,7 @@ gseaAnalysis <- function(ptn,
   gseaOut$Genes <- sapply(gseaOut$Genes, function(x) paste(x, collapse = ":"))
 
   nameTmp <- ifelse(!is.null(name), paste(name, "gseaAnalysis", sep = "_"), "gseaAnalysis")
-  data.table::fwrite(gseaOut, file = paste(nameTmp, ".txt", sep = ""), sep = "\t") 
+  data.table::fwrite(gseaOut, file = paste(nameTmp, ".txt", sep = ""), sep = "\t")
   #
   ptn@analysis@GSEA <- gseaOut
   #
