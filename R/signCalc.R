@@ -1,9 +1,8 @@
-signCalc <- function(ptn,
-                     signatures) {
+signCalc <- function(ptn, signatures) {
   #
   outSign <- list()
   #
-  for (i in 1:length(signatures)) {
+  for (i in seq_len(signatures)) {
     #
     Outvec <- rep(0, length(ptn_geneID(ptn, "CDS")))
     names(Outvec) <- ptn_geneID(ptn, "CDS")

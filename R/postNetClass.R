@@ -4,13 +4,17 @@ setClassUnion("numericOrNULL", members = c("numeric", "NULL"))
 setClassUnion("listOrNULL", members = c("list", "NULL"))
 setClassUnion("dataframeOrNULL", members = c("data.frame", "NULL"))
 setClassUnion("matrixOrNULL", members = c("matrix", "NULL"))
-setClassUnion("numericOrNULLOrlogical", members = c("numeric", "NULL", "logical"))
-setClassUnion("characterOrNULLOrlogical", members = c("character", "NULL", "logical"))
-setClassUnion("characterOrnumericOrNULL", members = c("character", "numeric", "NULL"))
+setClassUnion("numericOrNULLOrlogical",
+              members = c("numeric", "NULL", "logical"))
+setClassUnion("characterOrNULLOrlogical",
+              members = c("character", "NULL", "logical"))
+setClassUnion("characterOrnumericOrNULL",
+              members = c("character", "numeric", "NULL"))
 
 setClassUnion("anovaOrNULL", members = c("anova", "logical"))
 
-setClass("postNetRegion",
+setClass(
+  "postNetRegion",
   slots = c(
     id = "character",
     geneID = "character",
@@ -20,7 +24,8 @@ setClass("postNetRegion",
 
 setClassUnion("RegionOrNULL", members = c("postNetRegion", "NULL"))
 
-setClass("postNetAnnot",
+setClass(
+  "postNetAnnot",
   slots = c(
     UTR5 = "RegionOrNULL",
     CDS = "RegionOrNULL",
@@ -29,7 +34,8 @@ setClass("postNetAnnot",
   )
 )
 
-setClass("postNetDataIn",
+setClass(
+  "postNetDataIn",
   slots = c(
     background = "characterOrNULL",
     geneList = "list",
@@ -39,15 +45,11 @@ setClass("postNetDataIn",
 )
 
 setClass("postNetMotifs",
-  slots = c(
-    UTR5 = "listOrNULL",
-    CDS = "listOrNULL",
-    UTR3 = "listOrNULL"
-  )
-)
+         slots = c(UTR5 = "listOrNULL", CDS = "listOrNULL", UTR3 = "listOrNULL"))
 
 
-setClass("postNetCodonsAll",
+setClass(
+  "postNetCodonsAll",
   slots = c(
     geneID = "characterOrNULL",
     codon = "characterOrNULL",
@@ -61,21 +63,16 @@ setClass("postNetCodonsAll",
 
 setClassUnion("codonsAllOrNULL", members = c("postNetCodonsAll", "NULL"))
 
-setClass("postNetCodons",
-  slots = c(
-    codonAnalysis = "codonsAllOrNULL",
-    codonSelection = "listOrNULL"
-  )
+setClass(
+  "postNetCodons",
+  slots = c(codonAnalysis = "codonsAllOrNULL", codonSelection = "listOrNULL")
 )
 
 setClass("postNetmiRNA",
-  slots = c(
-    miRNA_analysis = "listOrNULL",
-    miRNA_to_gene = "listOrNULL"
-  )
-)
+         slots = c(miRNA_analysis = "listOrNULL", miRNA_to_gene = "listOrNULL"))
 
-setClass("postNetGO",
+setClass(
+  "postNetGO",
   slots = c(
     BP = "listOrNULL",
     CC = "listOrNULL",
@@ -84,7 +81,8 @@ setClass("postNetGO",
   )
 )
 
-setClass("postNetGAGE",
+setClass(
+  "postNetGAGE",
   slots = c(
     BP = "listOrNULL",
     CC = "listOrNULL",
@@ -93,7 +91,8 @@ setClass("postNetGAGE",
   )
 )
 
-setClass("postNetUnivariate",
+setClass(
+  "postNetUnivariate",
   slots = c(
     pvalue = "numericOrNULL",
     fdr = "numericOrNULL",
@@ -102,13 +101,10 @@ setClass("postNetUnivariate",
 )
 
 setClass("postNetStepWise",
-  slots = c(
-    models = "listOrNULL",
-    table = "matrixOrNULL"
-  )
-)
+         slots = c(models = "listOrNULL", table = "matrixOrNULL"))
 
-setClass("postNetFinalModel",
+setClass(
+  "postNetFinalModel",
   slots = c(
     totalVarianceExplained = "numericOrNULL",
     finalModel = "anovaOrNULL",
@@ -120,7 +116,8 @@ setClassUnion("univariateOrNULL", members = c("postNetUnivariate", "NULL"))
 setClassUnion("stepwiseOrNULL", members = c("postNetStepWise", "NULL"))
 setClassUnion("finalmodelOrNULL", members = c("postNetFinalModel", "NULL"))
 
-setClass("postNetFeatureIntegration_lm",
+setClass(
+  "postNetFeatureIntegration_lm",
   slots = c(
     univariateModel = "univariateOrNULL",
     stepwiseModel = "stepwiseOrNULL",
@@ -130,7 +127,8 @@ setClass("postNetFeatureIntegration_lm",
   )
 )
 
-setClass("postNetFeatureIntegration_rf",
+setClass(
+  "postNetFeatureIntegration_rf",
   slots = c(
     preModel = "ANY",
     borutaModel = "ANY",
@@ -147,7 +145,8 @@ setClassUnion("GOOrNULL", members = c("postNetGO", "NULL"))
 setClassUnion("GAGEOrNULL", members = c("postNetGAGE", "NULL"))
 
 
-setClass("postNetAnalysis",
+setClass(
+  "postNetAnalysis",
   slots = c(
     featureIntegration = "listOrNULL",
     motifs = "motifsOrNULL",
@@ -159,7 +158,8 @@ setClass("postNetAnalysis",
   )
 )
 
-setClass("postNetData",
+setClass(
+  "postNetData",
   slots = c(
     species = "characterOrNULL",
     version = "characterOrNULL",

@@ -228,7 +228,7 @@ postNetStart <- function(ads = NULL,
     source_files_tmp <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
     source_files <- gsub(".gz", "", source_files_tmp)
     filenames <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
-    for (i in seq_along(source_files_tmp)) {
+    for (i in seq_len(source_files_tmp)) {
       R.utils::gunzip(source_files_tmp[i], remove = FALSE)
       file.rename(source_files[i], filenames[i])
     }
@@ -273,7 +273,7 @@ postNetStart <- function(ads = NULL,
     
     #
     filesToRm <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
-    for (i in seq_along(filesToRm)) {
+    for (i in seq_len(filesToRm)) {
       if (file.exists(filesToRm[i])) {
         file.remove(filesToRm[i])
       }

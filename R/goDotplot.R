@@ -21,17 +21,28 @@ goDotplot <- function(ptn,
   #
   for (sel in category) {
     if (is.null(slot(ptn@analysis@GO, sel))) {
-      stop("No results found for the selected category. Please run the goAnalysis() function first for all of the selected categories.")
+      stop(
+        "No results found for the selected category. Please run the goAnalysis() function first for all of the selected categories."
+      )
     } else {
       goIn <- slot(ptn@analysis@GO, sel)
     }
     #
     if (isTRUE(pool)) {
-      nameOut <- ifelse(is.null(pdfName), paste0("pooled_GOdotplot", "_", sel, ".pdf"),
-        paste(pdfName, paste0("pooled_GOdotplot", "_", sel, ".pdf"), sep = "_")
+      nameOut <- ifelse(
+        is.null(pdfName),
+        paste0("pooled_GOdotplot", "_", sel, ".pdf"),
+        paste(
+          pdfName,
+          paste0("pooled_GOdotplot", "_", sel, ".pdf"),
+          sep = "_"
+        )
       )
       #
-      goDf <- data.table::rbindlist(lapply(goIn, function(x) x@result), use.names = TRUE, idcol = TRUE)
+      goDf <- data.table::rbindlist(lapply(goIn, function(x)
+        x@result),
+        use.names = TRUE,
+        idcol = TRUE)
       colnames(goDf)[1] <- "regulation"
       #
       if (!is.null(termSel)) {
@@ -44,17 +55,17 @@ goDotplot <- function(ptn,
       if (nCategories < nrow(goDf)) {
         goDf <- goDf[1:nCategories, ]
       }
-
+      
       #
       goDf$log10fdr <- -log10(goDf$p.adjust)
-
+      
       #
       if (size == "geneRatio") {
         goDf$scale <- goDf$Count / goDf$Size
       } else {
         goDf$scale <- goDf$Count
       }
-
+      
       #
       colOut <- colPlot(ptn)[-1]
       names(colOut) <- names(ptn@dataIn@geneList)
@@ -68,17 +79,37 @@ goDotplot <- function(ptn,
         #
         rng <- range(goDf$scale, na.rm = TRUE)
         step <- 0.05 # finer step for better resolution in small ranges
-
+        
         min_val <- floor(rng[1] / step) * step
         max_val <- ceiling(rng[2] / step) * step
-
+        
         size_breaks <- seq(min_val, max_val, by = step)
         size_limits <- c(min_val, max_val)
       }
       #
-      pdf(nameOut, width = 8, height = 8, useDingbats = FALSE)
-      par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
-      pOut <- ggplot2::ggplot(goDf, ggplot2::aes(x = log10fdr, y = reorder(Description, log10fdr), size = scale, colour = regulation)) +
+      pdf(
+        nameOut,
+        width = 8,
+        height = 8,
+        useDingbats = FALSE
+      )
+      par(
+        mar = c(5, 5, 3, 3),
+        bty = "l",
+        font = 2,
+        font.axis = 2,
+        font.lab = 2,
+        cex.axis = 1.3,
+        cex.main = 1.7,
+        cex.lab = 1
+      )
+      pOut <- ggplot2::ggplot(goDf,
+                              ggplot2::aes(
+                                x = log10fdr,
+                                y = reorder(Description, log10fdr),
+                                size = scale,
+                                colour = regulation
+                              )) +
         ggplot2::geom_point() +
         ggplot2::scale_color_manual(values = colOut) +
         ggplot2::scale_size_continuous(
@@ -88,7 +119,12 @@ goDotplot <- function(ptn,
           range = c(2, 8)
         ) +
         ggplot2::theme_bw() +
-        ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = "dashed", linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(), panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, "cm")) +
+        ggplot2::theme(
+          panel.grid.major = ggplot2::element_line(linetype = "dashed", linewidth = 0.25),
+          panel.grid.minor = ggplot2::element_blank(),
+          panel.background = ggplot2::element_blank(),
+          legend.key.size = ggplot2::unit(0.5, "cm")
+        ) +
         ggplot2::xlab("-log10 FDR") +
         ggplot2::scale_x_continuous(limits = c(0, NA)) +
         ggplot2::ylab(" ")
@@ -96,14 +132,32 @@ goDotplot <- function(ptn,
       plot(pOut)
       dev.off()
     } else {
-      for (i in 1:length(goIn)) {
-        nameOut <- ifelse(is.null(pdfName), paste(names(goIn)[i], paste0("GOdotplot", "_", sel, ".pdf"), sep = "_"),
-          paste(pdfName, names(goIn)[i], paste0("GOdotplot", "_", sel, ".pdf"), sep = "_")
+      for (i in seq_len(goIn)) {
+        nameOut <- ifelse(
+          is.null(pdfName),
+          paste(
+            names(goIn)[i],
+            paste0("GOdotplot", "_", sel, ".pdf"),
+            sep = "_"
+          ),
+          paste(
+            pdfName,
+            names(goIn)[i],
+            paste0("GOdotplot", "_", sel, ".pdf"),
+            sep = "_"
+          )
         )
-
+        
         goDf <- goIn[[i]]@result
         if (nrow(goDf) == 0) {
-          message(paste("For the geneList: ", names(goIn)[i], " there are no categories to plot.", sep = ""))
+          message(
+            paste(
+              "For the geneList: ",
+              names(goIn)[i],
+              " there are no categories to plot.",
+              sep = ""
+            )
+          )
         } else {
           if (!is.null(termSel)) {
             goDf <- goDf[goDf$ID %in% termSel, ]
@@ -117,14 +171,14 @@ goDotplot <- function(ptn,
           }
           #
           goDf$log10fdr <- -log10(goDf$p.adjust)
-
+          
           #
           if (size == "geneRatio") {
             goDf$scale <- goDf$Count / goDf$Size
           } else {
             goDf$scale <- goDf$Count
           }
-
+          
           #
           colOut <- colPlot(ptn)[-1]
           names(colOut) <- names(ptn_geneList(ptn))
@@ -138,20 +192,44 @@ goDotplot <- function(ptn,
             #
             rng <- range(goDf$scale, na.rm = TRUE)
             step <- 0.05
-
+            
             min_val <- floor(rng[1] / step) * step
             max_val <- ceiling(rng[2] / step) * step
-
+            
             size_breaks <- seq(min_val, max_val, by = step)
             size_limits <- c(min_val, max_val)
           }
           #
-          pdf(nameOut, width = 8, height = 8, useDingbats = FALSE)
-          par(mar = c(5, 5, 3, 3), bty = "l", font = 2, font.axis = 2, font.lab = 2, cex.axis = 1.3, cex.main = 1.7, cex.lab = 1)
-          pOut <- ggplot2::ggplot(goDf, ggplot2::aes(x = log10fdr, y = reorder(Description, log10fdr), size = scale)) +
+          pdf(
+            nameOut,
+            width = 8,
+            height = 8,
+            useDingbats = FALSE
+          )
+          par(
+            mar = c(5, 5, 3, 3),
+            bty = "l",
+            font = 2,
+            font.axis = 2,
+            font.lab = 2,
+            cex.axis = 1.3,
+            cex.main = 1.7,
+            cex.lab = 1
+          )
+          pOut <- ggplot2::ggplot(goDf,
+                                  ggplot2::aes(
+                                    x = log10fdr,
+                                    y = reorder(Description, log10fdr),
+                                    size = scale
+                                  )) +
             ggplot2::geom_point(color = colOut[names(goIn)[i]]) +
             ggplot2::theme_bw() +
-            ggplot2::theme(panel.grid.major = ggplot2::element_line(linetype = "dashed", linewidth = 0.25), panel.grid.minor = ggplot2::element_blank(), panel.background = ggplot2::element_blank(), legend.key.size = ggplot2::unit(0.5, "cm")) +
+            ggplot2::theme(
+              panel.grid.major = ggplot2::element_line(linetype = "dashed", linewidth = 0.25),
+              panel.grid.minor = ggplot2::element_blank(),
+              panel.background = ggplot2::element_blank(),
+              legend.key.size = ggplot2::unit(0.5, "cm")
+            ) +
             ggplot2::xlab("-log10 FDR") +
             ggplot2::scale_size_continuous(
               name = size,
