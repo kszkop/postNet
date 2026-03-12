@@ -616,7 +616,7 @@ plotPostNet <- function(resOut,
       )
     }
     text(
-      seq_len(resOut),
+      seq_along(resOut),
       par("usr")[3] - 0.05 * diff(par("usr")[3:4]),
       labels = names(resOut),
       xpd = NA,
