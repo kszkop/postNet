@@ -63,7 +63,7 @@ goAnalysis <- function(ptn,
   for (sel in category) {
     resOut <- list()
     if (sel == "KEGG") {
-      for (i in seq_len(GoLists)) {
+      for (i in seq_along(GoLists)) {
         resTmp <- clusterProfiler::enrichKEGG(
           gene = GoLists[[i]],
           universe = bg_entrezID,
@@ -82,7 +82,7 @@ goAnalysis <- function(ptn,
         resOut[[names(GoLists)[i]]] <- resTmp
       }
     } else if (sel == "BP" | sel == "MF" | sel == "CC") {
-      for (i in seq_len(GoLists)) {
+      for (i in seq_along(GoLists)) {
         resTmp <- clusterProfiler::enrichGO(
           gene = GoLists[[i]],
           universe = bg_entrezID,
@@ -104,7 +104,7 @@ goAnalysis <- function(ptn,
       }
     }
     #
-    for (i in seq_len(resOut)) {
+    for (i in seq_along(resOut)) {
       tabTmp <- resOut[[i]]@result
       #
       tabTmp <- tabTmp[tabTmp$Count >= counts, ]

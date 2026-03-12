@@ -61,7 +61,7 @@ codonCalc <- function(ptn,
   }
   #
   codonCalcOut <- list()
-  for (i in seq_len(featsel)) {
+  for (i in seq_along(featsel)) {
     #
     featTmp <- featsel[[i]]
     featNameTmp <- names(featsel)[i]

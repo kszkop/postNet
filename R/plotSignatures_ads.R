@@ -126,7 +126,7 @@ plotSignatures_ads <- function(ads,
       "There are some genes that overlap between signatures. Separate backgrounds will be used for each gene signature."
     )
     ##
-    for (i in seq_len(signatureList)) {
+    for (i in seq_along(signatureList)) {
       regData[, 5 + i] <- "bkg"
       regData[, 5 + i][regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]
       #
@@ -140,7 +140,7 @@ plotSignatures_ads <- function(ads,
     }
   } else {
     regData$signature <- "bkg"
-    for (i in seq_len(signatureList)) {
+    for (i in seq_along(signatureList)) {
       regData$signature[regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]
       #
       points(
@@ -161,7 +161,7 @@ plotSignatures_ads <- function(ads,
     
     if (any(duplicated(unlist(signatureList)))) {
       tmpBgOut <- list()
-      for (i in seq_len(signatureList)) {
+      for (i in seq_along(signatureList)) {
         #
         tmpBg <- sort(as.numeric(regData[regData[, (5 + i)] == "bkg", ][, eff]))
         ecdfBg <- seq_len(tmpBg) / length(tmpBg)
@@ -239,7 +239,7 @@ plotSignatures_ads <- function(ads,
       )
       
       #
-      for (i in seq_len(signatureList)) {
+      for (i in seq_along(signatureList)) {
         lines(
           ecdf(as.numeric(regData[regData[, (5 + i)] == signNames[i], ][, eff])),
           col = signature_colours[i],
@@ -273,7 +273,7 @@ plotSignatures_ads <- function(ads,
       bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
       
       #
-      for (i in seq_len(signatureList)) {
+      for (i in seq_along(signatureList)) {
         tableOut[i, 2] <- format(as.numeric(
           wilcox.test(
             as.numeric(regData[regData$signature == signNames[i], ][, eff]),
@@ -336,7 +336,7 @@ plotSignatures_ads <- function(ads,
         cex = 1.3
       )
       #
-      for (i in seq_len(signatureList)) {
+      for (i in seq_along(signatureList)) {
         lines(
           ecdf(as.numeric(regData[regData$signature == signNames[i], ][, eff])),
           col = signature_colours[i],

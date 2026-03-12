@@ -71,7 +71,7 @@ contentAnalysis <- function(ptn,
       seqTmp <- subSeq
     }
     #
-    for (i in seq_len(contentIn)) {
+    for (i in seq_along(contentIn)) {
       content <- contentIn[i]
       
       ##
@@ -82,7 +82,7 @@ contentAnalysis <- function(ptn,
       }
       
       contentOut <- as.numeric()
-      for (i in seq_len(seqTmp)) {
+      for (i in seq_along(seqTmp)) {
         tmpSeq <- seqTmp[i]
         
         if (!is.na(contentTmp$positions[1])) {

@@ -100,7 +100,7 @@ uorfAnalysis <- function(ptn,
     colOut <- colPlot(ptn)
     #
     resProp <- as.numeric()
-    for (i in seq_len(resOut)) {
+    for (i in seq_along(resOut)) {
       resProp[i] <- length(resOut[[i]][resOut[[i]] > 0]) / length(resOut[[i]])
     }
     dataTmp <- as.numeric(unlist(resProp))

@@ -132,7 +132,7 @@ goDotplot <- function(ptn,
       plot(pOut)
       dev.off()
     } else {
-      for (i in seq_len(goIn)) {
+      for (i in seq_along(goIn)) {
         nameOut <- ifelse(
           is.null(pdfName),
           paste(

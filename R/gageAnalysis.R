@@ -74,7 +74,7 @@ gageAnalysis <- function(ptn,
     
     #
     pathwaysGenes <- list()
-    for (pw in seq_len(pathwaysIn)) {
+    for (pw in seq_along(pathwaysIn)) {
       glist <- unlist(pathwaysIn[pw])
       tmpGenes <- glist[glist %in% names(rankIn)]
       if (length(tmpGenes) > 0) {

@@ -49,13 +49,13 @@ plotSignatures <- function(ptn,
     )
     
     #
-    for (i in seq_len(signatureList)) {
+    for (i in seq_along(signatureList)) {
       regData[, 2 + i] <- "bkg"
       regData[, 2 + i][regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]
     }
   } else {
     regData$signature <- "bkg"
-    for (i in seq_len(signatureList)) {
+    for (i in seq_along(signatureList)) {
       regData$signature[regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]
     }
   }
@@ -67,7 +67,7 @@ plotSignatures <- function(ptn,
   
   if (any(duplicated(unlist(signatureList)))) {
     tmpBgOut <- list()
-    for (i in seq_len(signatureList)) {
+    for (i in seq_along(signatureList)) {
       #
       tmpBg <- sort(as.numeric(regData[regData[, (2 + i)] == "bkg", "effIn"]))
       ecdfBg <- seq_len(tmpBg) / length(tmpBg)
@@ -104,7 +104,7 @@ plotSignatures <- function(ptn,
     bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
     
     #
-    for (i in seq_len(signatureList)) {
+    for (i in seq_along(signatureList)) {
       tableOut[i, 2] <- format(as.numeric(
         wilcox.test(
           as.numeric(regData[regData$signature == signNames[i], "effIn"]),
@@ -235,7 +235,7 @@ plotSignatures <- function(ptn,
   
   #
   if (any(duplicated(unlist(signatureList)))) {
-    for (i in seq_len(signatureList)) {
+    for (i in seq_along(signatureList)) {
       regData[, 2 + i] <- "bkg"
       regData[, 2 + i][regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]
       
@@ -256,7 +256,7 @@ plotSignatures <- function(ptn,
     }
   } else {
     regData$signature <- "bkg"
-    for (i in seq_len(signatureList)) {
+    for (i in seq_along(signatureList)) {
       regData$signature[regData$geneSymb %in% signatureList[[i]]] <- names(signatureList)[i]
     }
     lines(
@@ -266,7 +266,7 @@ plotSignatures <- function(ptn,
       do.p = FALSE,
       lwd = 3
     )
-    for (i in seq_len(signatureList)) {
+    for (i in seq_along(signatureList)) {
       lines(
         stats::ecdf(as.numeric(regData[regData$signature == names(signatureList)[i], "effIn"])),
         col = signature_colours[i],

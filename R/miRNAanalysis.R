@@ -66,7 +66,7 @@ miRNAanalysis <- function(ptn,
     )
   }
   
-  for (miRNA in seq_len(miRNAList)) {
+  for (miRNA in seq_along(miRNAList)) {
     miRNAList[[miRNA]] <- miRNATargetScan$Gene.Symbol[miRNATargetScan$Representative.miRNA %in% names(miRNAList)[miRNA]]
   }
   #

@@ -29,7 +29,7 @@ signaturesHeatmap <- function(ptn,
   if (unit == "FDR") {
     fdrOut <- as.numeric()
   }
-  for (sign in seq_len(signatureList)) {
+  for (sign in seq_along(signatureList)) {
     regData[, 3] <- "bkg"
     regData[, 3][regData$geneSymb %in% signatureList[[sign]]] <- names(signatureList)[sign]
     colnames(regData)[3] <- "signature"

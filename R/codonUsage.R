@@ -296,7 +296,7 @@ codonUsage <- function(ptn,
   geneIDs <- names(seqTmp)
   
   codonTmp <- list()
-  for (i in seq_len(geneIDs)) {
+  for (i in seq_along(geneIDs)) {
     codonTmp[[i]] <- codonCount(gene = geneIDs[i],
                                 seq = seqTmp[i],
                                 codonN = codonN)
@@ -460,7 +460,7 @@ codonUsage <- function(ptn,
   }
   #
   codonsSel <- list()
-  for (j in seq_len(comparisons)) {
+  for (j in seq_along(comparisons)) {
     if (names(compOut1)[1] == "background") {
       compTmp <- comparisons[[j]] + 1
     } else {

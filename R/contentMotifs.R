@@ -95,7 +95,7 @@ contentMotifs <- function(ptn,
     seqTmp <- seqTmp[!is.na(seqTmp)]
     
     motifsFinal <- list()
-    for (i in seq_len(motifsIn)) {
+    for (i in seq_along(motifsIn)) {
       motif <- motifsIn[i]
       #
       if (motif == "G4" & !tolower(seqType) == "protein") {

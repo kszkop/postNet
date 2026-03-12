@@ -91,7 +91,7 @@ featureIntegration <- function(ptn,
     if (isTRUE(regOnly)) {
       #
       compOut <- list()
-      for (i in seq_len(comparisons)) {
+      for (i in seq_along(comparisons)) {
         coloursTmp <- ptn_colours(ptn)
         if (names(resOut)[1] == "background") {
           compTmp <- comparisons[[i]] + 1
@@ -196,7 +196,7 @@ featureIntegration <- function(ptn,
     
     #
     compOut <- list()
-    for (i in seq_len(comparisons)) {
+    for (i in seq_along(comparisons)) {
       coloursTmp <- ptn_colours(ptn)
       if (names(resOut)[1] == "background") {
         compTmp <- comparisons[[i]] + 1

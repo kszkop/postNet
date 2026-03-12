@@ -268,7 +268,7 @@ resSel <- function(ads = NULL,
       names(res) <- paste(regulation, paste("c", contrast, sep = ""), sep = "_")
     } else {
       res <- list()
-      for (i in seq_len(results)) {
+      for (i in seq_along(results)) {
         resTmp <- results[[i]]
         names(resTmp) <- paste(names(resTmp), paste("c", i, sep = ""), sep = "_")
         res <- append(res, resTmp)
@@ -388,7 +388,7 @@ resQuant <- function(qvec, ptn) {
     res <- ptn_geneList(ptn)
   }
   
-  for (i in seq_len(res)) {
+  for (i in seq_along(res)) {
     resOut[[names(res)[i]]] <- qvec[names(qvec) %in% res[[i]]]
   }
   return(resOut)
@@ -411,7 +411,7 @@ addStats <- function(comparisons, plotType, resOut, coloursOut) {
     colnames(tableOut) <- c("signature", "Wilcox_pval", "q25", "q50", "q75")
     colOut <- as.character()
   }
-  for (j in seq_len(comparisons)) {
+  for (j in seq_along(comparisons)) {
     if (names(resOut)[1] == "background") {
       compTmp <- comparisons[[j]] + 1
     } else {
@@ -631,7 +631,7 @@ plotPostNet <- function(resOut,
     }
     text(xlimTmp[2] - 0.75, ylimTmp[1], "(mean values)", font = 2)
     #
-    for (i in seq_len(resOut)) {
+    for (i in seq_along(resOut)) {
       if (plotType == "boxplot") {
         boxplot(
           resOut[[i]],
@@ -991,7 +991,7 @@ statOnDf <- function(df, regs, analysis) {
     testList <- rep(list(NA), length(unique(df$codon)))
     names(testList) <- names(fisherList) <- unique(df$codon)
     
-    for (AAind in seq_len(uniqAA)) {
+    for (AAind in seq_along(uniqAA)) {
       #
       tmpDf <- df[df$AA == uniqAA[AAind], ]
       #
@@ -999,7 +999,7 @@ statOnDf <- function(df, regs, analysis) {
       
       #
       if (length(codons) > 1) {
-        for (cod in seq_len(codons)) {
+        for (cod in seq_along(codons)) {
           codTmp <- codons[cod]
           c_codTmp <- tmpDf[tmpDf$codon == codTmp, regs]
           #
@@ -1021,7 +1021,7 @@ statOnDf <- function(df, regs, analysis) {
     testList <- rep(list(NA), length(unique(df$AA)))
     names(testList) <- names(fisherList) <- unique(df$AA)
     
-    for (AAi in seq_len(uniqAA)) {
+    for (AAi in seq_along(uniqAA)) {
       AATmp <- uniqAA[AAi]
       c_codTmp <- df[df$AA == AATmp, regs]
       #
@@ -1092,7 +1092,7 @@ calc_uORF <- function(seqTmp, ext, context, unit) {
     #
     if (length(stopOut) > 0) {
       #
-      for (i in seq_len(startOut)) {
+      for (i in seq_along(startOut)) {
         #
         stopTmp <- stopOut[which((stopOut - startOut[i]) > 0)]
         #
@@ -1176,7 +1176,7 @@ writeExcel <- function(listOfData = NULL,
                        listNames = NULL,
                        fileName = NULL) {
   listToWrite <- list()
-  for (i in seq_len(listOfData)) {
+  for (i in seq_along(listOfData)) {
     if (!is.null(listOfData[[i]])) {
       listToWrite[[i]] <- as.data.frame(listOfData[[i]])
     } else {
@@ -1592,7 +1592,7 @@ runLM <- function(dataIn,
     "effM", paste(bestSel, collapse = " + "), sep = "~"
   )), data = dataIn))
   varExpldepend <- numeric()
-  for (i in seq_len(bestSel)) {
+  for (i in seq_along(bestSel)) {
     tmpFeatI <- bestSel[i]
     #
     varExpldepend[i] <- round((varExpl[i, 2] / sum(varExpl$`Sum Sq`)) * 100, 2)
@@ -1601,7 +1601,7 @@ runLM <- function(dataIn,
   
   #
   varExplIndepend <- numeric()
-  for (i in seq_len(bestSel)) {
+  for (i in seq_along(bestSel)) {
     tmpFeat <- bestSel[i]
     restFeat <- bestSel[-i]
     
