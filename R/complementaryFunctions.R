@@ -1479,7 +1479,8 @@ runLM <- function(dataIn,
     #
     x_sel <- paste(bestSel, collapse = " + ")
     #
-    for (j in 1:(length(colnames(dataIn)[-length(colnames(dataIn))]) - length(c(bestSel, outSel)))) {
+    lenTmp <- length(colnames(dataIn)[-length(colnames(dataIn))]) - length(c(bestSel, outSel))
+    for (j in seq_len(lenTmp)) {
       varx <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)][j]
       design <- as.formula(paste(paste(
         "effM", paste(x_sel, collapse = " + "), sep = "~"
@@ -1554,7 +1555,7 @@ runLM <- function(dataIn,
   colours <- matrix("white", nrow(tb1Out), ncol(tb1Out))
   linkIn <- matrix(NA, nrow(tb1Out), ncol(tb1Out))
   
-  for (k in 2:nrow(colours)) {
+  for (k in seq.int(2, nrow(colours))) {
     trow <- as.numeric(na.omit(as.numeric(tb1Out[k, ])))
     #
     if (length(trow) > 0) {
@@ -1562,11 +1563,11 @@ runLM <- function(dataIn,
       tsel_net <- lag(trow) - trow
       #
       colours[k, tsel_tab] <- "#FDE0C5"
-      linkIn[k, seq_len(tsel_net)] <- tsel_net
+      linkIn[k, 1:length(tsel_net)] <- tsel_net
     }
   }
   
-  for (k in 1:ncol(colours)) {
+  for (k in seq_along(colours)) {
     colours[k, k] <- "#B0F2BC"
   }
   #
@@ -1592,7 +1593,7 @@ runLM <- function(dataIn,
     "effM", paste(bestSel, collapse = " + "), sep = "~"
   )), data = dataIn))
   varExpldepend <- numeric()
-  for (i in seq_along(bestSel)) {
+  for (i in 1:length(bestSel)) {
     tmpFeatI <- bestSel[i]
     #
     varExpldepend[i] <- round((varExpl[i, 2] / sum(varExpl$`Sum Sq`)) * 100, 2)
@@ -1601,7 +1602,7 @@ runLM <- function(dataIn,
   
   #
   varExplIndepend <- numeric()
-  for (i in seq_along(bestSel)) {
+  for (i in 1:length(bestSel)) {
     tmpFeat <- bestSel[i]
     restFeat <- bestSel[-i]
     
@@ -1617,7 +1618,7 @@ runLM <- function(dataIn,
   tb2out <- data.frame(
     Features = namesDf$originalNames[match(bestSel, namesDf$newNames)],
     Pvalue = format(
-      varExpl$`Pr(>F)`[seq_len(bestSel)],
+      varExpl$`Pr(>F)`[1:length(bestSel)],
       scientific = TRUE,
       digits = 2
     ),
@@ -1680,7 +1681,7 @@ runLM <- function(dataIn,
   
   #
   if (isTRUE(useCorel) & nrow(linkOut) > 0) {
-    for (i in 1:nrow(linkOut)) {
+    for (i in seq_len(nrow(linkOut))) {
       f1tmp <- linkOut[i, ]$from
       f2tmp <- linkOut[i, ]$to
       #
@@ -2057,6 +2058,7 @@ runLM <- function(dataIn,
   )
   return(lmOut)
 }
+
 
 
 plotScatterInd <- function(set1, set2 = NULL, orgName, coloursIn, nameOut) {
