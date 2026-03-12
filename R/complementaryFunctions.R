@@ -1406,12 +1406,11 @@ runLM <- function(dataIn,
   })
   names(models) <- namesDf$originalNames
   #
-  step1expl <- round(sapply(models, function(x)
-    (x[1, 2] / (sum(
-      x[1, 2], x[2, 2]
-    ))) * 100), 2)
-  step1pval <- sapply(models, function(x)
-    (x[1, 5]))
+  step1expl <- round(vapply(models, function(x) {
+    x[1, 2] / (x[1, 2] + x[2, 2]) * 100
+  }, numeric(1)), 2)
+  step1pval <- vapply(models, function(x)
+    x[1, 5], numeric(1))
   step1fdr <- p.adjust(step1pval)
   
   #
@@ -1437,8 +1436,9 @@ runLM <- function(dataIn,
       )
     } else if (ncol(dataIn) - 2 == length(presel)) {
       stop(
-        paste("Only: ", getOrgNames(colnames(dataIn)[-presel][1], namesDf), sep = ""),
-        " passed the selected significance threshold in univariate analyses."
+        "Only:",
+        getOrgNames(colnames(dataIn)[-presel][1], namesDf),
+        "passed the selected significance threshold in univariate analyses."
       )
     }
     dataIn <- dataIn[, -presel]
@@ -1447,8 +1447,8 @@ runLM <- function(dataIn,
   
   stepwiseModels <- list()
   #
-  fvalTmp <- sapply(models, function(x)
-    x[1, 4])
+  fvalTmp <- vapply(models, function(x)
+    x[1, 4], numeric(1))
   names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))]
   #
   if (length(getDup(fvalTmp)) > 0) {
@@ -1461,8 +1461,8 @@ runLM <- function(dataIn,
   }
   fval[[1]] <- fvalTmp
   
-  pvalTmp <- sapply(models, function(x)
-    x[1, 5])
+  pvalTmp <- vapply(models, function(x)
+    x[1, 5], numeric(1))
   names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))]
   pval[[1]] <- pvalTmp
   
@@ -1503,8 +1503,9 @@ runLM <- function(dataIn,
     #
     stepwiseModels[[paste("step", i, sep = " ")]] <- models2
     #
-    fvalTmp <- sapply(models2, function(x)
-      x[nrow(x) - 1, 4])
+    fvalTmp <- vapply(models2, function(x)
+      x[nrow(x) - 1, 4], numeric(1))
+    
     names(fvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
     #
     if (length(getDup(fvalTmp)) > 0) {
@@ -1516,8 +1517,8 @@ runLM <- function(dataIn,
       )
     }
     #
-    pvalTmp <- sapply(models2, function(x)
-      x[nrow(x) - 1, 5])
+    pvalTmp <- vapply(models2, function(x)
+      x[nrow(x) - 1, 5], numeric(1))
     names(pvalTmp) <- colnames(dataIn)[-length(colnames(dataIn))][!colnames(dataIn)[-length(colnames(dataIn))] %in% c(bestSel, outSel)]
     #
     
@@ -1567,7 +1568,7 @@ runLM <- function(dataIn,
     }
   }
   
-  for (k in seq_along(colours)) {
+  for (k in seq_len(ncol(colours))) {
     colours[k, k] <- "#B0F2BC"
   }
   #
@@ -1593,7 +1594,7 @@ runLM <- function(dataIn,
     "effM", paste(bestSel, collapse = " + "), sep = "~"
   )), data = dataIn))
   varExpldepend <- numeric()
-  for (i in 1:length(bestSel)) {
+  for (i in seq_along(bestSel)) {
     tmpFeatI <- bestSel[i]
     #
     varExpldepend[i] <- round((varExpl[i, 2] / sum(varExpl$`Sum Sq`)) * 100, 2)
@@ -1602,7 +1603,7 @@ runLM <- function(dataIn,
   
   #
   varExplIndepend <- numeric()
-  for (i in 1:length(bestSel)) {
+  for (i in seq_along(bestSel)) {
     tmpFeat <- bestSel[i]
     restFeat <- bestSel[-i]
     
@@ -1618,7 +1619,7 @@ runLM <- function(dataIn,
   tb2out <- data.frame(
     Features = namesDf$originalNames[match(bestSel, namesDf$newNames)],
     Pvalue = format(
-      varExpl$`Pr(>F)`[1:length(bestSel)],
+      varExpl$`Pr(>F)`[seq_along(bestSel)],
       scientific = TRUE,
       digits = 2
     ),
@@ -1656,7 +1657,7 @@ runLM <- function(dataIn,
   tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
   #
   linkOut <- list()
-  for (i in 2:ncol(linkIn)) {
+  for (i in seq.int(2, nrow(linkIn))) {
     tmpIn <- linkIn[, i]
     #
     tmpOut <- as.numeric(tmpIn)[which(!is.na(tmpIn))]
@@ -1793,7 +1794,7 @@ runLM <- function(dataIn,
   
   #
   direct <- as.character()
-  for (i in 1:nrow(nodeOutAll)) {
+  for (i in seq_len(nrow(nodeOutAll))) {
     if (nodeOutAll[i, ]$varexpl == 1) {
       IDtmp <- nodeOutAll[i, ]$ID
       #
