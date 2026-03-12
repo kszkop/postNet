@@ -1657,7 +1657,7 @@ runLM <- function(dataIn,
   tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
   #
   linkOut <- list()
-  for (i in seq.int(2, nrow(linkIn))) {
+  for (i in seq.int(2, ncol(linkIn))) {
     tmpIn <- linkIn[, i]
     #
     tmpOut <- as.numeric(tmpIn)[which(!is.na(tmpIn))]
