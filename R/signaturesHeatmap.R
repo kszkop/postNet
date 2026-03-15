@@ -36,14 +36,14 @@ signaturesHeatmap <- function(ptn,
     
     #
     tmpBg <- sort(as.numeric(regData[regData$signature == "bkg", ]$effIn))
-    ecdfBg <- seq_len(tmpBg) / length(tmpBg)
+    ecdfBg <- seq_along(tmpBg) / length(tmpBg)
     if (unit == "FDR") {
       percentileBG <- tmpBg[which(ecdfBg >= 0.5)[1]]
     } else {
       percentileBG <- tmpBg[which(ecdfBg >= as.numeric(gsub("p", "0.", unit)))[1]]
     }
     tmpSign <- sort(as.numeric(regData[regData$signature == names(signatureList)[sign], ]$effIn))
-    ecdfSign <- seq_len(tmpSign) / length(tmpSign)
+    ecdfSign <- seq_along(tmpSign) / length(tmpSign)
     if (unit == "FDR") {
       percentileSign <- tmpSign[which(ecdfSign >= 0.5)[1]]
     } else {

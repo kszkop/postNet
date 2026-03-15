@@ -70,7 +70,7 @@ plotSignatures <- function(ptn,
     for (i in seq_along(signatureList)) {
       #
       tmpBg <- sort(as.numeric(regData[regData[, (2 + i)] == "bkg", "effIn"]))
-      ecdfBg <- seq_len(tmpBg) / length(tmpBg)
+      ecdfBg <- seq_along(tmpBg) / length(tmpBg)
       bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
       bg_05 <- tmpBg[which(ecdfBg >= 0.5)[1]]
       bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
@@ -89,7 +89,7 @@ plotSignatures <- function(ptn,
       
       # C
       tmpSign <- sort(as.numeric(regData[regData[, (2 + i)] == signNames[i], "effIn"]))
-      ecdfSign <- seq_len(tmpSign) / length(tmpSign)
+      ecdfSign <- seq_along(tmpSign) / length(tmpSign)
       
       tableOut[i, 3] <- format(tmpSign[which(ecdfSign >= 0.25)[1]] - bg_025, digits = 2)
       tableOut[i, 4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
@@ -98,7 +98,7 @@ plotSignatures <- function(ptn,
   } else {
     #
     tmpBg <- sort(as.numeric(regData[regData$signature == "bkg", "effIn"]))
-    ecdfBg <- seq_len(tmpBg) / length(tmpBg)
+    ecdfBg <- seq_along(tmpBg) / length(tmpBg)
     bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
     bg_05 <- tmpBg[which(ecdfBg >= 0.5)[1]]
     bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
@@ -117,7 +117,7 @@ plotSignatures <- function(ptn,
       
       #
       tmpSign <- sort(as.numeric(regData[regData$signature == signNames[i], "effIn"]))
-      ecdfSign <- seq_len(tmpSign) / length(tmpSign)
+      ecdfSign <- seq_along(tmpSign) / length(tmpSign)
       
       tableOut[i, 3] <- format(tmpSign[which(ecdfSign >= 0.25)[1]] - bg_025, digits = 2)
       tableOut[i, 4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
