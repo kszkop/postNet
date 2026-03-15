@@ -16,7 +16,6 @@ codonUsage <- function(ptn,
                        plotType_index = "boxplot",
                        setSeed = NULL,
                        pdfName = NULL) {
-  #
   check_ptn(ptn)
   if (!is_annotType(annotType)) {
     stop(
@@ -59,7 +58,7 @@ codonUsage <- function(ptn,
         unlink("CCDS_human.txt")
         #
         ccds$ccds_id_cl <- gsub("\\..*", "", ccds$ccds_id)
-
+        
         #
         download.file(
           "ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/CCDS_nucleotide.current.fna.gz",
@@ -68,23 +67,21 @@ codonUsage <- function(ptn,
         R.utils::gunzip("CCDS_nucleotide_human.fna.gz")
         ccdsSeq <- seqinr::read.fasta("CCDS_nucleotide_human.fna", seqtype = "AA")
         unlink("CCDS_nucleotide_human.fna")
-
+        
         #
         ccdsSeq <- ccdsSeq[!duplicated(sapply(strsplit(names(ccdsSeq), "\\|"), function(x) {
           x[1]
         }))]
-
+        
         ccdsSeq <- data.frame(
           id = sub("\\..*", "", names(ccdsSeq)),
-          CDS_seq = t(as.data.frame(
-            lapply(ccdsSeq, function(x) {
-              paste(x, collapse = "")
-            })
-          )),
+          CDS_seq = t(as.data.frame(lapply(ccdsSeq, function(x) {
+            paste(x, collapse = "")
+          }))),
           row.names = NULL,
           stringsAsFactors = FALSE
         )
-
+        
         annotTmp <- merge(
           unique(ccds[, c("ccds_id_cl", "gene")]),
           ccdsSeq,
@@ -100,12 +97,10 @@ codonUsage <- function(ptn,
         }))
         annotTmp$lenTmp <- lenTmp
         #
-        annotSel <- isoSel(
-          annot = annotTmp,
-          method = ptn_selection(ptn),
-          setSeed = setSeed
-        )
-        colnames(annotSel)[1:3] <- c("id", "geneID", "CDS_seq")
+        annotSel <- isoSel(annot = annotTmp,
+                           method = ptn_selection(ptn),
+                           setSeed = setSeed)
+        colnames(annotSel)[seq_len(3)] <- c("id", "geneID", "CDS_seq")
         #
         annot <- new(
           "postNetRegion",
@@ -113,7 +108,7 @@ codonUsage <- function(ptn,
           geneID = annotSel$geneID,
           sequences = annotSel$CDS_seq
         )
-
+        
         ptn@annot@CCDS <- annot
       } else if (species == "mouse") {
         #
@@ -140,7 +135,7 @@ codonUsage <- function(ptn,
         unlink("CCDS_mouse.txt")
         #
         ccds$ccds_id_cl <- gsub("\\..*", "", ccds$ccds_id)
-
+        
         #
         download.file(
           "ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_mouse/CCDS_nucleotide.current.fna.gz",
@@ -149,23 +144,21 @@ codonUsage <- function(ptn,
         R.utils::gunzip("CCDS_nucleotide_mouse.fna.gz")
         ccdsSeq <- seqinr::read.fasta("CCDS_nucleotide_mouse.fna", seqtype = "AA")
         unlink("CCDS_nucleotide_mouse.fna")
-
+        
         #
         ccdsSeq <- ccdsSeq[!duplicated(sapply(strsplit(names(ccdsSeq), "\\|"), function(x) {
           x[1]
         }))]
-
+        
         ccdsSeq <- data.frame(
           id = sub("\\..*", "", names(ccdsSeq)),
-          CDS_seq = t(as.data.frame(
-            lapply(ccdsSeq, function(x) {
-              paste(x, collapse = "")
-            })
-          )),
+          CDS_seq = t(as.data.frame(lapply(ccdsSeq, function(x) {
+            paste(x, collapse = "")
+          }))),
           row.names = NULL,
           stringsAsFactors = FALSE
         )
-
+        
         annotTmp <- merge(
           unique(ccds[, c("ccds_id_cl", "gene")]),
           ccdsSeq,
@@ -181,12 +174,10 @@ codonUsage <- function(ptn,
         }))
         annotTmp$lenTmp <- lenTmp
         #
-        annotSel <- isoSel(
-          annot = annotTmp,
-          method = ptn_selection(ptn),
-          setSeed = setSeed
-        )
-        colnames(annotSel)[1:3] <- c("id", "geneID", "CDS_seq")
+        annotSel <- isoSel(annot = annotTmp,
+                           method = ptn_selection(ptn),
+                           setSeed = setSeed)
+        colnames(annotSel)[seq_len(3)] <- c("id", "geneID", "CDS_seq")
         #
         annot <- new(
           "postNetRegion",
@@ -194,7 +185,7 @@ codonUsage <- function(ptn,
           geneID = annotSel$geneID,
           sequences = annotSel$CDS_seq
         )
-
+        
         ptn@annot@CCDS <- annot
       }
     } else if (sourceSeq == "load") {
@@ -218,13 +209,10 @@ codonUsage <- function(ptn,
         length(seqinr::s2c(x))
       }))
       annotTmp$lenTmp <- lenTmp
-      #
-      annotSel <- isoSel(
-        annot = annotTmp,
-        method = ptn_selection(ptn),
-        setSeed = setSeed
-      )
-      colnames(annotSel)[1:3] <- c("id", "geneID", "CDS_seq")
+      annotSel <- isoSel(annot = annotTmp,
+                         method = ptn_selection(ptn),
+                         setSeed = setSeed)
+      colnames(annotSel)[seq_len(3)] <- c("id", "geneID", "CDS_seq")
       #
       annot <- new(
         "postNetRegion",
@@ -232,18 +220,20 @@ codonUsage <- function(ptn,
         geneID = annotSel$geneID,
         sequences = annotSel$CDS_seq
       )
-
       ptn@annot@CCDS <- annot
     }
   }
-  ####
+  
   if (!is_valid_analysis(analysis)) {
-    stop("Please provide an input for 'analysis'. The options are 'codon' or 'AA' (amino acid).")
+    stop("Please provide an input for 'analysis'.
+         The options are 'codon' or 'AA' (amino acid).")
   }
   if (!check_number(codonN)) {
     stop(
-      "Please provide an integer value for 'codonN' specifying the number of consecutive codons to consider in the analysis. \
-    For example, 1 will consider each individual codon, while 2 will consider dicodons, etc."
+      "Please provide an integer value for 'codonN' specifying the number
+      of consecutive codons to consider in the analysis. \
+      For example, 1 will consider each individual codon,
+      while 2 will consider dicodons, etc."
     )
   }
   if (!check_logical(rem5)) {
@@ -251,37 +241,41 @@ codonUsage <- function(ptn,
   }
   #
   if (!is.null(subregion) &&
-    (!is.numeric(subregion) || !length(subregion) == 1)) {
+      (!is.numeric(subregion) || !length(subregion) == 1)) {
     stop("The input for 'subregion' must be an integer.")
   }
   if (!is.null(subregionSel) &&
-    !subregionSel %in% c("select", "exclude")) {
-    stop("The input for 'subregionSel' must be either 'select' or 'exclude'.")
+      !subregionSel %in% c("select", "exclude")) {
+    stop("The input for 'subregionSel'
+         must be either 'select' or 'exclude'.")
   }
-
+  
   if (!is.null(comparisons)) {
     if (!check_comparisons(comparisons)) {
       stop(
-        "The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always \ denotes the background gene set."
+        "The input for 'comparisons' must be a list of numeric vectors
+        of paired comparisons. For example: list(c(0,2),c(0,1)).
+        0 always \ denotes the background gene set."
       )
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
-      is.null(ptn_background(ptn))) {
-      stop("0 always denotes the background, but no background has been provided.")
+        is.null(ptn_background(ptn))) {
+      stop("0 always denotes the background,
+           but no background has been provided.")
     }
   } else {
     stop(
-      "For further analysis to be performed, pairs of comparisons must be specified with the 'comparisons' parameter. \
+      "For further analysis to be performed, pairs of comparisons
+      must be specified with the 'comparisons' parameter. \
       See the 'codonUsage()' help page for details: ?codonUsage.",
       call. = FALSE
     )
   }
   #
   nameTmp <- ifelse(is.null(pdfName),
-    analysis,
-    paste(pdfName, analysis, sep = "_")
-  )
+                    analysis,
+                    paste(pdfName, analysis, sep = "_"))
   nameOut <- nameTmp
   #
   if (annotType == "ccds") {
@@ -301,26 +295,22 @@ codonUsage <- function(ptn,
     })
     if (length(which(is.na(subSeq))) > 0) {
       message(
-        "For some sequences, the selected subregion is longer than the reference sequence region. These sequences will be removed from the analysis."
+        "For some sequences, the selected subregion
+        is longer than the reference sequence region.
+        These sequences will be removed from the analysis."
       )
     }
     seqTmp <- subSeq
   }
   seqTmp <- seqTmp[!is.na(seqTmp)]
-
   geneIDs <- names(seqTmp)
-
   codonTmp <- list()
   for (i in seq_along(geneIDs)) {
-    codonTmp[[i]] <- codonCount(
-      gene = geneIDs[i],
-      seq = seqTmp[i],
-      codonN = codonN
-    )
+    codonTmp[[i]] <- codonCount(gene = geneIDs[i],
+                                seq = seqTmp[i],
+                                codonN = codonN)
   }
   codonAll <- data.table::rbindlist(codonTmp, use.names = TRUE, fill = TRUE)
-
-
   if (codonN == 1) {
     codonAll <- codonAll[!codonAll$AA %in% c("Stop", "W", "M", "O", "U"), ]
   }
@@ -334,7 +324,7 @@ codonUsage <- function(ptn,
     AACountPerGene = codonAll$AACountPerGene,
     relative_frequency = codonAll$relative_frequency
   )
-
+  
   #
   if (analysis == "codon" & codonN == 1) {
     species <- ptn_species(ptn)
@@ -352,18 +342,18 @@ codonUsage <- function(ptn,
     } else {
       message("No available codon indexes for ", species)
     }
-
+    
     #
     indNames <- c("CAI", "CBI", "Fop", "tAI", "L_aa")
-
+    
     for (ind in indNames) {
       #####
       index_sel <- codind[, which(colnames(codind) == ind)]
       names(index_sel) <- codind$external_gene_name
-
+      
       resOutInd <- resQuant(qvec = index_sel, ptn = ptn)
       colOutInd <- colPlot(ptn)
-
+      
       ##
       pdf(
         paste(nameOut, ind, "_index.pdf", sep = ""),
@@ -373,11 +363,10 @@ codonUsage <- function(ptn,
       )
       ylabel <- paste(ind, "index", sep = " ")
       plotPostNet(resOutInd,
-        colOutInd,
-        comparisons,
-        ylabel = ylabel,
-        plotType = plotType_index
-      )
+                  colOutInd,
+                  comparisons,
+                  ylabel = ylabel,
+                  plotType = plotType_index)
       dev.off()
     }
   }
@@ -402,26 +391,26 @@ codonUsage <- function(ptn,
         summarise(codonPerReg = sum(count))
       tmpSum <- tmp1$codonPerReg
       names(tmpSum) <- tmp1$codon
-
+      
       if (i == 0) {
         compOut1[["background"]] <- tmpSum
       } else {
         compOut1[[names(resTmp)[i]]] <- tmpSum
       }
-
+      
       ####
       tmp2 <- tmp %>%
         group_by(codon) %>%
         summarise(freqPerReg = mean(frequency))
       tmpFreq <- tmp2$freqPerReg
       names(tmpFreq) <- tmp2$codon
-
+      
       if (i == 0) {
         compOut2[["background"]] <- tmpFreq
       } else {
         compOut2[[names(resTmp)[i]]] <- tmpFreq
       }
-
+      
       #####
       tmp3 <- tmp %>%
         group_by(codon) %>%
@@ -433,7 +422,7 @@ codonUsage <- function(ptn,
       tmp3$codonNormAA <- tmp3$codonPerReg / tmp3$AAPerReg
       tmpcodonNormAA <- tmp3$codonNormAA
       names(tmpcodonNormAA) <- tmp3$codon
-
+      
       if (i == 0) {
         compOut3[["background"]] <- tmpcodonNormAA
       } else {
@@ -457,13 +446,13 @@ codonUsage <- function(ptn,
       #
       tmpSum <- tmp1$AAPerReg
       names(tmpSum) <- tmp1$AA
-
+      
       if (i == 0) {
         compOut1[["background"]] <- tmpSum
       } else {
         compOut1[[names(resTmp)[i]]] <- tmpSum
       }
-
+      
       tmp4 <- tmp %>%
         group_by(AA) %>%
         summarise(freq = sum(frequency))
@@ -486,10 +475,10 @@ codonUsage <- function(ptn,
     }
     resIn <- compOut1[compTmp]
     resIn <- do.call(rbind, resIn)
-
+    
     #
     resIn <- resIn[, colSums(resIn) > 0]
-
+    
     #
     if (all(resIn <= 0)) {
       stop(
@@ -497,7 +486,7 @@ codonUsage <- function(ptn,
            for the Chi-squared test to be performed."
       )
     }
-
+    
     #
     if (sum(apply(resIn, 2, min) < 5) > 0) {
       if (isTRUE(rem5)) {
@@ -510,7 +499,7 @@ codonUsage <- function(ptn,
         )
       }
     }
-
+    
     #
     if (all(resIn <= 0)) {
       stop(
@@ -518,22 +507,22 @@ codonUsage <- function(ptn,
            for the Chi-squared test to be performed."
       )
     }
-
+    
     chisqTest <- chisq.test(resIn)
-
+    
     if (is.na(chisqTest$p.value)) {
       stop(
         "The Chi-squared test could not be performed. Please check that all codons or AAs have at least one count in at least one gene set."
       )
     }
-
+    
     StResiduals <- chisqTest$stdres
     signifLimit <- sqrt(qchisq(pAdj / (dim(resIn)[1] * dim(resIn)[2]), lower.tail = FALSE, df = 1))
-
+    
     if (isTRUE(plotHeatmap) & codonN == 1) {
       #
       residOut <- t(as.matrix(StResiduals))
-
+      
       pdf(
         paste(
           nameOut,
@@ -556,10 +545,10 @@ codonUsage <- function(ptn,
         cex.lab = 0.7
       )
       col <- grDevices::colorRampPalette(c("blue", "white", "red"))(50)
-
+      
       max_abs <- ceiling(max(abs(residOut[, 1])))
       breaks <- sort(c(seq(-max_abs, max_abs, length = 51)))
-
+      
       gplots::heatmap.2(
         residOut,
         col = col,
@@ -584,7 +573,7 @@ codonUsage <- function(ptn,
     }
     #
     signSel <- colnames(StResiduals)[which(abs(StResiduals[1, ]) > signifLimit)]
-
+    
     ###
     if (length(signSel) == 0) {
       message(paste("There are no significant codons for the comparison ", j, sep = ""))
@@ -597,21 +586,19 @@ codonUsage <- function(ptn,
         resIn2$AA <- seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(
           rownames(resIn2)
         ))))
-        resIn2$AAcodon <- paste(
-          seqinr::translate(seqinr::s2c(seqinr::c2s(
-            rownames(resIn2)
-          ))),
-          rownames(resIn2),
-          sep = "_"
-        )
-
+        resIn2$AAcodon <- paste(seqinr::translate(seqinr::s2c(seqinr::c2s(
+          rownames(resIn2)
+        ))),
+        rownames(resIn2),
+        sep = "_")
+        
         #
         xylim1 <- roundNice(max(resIn2[, c(1, 2)]), direction = "up")
         #
         pdf(
           paste(
             nameOut,
-            paste(colnames(resIn2)[1:2], collapse = "_"),
+            paste(colnames(resIn2)[seq_len(2)], collapse = "_"),
             "averageFreq.pdf",
             sep = "_"
           ),
@@ -661,30 +648,28 @@ codonUsage <- function(ptn,
           )
         print(pOut1)
         dev.off()
-
+        
         #
         resIn3 <- compOut3[compTmp]
-
+        
         resIn3 <- as.data.frame(do.call(cbind, resIn3))
         resIn3$codon <- row.names(resIn3)
         resIn3$AA <- seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(
           rownames(resIn3)
         ))))
-        resIn3$AAcodon <- paste(
-          seqinr::translate(seqinr::s2c(seqinr::c2s(
-            rownames(resIn3)
-          ))),
-          rownames(resIn3),
-          sep = "_"
-        )
-
+        resIn3$AAcodon <- paste(seqinr::translate(seqinr::s2c(seqinr::c2s(
+          rownames(resIn3)
+        ))),
+        rownames(resIn3),
+        sep = "_")
+        
         #
         xylim2 <- roundNice(max(resIn3[, c(1, 2)]), direction = "up")
         #
         pdf(
           paste(
             nameOut,
-            paste(colnames(resIn3)[1:2], collapse = "_"),
+            paste(colnames(resIn3)[seq_len(2)], collapse = "_"),
             "codonUsage.pdf",
             sep = "_"
           ),
@@ -743,17 +728,15 @@ codonUsage <- function(ptn,
         print(pOut2)
         dev.off()
         #
-
-
-        resIn4 <- data.frame(
-          codon = colnames(resIn),
-          t(resIn),
-          row.names = NULL
-        )
+        
+        
+        resIn4 <- data.frame(codon = colnames(resIn),
+                             t(resIn),
+                             row.names = NULL)
         resIn4$AA <- seqinr::aaa(seqinr::translate(seqinr::s2c(seqinr::c2s(
           resIn4$codon
         ))))
-
+        
         regComb <- combn(x = names(compOut1[compTmp]), m = 2)
         statOut <- log2(statOnDf(
           df = resIn4,
@@ -763,7 +746,7 @@ codonUsage <- function(ptn,
         #
         sumFreq <- compOut4[compTmp]
         sumFreq <- rowSums(do.call(cbind, sumFreq))[signSel]
-
+        
         #
         xlimT <- roundNice(max(abs(range(statOut))), direction = "up")
         pdf(
@@ -777,10 +760,8 @@ codonUsage <- function(ptn,
           height = 8,
           useDingbats = FALSE
         )
-        m <- layout(
-          mat = matrix(c(1, 2), nrow = 2, ncol = 1),
-          heights = c(1, 5)
-        )
+        m <- layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1),
+                    heights = c(1, 5))
         #
         par(
           mar = c(0, 8, 0, 3),
@@ -818,7 +799,7 @@ codonUsage <- function(ptn,
           y.intersp = 2.8,
           cex = 1.3
         )
-
+        
         par(
           mar = c(5, 8, 0, 3),
           bty = "l",
@@ -844,12 +825,11 @@ codonUsage <- function(ptn,
           ylim = range(sumFreq)
         ) # , xaxt = "n", yaxt = "n")
         text(statOut,
-          sumFreq,
-          names(sumFreq),
-          col = "black",
-          font = 2
-        )
-
+             sumFreq,
+             names(sumFreq),
+             col = "black",
+             font = 2)
+        
         mtext(
           side = 2,
           line = 3,
@@ -867,12 +847,12 @@ codonUsage <- function(ptn,
           cex = 1.7,
           at = 0
         )
-
+        
         indUp <- as.numeric(which(statOut >= 0))
         statOut_up <- statOut[indUp]
         sumFreq_up <- sumFreq[indUp]
         codU <- names(sumFreq_up)[sumFreq_up >= quantile(sumFreq_up, 1 - thresFreqUp) &
-          statOut_up >= quantile(statOut_up, 1 - thresOddsUp)]
+                                    statOut_up >= quantile(statOut_up, 1 - thresOddsUp)]
         if (length(codU) > 0) {
           text(
             statOut_up[codU],
@@ -892,7 +872,7 @@ codonUsage <- function(ptn,
         statOut_down <- statOut[indDown]
         sumFreq_down <- sumFreq[indDown]
         codD <- names(sumFreq_down)[sumFreq_down >= quantile(sumFreq_down, 1 - thresFreqDown) &
-          statOut_down <= quantile(statOut_down, thresOddsDown)]
+                                      statOut_down <= quantile(statOut_down, thresOddsDown)]
         if (length(codD) > 0) {
           text(
             statOut_down[codD],
@@ -908,7 +888,7 @@ codonUsage <- function(ptn,
           )
         }
         dev.off()
-
+        
         codonsSel[[paste(regComb, collapse = "_vs_")]] <- list(Up = codU, Down = codD)
       } else if (analysis == "AA") {
         resIn4 <- data.frame(AA = colnames(resIn), t(resIn), row.names = NULL)
@@ -919,12 +899,12 @@ codonUsage <- function(ptn,
           regs = regComb,
           analysis = analysis
         )[signSel])
-
+        
         sumFreq <- compOut4[compTmp]
         sumFreq <- rowSums(do.call(cbind, sumFreq))[signSel]
-
+        
         xlimT <- roundNice(max(abs(range(statOut))), direction = "up")
-
+        
         pdf(
           paste(
             nameOut,
@@ -936,10 +916,8 @@ codonUsage <- function(ptn,
           height = 8,
           useDingbats = FALSE
         )
-        m <- layout(
-          mat = matrix(c(1, 2), nrow = 2, ncol = 1),
-          heights = c(1, 5)
-        )
+        m <- layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1),
+                    heights = c(1, 5))
         #
         par(
           mar = c(0, 8, 0, 3),
@@ -977,7 +955,7 @@ codonUsage <- function(ptn,
           y.intersp = 2.8,
           cex = 1.3
         )
-
+        
         par(
           mar = c(5, 8, 0, 3),
           bty = "l",
@@ -1003,12 +981,11 @@ codonUsage <- function(ptn,
           ylim = range(sumFreq)
         )
         text(statOut,
-          sumFreq,
-          names(sumFreq),
-          col = "black",
-          font = 2
-        )
-
+             sumFreq,
+             names(sumFreq),
+             col = "black",
+             font = 2)
+        
         mtext(
           side = 2,
           line = 3,
@@ -1026,12 +1003,12 @@ codonUsage <- function(ptn,
           cex = 1.7,
           at = 0
         )
-
+        
         indUp <- as.numeric(which(statOut >= 0))
         statOut_up <- statOut[indUp]
         sumFreq_up <- sumFreq[indUp]
         codU <- names(sumFreq_up)[sumFreq_up >= quantile(sumFreq_up, 1 - thresFreqUp) &
-          statOut_up >= quantile(statOut_up, 1 - thresOddsUp)]
+                                    statOut_up >= quantile(statOut_up, 1 - thresOddsUp)]
         if (length(codU) > 0) {
           text(
             statOut_up[codU],
@@ -1051,7 +1028,7 @@ codonUsage <- function(ptn,
         statOut_down <- statOut[indDown]
         sumFreq_down <- sumFreq[indDown]
         codD <- names(sumFreq_down)[sumFreq_down >= quantile(sumFreq_down, 1 - thresFreqDown) &
-          statOut_down <= quantile(statOut_down, thresOddsDown)]
+                                      statOut_down <= quantile(statOut_down, thresOddsDown)]
         if (length(codD) > 0) {
           text(
             statOut_down[codD],
@@ -1067,7 +1044,7 @@ codonUsage <- function(ptn,
           )
         }
         dev.off()
-
+        
         codonsSel[[paste(regComb, collapse = "_vs_")]] <- list(Up = codU, Down = codD)
       } else {
         codonsSel[[paste(row.names(resIn), collapse = "_vs_")]] <- signSel
@@ -1075,10 +1052,9 @@ codonUsage <- function(ptn,
     }
   }
   codonsOut <- new("postNetCodons",
-    codonAnalysis = codonsAllOut,
-    codonSelection = codonsSel
-  )
-
+                   codonAnalysis = codonsAllOut,
+                   codonSelection = codonsSel)
+  
   ptn@analysis@codons <- codonsOut
   return(ptn)
 }
