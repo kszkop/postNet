@@ -318,7 +318,7 @@ featureIntegration <- function(ptn,
       coloursN[tmpNames %in% addNames] <- "firebrick1"
       axis(
         side = 1,
-        at = seq_len(tmpNames),
+        at = seq_along(tmpNames),
         labels = FALSE,
         font = 2,
         lwd = 2,
@@ -327,7 +327,7 @@ featureIntegration <- function(ptn,
         tck = -0.005
       )
       text(
-        seq_len(tmpNames),
+        seq_along(tmpNames),
         par("usr")[3] - 1.05,
         labels = tmpNames,
         col = coloursN,
