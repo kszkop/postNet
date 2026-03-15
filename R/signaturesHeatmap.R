@@ -11,19 +11,19 @@ signaturesHeatmap <- function(ptn,
          If FDR is selected: the heatmap will display the -log10 FDR from a Wilcoxon Rank Sum test (corrected for multiple testing using BH) \ multiplied by the direction of eCDF shift. \ If percentile is selected: the heatmap will display the difference of the eCDF from the background for one of the percentiles."
     )
   }
-  
+
   compOut <- 1
   effNames <- "ptn_effect"
   #
   tableFinal <- matrix(NA, nrow = length(signatureList), ncol = compOut)
   row.names(tableFinal) <- names(signatureList)
   colnames(tableFinal) <- effNames
-  
-  
+
+
   effIn <- ptn_effect(ptn)
   regData <- data.frame(geneSymb = names(effIn))
   regData$effIn <- as.numeric(effIn)
-  
+
   #
   percOut <- as.numeric()
   if (unit == "FDR") {
@@ -33,7 +33,7 @@ signaturesHeatmap <- function(ptn,
     regData[, 3] <- "bkg"
     regData[, 3][regData$geneSymb %in% signatureList[[sign]]] <- names(signatureList)[sign]
     colnames(regData)[3] <- "signature"
-    
+
     #
     tmpBg <- sort(as.numeric(regData[regData$signature == "bkg", ]$effIn))
     ecdfBg <- seq_along(tmpBg) / length(tmpBg)
@@ -51,7 +51,7 @@ signaturesHeatmap <- function(ptn,
     }
     percentileDiff <- percentileSign - percentileBG
     percOut[sign] <- percentileDiff
-    
+
     if (unit == "FDR") {
       #
       pval <- as.numeric(
@@ -75,7 +75,7 @@ signaturesHeatmap <- function(ptn,
   } else {
     tableFinal[, 1] <- percOut
   }
-  
+
   breaks <- seq(-max(abs(min(
     as.vector(tableFinal)
   )), abs(max(
@@ -86,13 +86,13 @@ signaturesHeatmap <- function(ptn,
     as.vector(tableFinal)
   ))), length.out = 51)
   keyL <- ifelse(unit == "FDR", paste("-log10", unit, sep = " "), unit)
-  
+
   colTmp <- grDevices::colorRampPalette(c("blue", "white", "red"))(50)
-  
+
   if (length(compOut) == 1) {
     tableFinal <- cbind(tableFinal, rep(0, nrow(tableFinal)))
   }
-  
+
   pdf(
     ifelse(
       is.null(pdfName),
@@ -113,7 +113,7 @@ signaturesHeatmap <- function(ptn,
     cex.main = 0.7,
     cex.lab = 0.9
   )
-  
+
   gplots::heatmap.2(
     tableFinal,
     trace = "none",
@@ -123,8 +123,7 @@ signaturesHeatmap <- function(ptn,
     key.xlab = keyL,
     key.title = "",
     dendrogram = "row",
-    Colv = FALSE,
-    ,
+    Colv = FALSE, ,
     density.info = "none",
     tracecol = NULL,
     margins = c(10, 19),

@@ -19,7 +19,7 @@ gageAnalysis <- function(ptn,
   }
   #
   gageOut <- list()
-  
+
   effTmp <- ptn_effect(ptn)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut]
@@ -33,10 +33,10 @@ gageAnalysis <- function(ptn,
   names(effIn) <- as.character(convTab)[match(names(effIn), names(convTab))]
   # remove NA
   effIn <- effIn[!is.na(names(effIn))]
-  
+
   #
   rankIn <- effIn[order(effIn, decreasing = TRUE)]
-  
+
   #
   GAGEout <- new(
     "postNetGAGE",
@@ -45,8 +45,8 @@ gageAnalysis <- function(ptn,
     MF = NULL,
     KEGG = NULL
   )
-  
-  
+
+
   for (sel in category) {
     resOut <- list()
     if (sel == "KEGG") {
@@ -71,7 +71,7 @@ gageAnalysis <- function(ptn,
       rank.test = TRUE,
       use.fold = FALSE
     )
-    
+
     #
     pathwaysGenes <- list()
     for (pw in seq_along(pathwaysIn)) {
@@ -86,15 +86,16 @@ gageAnalysis <- function(ptn,
     }
     names(pathwaysGenes) <- names(pathwaysIn)
     pathwaysGenes <- pathwaysGenes[as.numeric(which(unlist(
-      lapply(pathwaysGenes, function(x)
-        x != "NA")
+      lapply(pathwaysGenes, function(x) {
+        x != "NA"
+      })
     )))]
-    
+
     if (nrow(resOut$greater) > 0) {
       grTmpG <- resOut$greater
       grTmpG <- grTmpG[, c(1, 2, 5, 3, 4)]
       grTmpG <- data.frame(id = row.names(grTmpG), grTmpG, row.names = NULL)
-      
+
       grTmpG$Genes <- as.character(pathwaysGenes)[match(grTmpG$id, names(pathwaysGenes))]
       resOut$greater <- grTmpG
     }
@@ -102,7 +103,7 @@ gageAnalysis <- function(ptn,
       grTmpL <- resOut$less
       grTmpL <- grTmpL[, c(1, 2, 5, 3, 4)]
       grTmpL <- data.frame(id = row.names(grTmpL), grTmpL, row.names = NULL)
-      
+
       grTmpL$Genes <- as.character(pathwaysGenes)[match(grTmpL$id, names(pathwaysGenes))]
       resOut$less <- grTmpL
     }

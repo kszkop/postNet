@@ -45,7 +45,7 @@ codonCalc <- function(ptn,
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
-        is.null(ptn_background(ptn))) {
+      is.null(ptn_background(ptn))) {
       stop("0 always denotes the background,
            but no background has been provided.")
     }
@@ -115,10 +115,11 @@ codonCalc <- function(ptn,
       )
       ylabel <- paste("codon usage(", unit, ")", sep = "")
       plotPostNet(resOut,
-                  colOut,
-                  comparisons,
-                  ylabel = ylabel,
-                  plotType = plotType)
+        colOut,
+        comparisons,
+        ylabel = ylabel,
+        plotType = plotType
+      )
       dev.off()
     }
   }

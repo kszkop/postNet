@@ -21,7 +21,7 @@ gseaAnalysis <- function(ptn,
   if (maxSize <= minSize) {
     stop("'maxSize' must be greater than 'minSize'.")
   }
-  
+
   effTmp <- ptn_effect(ptn)
   if (!is.null(genesSlopeFiltOut)) {
     effIn <- effTmp[!names(effTmp) %in% genesSlopeFiltOut]
@@ -38,7 +38,7 @@ gseaAnalysis <- function(ptn,
     checkCollection(collection)
     eh <- ExperimentHub::ExperimentHub()
     AnnotationHub::query(eh, "msigdb")
-    
+
     versionTmp <- as.character(sort(as.numeric(msigdb::getMsigdbVersions()), decreasing = TRUE))[1]
     msigdbOut <- msigdb::getMsigdb(
       org = ifelse(species == "human", "hs", "mm"),
@@ -47,10 +47,11 @@ gseaAnalysis <- function(ptn,
     )
     msigdbOut <- msigdb::appendKEGG(msigdbOut, version = versionTmp)
     #
-    
+
     collectionTmp <- msigdb::subsetCollection(msigdbOut,
-                                              collection = collection,
-                                              subcollection = subcollection)
+      collection = collection,
+      subcollection = subcollection
+    )
     if (!is.null(subsetNames)) {
       collectionTmp <- collectionTmp[names(collectionTmp) %in% subsetNames]
     }
@@ -65,7 +66,7 @@ gseaAnalysis <- function(ptn,
     minSize = minSize,
     maxSize = maxSize
   )
-  
+
   #
   resOut$Count <- unlist(lapply(resOut$leadingEdge, length))
   colnames(resOut) <- c(
@@ -81,15 +82,18 @@ gseaAnalysis <- function(ptn,
   )
   resOut <- resOut[, c(1, 5, 6, 4, 9, 7, 2, 3, 8)]
   gseaOut <- resOut[order(resOut$adjusted_pvalue), ]
-  gseaOut$Genes <- sapply(gseaOut$Genes, function(x)
-    paste(x, collapse = ":"))
-  
+  gseaOut$Genes <- sapply(gseaOut$Genes, function(x) {
+    paste(x, collapse = ":")
+  })
+
   nameTmp <- ifelse(!is.null(name),
-                    paste(name, "gseaAnalysis", sep = "_"),
-                    "gseaAnalysis")
+    paste(name, "gseaAnalysis", sep = "_"),
+    "gseaAnalysis"
+  )
   data.table::fwrite(gseaOut,
-                     file = paste(nameTmp, ".txt", sep = ""),
-                     sep = "\t")
+    file = paste(nameTmp, ".txt", sep = ""),
+    sep = "\t"
+  )
   #
   ptn@analysis@GSEA <- gseaOut
   #

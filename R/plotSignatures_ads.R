@@ -16,9 +16,9 @@ plotSignatures_ads <- function(ads,
                                pdfName = NULL) {
   #
   check_ads(ads)
-  
+
   if (!check_number(contrast) ||
-      !contrast %in% seq(1, ncol(ads@contrasts), 1)) {
+    !contrast %in% seq(1, ncol(ads@contrasts), 1)) {
     stop(
       "The input for 'contrast' should be a number corresponding to the number of the anota2seq contrast for the selected comparison. Please see the anota2seq vignette for additional details on contrasts."
     )
@@ -33,22 +33,22 @@ plotSignatures_ads <- function(ads,
       "There must be 4 effect names provided. By default, these reflect the data in the anota2seq object (Total mRNA Log2FC, Polysome-associated mRNA Log2FC, Translation Log2FC, and Buffering Log2FC)."
     )
   }
-  
+
   check_geneList(signatureList)
   signNames <- names(signatureList)
-  
+
   if (is.null(generalName)) {
     stop(
       'Please provide an input for "generalName" that will be assigned to the gene signatures plotted.'
     )
   }
   if (!is.character(signature_colours) ||
-      !length(signature_colours) == length(signatureList)) {
+    !length(signature_colours) == length(signatureList)) {
     stop(
       "The input for the 'signature_colours' parameter should be a character vector of the same length as number of signatures in \ 'signatureList'. These colours will be used for plotting."
     )
   }
-  
+
   if (!check_number(tableCex)) {
     stop(
       "Please provide a numeric value for 'tableCex' to scale the size of table containing the statistical results."
@@ -59,15 +59,15 @@ plotSignatures_ads <- function(ads,
       "Please provide a numeric value for 'scatterXY' to indicate range of the x and y axes of the fold change scatter plot."
     )
   }
-  
+
   ##
   regData <- data.frame(geneSymb = rownames(ads@dataP))
-  
+
   regData$totalApvEff <- ads@totalmRNA@apvStatsRvm[[contrast]][, "apvEff"]
   regData$polyApvEff <- ads@translatedmRNA@apvStatsRvm[[contrast]][, "apvEff"]
   regData$buffApvEff <- ads@buffering@apvStatsRvm[[contrast]][, "apvEff"]
   regData$translationApvEff <- ads@translation@apvStatsRvm[[contrast]][, "apvEff"]
-  
+
   #
   if (is.null(scatterXY)) {
     scatterXY <- roundNice(max(abs(c(
@@ -119,7 +119,7 @@ plotSignatures_ads <- function(ads,
   )
   abline(v = 0)
   abline(h = 0)
-  
+
   #
   if (any(duplicated(unlist(signatureList)))) {
     cat(
@@ -158,7 +158,7 @@ plotSignatures_ads <- function(ads,
     tableOut <- matrix(NA, nrow = length(signNames), ncol = 5)
     colnames(tableOut) <- c("signature", "Wilcox_pval", "q25", "q50", "q75")
     tableOut[, 1] <- signNames
-    
+
     if (any(duplicated(unlist(signatureList)))) {
       tmpBgOut <- list()
       for (i in seq_along(signatureList)) {
@@ -171,20 +171,22 @@ plotSignatures_ads <- function(ads,
         #
         tmpBgOut[[i]] <- tmpBg
         #
-        tableOut[i, 2] <- format(as.numeric(
-          wilcox.test(
-            as.numeric(regData[regData[, (5 + i)] == signNames[i], ][, eff]),
-            as.numeric(regData[regData[, (5 + i)] == "bkg", ][, eff]),
-            alternative = "two.sided"
-          )[3]
-        ),
-        scientific = TRUE,
-        digits = 2)
-        
+        tableOut[i, 2] <- format(
+          as.numeric(
+            wilcox.test(
+              as.numeric(regData[regData[, (5 + i)] == signNames[i], ][, eff]),
+              as.numeric(regData[regData[, (5 + i)] == "bkg", ][, eff]),
+              alternative = "two.sided"
+            )[3]
+          ),
+          scientific = TRUE,
+          digits = 2
+        )
+
         #
         tmpSign <- sort(as.numeric(regData[regData[, (5 + i)] == signNames[i], ][, eff]))
         ecdfSign <- seq_along(tmpSign) / length(tmpSign)
-        
+
         tableOut[i, 3] <- format(tmpSign[which(ecdfSign >= 0.25)[1]] - bg_025, digits = 2)
         tableOut[i, 4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
         tableOut[i, 5] <- format(tmpSign[which(ecdfSign >= 0.75)[1]] - bg_075, digits = 2)
@@ -237,7 +239,7 @@ plotSignatures_ads <- function(ads,
         bty = "n",
         cex = 1.3
       )
-      
+
       #
       for (i in seq_along(signatureList)) {
         lines(
@@ -271,23 +273,25 @@ plotSignatures_ads <- function(ads,
       bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
       bg_05 <- tmpBg[which(ecdfBg >= 0.5)[1]]
       bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
-      
+
       #
       for (i in seq_along(signatureList)) {
-        tableOut[i, 2] <- format(as.numeric(
-          wilcox.test(
-            as.numeric(regData[regData$signature == signNames[i], ][, eff]),
-            as.numeric(regData[regData$signature == "bkg", ][, eff]),
-            alternative = "two.sided"
-          )[3]
-        ),
-        scientific = TRUE,
-        digits = 2)
-        
+        tableOut[i, 2] <- format(
+          as.numeric(
+            wilcox.test(
+              as.numeric(regData[regData$signature == signNames[i], ][, eff]),
+              as.numeric(regData[regData$signature == "bkg", ][, eff]),
+              alternative = "two.sided"
+            )[3]
+          ),
+          scientific = TRUE,
+          digits = 2
+        )
+
         #
         tmpSign <- sort(as.numeric(regData[regData$signature == signNames[i], ][, eff]))
         ecdfSign <- seq_along(tmpSign) / length(tmpSign)
-        
+
         tableOut[i, 3] <- format(tmpSign[which(ecdfSign >= 0.25)[1]] - bg_025, digits = 2)
         tableOut[i, 4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
         tableOut[i, 5] <- format(tmpSign[which(ecdfSign >= 0.75)[1]] - bg_075, digits = 2)

@@ -11,12 +11,12 @@ slopeFilt <- function(ads,
     )
   }
   if (!is.numeric(contrastSel) |
-      !contrastSel %in% seq(1, ncol(ads@contrasts), 1)) {
+    !contrastSel %in% seq(1, ncol(ads@contrasts), 1)) {
     stop(
       "The input for 'contrastSel' should be a number corresponding to the desired contrast in the anota2seq object."
     )
   }
-  
+
   #
   if (is.null(minSlope) || is.null(maxSlope)) {
     if (regulationGen == "translation") {
@@ -27,7 +27,7 @@ slopeFilt <- function(ads,
       maxSlope <- ifelse(is.null(maxSlope), 1, maxSlope)
     }
   }
-  
+
   checkSlopes(minSlope, maxSlope)
   #
   tmpAds <- anota2seq::anota2seqGetOutput(
@@ -37,11 +37,11 @@ slopeFilt <- function(ads,
     selContrast = contrastSel,
     getRVM = TRUE
   )
-  
+
   #
   tmpAds_slopeFilt <- tmpAds[which(tmpAds[, 1] < minSlope |
-                                     tmpAds[, 1] > maxSlope), ]
-  
+    tmpAds[, 1] > maxSlope), ]
+
   #
   genesOut <- as.character(row.names(tmpAds_slopeFilt))
   #

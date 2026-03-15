@@ -20,7 +20,7 @@ uorfAnalysis <- function(ptn,
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
-        is.null(ptn_background(ptn))) {
+      is.null(ptn_background(ptn))) {
       stop("0 always denotes the background, but no background has been provided.")
     }
   }
@@ -40,7 +40,7 @@ uorfAnalysis <- function(ptn,
   if (!isUnitOut(unitOut)) {
     stop("The input for 'unitOut' must be either 'number' or 'position'.")
   }
-  
+
   #
   KozakContext <- tolower(KozakContext)
   if (KozakContext == "strong") {
@@ -58,7 +58,7 @@ uorfAnalysis <- function(ptn,
   }
   #
   uORFFinal <- list()
-  
+
   seqTmp <- ptn_sequences(ptn, region = "UTR5")
   #
   if (!isTRUE(onlyUTR5)) {
@@ -77,13 +77,14 @@ uorfAnalysis <- function(ptn,
       USE.NAMES = FALSE
     )
   } else {
-    uorfOut <- sapply(seqTmp, function(x)
+    uorfOut <- sapply(seqTmp, function(x) {
       calc_uORF(
         x,
         ext = NULL,
         context = context,
         unit = tolower(unitOut)
-      ), USE.NAMES = FALSE)
+      )
+    }, USE.NAMES = FALSE)
   }
   #
   names(uorfOut) <- ptn_geneID(ptn, region = "UTR5")
@@ -91,7 +92,7 @@ uorfAnalysis <- function(ptn,
   if (tolower(unitOut) == "number" & isTRUE(plotOut)) {
     #
     resOut <- resQuant(qvec = uorfOut, ptn = ptn)
-    
+
     if (length(resOut) == 0) {
       stop(
         "There are no regulated genes. Check the input or run without indicating 'regulation' and 'comparisons'."
@@ -107,7 +108,7 @@ uorfAnalysis <- function(ptn,
     ylimTmp2_1 <- 0
     ylimTmp2_2 <- roundNice(max(dataTmp), direction = "up")
     ylimTmp <- as.numeric(adjust_ylim(ylimTmp2_1, ylimTmp2_2))
-    
+
     # Plot
     pdf(
       ifelse(
@@ -119,8 +120,10 @@ uorfAnalysis <- function(ptn,
       height = 8,
       useDingbats = FALSE
     )
-    m <- layout(mat = matrix(c(1, 2), nrow = 2, ncol = 1),
-                heights = c(1, 5))
+    m <- layout(
+      mat = matrix(c(1, 2), nrow = 2, ncol = 1),
+      heights = c(1, 5)
+    )
     xlimTmp <- c(0.5, length(resProp) + 0.5)
     #
     par(
@@ -192,14 +195,16 @@ uorfAnalysis <- function(ptn,
       )
       resPropTmp <- resProp[[i]] * 100
       resPropTmp <- ifelse(resPropTmp > -1 &
-                             resPropTmp < 1,
-                           round(resPropTmp, 2),
-                           round(resPropTmp, 0))
+        resPropTmp < 1,
+      round(resPropTmp, 2),
+      round(resPropTmp, 0)
+      )
       text(i,
-           0.05,
-           paste(resPropTmp, "%", sep = " "),
-           font = 2,
-           cex = 1.3)
+        0.05,
+        paste(resPropTmp, "%", sep = " "),
+        font = 2,
+        cex = 1.3
+      )
     }
     axis(
       side = 2,
@@ -230,7 +235,7 @@ uorfAnalysis <- function(ptn,
       cex = 1.7,
       at = mean(ylimTmp)
     )
-    
+
     dev.off()
   }
   uORFFinal[[paste("uORFs", startCodon, KozakContext, sep = "_")]] <- uorfOut

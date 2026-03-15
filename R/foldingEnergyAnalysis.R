@@ -11,7 +11,7 @@ foldingEnergyAnalysis <- function(ptn,
   species <- ptn_species(ptn)
   version <- ptn_version(ptn)
   checkSourceFE(sourceFE)
-  
+
   if (!check_logical(plotOut)) {
     stop("The input for 'plotOut' must be logical: TRUE or FALSE.")
   }
@@ -24,7 +24,7 @@ foldingEnergyAnalysis <- function(ptn,
       )
     }
   }
-  
+
   if (!is.null(comparisons)) {
     if (!check_comparisons(comparisons)) {
       stop(
@@ -34,7 +34,7 @@ foldingEnergyAnalysis <- function(ptn,
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
-        is.null(ptn_background(ptn))) {
+      is.null(ptn_background(ptn))) {
       stop("0 always denotes the background, but no background has been provided.")
     }
   }
@@ -65,9 +65,11 @@ foldingEnergyAnalysis <- function(ptn,
     energyIn <- read.delim(customFileFE, stringsAsFactors = FALSE)
     energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
     #
-    feOutTmp <- runFE(energyIn = energyIn,
-                      ptn = ptn,
-                      residFE = residFE)
+    feOutTmp <- runFE(
+      energyIn = energyIn,
+      ptn = ptn,
+      residFE = residFE
+    )
     feOut[["custom"]] <- feOutTmp
     #
     if (isTRUE(plotOut)) {
@@ -96,13 +98,15 @@ foldingEnergyAnalysis <- function(ptn,
         useDingbats = FALSE
       )
       ylabel <- ifelse(isTRUE(residFE),
-                       "Residuals (FE ~ Length)",
-                       "Folding Energy")
+        "Residuals (FE ~ Length)",
+        "Folding Energy"
+      )
       plotPostNet(resOut,
-                  colOut,
-                  comparisons,
-                  ylabel = ylabel,
-                  plotType = plotType)
+        colOut,
+        comparisons,
+        ylabel = ylabel,
+        plotType = plotType
+      )
       dev.off()
     }
   } else if (sourceFE == "load") {
@@ -115,7 +119,7 @@ foldingEnergyAnalysis <- function(ptn,
     feOut <- list()
     #
     currTmp <- list.files(system.file("extdata/foldEnergies/", package = "postNet"))
-    
+
     if (!species %in% currTmp) {
       stop(
         "The 'load' option for 'sourceFE' is currently only available for human and mouse. Custom folding energies can be provided by specifying the \
@@ -125,38 +129,44 @@ foldingEnergyAnalysis <- function(ptn,
     #
     for (reg in region) {
       if (species == "human") {
-        energyIn <- read.delim(system.file(
-          paste(
-            "extdata/foldEnergies/human/",
-            "humanDB_",
-            reg,
-            "_foldEnergy",
-            ".txt.gz",
-            sep = ""
+        energyIn <- read.delim(
+          system.file(
+            paste(
+              "extdata/foldEnergies/human/",
+              "humanDB_",
+              reg,
+              "_foldEnergy",
+              ".txt.gz",
+              sep = ""
+            ),
+            package = "postNet"
           ),
-          package = "postNet"
-        ),
-        stringsAsFactors = FALSE)
+          stringsAsFactors = FALSE
+        )
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
       if (species == "mouse") {
-        energyIn <- read.delim(system.file(
-          paste(
-            "extdata/foldEnergies/mouse/",
-            "mouseDB_",
-            reg,
-            "_foldEnergy",
-            ".txt.gz",
-            sep = ""
+        energyIn <- read.delim(
+          system.file(
+            paste(
+              "extdata/foldEnergies/mouse/",
+              "mouseDB_",
+              reg,
+              "_foldEnergy",
+              ".txt.gz",
+              sep = ""
+            ),
+            package = "postNet"
           ),
-          package = "postNet"
-        ),
-        stringsAsFactors = FALSE)
+          stringsAsFactors = FALSE
+        )
         energyIn$fold_energy <- as.numeric(energyIn$fold_energy)
       }
-      feOutTmp <- runFE(energyIn = energyIn,
-                        ptn = ptn,
-                        residFE = residFE)
+      feOutTmp <- runFE(
+        energyIn = energyIn,
+        ptn = ptn,
+        residFE = residFE
+      )
       feOut[[paste(reg, "foldingEnergy", sep = "_")]] <- feOutTmp
       #
       if (isTRUE(plotOut)) {
@@ -179,13 +189,15 @@ foldingEnergyAnalysis <- function(ptn,
           useDingbats = FALSE
         )
         ylabel <- ifelse(isTRUE(residFE),
-                         "Residuals (FE ~ Length)",
-                         "Folding Energy")
+          "Residuals (FE ~ Length)",
+          "Folding Energy"
+        )
         plotPostNet(resOut,
-                    colOut,
-                    comparisons,
-                    ylabel = ylabel,
-                    plotType = plotType)
+          colOut,
+          comparisons,
+          ylabel = ylabel,
+          plotType = plotType
+        )
         dev.off()
       }
     }

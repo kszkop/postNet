@@ -14,11 +14,11 @@ contentMotifs <- function(ptn,
   #
   check_ptn(ptn)
   check_region(region)
-  
+
   if (!check_logical(plotOut)) {
     stop("The input for 'plotOut' must be logical: TRUE or FALSE.")
   }
-  
+
   if (!is.null(comparisons)) {
     if (!check_comparisons(comparisons)) {
       stop(
@@ -28,17 +28,17 @@ contentMotifs <- function(ptn,
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
-        is.null(ptn_background(ptn))) {
+      is.null(ptn_background(ptn))) {
       stop("0 always denotes the background, but no background has been provided.")
     }
   }
-  
+
   if (!is.null(subregion) &&
-      (!is.numeric(subregion) || !length(subregion) == 1)) {
+    (!is.numeric(subregion) || !length(subregion) == 1)) {
     stop("The input for 'subregion' must be an integer.")
   }
   if (!is.null(subregionSel) &&
-      !subregionSel %in% c("select", "exclude")) {
+    !subregionSel %in% c("select", "exclude")) {
     stop("The input for 'subregionSel' must be either 'select' or 'exclude'.")
   }
   if (!check_number(dist)) {
@@ -68,7 +68,7 @@ contentMotifs <- function(ptn,
   for (reg in region) {
     seqTmp <- ptn_sequences(ptn, region = reg)
     names(seqTmp) <- ptn_geneID(ptn, region = reg)
-    
+
     #
     if (tolower(seqType) == "protein") {
       if (!is_by_3(seqTmp)) {
@@ -76,15 +76,17 @@ contentMotifs <- function(ptn,
           "Not all sequences provided can be divided into codons (are multiples of 3) so cannot be translated into protein sequences."
         )
       }
-      proseqtmp <- sapply(seqTmp, function(x)
-        seqinr::c2s(seqinr::translate(seqinr::s2c(x))))
+      proseqtmp <- sapply(seqTmp, function(x) {
+        seqinr::c2s(seqinr::translate(seqinr::s2c(x)))
+      })
       seqTmp <- proseqtmp
     }
     #
     if (!is.null(subregion)) {
       #
-      subSeq <- sapply(seqTmp, function(x)
-        subset_seq(x, pos = subregion, subregionSel = subregionSel))
+      subSeq <- sapply(seqTmp, function(x) {
+        subset_seq(x, pos = subregion, subregionSel = subregionSel)
+      })
       if (length(which(is.na(subSeq))) > 0) {
         message(
           "For some sequences, the selected subregion is longer than the sequence region. These sequences will be removed from the analysis."
@@ -93,7 +95,7 @@ contentMotifs <- function(ptn,
       seqTmp <- subSeq
     }
     seqTmp <- seqTmp[!is.na(seqTmp)]
-    
+
     motifsFinal <- list()
     for (i in seq_along(motifsIn)) {
       motif <- motifsIn[i]
@@ -105,9 +107,10 @@ contentMotifs <- function(ptn,
           )
         }
         motifOutTmp <- sapply(seqTmp,
-                              calc_g4,
-                              min_score = min_score,
-                              unit = unitOut)
+          calc_g4,
+          min_score = min_score,
+          unit = unitOut
+        )
       } else {
         motif <- toupper(motif)
         #
@@ -117,14 +120,15 @@ contentMotifs <- function(ptn,
           motifTmp <- replaceProtAmbig(motif)
         }
         #
-        motifOutTmp <- lapply(seqTmp, function(x)
+        motifOutTmp <- lapply(seqTmp, function(x) {
           calc_motif(
             x,
             motifIn = motifTmp,
             dist = dist,
             unit = unitOut
-          ))
-        
+          )
+        })
+
         if (unitOut == "number") {
           motifOutTmp <- unlist(motifOutTmp)
         }
@@ -134,15 +138,16 @@ contentMotifs <- function(ptn,
         if (length(which(motifOutTmp > 0))) {
           if (isTRUE(resid)) {
             #
-            lenTmp <- sapply(seqTmp, function(x)
-              length(seqinr::s2c(x)))
+            lenTmp <- sapply(seqTmp, function(x) {
+              length(seqinr::s2c(x))
+            })
             #
             motifOut <- lm(as.numeric(motifOutTmp) ~ log2(as.numeric(lenTmp)))$residuals
           } else {
             motifOut <- motifOutTmp
           }
           names(motifOut) <- names(seqTmp)
-          
+
           if (tolower(unitOut) == "number" & isTRUE(plotOut)) {
             nameTmp <- ifelse(
               is.null(pdfName),
@@ -152,7 +157,7 @@ contentMotifs <- function(ptn,
             nameOut <- nameTmp
             #
             resOut <- resQuant(qvec = motifOut, ptn = ptn)
-            
+
             colOut <- colPlot(ptn)
             # Plot
             pdf(
@@ -163,10 +168,11 @@ contentMotifs <- function(ptn,
             )
             ylabel <- paste(reg, motif, sep = "_")
             plotPostNet(resOut,
-                        colOut,
-                        comparisons,
-                        ylabel = ylabel,
-                        plotType = "ecdf")
+              colOut,
+              comparisons,
+              ylabel = ylabel,
+              plotType = "ecdf"
+            )
             dev.off()
           }
           motifsFinal[[paste(reg, motif, sep = "_")]] <- motifOut
@@ -174,8 +180,9 @@ contentMotifs <- function(ptn,
           message(paste(motifTmp, "does not have any sites", sep = " "))
         }
       } else {
-        if (!any(sapply(motifOutTmp, function(x)
-          ! all(is.na(x))))) {
+        if (!any(sapply(motifOutTmp, function(x) {
+          !all(is.na(x))
+        }))) {
           message(paste(motifTmp, "does not have any sites", sep = " "))
         } else {
           motifsFinal[[paste(reg, motif, sep = "_")]] <- motifOutTmp

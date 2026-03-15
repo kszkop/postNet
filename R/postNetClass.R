@@ -5,11 +5,14 @@ setClassUnion("listOrNULL", members = c("list", "NULL"))
 setClassUnion("dataframeOrNULL", members = c("data.frame", "NULL"))
 setClassUnion("matrixOrNULL", members = c("matrix", "NULL"))
 setClassUnion("numericOrNULLOrlogical",
-              members = c("numeric", "NULL", "logical"))
+  members = c("numeric", "NULL", "logical")
+)
 setClassUnion("characterOrNULLOrlogical",
-              members = c("character", "NULL", "logical"))
+  members = c("character", "NULL", "logical")
+)
 setClassUnion("characterOrnumericOrNULL",
-              members = c("character", "numeric", "NULL"))
+  members = c("character", "numeric", "NULL")
+)
 
 setClassUnion("anovaOrNULL", members = c("anova", "logical"))
 
@@ -45,7 +48,8 @@ setClass(
 )
 
 setClass("postNetMotifs",
-         slots = c(UTR5 = "listOrNULL", CDS = "listOrNULL", UTR3 = "listOrNULL"))
+  slots = c(UTR5 = "listOrNULL", CDS = "listOrNULL", UTR3 = "listOrNULL")
+)
 
 
 setClass(
@@ -69,7 +73,8 @@ setClass(
 )
 
 setClass("postNetmiRNA",
-         slots = c(miRNA_analysis = "listOrNULL", miRNA_to_gene = "listOrNULL"))
+  slots = c(miRNA_analysis = "listOrNULL", miRNA_to_gene = "listOrNULL")
+)
 
 setClass(
   "postNetGO",
@@ -101,7 +106,8 @@ setClass(
 )
 
 setClass("postNetStepWise",
-         slots = c(models = "listOrNULL", table = "matrixOrNULL"))
+  slots = c(models = "listOrNULL", table = "matrixOrNULL")
+)
 
 setClass(
   "postNetFinalModel",

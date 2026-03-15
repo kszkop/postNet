@@ -1,5 +1,6 @@
-setGeneric("ptn_sequences", function(ptn, region)
-  standardGeneric("ptn_sequences"))
+setGeneric("ptn_sequences", function(ptn, region) {
+  standardGeneric("ptn_sequences")
+})
 setMethod("ptn_sequences", "postNetData", function(ptn, region) {
   check_region(region)
   check_ptn(ptn)
@@ -13,8 +14,9 @@ setMethod("ptn_sequences", "postNetData", function(ptn, region) {
   return(seqOut)
 })
 
-setGeneric("ptn_id", function(ptn, region)
-  standardGeneric("ptn_id"))
+setGeneric("ptn_id", function(ptn, region) {
+  standardGeneric("ptn_id")
+})
 setMethod("ptn_id", "postNetData", function(ptn, region) {
   check_region(region)
   check_ptn(ptn)
@@ -28,8 +30,9 @@ setMethod("ptn_id", "postNetData", function(ptn, region) {
   return(idOut)
 })
 
-setGeneric("ptn_geneID", function(ptn, region)
-  standardGeneric("ptn_geneID"))
+setGeneric("ptn_geneID", function(ptn, region) {
+  standardGeneric("ptn_geneID")
+})
 setMethod("ptn_geneID", "postNetData", function(ptn, region) {
   check_region(region)
   check_ptn(ptn)
@@ -43,64 +46,73 @@ setMethod("ptn_geneID", "postNetData", function(ptn, region) {
   return(geneIDOut)
 })
 
-setGeneric("ptn_dataIn", function(ptn)
-  standardGeneric("ptn_dataIn"))
+setGeneric("ptn_dataIn", function(ptn) {
+  standardGeneric("ptn_dataIn")
+})
 setMethod("ptn_dataIn", "postNetData", function(ptn) {
   check_ptn(ptn)
   ptn@dataIn
 })
 
-setGeneric("ptn_geneList", function(ptn)
-  standardGeneric("ptn_geneList"))
+setGeneric("ptn_geneList", function(ptn) {
+  standardGeneric("ptn_geneList")
+})
 setMethod("ptn_geneList", "postNetData", function(ptn) {
   check_ptn(ptn)
   ptn@dataIn@geneList
 })
 
-setGeneric("ptn_background", function(ptn)
-  standardGeneric("ptn_background"))
+setGeneric("ptn_background", function(ptn) {
+  standardGeneric("ptn_background")
+})
 setMethod("ptn_background", "postNetData", function(ptn) {
   check_ptn(ptn)
   ptn@dataIn@background
 })
 
-setGeneric("ptn_effect", function(ptn)
-  standardGeneric("ptn_effect"))
+setGeneric("ptn_effect", function(ptn) {
+  standardGeneric("ptn_effect")
+})
 setMethod("ptn_effect", "postNetData", function(ptn) {
   check_ptn(ptn)
   ptn@dataIn@effect
 })
 
-setGeneric("ptn_colours", function(ptn)
-  standardGeneric("ptn_colours"))
+setGeneric("ptn_colours", function(ptn) {
+  standardGeneric("ptn_colours")
+})
 setMethod("ptn_colours", "postNetData", function(ptn) {
   check_ptn(ptn)
   ptn@dataIn@colours
 })
 
-setGeneric("ptn_species", function(ptn)
-  standardGeneric("ptn_species"))
+setGeneric("ptn_species", function(ptn) {
+  standardGeneric("ptn_species")
+})
 setMethod("ptn_species", "postNetData", function(ptn) {
   check_ptn(ptn)
   ptn@species
 })
 
-setGeneric("ptn_version", function(ptn)
-  standardGeneric("ptn_version"))
+setGeneric("ptn_version", function(ptn) {
+  standardGeneric("ptn_version")
+})
 setMethod("ptn_version", "postNetData", function(ptn) {
   check_ptn(ptn)
   ptn@version
 })
 
-setGeneric("ptn_selection", function(ptn)
-  standardGeneric("ptn_selection"))
+setGeneric("ptn_selection", function(ptn) {
+  standardGeneric("ptn_selection")
+})
 setMethod("ptn_selection", "postNetData", function(ptn) {
   check_ptn(ptn)
   ptn@selection
 })
 
-setGeneric("ptn_motifSelection", function(ptn, region)
-  standardGeneric("ptn_motifSelection"))
+setGeneric("ptn_motifSelection", function(ptn, region) {
+  standardGeneric("ptn_motifSelection")
+})
 setMethod("ptn_motifSelection", "postNetData", function(ptn, region) {
   check_ptn(ptn)
   check_region(region)
@@ -112,8 +124,9 @@ setMethod("ptn_motifSelection", "postNetData", function(ptn, region) {
   return(motifsOut)
 })
 
-setGeneric("ptn_motifGeneList", function(ptn, region, geneList)
-  standardGeneric("ptn_motifGeneList"))
+setGeneric("ptn_motifGeneList", function(ptn, region, geneList) {
+  standardGeneric("ptn_motifGeneList")
+})
 setMethod("ptn_motifGeneList", "postNetData", function(ptn, region, geneList) {
   check_ptn(ptn)
   check_region(region)
@@ -128,30 +141,33 @@ setMethod("ptn_motifGeneList", "postNetData", function(ptn, region, geneList) {
   return(motifsAnalysisOut)
 })
 
-setGeneric("ptn_codonAnalysis", function(ptn)
-  standardGeneric("ptn_codonAnalysis"))
+setGeneric("ptn_codonAnalysis", function(ptn) {
+  standardGeneric("ptn_codonAnalysis")
+})
 setMethod("ptn_codonAnalysis", "postNetData", function(ptn) {
   check_ptn(ptn)
-  
+
   tmpOut <- ptn@analysis@codons@codonAnalysis
   out <- s4_to_dataframe(tmpOut)
   return(out)
 })
 
-setGeneric("ptn_codonSelection", function(ptn, comparison)
-  standardGeneric("ptn_codonSelection"))
+setGeneric("ptn_codonSelection", function(ptn, comparison) {
+  standardGeneric("ptn_codonSelection")
+})
 setMethod("ptn_codonSelection", "postNetData", function(ptn, comparison) {
   check_ptn(ptn)
-  
+
   out <- ptn@analysis@codons@codonSelection[[comparison]]
   return(out)
 })
 
-setGeneric("ptn_features", function(ptn)
-  standardGeneric("ptn_features"))
+setGeneric("ptn_features", function(ptn) {
+  standardGeneric("ptn_features")
+})
 setMethod("ptn_features", "postNetData", function(ptn) {
   check_ptn(ptn)
-  
+
   out <- ptn@features
   return(out)
 })
@@ -164,13 +180,13 @@ ptn_miRNA_analysis <- function(ptn, direction, threshold) {
   if (!check_number(threshold)) {
     stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
   }
-  
+
   if (is.null(slot(ptn@analysis, "miRNA"))) {
     stop("Please run the miRNAanalysis() function first.")
   } else {
     miRNAres <- ptn@analysis@miRNA@miRNA_analysis
   }
-  
+
   if (tolower(direction) == "greater") {
     resOut <- miRNAres$greater
   } else if (tolower(direction) == "less") {
@@ -192,14 +208,14 @@ ptn_miRNA_analysis <- function(ptn, direction, threshold) {
 ptn_miRNA_to_gene <- function(ptn, miRNAs) {
   #
   check_ptn(ptn)
-  
+
   if (is.null(slot(ptn@analysis, "miRNA"))) {
     stop("Please run the miRNAanalysis() function first.")
   } else {
     miRNATmp <- ptn@analysis@miRNA@miRNA_to_gene
   }
   miRNAsOut <- miRNATmp[which(names(miRNATmp) %in% miRNAs)]
-  
+
   return(miRNAsOut)
 }
 
@@ -228,7 +244,7 @@ ptn_GO <- function(ptn, category, geneList, threshold) {
   }
   GOresOut <- GOres[[which(geneList == names(GOres))]]@result
   GOresOut <- GOresOut[which(GOresOut$p.adjust < threshold), ]
-  
+
   if (nrow(GOresOut) > 0) {
     GOresOut <- data.frame(GOresOut, row.names = NULL)
   } else {
@@ -240,7 +256,7 @@ ptn_GO <- function(ptn, category, geneList, threshold) {
 ###
 ptn_GSEA <- function(ptn, threshold = NULL) {
   check_ptn(ptn)
-  
+
   if (is.null(slot(ptn@analysis, "GSEA"))) {
     stop("Please run the gseaAnalysis() function first.")
   } else {
@@ -266,7 +282,7 @@ ptn_GAGE <- function(ptn, category, direction, threshold) {
   if (!check_number(threshold)) {
     stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
   }
-  
+
   if (length(category) != 1) {
     stop("Please provide only one category.")
   }
@@ -275,7 +291,7 @@ ptn_GAGE <- function(ptn, category, direction, threshold) {
   } else {
     GAGEres <- slot(ptn@analysis@GAGE, category)
   }
-  
+
   if (tolower(direction) == "greater") {
     resOut <- GAGEres$greater
   } else if (tolower(direction) == "less") {
@@ -294,7 +310,7 @@ ptn_GAGE <- function(ptn, category, direction, threshold) {
 ptn_check_models <- function(ptn, analysis_type) {
   check_ptn(ptn)
   check_analysis_type(analysis_type)
-  
+
   tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
   if (is.null(tmpIn)) {
     stop(paste("Please run ", analysis_type, " analysis first", sep = ""))
@@ -307,11 +323,11 @@ ptn_model <- function(ptn, analysis_type, model, comparison) {
   check_ptn(ptn)
   check_analysis_type(analysis_type)
   check_model(model, analysis_type = analysis_type)
-  
+
   if (!check_number(comparison)) {
     stop(paste("Please provide a single numeric value for ", comparison, sep = ""))
   }
-  
+
   tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
   if (comparison > length(tmpIn)) {
     stop(paste("There are only ", length(tmpIn), " comparisons", sep = ""))
@@ -345,9 +361,9 @@ ptn_networkGraph <- function(ptn, comparison) {
   if (!check_number(comparison)) {
     stop(paste("Please provide a single numeric value for ", comparison, sep = ""))
   }
-  
+
   tmpIn <- ptn@analysis@featureIntegration$lm[[comparison]]
-  
+
   tmpOut <- tmpIn@networkGraph
   return(tmpOut)
 }

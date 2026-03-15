@@ -39,10 +39,13 @@ goDotplot <- function(ptn,
         )
       )
       #
-      goDf <- data.table::rbindlist(lapply(goIn, function(x)
-        x@result),
+      goDf <- data.table::rbindlist(
+        lapply(goIn, function(x) {
+          x@result
+        }),
         use.names = TRUE,
-        idcol = TRUE)
+        idcol = TRUE
+      )
       colnames(goDf)[1] <- "regulation"
       #
       if (!is.null(termSel)) {
@@ -55,17 +58,17 @@ goDotplot <- function(ptn,
       if (nCategories < nrow(goDf)) {
         goDf <- goDf[1:nCategories, ]
       }
-      
+
       #
       goDf$log10fdr <- -log10(goDf$p.adjust)
-      
+
       #
       if (size == "geneRatio") {
         goDf$scale <- goDf$Count / goDf$Size
       } else {
         goDf$scale <- goDf$Count
       }
-      
+
       #
       colOut <- colPlot(ptn)[-1]
       names(colOut) <- names(ptn@dataIn@geneList)
@@ -79,10 +82,10 @@ goDotplot <- function(ptn,
         #
         rng <- range(goDf$scale, na.rm = TRUE)
         step <- 0.05 # finer step for better resolution in small ranges
-        
+
         min_val <- floor(rng[1] / step) * step
         max_val <- ceiling(rng[2] / step) * step
-        
+
         size_breaks <- seq(min_val, max_val, by = step)
         size_limits <- c(min_val, max_val)
       }
@@ -103,13 +106,15 @@ goDotplot <- function(ptn,
         cex.main = 1.7,
         cex.lab = 1
       )
-      pOut <- ggplot2::ggplot(goDf,
-                              ggplot2::aes(
-                                x = log10fdr,
-                                y = reorder(Description, log10fdr),
-                                size = scale,
-                                colour = regulation
-                              )) +
+      pOut <- ggplot2::ggplot(
+        goDf,
+        ggplot2::aes(
+          x = log10fdr,
+          y = reorder(Description, log10fdr),
+          size = scale,
+          colour = regulation
+        )
+      ) +
         ggplot2::geom_point() +
         ggplot2::scale_color_manual(values = colOut) +
         ggplot2::scale_size_continuous(
@@ -147,7 +152,7 @@ goDotplot <- function(ptn,
             sep = "_"
           )
         )
-        
+
         goDf <- goIn[[i]]@result
         if (nrow(goDf) == 0) {
           message(
@@ -171,14 +176,14 @@ goDotplot <- function(ptn,
           }
           #
           goDf$log10fdr <- -log10(goDf$p.adjust)
-          
+
           #
           if (size == "geneRatio") {
             goDf$scale <- goDf$Count / goDf$Size
           } else {
             goDf$scale <- goDf$Count
           }
-          
+
           #
           colOut <- colPlot(ptn)[-1]
           names(colOut) <- names(ptn_geneList(ptn))
@@ -192,10 +197,10 @@ goDotplot <- function(ptn,
             #
             rng <- range(goDf$scale, na.rm = TRUE)
             step <- 0.05
-            
+
             min_val <- floor(rng[1] / step) * step
             max_val <- ceiling(rng[2] / step) * step
-            
+
             size_breaks <- seq(min_val, max_val, by = step)
             size_limits <- c(min_val, max_val)
           }
@@ -216,12 +221,14 @@ goDotplot <- function(ptn,
             cex.main = 1.7,
             cex.lab = 1
           )
-          pOut <- ggplot2::ggplot(goDf,
-                                  ggplot2::aes(
-                                    x = log10fdr,
-                                    y = reorder(Description, log10fdr),
-                                    size = scale
-                                  )) +
+          pOut <- ggplot2::ggplot(
+            goDf,
+            ggplot2::aes(
+              x = log10fdr,
+              y = reorder(Description, log10fdr),
+              size = scale
+            )
+          ) +
             ggplot2::geom_point(color = colOut[names(goIn)[i]]) +
             ggplot2::theme_bw() +
             ggplot2::theme(

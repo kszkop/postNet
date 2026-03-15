@@ -23,7 +23,7 @@ featureIntegration <- function(ptn,
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
-        is.null(ptn_background(ptn))) {
+      is.null(ptn_background(ptn))) {
       stop("0 always denotes the background, but no background has been provided.")
     }
   }
@@ -56,13 +56,13 @@ featureIntegration <- function(ptn,
   }
   #
   ptn <- prepFeatures(ptn, features)
-  
+
   dataTmp <- ptn_features(ptn)
-  
-  
+
+
   effTmp <- ptn_effect(ptn)
   colnames(dataTmp) <- c(paste("a", seq(1, ncol(dataTmp), 1), sep = ""))
-  
+
   dataTmp$effM <- effTmp[match(row.names(dataTmp), names(effTmp))]
   namesDf <- data.frame(
     originalNames = colnames(ptn_features(ptn))[1:ncol(dataTmp) - 1],
@@ -71,19 +71,19 @@ featureIntegration <- function(ptn,
   )
   #
   resOut <- resQuant(qvec = ptn_effect(ptn), ptn = ptn)
-  
+
   ######
   if (analysis_type == "lm") {
     #
     if (!is.null(lmfeatGroup)) {
       check_lmfeatGroup(lmfeatGroup, ncol(dataTmp) - 1)
       names(lmfeatGroup) <- colnames(dataTmp)[1:ncol(dataTmp) - 1]
-      
+
       if (is.null(lmfeatGroupColour)) {
         lmfeatGroupColourOut <- colourAssign(group = lmfeatGroup, colours = lmfeatGroupColour)
       } else {
         check_lmfeatGroupColour(lmfeatGroupColour, lmfeatGroup)
-        
+
         lmfeatGroupColourOut <- colourAssign(group = lmfeatGroup, colours = lmfeatGroupColour)
       }
     }
@@ -102,7 +102,7 @@ featureIntegration <- function(ptn,
         }
         listSel <- c(names(resOut[[compTmp[1]]]), names(resOut[[compTmp[2]]]))
         dataTmpSel <- dataTmp[row.names(dataTmp) %in% listSel, ]
-        
+
         nameOut <- ifelse(
           is.null(pdfName),
           paste("lm", paste(names(resOut)[compTmp], collapse = "_"), sep = "_"),
@@ -124,9 +124,9 @@ featureIntegration <- function(ptn,
           stepP = stepP
         )
         compOut[[paste(names(resOut)[compTmp], collapse = "_")]] <- lmOut
-        
+
         bestSel <- names(lmOut@selectedFeatures)
-        
+
         for (feat in bestSel) {
           #
           featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
@@ -168,12 +168,13 @@ featureIntegration <- function(ptn,
       compOut <- lmOut
       #
       bestSel <- names(lmOut@selectedFeatures)
-      
+
       nameOut <- ifelse(is.null(pdfName),
-                        "lm_allData",
-                        paste(pdfName, "lm_allData", sep = "_"))
-      
-      
+        "lm_allData",
+        paste(pdfName, "lm_allData", sep = "_")
+      )
+
+
       for (feat in bestSel) {
         #
         featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames
@@ -193,7 +194,7 @@ featureIntegration <- function(ptn,
   } else if (analysis_type == "rf") {
     dataTmpReg <- dataTmp[, colnames(dataTmp) != "effM"]
     colnames(dataTmpReg) <- namesDf$originalNames[match(colnames(dataTmpReg), namesDf$newNames)]
-    
+
     #
     compOut <- list()
     for (i in seq_along(comparisons)) {
@@ -216,7 +217,7 @@ featureIntegration <- function(ptn,
           sep = "_"
         )
       )
-      
+
       dataTmpSel <- dataTmpReg
       dataTmpSel$reg <- NA
       for (j in 1:2) {
@@ -240,10 +241,11 @@ featureIntegration <- function(ptn,
       ValidSet$reg <- as.factor(ValidSet$reg)
       #
       model1 <- randomForest::randomForest(reg ~ .,
-                                           data = TrainSet,
-                                           importance = TRUE,
-                                           ntree = 500)
-      
+        data = TrainSet,
+        importance = TRUE,
+        ntree = 500
+      )
+
       #
       model1Imp <- Boruta::Boruta(
         reg ~ .,
@@ -299,7 +301,8 @@ featureIntegration <- function(ptn,
       axis(
         side = 2,
         seq(0, roundNice(
-          max(Boruta::attStats(model1Imp)[, 4]), direction = "up"
+          max(Boruta::attStats(model1Imp)[, 4]),
+          direction = "up"
         ), 10),
         font = 2,
         lwd = 2,
@@ -307,12 +310,13 @@ featureIntegration <- function(ptn,
         cex = 0.75
       )
       #
-      tmp <- lapply(1:ncol(model1Imp$ImpHistory), function(i)
-        model1Imp$ImpHistory[is.finite(model1Imp$ImpHistory[, i]), i])
+      tmp <- lapply(1:ncol(model1Imp$ImpHistory), function(i) {
+        model1Imp$ImpHistory[is.finite(model1Imp$ImpHistory[, i]), i]
+      })
       names(tmp) <- colnames(model1Imp$ImpHistory)
       tmpNames <- names(sort(sapply(tmp, median)))
       addNames <- c("shadowMin", "shadowMax", "shadowMean")
-      
+
       #
       coloursN <- rep("black", length(tmpNames))
       coloursN[tmpNames %in% addNames] <- "firebrick1"
@@ -337,16 +341,17 @@ featureIntegration <- function(ptn,
         xpd = NA
       )
       dev.off()
-      
+
       #
       TrainSet <- TrainSet[, colnames(TrainSet) %in% c(featComf, "reg")]
       ValidSet <- ValidSet[, colnames(ValidSet) %in% c(featComf, "reg")]
-      
+
       #
       model2 <- randomForest::randomForest(reg ~ .,
-                                           data = TrainSet,
-                                           importance = TRUE,
-                                           ntree = 500)
+        data = TrainSet,
+        importance = TRUE,
+        ntree = 500
+      )
       #
       varImpIn <- sort(randomForest::importance(model2)[, 3], decreasing = TRUE)
       #
@@ -378,7 +383,7 @@ featureIntegration <- function(ptn,
         frame.plot = FALSE,
         pch = 16
       )
-      
+
       axis(
         side = 1,
         seq(0, roundNice(max(varImpIn), direction = "up"), 5),
@@ -393,7 +398,7 @@ featureIntegration <- function(ptn,
         font = 2,
         cex = 1.2
       )
-      
+
       predValidc <- stats::predict(model2, ValidSet, type = "class")
       #
       predValid <- stats::predict(model2, ValidSet, type = "prob")
@@ -415,7 +420,6 @@ featureIntegration <- function(ptn,
         lwd = 3,
         xlab = "",
         ylab = "",
-        
       )
       abline(
         a = 0,
@@ -424,7 +428,7 @@ featureIntegration <- function(ptn,
         lty = 2,
         col = "gray"
       )
-      
+
       mtext(
         side = 1,
         line = 4,
@@ -464,7 +468,7 @@ featureIntegration <- function(ptn,
         )
       )
       dev.off()
-      
+
       pdf(
         paste(nameOut, "pred_rocr.pdf", sep = "_"),
         width = 8,
@@ -482,7 +486,6 @@ featureIntegration <- function(ptn,
         lwd = 3,
         xlab = "",
         ylab = "",
-        
       )
       abline(
         a = 0,
@@ -491,7 +494,7 @@ featureIntegration <- function(ptn,
         lty = 2,
         col = "gray"
       )
-      
+
       mtext(
         side = 1,
         line = 4,
@@ -531,7 +534,7 @@ featureIntegration <- function(ptn,
         )
       )
       dev.off()
-      
+
       rfOut <- new(
         "postNetFeatureIntegration_rf",
         preModel = model1,
@@ -542,9 +545,9 @@ featureIntegration <- function(ptn,
       #
       compOut[[paste(names(resOut)[compTmp], collapse = "_")]] <- rfOut
       #
-      
+
       bestSel <- names(rfOut@selectedFeatures)
-      
+
       for (feat in bestSel) {
         #
         featTmp <- namesDf[namesDf$originalNames == feat, ]$newNames

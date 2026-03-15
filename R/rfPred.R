@@ -40,26 +40,26 @@ rfPred <- function(ptn,
   if (length(predGeneList) != 2) {
     stop("The input for 'predGeneList' can only have two categories.")
   }
-  
+
   predFeaturesNames <- names(predFeatures)
   tmpDf <- data.frame(t(plyr::ldply(predFeatures, rbind, .id = NULL)))
   colnames(tmpDf) <- predFeaturesNames
   #
   tmpDf <- tmpDf[, colnames(tmpDf) %in% selFeat]
-  
+
   featIn <- na.omit(tmpDf)
   message(paste(nrow(tmpDf) - nrow(featIn), "genes removed because of NAs", sep = " "))
-  
+
   listSel <- as.character((unlist(predGeneList)))
   featInSel <- featIn[row.names(featIn) %in% listSel, ]
-  
+
   featInSel$reg <- NA
   for (i in 1:2) {
     cTmp <- predGeneList[[i]]
     regTmp <- c("A", "B")
     featInSel$reg[row.names(featInSel) %in% cTmp] <- regTmp[i]
   }
-  
+
   featInSel <- featInSel[!is.na(featInSel$reg), ]
   featInSel$reg <- as.factor(featInSel$reg)
   #
@@ -67,7 +67,7 @@ rfPred <- function(ptn,
   predValid <- stats::predict(modelIn, featInSel, type = "prob")
   #
   perf <- ROCR::prediction(predValid[, 2], as.numeric(featInSel$reg))
-  
+
   predOut <- ROCR::performance(perf, "tpr", "fpr")
   #
   pdf(
@@ -93,7 +93,6 @@ rfPred <- function(ptn,
     lwd = 3,
     xlab = "",
     ylab = "",
-    
   )
   abline(
     a = 0,
@@ -102,7 +101,7 @@ rfPred <- function(ptn,
     lty = 2,
     col = "gray"
   )
-  
+
   mtext(
     side = 1,
     line = 4,
@@ -120,20 +119,22 @@ rfPred <- function(ptn,
     cex = 1.2
   )
   text(0.8,
-       0.2,
-       font = 2,
-       cex = 1.7,
-       paste("Sensitivity: ", round(
-         caret::confusionMatrix(predValidc, featInSel$reg)[[4]][1], 2
-       ), sep = ""))
+    0.2,
+    font = 2,
+    cex = 1.7,
+    paste("Sensitivity: ", round(
+      caret::confusionMatrix(predValidc, featInSel$reg)[[4]][1], 2
+    ), sep = "")
+  )
   text(0.8,
-       0.1,
-       font = 2,
-       cex = 1.7,
-       paste("Specificity: ", round(
-         caret::confusionMatrix(predValidc, featInSel$reg)[[4]][2], 2
-       ), sep = ""))
+    0.1,
+    font = 2,
+    cex = 1.7,
+    paste("Specificity: ", round(
+      caret::confusionMatrix(predValidc, featInSel$reg)[[4]][2], 2
+    ), sep = "")
+  )
   dev.off()
-  
+
   return(ptn)
 }

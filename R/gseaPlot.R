@@ -23,7 +23,7 @@ gseaPlot <- function(ptn,
   }
   #
   rankIn <- effIn[order(effIn, decreasing = TRUE)]
-  
+
   rnk <- rank(-rankIn)
   ord <- order(rnk)
   statsAdj <- rankIn[ord]
@@ -33,12 +33,13 @@ gseaPlot <- function(ptn,
   for (tname in termNames) {
     termTmp <- tname
     pathGenes <- unlist(strsplit(as.character(gseaOut[gseaOut$Term %in% termTmp, ]$Genes), ":"))
-    
+
     pathGenes <- match(pathGenes, names(statsAdj))
     pathGenes <- sort(pathGenes)
     gseaRes <- fgsea::calcGseaStat(statsAdj,
-                                   selectedStats = pathGenes,
-                                   returnAllExtremes = TRUE)
+      selectedStats = pathGenes,
+      returnAllExtremes = TRUE
+    )
     bottoms <- gseaRes$bottoms
     tops <- gseaRes$tops
     n <- length(statsAdj)
@@ -47,13 +48,13 @@ gseaPlot <- function(ptn,
     toPlot <- data.frame(x = c(0, xs, n + 1), y = c(0, ys, 0))
     diff <- (max(tops) - min(bottoms)) / 8
     x <- y <- NULL
-    
+
     nameOut <- ifelse(
       !is.null(pdfName),
       paste(pdfName, "gsea", termTmp, sep = "_"),
       paste("gsea", termTmp, sep = "_")
     )
-    
+
     pdf(
       paste(nameOut, ".pdf", sep = ""),
       width = 8,
@@ -71,9 +72,11 @@ gseaPlot <- function(ptn,
       cex.lab = 0.7
     )
     peOut <- ggplot2::ggplot(toPlot, ggplot2::aes(x = x, y = y)) +
-      ggplot2::geom_line(color = "grey75",
-                         linetype = 1,
-                         linewidth = 0.75) +
+      ggplot2::geom_line(
+        color = "grey75",
+        linetype = 1,
+        linewidth = 0.75
+      ) +
       ggplot2::geom_line(color = "grey75") +
       ggplot2::theme_bw() +
       ggplot2::theme(

@@ -29,7 +29,7 @@ lengthAnalysis <- function(ptn,
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
-        is.null(ptn_background(ptn))) {
+      is.null(ptn_background(ptn))) {
       stop("0 always denotes the background, but no background has been provided.")
     }
   }
@@ -39,8 +39,9 @@ lengthAnalysis <- function(ptn,
     #
     seqTmp <- ptn_sequences(ptn, region = reg)
     #
-    lenTmp <- as.numeric(sapply(seqTmp, function(x)
-      length(seqinr::s2c(x))))
+    lenTmp <- as.numeric(sapply(seqTmp, function(x) {
+      length(seqinr::s2c(x))
+    }))
     #
     lenForAnalysis <- log2(as.numeric(lenTmp))
     names(lenForAnalysis) <- ptn_geneID(ptn, region = reg)
@@ -66,10 +67,11 @@ lengthAnalysis <- function(ptn,
       )
       ylabel <- "Length (Log2 scale)"
       plotPostNet(resOut,
-                  colOut,
-                  comparisons,
-                  ylabel = ylabel,
-                  plotType = plotType)
+        colOut,
+        comparisons,
+        ylabel = ylabel,
+        plotType = plotType
+      )
       dev.off()
     }
     lengthFinal[[paste(reg, "length", sep = "_")]] <- lenForAnalysis

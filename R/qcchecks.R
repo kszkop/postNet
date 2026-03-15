@@ -1,17 +1,17 @@
 check_region <- function(region, convertToUppercase = TRUE) {
   valid_regions <- c("UTR3", "CDS", "UTR5", "CCDS")
-  
+
   if (is.null(region) ||
-      !is.character(region) || length(region) == 0) {
+    !is.character(region) || length(region) == 0) {
     stop(
       "The input for 'region' must be a non-empty character vector with valid values, including 'UTR3', 'CDS', 'UTR5', or 'CCDS'."
     )
   }
-  
+
   if (convertToUppercase) {
     region <- toupper(region)
   }
-  
+
   if (!all(region %in% valid_regions)) {
     stop("The input for 'region' must contain valid values: 'UTR3', 'CDS', 'UTR5', 'CCDS'.")
   }
@@ -38,12 +38,12 @@ check_adjObj <- function(adjObj) {
 
 check_selection <- function(selection, convertToLowercase = TRUE) {
   valid_selection <- c("random", "longest", "shortest")
-  
+
   if (is.null(selection) ||
-      !is.character(selection) || length(selection) == 0) {
+    !is.character(selection) || length(selection) == 0) {
     stop("The input for 'selection' must be one of: 'random', 'longest', or 'shortest'.")
   }
-  
+
   if (convertToLowercase) {
     selection <- tolower(selection)
   }
@@ -54,16 +54,16 @@ check_selection <- function(selection, convertToLowercase = TRUE) {
 
 check_plotType <- function(plotType, convertToLowercase = TRUE) {
   valid_plottypes <- c("boxplot", "violin", "ecdf")
-  
+
   if (is.null(plotType) ||
-      !is.character(plotType) || length(plotType) == 0) {
+    !is.character(plotType) || length(plotType) == 0) {
     stop("The input for 'plotType' must be one of: 'boxplot', 'violin', or 'ecdf'.")
   }
-  
+
   if (convertToLowercase) {
     plotType <- tolower(plotType)
   }
-  
+
   if (!plotType %in% tolower(valid_plottypes)) {
     stop("The input for 'plotType' must be one of: 'boxplot', 'violin', or 'ecdf'.")
   }
@@ -115,8 +115,9 @@ check_comparisons <- function(obj) {
   if (!is.list(obj)) {
     return(FALSE)
   }
-  all(sapply(obj, function(x)
-    is.numeric(x) && length(x) == 2))
+  all(sapply(obj, function(x) {
+    is.numeric(x) && length(x) == 2
+  }))
 }
 
 is_valid_named_list <- function(obj) {
@@ -124,17 +125,17 @@ is_valid_named_list <- function(obj) {
   if (is.null(obj)) {
     return(FALSE)
   }
-  
+
   #
   if (!is.list(obj)) {
     return(FALSE)
   }
-  
+
   #
   if (is.null(names(obj)) || any(names(obj) == "")) {
     return(FALSE)
   }
-  
+
   #
   for (item in obj) {
     if (!is.numeric(item) || !is.vector(item)) {
@@ -162,31 +163,33 @@ is_named_list_of_named_numeric_vectors <- function(x) {
   if (!is.list(x)) {
     return(FALSE)
   }
-  
+
   #
   if (is.null(names(x)) || any(names(x) == "")) {
     return(FALSE)
   }
-  
+
   #
   for (element in x) {
     if (!is.numeric(element) ||
-        is.null(names(element)) || any(names(element) == "")) {
+      is.null(names(element)) || any(names(element) == "")) {
       return(FALSE)
     }
   }
-  
+
   #
   return(TRUE)
 }
 
 #
 check_source <- function(source) {
-  valid_sources <- c("create",
-                     "createFromSourceFiles",
-                     "load",
-                     "custom",
-                     "createFromFasta")
+  valid_sources <- c(
+    "create",
+    "createFromSourceFiles",
+    "load",
+    "custom",
+    "createFromFasta"
+  )
   if (!(source %in% valid_sources)) {
     stop(
       "Invalid source. Please provide a valid 'source' option: 'create', 'createFromSourceFiles', 'load', 'custom', or 'createFromFasta'."
@@ -207,7 +210,7 @@ checkSourceFE <- function(sourceFE) {
 is_valid_species <- function(species) {
   species <- tolower(species)
   if (!is.null(species) &&
-      (species == "human" || species == "mouse")) {
+    (species == "human" || species == "mouse")) {
     return(TRUE)
   }
   return(FALSE)
@@ -220,7 +223,7 @@ check_DNAsequence <- function(contentIn) {
     )
   }
   pattern <- "^[ACGTacgt]+[123]*$"
-  
+
   if (!all(grepl(pattern, contentIn))) {
     stop(
       "The entries provided in 'contentIn' do not appear to all be DNA sequences. Please check that the sequences are correct. It must be a nucleotide string followed by digits 1, 2, or 3 (e.g., 'GC', 'GC2', 'ACGT123')."
@@ -241,7 +244,7 @@ isStartCodon <- function(startCodon) {
     start_codon <- toupper(seqinr::s2c(startCodon))
     valid_bases <- c("A", "C", "G", "T")
     if (all(start_codon %in% valid_bases) &&
-        length(start_codon) == 3) {
+      length(start_codon) == 3) {
       return(TRUE)
     } else {
       return(FALSE)
@@ -252,15 +255,16 @@ isStartCodon <- function(startCodon) {
 }
 
 is_by_3 <- function(seqs) {
-  all(sapply(seqs, function(x)
-    length(seqinr::s2c(x)) %% 3 == 0))
+  all(sapply(seqs, function(x) {
+    length(seqinr::s2c(x)) %% 3 == 0
+  }))
 }
 
 isKozakContext <- function(KozakContext) {
   KozakContext <- tolower(KozakContext)
   valid_values <- c("strong", "adequate1", "adequate2", "weak", "any")
   if (is.character(KozakContext) && length(KozakContext) == 1 &&
-      KozakContext %in% valid_values) {
+    KozakContext %in% valid_values) {
     return(TRUE)
   }
   return(FALSE)
@@ -270,7 +274,7 @@ isUnitOut <- function(unitOut) {
   unitOut <- tolower(unitOut)
   valid_values <- c("number", "position")
   if (is.character(unitOut) &&
-      length(unitOut) == 1 && unitOut %in% valid_values) {
+    length(unitOut) == 1 && unitOut %in% valid_values) {
     return(TRUE)
   }
   return(FALSE)
@@ -280,7 +284,7 @@ isUnit <- function(unit) {
   unitOut <- tolower(unit)
   valid_values <- c("count", "freq")
   if (is.character(unit) &&
-      length(unit) == 1 && unit %in% valid_values) {
+    length(unit) == 1 && unit %in% valid_values) {
     return(TRUE)
   }
   return(FALSE)
@@ -288,7 +292,7 @@ isUnit <- function(unit) {
 
 is_motifs <- function(motifsIn) {
   if (!is.null(motifsIn) &&
-      is.character(motifsIn) && length(motifsIn) > 0) {
+    is.character(motifsIn) && length(motifsIn) > 0) {
     return(TRUE)
   }
   return(FALSE)
@@ -331,7 +335,7 @@ check_input <- function(source,
 
 is_annotType <- function(annotType) {
   valid_types <- c("ccds", "ptncds")
-  
+
   if (!is.null(annotType) && tolower(annotType) %in% valid_types) {
     return(TRUE)
   }
@@ -377,7 +381,7 @@ check_codonIn <- function(codonIn) {
     "relative_frequency"
   )
   if (!all(required_elements %in% colnames(codonIn)) ||
-      is.null(codonIn)) {
+    is.null(codonIn)) {
     stop(
       "The 'codonsAll' element does not contain all required elements, and so is not a valid output of the codonUsage() function."
     )
@@ -388,10 +392,10 @@ check_codonIn <- function(codonIn) {
 check_codons <- function(featsel) {
   #
   if (!is.list(featsel) ||
-      is.null(names(featsel)) || any(names(featsel) == "")) {
+    is.null(names(featsel)) || any(names(featsel) == "")) {
     stop("The input for 'featsel' must be a named list.")
   }
-  
+
   #
   all_codons <- c(
     "AAA",
@@ -459,7 +463,7 @@ check_codons <- function(featsel) {
     "TTG",
     "TTT"
   )
-  
+
   #
   all(sapply(featsel, function(codons) {
     all(codons %in% all_codons)
@@ -468,7 +472,7 @@ check_codons <- function(featsel) {
 
 check_AA <- function(featSel) {
   if (!is.list(featSel) ||
-      is.null(names(featSel)) || any(names(featSel) == "")) {
+    is.null(names(featSel)) || any(names(featSel) == "")) {
     stop("The input for 'featsel' must be a named list.")
   }
   #
@@ -494,11 +498,11 @@ check_AA <- function(featSel) {
     Y = "Tyr",
     V = "Val"
   )
-  
+
   #
   all(sapply(featSel, function(x) {
     if (nchar(x) %% 3 == 0 &&
-        all(strsplit(x, "")[[1]] %in% c("A", "C", "G", "T"))) {
+      all(strsplit(x, "")[[1]] %in% c("A", "C", "G", "T"))) {
       all(substring(x, seq(1, nchar(x), by = 3), seq(3, nchar(x), by = 3)) %in% all_codons)
     } else {
       x %in% all_codons
@@ -525,13 +529,13 @@ checkFileColumns <- function(filePath) {
   if (is.null(filePath)) {
     stop("File path is NULL.")
   }
-  
+
   if (!file.exists(filePath)) {
     stop("File does not exist.")
   }
-  
+
   fileData <- read.delim(filePath)
-  
+
   requiredColumns <- c(
     "Cumulative.weighted.context...score",
     "Aggregate.PCT",
@@ -545,7 +549,7 @@ checkFileColumns <- function(filePath) {
       paste(missingColumns, collapse = ", ")
     ))
   }
-  
+
   noS <- length(unique(fileData$Species.ID))
   if (noS > 1) {
     stop("Please subset the targetScan file to include only the desired species.")
@@ -557,9 +561,9 @@ checkCollection <- function(collection) {
   if (is.null(collection)) {
     stop("Please provide an input for 'collection' or 'geneSet'.")
   }
-  
+
   collections <- c("c1", "c2", "c3", "c4", "c5", "c6", "h")
-  
+
   for (choice in collections) {
     if (!choice %in% collections) {
       stop("Please provide valid collections, which include: c1, c2, c3, c4, c5, c6, h.")
@@ -571,11 +575,11 @@ check_geneList <- function(obj) {
   if (!is.list(obj)) {
     stop("The input is not a list.")
   }
-  
+
   if (length(obj) == 0) {
     stop("The list is empty.")
   }
-  
+
   if (all(names(obj) == "")) {
     stop("The list is not a named list.")
   }
@@ -658,17 +662,17 @@ check_features <- function(features) {
   if (is.null(features)) {
     stop("Error: 'features' cannot be NULL.")
   }
-  
+
   #
   if (!is.list(features)) {
     stop("Error: 'features' must be a list.")
   }
-  
+
   #
   if (is.null(names(features)) || any(names(features) == "")) {
     stop("Error: 'features' must be a named list.")
   }
-  
+
   #
   if (!all(sapply(features, is.vector))) {
     stop("Error: Each element in 'features' must be a vector.")
@@ -684,7 +688,7 @@ check_lmfeatGroup <- function(lmfeatGroup, numfeatures) {
     if (!is.vector(lmfeatGroup)) {
       stop("Error: 'lmfeatGroup' must be a character vector when provided.")
     }
-    
+
     #
     if (length(lmfeatGroup) != numfeatures) {
       stop(
@@ -700,14 +704,14 @@ check_lmfeatGroupColour <- function(lmfeatGroupColour, lmfeatGroup) {
   if (is.null(names(lmfeatGroupColour))) {
     stop("The input for 'lmfeatGroupColour' has no names. It must be a named vector.")
   }
-  
+
   #
   if (!setequal(names(lmfeatGroupColour), unique(lmfeatGroup))) {
     stop(
       "Names in 'lmfeatGroupColour' do not exactly match unique category names in 'lmfeatGroup'."
     )
   }
-  
+
   #
   is_hex_color <- grepl("^#([A-Fa-f0-9]{6})$", lmfeatGroupColour)
   if (!all(is_hex_color)) {
@@ -730,7 +734,7 @@ check_shiftUnit <- function(unit) {
 
 check_featSel <- function(featSel, features) {
   if (!is.null(featSel) &&
-      is.character(featSel) && length(featSel) >= 2) {
+    is.character(featSel) && length(featSel) >= 2) {
     if (all(featSel %in% colnames(features))) {
       return(TRUE)
     } else {
@@ -755,6 +759,6 @@ check_predFeat <- function(predFeat) {
     all(rownames(predFeat) != "")
   is_numeric <- all(sapply(predFeat, is.numeric))
   has_no_nas <- all(complete.cases(predFeat))
-  
+
   return(is_dataframe && has_rownames && is_numeric && has_no_nas)
 }

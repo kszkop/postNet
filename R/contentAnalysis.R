@@ -10,7 +10,7 @@ contentAnalysis <- function(ptn,
   #
   check_ptn(ptn)
   check_region(region)
-  
+
   if (!check_logical(plotOut)) {
     stop("The input for 'plotOut' must be logical: TRUE or FALSE.")
   }
@@ -31,21 +31,21 @@ contentAnalysis <- function(ptn,
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
-        is.null(ptn_background(ptn))) {
+      is.null(ptn_background(ptn))) {
       stop("0 always denotes the background, but no background has been provided.")
     }
   }
   check_DNAsequence(contentIn)
-  
+
   if (!is.null(subregion) &&
-      (!is.numeric(subregion) || !length(subregion) == 1)) {
+    (!is.numeric(subregion) || !length(subregion) == 1)) {
     stop("The input for 'subregion' must be a single integer.")
   }
   if (!is.null(subregionSel) &&
-      !subregionSel %in% c("select", "exclude")) {
+    !subregionSel %in% c("select", "exclude")) {
     stop("The input for 'subregionSel' must be either 'select' or 'exclude'.")
   }
-  
+
   ####
   contentFinal <- list()
   for (reg in toupper(region)) {
@@ -60,9 +60,10 @@ contentAnalysis <- function(ptn,
         )
       }
       #
-      subSeq <- sapply(seqTmp, function(x)
-        subset_seq(x, pos = subregion, subregionSel = subregionSel))
-      
+      subSeq <- sapply(seqTmp, function(x) {
+        subset_seq(x, pos = subregion, subregionSel = subregionSel)
+      })
+
       if (length(which(is.na(subSeq))) > 0) {
         message(
           "For some sequences, the selected subregion is longer than the reference sequence region. \ These sequences will be removed from the analysis."
@@ -73,31 +74,33 @@ contentAnalysis <- function(ptn,
     #
     for (i in seq_along(contentIn)) {
       content <- contentIn[i]
-      
+
       ##
       contentTmp <- nPos_extract(content)
-      
+
       if (!is.na(contentTmp$positions[1]) & reg != "CDS") {
         next
       }
-      
+
       contentOut <- as.numeric()
       for (i in seq_along(seqTmp)) {
         tmpSeq <- seqTmp[i]
-        
+
         if (!is.na(contentTmp$positions[1])) {
           nPos <- contentTmp$positions
-          tmpCont <- sapply(seqinr::s2c(toupper(contentTmp$nucleotide)), function(x)
-            calc_content_pos(tmpSeq, nPos, x))
+          tmpCont <- sapply(seqinr::s2c(toupper(contentTmp$nucleotide)), function(x) {
+            calc_content_pos(tmpSeq, nPos, x)
+          })
         } else {
-          tmpCont <- sapply(seqinr::s2c(toupper(content)), function(x)
-            calc_content(tmpSeq, x))
+          tmpCont <- sapply(seqinr::s2c(toupper(content)), function(x) {
+            calc_content(tmpSeq, x)
+          })
         }
         contentOut[i] <- sum(tmpCont)
       }
       names(contentOut) <- names(seqTmp)
       contentOut <- contentOut[!is.na(contentOut)]
-      
+
       #
       if (isTRUE(plotOut)) {
         resOut <- resQuant(qvec = contentOut, ptn = ptn)
@@ -133,10 +136,11 @@ contentAnalysis <- function(ptn,
           )
           ylabel <- paste(paste0(content, " content"), "in ", reg, "(%)", sep = " ")
           plotPostNet(resOut,
-                      colOut,
-                      comparisons,
-                      ylabel = ylabel,
-                      plotType = plotType)
+            colOut,
+            comparisons,
+            ylabel = ylabel,
+            plotType = plotType
+          )
           dev.off()
         }
       }

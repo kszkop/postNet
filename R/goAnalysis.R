@@ -16,8 +16,8 @@ goAnalysis <- function(ptn,
   check_category(category)
   #
   if (!check_number(maxSize) |
-      !check_number(minSize) |
-      !check_number(counts) | !check_number(FDR)) {
+    !check_number(minSize) |
+    !check_number(counts) | !check_number(FDR)) {
     stop("The inputs for 'maxSize', 'minSize', 'counts', and 'FDR' must be numeric.")
   }
   if (minSize <= 0 | maxSize <= 0 | counts <= 0 | FDR < 0) {
@@ -28,7 +28,7 @@ goAnalysis <- function(ptn,
   }
   #
   GOout <- list()
-  
+
   res <- ptn_geneList(ptn)
   bg <- unlist(ptn_background(ptn))
   if (length(setdiff(bg, unique(unlist(res)))) == 0) {
@@ -36,21 +36,23 @@ goAnalysis <- function(ptn,
       "All genes in the background gene set are regulated. Please check that you are using an appropriate background set."
     )
   }
-  
+
   #
   if (!is.null(genesSlopeFiltOut)) {
     bg <- bg[!bg %in% genesSlopeFiltOut]
-    res <- lapply(res, function(x)
-      x[!x %in% genesSlopeFiltOut])
+    res <- lapply(res, function(x) {
+      x[!x %in% genesSlopeFiltOut]
+    })
   }
-  
+
   #
   bg_entrezID <- convertSymbolToEntrezID(geneList = bg, species = species)
-  res_entrezID <- lapply(res, function(x)
-    convertSymbolToEntrezID(geneList = x, species = species))
-  
+  res_entrezID <- lapply(res, function(x) {
+    convertSymbolToEntrezID(geneList = x, species = species)
+  })
+
   GoLists <- res_entrezID[!sapply(res_entrezID, is.null)]
-  
+
   #
   GOout <- new(
     "postNetGO",
@@ -112,21 +114,23 @@ goAnalysis <- function(ptn,
         tabTmp$p.adjust <- stats::p.adjust(tabTmp$pvalue, method = "BH")
       }
       tabTmp <- tabTmp[tabTmp$p.adjust < FDR, ]
-      
+
       if (nrow(tabTmp) > 0) {
         geneIDs_temp <- tabTmp$geneID
-        
+
         checkID <- check_id_type(seqinr::c2s(strsplit(geneIDs_temp[[1]], "/")[[1]][1:5]))
         if (checkID == "entrezID") {
-          tabTmp$geneID <- sapply(geneIDs_temp, function(x)
+          tabTmp$geneID <- sapply(geneIDs_temp, function(x) {
             paste(sort(
               convertEntrezIDToSymbol(unlist(strsplit(x, "/")), species = species)
-            ), collapse = ":"), USE.NAMES = FALSE)
+            ), collapse = ":")
+          }, USE.NAMES = FALSE)
         } else {
-          tabTmp$geneID <- sapply(geneIDs_temp, function(x)
+          tabTmp$geneID <- sapply(geneIDs_temp, function(x) {
             paste(sort(unlist(
               strsplit(x, "/")
-            )), collapse = ":"), USE.NAMES = FALSE)
+            )), collapse = ":")
+          }, USE.NAMES = FALSE)
         }
       } else {
         message(paste(
@@ -138,7 +142,7 @@ goAnalysis <- function(ptn,
         ))
       }
       tabTmp$Size <- as.numeric(sub("\\/.*", "", tabTmp$BgRatio))
-      
+
       if (sel == "KEGG") {
         tabTmp <- tabTmp[, c(
           "ID",
@@ -152,18 +156,21 @@ goAnalysis <- function(ptn,
           "geneID"
         )]
       } else {
-        tabTmp <- tabTmp[, c("ID",
-                             "Description",
-                             "Count",
-                             "Size",
-                             "pvalue",
-                             "p.adjust",
-                             "geneID")]
+        tabTmp <- tabTmp[, c(
+          "ID",
+          "Description",
+          "Count",
+          "Size",
+          "pvalue",
+          "p.adjust",
+          "geneID"
+        )]
       }
       resOut[[i]]@result <- tabTmp
     }
-    resWrite <- lapply(resOut, function(x)
-      x@result)
+    resWrite <- lapply(resOut, function(x) {
+      x@result
+    })
     #
     nameOut <- ifelse(
       is.null(name),
@@ -176,7 +183,7 @@ goAnalysis <- function(ptn,
       ExcelFileName = nameOut,
       row.names = FALSE
     )
-    
+
     slot(GOout, sel) <- resOut
   }
   ptn@analysis@GO <- GOout

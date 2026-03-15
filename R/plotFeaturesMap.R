@@ -9,7 +9,7 @@ plotFeaturesMap <- function(ptn,
                             remExtreme = NULL,
                             pdfName = NULL) {
   check_ptn(ptn)
-  
+
   if (!is.null(ptn_features(ptn))) {
     featuresIn <- ptn_features(ptn)
   } else {
@@ -28,7 +28,7 @@ plotFeaturesMap <- function(ptn,
     }
   }
   featuresSel <- featuresIn[, colnames(featuresIn) %in% featSel]
-  
+
   if (!check_logical(regOnly)) {
     stop("The input for 'regOnly' must be logical: TRUE or FALSE")
   }
@@ -48,7 +48,7 @@ plotFeaturesMap <- function(ptn,
       )
     }
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
-        is.null(ptn_background(ptn))) {
+      is.null(ptn_background(ptn))) {
       stop("0 always denotes the background, but no background has been provided.")
     }
     if (length(comparisons) != 1) {
@@ -72,7 +72,7 @@ plotFeaturesMap <- function(ptn,
   }
   #
   if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
-      is.null(ptn_background(ptn))) {
+    is.null(ptn_background(ptn))) {
     stop("0 always denotes the background, but no background has been provided.")
   }
   #
@@ -94,36 +94,39 @@ plotFeaturesMap <- function(ptn,
   }
   if (isTRUE(scaled)) {
     featuresCluster <- scale(na.omit(featuresCluster),
-                             center = centered,
-                             scale = scaled)
+      center = centered,
+      scale = scaled
+    )
   } else {
     featuresCluster <- na.omit(featuresCluster)
   }
-  
+
   fmapRes <- umap::umap(featuresCluster, n_components = 2)
   fmapRes <- fmapResOut <- as.data.frame(fmapRes$layout)
   colnames(fmapRes) <- colnames(fmapResOut) <- c("UMAP1", "UMAP2")
   fmapRes$Gene <- rownames(featuresCluster)
-  
+
   effTmp <- ptn_effect(ptn)
   eff <- effTmp[match(row.names(fmapRes), names(effTmp))]
   effect_fmap <- plot_fmap(fmapRes,
-                           colVec = eff,
-                           remExtreme = remExtreme,
-                           name = "Effect")
-  
+    colVec = eff,
+    remExtreme = remExtreme,
+    name = "Effect"
+  )
+
   if (is.null(featCol)) {
     featCol <- featSel
   }
-  
+
   featuresIn <- featuresIn[match(row.names(fmapRes), row.names(featuresIn)), ]
   for (feat in featCol) {
     featTmp <- featuresIn[, feat]
     feature_fmap <- plot_fmap(fmapRes,
-                              colVec = featTmp,
-                              remExtreme = remExtreme,
-                              name = feat)
-    
+      colVec = featTmp,
+      remExtreme = remExtreme,
+      name = feat
+    )
+
     pdf(
       ifelse(
         is.null(pdfName),
@@ -144,7 +147,7 @@ plotFeaturesMap <- function(ptn,
       cex.main = 0.7,
       cex.lab = 0.9
     )
-    
+
     gridExtra::grid.arrange(
       effect_fmap$legend[[1]],
       effect_fmap$mainPlot,
@@ -153,7 +156,7 @@ plotFeaturesMap <- function(ptn,
       ncol = 4,
       widths = c(1, 4, 4, 1)
     )
-    
+
     dev.off()
   }
   ptn@analysis@featureIntegration[["featuresMap"]] <- fmapResOut

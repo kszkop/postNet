@@ -51,7 +51,7 @@ miRNAanalysis <- function(ptn,
     )))
     names(miRNAList) <- unique(miRNATargetScan$Representative.miRNA)
   }
-  
+
   if (!is.null(Pct)) {
     miRNATargetScan <- miRNATargetScan[miRNATargetScan$Aggregate.PCT > Pct, ]
     miRNAList <- rep(list(NA), length(unique(
@@ -59,13 +59,13 @@ miRNAanalysis <- function(ptn,
     )))
     names(miRNAList) <- unique(miRNATargetScan$Representative.miRNA)
   }
-  
+
   if (length(miRNAList) == 0) {
     stop(
       "No miRNA meet the selected thresholds. Try adjusting 'contextScore' and/or 'Pct' for less stringent filtering."
     )
   }
-  
+
   for (miRNA in seq_along(miRNAList)) {
     miRNAList[[miRNA]] <- miRNATargetScan$Gene.Symbol[miRNATargetScan$Representative.miRNA %in% names(miRNAList)[miRNA]]
   }
@@ -79,8 +79,9 @@ miRNAanalysis <- function(ptn,
   )
   #
   miRNA <- new("postNetmiRNA",
-               miRNA_analysis = miRNA_enrichment_targetScan,
-               miRNA_to_gene = miRNAList)
+    miRNA_analysis = miRNA_enrichment_targetScan,
+    miRNA_to_gene = miRNAList
+  )
   ptn@analysis@miRNA <- miRNA
   #
   return(ptn)
