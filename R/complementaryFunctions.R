@@ -445,14 +445,14 @@ addStats <- function(comparisons, plotType, resOut, coloursOut) {
       
       #
       tmpBg <- sort(resOut[[compTmp[1]]])
-      ecdfBg <- seq_len(tmpBg) / length(tmpBg)
+      ecdfBg <- seq_along(tmpBg) / length(tmpBg)
       bg_025 <- tmpBg[which(ecdfBg >= 0.25)[1]]
       bg_05 <- tmpBg[which(ecdfBg >= 0.5)[1]]
       bg_075 <- tmpBg[which(ecdfBg >= 0.75)[1]]
       
       #
       tmpSign <- sort(resOut[[compTmp[2]]])
-      ecdfSign <- seq_len(tmpSign) / length(tmpSign)
+      ecdfSign <- seq_along(tmpSign) / length(tmpSign)
       tableOut[j, 3] <- format(tmpSign[which(ecdfSign >= 0.25)[1]] - bg_025, digits = 2)
       tableOut[j, 4] <- format(tmpSign[which(ecdfSign >= 0.5)[1]] - bg_05, digits = 2)
       tableOut[j, 5] <- format(tmpSign[which(ecdfSign >= 0.75)[1]] - bg_075, digits = 2)
