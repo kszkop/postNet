@@ -8,13 +8,13 @@ codonCalc <- function(ptn,
                       pdfName = NULL) {
   #
   check_ptn(ptn)
-  
   if (!is.null(ptn_codonAnalysis(ptn))) {
     codonsAll <- ptn_codonAnalysis(ptn)
     check_codonIn(codonsAll)
   } else {
     stop(
-      "Codon analysis is NULL in the 'postNetData' object provided. Please run the codonUsage() function prior to running CodonCalc()."
+      "Codon analysis is NULL in the 'postNetData' object provided.
+      Please run the codonUsage() function prior to running CodonCalc()."
     )
   }
   #
@@ -27,7 +27,9 @@ codonCalc <- function(ptn,
       check_plotType(plotType)
     } else {
       stop(
-        "Please provide a selection for 'plotType' to specify the method for plotting. Options include: 'boxplot','violin' , or 'ecdf'."
+        "Please provide a selection for 'plotType'
+        to specify the method for plotting.
+        Options include: 'boxplot','violin' , or 'ecdf'."
       )
     }
   }
@@ -35,22 +37,26 @@ codonCalc <- function(ptn,
   if (!is.null(comparisons)) {
     if (!check_comparisons(comparisons)) {
       stop(
-        "The input for 'comparisons' must be a list of numeric vectors of paired comparisons. For example: list(c(0,2),c(0,1)). 0 always denotes the background gene set."
+        "The input for 'comparisons' must be
+        a list of numeric vectors of paired comparisons.
+        For example: list(c(0,2),c(0,1)).
+        0 always denotes the background gene set."
       )
     }
     #
     if (length(which(unique(unlist(comparisons)) == 0)) > 0 &&
         is.null(ptn_background(ptn))) {
-      stop("0 always denotes the background, but no background has been provided.")
+      stop("0 always denotes the background,
+           but no background has been provided.")
     }
   }
   #
   if (!is_valid_analysis(analysis)) {
     stop(
-      "Please provide a selection for 'analysis'. The options are: 'codon' or 'AA' (amino acid)."
+      "Please provide a selection for 'analysis'.
+      The options are: 'codon' or 'AA' (amino acid)."
     )
   }
-  #
   if (analysis == "codon") {
     if (!check_codons(featsel)) {
       stop("Your input for 'featsel'. Invalid codons provided.")
@@ -59,17 +65,13 @@ codonCalc <- function(ptn,
   if (!isUnit(unit)) {
     stop("The 'unit' parameter must be either 'count' or 'freq'.")
   }
-  #
   codonCalcOut <- list()
   for (i in seq_along(featsel)) {
-    #
     featTmp <- featsel[[i]]
     featNameTmp <- names(featsel)[i]
     if (featNameTmp == 0) {
       stop("The input for 'featSel' must be a named list.")
     }
-    
-    #
     regName <- names(featsel[i])
     nameTmp <- ifelse(
       is.null(pdfName),
@@ -77,7 +79,6 @@ codonCalc <- function(ptn,
       paste(pdfName, "features", regName, "codonCalc.pdf", sep = "_")
     )
     nameOut <- nameTmp
-    #
     if (analysis == "codon") {
       codonTmp <- codonsAll[codonsAll$codon %in% featTmp, ]
     } else if (analysis == "AA") {
@@ -95,15 +96,14 @@ codonCalc <- function(ptn,
       codonCalcOutTmp <- tmp$freq
     }
     names(codonCalcOutTmp) <- tmp$geneID
-    #
     codonCalcOut[[featNameTmp]] <- codonCalcOutTmp
-    ##
     if (isTRUE(plotOut)) {
-      #
       resOut <- resQuant(qvec = codonCalcOutTmp, ptn = ptn)
       if (length(resOut) == 0) {
         stop(
-          "There are no regulated genes in your input. Please check the input, or run without indicating 'regulation' and 'comparisons'."
+          "There are no regulated genes in your input.
+          Please check the input,
+          or run without indicating 'regulation' and 'comparisons'."
         )
       }
       colOut <- colPlot(ptn)
@@ -122,6 +122,5 @@ codonCalc <- function(ptn,
       dev.off()
     }
   }
-  #
   return(codonCalcOut)
 }
