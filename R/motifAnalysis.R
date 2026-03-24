@@ -57,15 +57,21 @@ motifAnalysis <- function(ptn,
             seqTmp <- proseqtmp
         }
         if (!is.null(subregion)) {
-            subSeq <- vapply(seqTmp, function(x) {
-                subset_seq(x, pos = subregion, subregionSel = subregionSel)
-            }, character(1))
-            if (length(which(is.na(subSeq))) > 0) {
-                message(
-                    "For some sequences, the selected subregion is longer than the sequence region. These sequences will be removed from the analysis."
-                )
+          subSeq <- vapply(seqTmp, function(x) {
+            out <- subset_seq(x, pos = subregion, subregionSel = subregionSel)
+            if (is.logical(out) && length(out) == 1 && is.na(out)) {
+              NA_character_
+            } else {
+              as.character(out)
             }
-            seqTmp <- subSeq
+          }, character(1))
+          
+          if (any(is.na(subSeq))) {
+            message(
+              "For some sequences, the selected subregion is longer than the reference sequence region. These sequences will be removed from the analysis."
+            )
+          }
+          seqTmp <- subSeq
         }
         seqForAnalysis <- seqTmp[!is.na(seqTmp)]
         resOut <- resQuant(qvec = seqForAnalysis, ptn = ptn)

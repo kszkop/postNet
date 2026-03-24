@@ -293,17 +293,21 @@ codonUsage <- function(ptn,
         #
         if (!is.null(subregion)) {
                 #
-                subSeq <- vapply(seqTmp, function(x) {
-                  subset_seq(x, pos = subregion, subregionSel = subregionSel)
-                }, character(1))
-                if (length(which(is.na(subSeq))) > 0) {
-                        message(
-                                "For some sequences, the selected subregion
-                                is longer than the reference sequence region.
-                                These sequences will be removed from the analysis."
-                        )
-                }
-                seqTmp <- subSeq
+          subSeq <- vapply(seqTmp, function(x) {
+            out <- subset_seq(x, pos = subregion, subregionSel = subregionSel)
+            if (is.logical(out) && length(out) == 1 && is.na(out)) {
+              NA_character_
+            } else {
+              as.character(out)
+            }
+          }, character(1))
+          
+          if (any(is.na(subSeq))) {
+            message(
+              "For some sequences, the selected subregion is longer than the reference sequence region. These sequences will be removed from the analysis."
+            )
+          }
+          seqTmp <- subSeq
         }
         seqTmp <- seqTmp[!is.na(seqTmp)]
         geneIDs <- names(seqTmp)
