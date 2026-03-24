@@ -69,9 +69,7 @@ codonUsage <- function(ptn,
                                 unlink("CCDS_nucleotide_human.fna")
 
                                 #
-                                ccdsSeq <- ccdsSeq[!duplicated(sapply(strsplit(names(ccdsSeq), "\\|"), function(x) {
-                                        x[1]
-                                }))]
+                                ccdsSeq <- ccdsSeq[!duplicated(sub("\\|.*", "", names(ccdsSeq)))]
 
                                 ccdsSeq <- data.frame(
                                         id = sub("\\..*", "", names(ccdsSeq)),
@@ -92,9 +90,9 @@ codonUsage <- function(ptn,
                                 )
                                 #
                                 colnames(annotTmp)[2] <- "geneID"
-                                lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) {
-                                        length(seqinr::s2c(x))
-                                }))
+                                lenTmp <- as.numeric(vapply(annotTmp$CDS_seq, function(x) {
+                                  length(seqinr::s2c(x))
+                                }, numeric(1)))
                                 annotTmp$lenTmp <- lenTmp
                                 #
                                 annotSel <- isoSel(
@@ -148,9 +146,7 @@ codonUsage <- function(ptn,
                                 unlink("CCDS_nucleotide_mouse.fna")
 
                                 #
-                                ccdsSeq <- ccdsSeq[!duplicated(sapply(strsplit(names(ccdsSeq), "\\|"), function(x) {
-                                        x[1]
-                                }))]
+                                ccdsSeq <- ccdsSeq[!duplicated(sub("\\|.*", "", names(ccdsSeq)))]
 
                                 ccdsSeq <- data.frame(
                                         id = sub("\\..*", "", names(ccdsSeq)),
@@ -171,9 +167,9 @@ codonUsage <- function(ptn,
                                 )
                                 #
                                 colnames(annotTmp)[2] <- "geneID"
-                                lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) {
-                                        length(seqinr::s2c(x))
-                                }))
+                                lenTmp <- as.numeric(vapply(annotTmp$CDS_seq, function(x) {
+                                  length(seqinr::s2c(x))
+                                }, numeric(1)))
                                 annotTmp$lenTmp <- lenTmp
                                 #
                                 annotSel <- isoSel(
@@ -209,9 +205,9 @@ codonUsage <- function(ptn,
                         if (species == "mouse") {
                                 annotTmp <- get_reference_data(file = "mouseDB_ccds.txt.gz")
                         }
-                        lenTmp <- as.numeric(sapply(annotTmp$CDS_seq, function(x) {
-                                length(seqinr::s2c(x))
-                        }))
+                        lenTmp <- as.numeric(vapply(annotTmp$CDS_seq, function(x) {
+                          length(seqinr::s2c(x))
+                        }, numeric(1)))
                         annotTmp$lenTmp <- lenTmp
                         annotSel <- isoSel(
                                 annot = annotTmp,
@@ -297,9 +293,9 @@ codonUsage <- function(ptn,
         #
         if (!is.null(subregion)) {
                 #
-                subSeq <- sapply(seqTmp, function(x) {
-                        subset_seq(x, pos = subregion, subregionSel = subregionSel)
-                })
+                subSeq <- vapply(seqTmp, function(x) {
+                  subset_seq(x, pos = subregion, subregionSel = subregionSel)
+                }, character(1))
                 if (length(which(is.na(subSeq))) > 0) {
                         message(
                                 "For some sequences, the selected subregion
@@ -586,7 +582,7 @@ codonUsage <- function(ptn,
 
                 ###
                 if (length(signSel) == 0) {
-                        message(paste("There are no significant codons for the comparison ", j, sep = ""))
+                  message("There are no significant codons for the comparison ", j)
                 } else {
                         #
                         if (analysis == "codon" & codonN == 1) {
@@ -658,7 +654,7 @@ codonUsage <- function(ptn,
                                                 x = paste(colnames(resIn2)[1], "\n(Average codon frequency)", sep = ""),
                                                 y = paste(colnames(resIn2)[2], "\n(Average codon frequency)", sep = "")
                                         )
-                                print(pOut1)
+                                plot(pOut1)
                                 dev.off()
 
                                 #
@@ -739,7 +735,7 @@ codonUsage <- function(ptn,
                                                         sep = ""
                                                 )
                                         )
-                                print(pOut2)
+                                plot(pOut2)
                                 dev.off()
                                 #
 
