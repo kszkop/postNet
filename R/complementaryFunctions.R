@@ -147,13 +147,13 @@ gSel <- function(annot, ads, customBg, geneList) {
 }
 
 regSel <- function(annot, region) {
-    nc <- grep(region, colnames(annot))
-    seqTmp <- annot[, nc]
-    lenTmp <- as.numeric(vapply(seqTmp, function(x) {
-        length(seqinr::s2c(x))
-    }, integer(1)))
-    annotOut <- cbind(annot[, c(seq_len(2)], seqTmp, lenTmp)
-                                                    return(annotOut)
+  nc <- grep(region, colnames(annot))
+  seqTmp <- annot[, nc]
+  lenTmp <- as.numeric(vapply(seqTmp, function(x) {
+    length(seqinr::s2c(x))
+  }, integer(1)))
+  annotOut <- cbind(annot[, seq_len(2)], seqTmp, lenTmp)
+  return(annotOut)
 }
 
 isoSel <- function(annot, method, setSeed = NULL) {
