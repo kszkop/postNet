@@ -1559,7 +1559,7 @@ runLM <- function(dataIn,
             tsel_net <- lag(trow) - trow
             #
             colours[k, tsel_tab] <- "#FDE0C5"
-            linkIn[k, seq_len(length(tsel_net)_] <- tsel_net
+            linkIn[k, seq_len(length(tsel_net))] <- tsel_net
         }
     }
     
