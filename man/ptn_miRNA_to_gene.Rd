@@ -39,7 +39,7 @@ Luo W., Friedman M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Appl
 }
 
 \examples{
-\donttest{
+\dontrun{
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
