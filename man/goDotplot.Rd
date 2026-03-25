@@ -54,7 +54,7 @@ goDotplot(ptn,
 
 \examples{
 
- \dontrun{
+ \donttest{
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn

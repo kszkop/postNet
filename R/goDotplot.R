@@ -56,7 +56,7 @@ goDotplot <- function(ptn,
       #
       goDf <- goDf[idx, ]
       if (nCategories < nrow(goDf)) {
-        goDf <- goDf[1:nCategories, ]
+        goDf <- goDf[seq_len(nCategories), ]
       }
 
       #
@@ -156,12 +156,9 @@ goDotplot <- function(ptn,
         goDf <- goIn[[i]]@result
         if (nrow(goDf) == 0) {
           message(
-            paste(
-              "For the geneList: ",
-              names(goIn)[i],
-              " there are no categories to plot.",
-              sep = ""
-            )
+            "For the geneList: ",
+            names(goIn)[i],
+            " there are no categories to plot."
           )
         } else {
           if (!is.null(termSel)) {
@@ -172,7 +169,7 @@ goDotplot <- function(ptn,
           #
           goDf <- goDf[idx, ]
           if (nCategories < nrow(goDf)) {
-            goDf <- goDf[1:nCategories, ]
+            goDf <- goDf[seq_len(nCategories), ]
           }
           #
           goDf$log10fdr <- -log10(goDf$p.adjust)
@@ -246,7 +243,7 @@ goDotplot <- function(ptn,
             ) +
             ggplot2::ylab(" ") +
             ggplot2::ggtitle(paste(names(goIn)[i], sel, sep = "_"))
-          print(pOut)
+          plot(pOut)
           dev.off()
         }
       }

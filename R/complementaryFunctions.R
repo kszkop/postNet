@@ -579,7 +579,7 @@ plotPostNet <- function(resOut,
                 font = 2,
                 las = 2,
                 lwd = 2,
-                at = sapply(c(1, 25, 100, 200, 400, 1000, 4000, 25000), log2),
+                at = log2(c(1, 25, 100, 200, 400, 1000, 4000, 25000)),
                 labels = c(0, 25, 100, 200, 400, 1000, 4000, 25000)
             )
             mtext(
@@ -1220,14 +1220,14 @@ getDup <- function(numIn, tol = 1e-8) {
 
 
 printDup <- function(dupIn) {
-    for (i in seq_along(dupIn)) {
-        namesMerged <- paste(names(dupIn[[i]]), collapse = " and ")
-        messageOut <- paste(
-            "The following features are too highly corelated to each other (see ?featureIntegration and vignette for details): ",
-            namesMerged
-        )
-        print(messageOut)
-    }
+  for (i in seq_along(dupIn)) {
+    namesMerged <- paste(names(dupIn[[i]]), collapse = " and ")
+    message(
+      "The following features are too highly corelated to each other ",
+      "(see ?featureIntegration and vignette for details): ",
+      namesMerged
+    )
+  }
 }
 
 #
@@ -1345,7 +1345,7 @@ prepFeatures <- function(ptn, features) {
     colnames(tmpDf) <- featureNames
     
     datOut <- na.omit(tmpDf)
-    message(paste(nrow(tmpDf) - nrow(datOut), "Genes removed because of NAs", sep = " "))
+    message(nrow(tmpDf) - nrow(datOut), " genes removed because of NAs")
     
     ptn@features <- datOut
     return(ptn)
@@ -1485,13 +1485,11 @@ runLM <- function(dataIn,
             isNAout <- names(lm(design, data = dataIn)[[1]][which(is.na(lm(design, data = dataIn)[[1]]))])
             
             if (length(isNAout) > 0) {
-                stop(
-                    paste(
-                        "Consider removing: ",
-                        getOrgNames(names(isNAout), namesDf),
-                        " as it is too correlated with other features."
-                    )
-                )
+              stop(
+                "Consider removing: ",
+                getOrgNames(names(isNAout), namesDf),
+                " as it is too correlated with other features."
+              )
             }
             rownames(models2[[j]]) <- c(getOrgNames(rownames(models2[[j]])[-length(rownames(models2[[j]]))], namesDf), "Residuals")
         }
@@ -1561,7 +1559,7 @@ runLM <- function(dataIn,
             tsel_net <- lag(trow) - trow
             #
             colours[k, tsel_tab] <- "#FDE0C5"
-            linkIn[k, 1:length(tsel_net)] <- tsel_net
+            linkIn[k, seq_len(tsel_net)] <- tsel_net
         }
     }
     
@@ -1829,7 +1827,6 @@ runLM <- function(dataIn,
         igraph::V(net)$Group <- as.vector(lmfeatGroup[match(igraph::V(net)$name, names(lmfeatGroup))])
         #
         for (i in unique(igraph::V(net)$Group)) {
-            print(i)
             GroupV <- which(igraph::V(net)$Group == i)
             net <- igraph::add_edges(net, combn(GroupV, 2), attr = list(weight = 5))
         }

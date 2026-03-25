@@ -61,7 +61,7 @@ Luo, W., Friedman, M., Shedden K., Hankenson K., and Woolf P. GAGE: Generally Ap
 }
 
 \examples{
-\dontrun{
+\donttest{
 # ------------------------------------------------------------------
 # Example 1: Running GAGE with gene lists 
 # ------------------------------------------------------------------

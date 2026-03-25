@@ -100,7 +100,7 @@ gseaPlot <- function(ptn,
         linewidth = ticksSize,
         color = "firebrick1"
       )
-    print(peOut)
+    plot(peOut)
     dev.off()
   }
 }

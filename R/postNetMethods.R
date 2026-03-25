@@ -178,7 +178,7 @@ ptn_miRNA_analysis <- function(ptn, direction, threshold) {
   check_direction(tolower(direction))
   check_ptn(ptn)
   if (!check_number(threshold)) {
-    stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
+    stop("Please provide a single numeric value for ", threshold)
   }
 
   if (is.null(slot(ptn@analysis, "miRNA"))) {
@@ -228,7 +228,7 @@ ptn_GO <- function(ptn, category, geneList, threshold) {
     stop("Please provide only one GO category.")
   }
   if (!check_number(threshold)) {
-    stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
+    stop("Please provide a single numeric value for ", threshold)
   }
   #
   if (!any(geneList %in% names(ptn_geneList(ptn)))) {
@@ -264,7 +264,7 @@ ptn_GSEA <- function(ptn, threshold = NULL) {
   }
   if (!is.null(threshold)) {
     if (!check_number(threshold)) {
-      stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
+      stop("Please provide a single numeric value for ", threshold)
     }
     gseaOut <- gseaOut[which(gseaOut[, 8] < threshold), ]
   }
@@ -280,7 +280,7 @@ ptn_GAGE <- function(ptn, category, direction, threshold) {
   check_ptn(ptn)
   check_category(category)
   if (!check_number(threshold)) {
-    stop(paste("Please provide a single numeric value for ", threshold, sep = ""))
+    stop("Please provide a single numeric value for ", threshold)
   }
 
   if (length(category) != 1) {
@@ -313,7 +313,7 @@ ptn_check_models <- function(ptn, analysis_type) {
 
   tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
   if (is.null(tmpIn)) {
-    stop(paste("Please run ", analysis_type, " analysis first", sep = ""))
+    stop("Please run ", analysis_type, " analysis first")
   } else {
     print(names(tmpIn))
   }
@@ -325,12 +325,12 @@ ptn_model <- function(ptn, analysis_type, model, comparison) {
   check_model(model, analysis_type = analysis_type)
 
   if (!check_number(comparison)) {
-    stop(paste("Please provide a single numeric value for ", comparison, sep = ""))
+    stop("Please provide a single numeric value for ", comparison)
   }
 
   tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
   if (comparison > length(tmpIn)) {
-    stop(paste("There are only ", length(tmpIn), " comparisons", sep = ""))
+    stop("There are only ", length(tmpIn), " comparisons")
   }
   tmpIn <- tmpIn[[comparison]]
   #
@@ -343,12 +343,12 @@ ptn_selectedFeatures <- function(ptn, analysis_type, comparison) {
   check_ptn(ptn)
   check_analysis_type(analysis_type)
   if (!check_number(comparison)) {
-    stop(paste("Please provide a single numeric value for ", comparison, sep = ""))
+    stop("Please provide a single numeric value for ", comparison)
   }
   #
   tmpIn <- ptn@analysis@featureIntegration[[analysis_type]]
   if (comparison > length(tmpIn)) {
-    stop(paste("There are only ", length(tmpIn), " comparisons", sep = ""))
+    stop("There are only ", length(tmpIn), " comparisons")
   }
   tmpIn <- tmpIn[[comparison]]
   tmpOut <- slot(tmpIn, "selectedFeatures")
@@ -359,7 +359,7 @@ ptn_selectedFeatures <- function(ptn, analysis_type, comparison) {
 ptn_networkGraph <- function(ptn, comparison) {
   check_ptn(ptn)
   if (!check_number(comparison)) {
-    stop(paste("Please provide a single numeric value for ", comparison, sep = ""))
+    stop("Please provide a single numeric value for ", comparison)
   }
 
   tmpIn <- ptn@analysis@featureIntegration$lm[[comparison]]

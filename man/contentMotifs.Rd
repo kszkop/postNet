@@ -109,7 +109,7 @@ Hon J, Martínek T, Zendulka J, Lexa M. pqsfinder: an exhaustive and imperfectio
                       
  str(UTR5_SGCSGCS_pos)
  
- \dontrun{
+ \donttest{
 # ------------------------------------------------------------------
 # Example 2: Detect and quantify motifs identified using motifAnalysis
 # ------------------------------------------------------------------

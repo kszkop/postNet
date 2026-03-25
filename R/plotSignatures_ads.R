@@ -122,7 +122,7 @@ plotSignatures_ads <- function(ads,
 
   #
   if (any(duplicated(unlist(signatureList)))) {
-    cat(
+    message(
       "There are some genes that overlap between signatures. Separate backgrounds will be used for each gene signature."
     )
     ##

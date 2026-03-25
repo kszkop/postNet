@@ -651,22 +651,22 @@ check_model <- function(model, analysis_type) {
 check_features <- function(features) {
     #
     if (is.null(features)) {
-        stop("Error: 'features' cannot be NULL.")
+        stop("'features' cannot be NULL.")
     }
     
     #
     if (!is.list(features)) {
-        stop("Error: 'features' must be a list.")
+        stop("'features' must be a list.")
     }
     
     #
     if (is.null(names(features)) || any(names(features) == "")) {
-        stop("Error: 'features' must be a named list.")
+        stop("'features' must be a named list.")
     }
     
     #
     if (!all(vapply(features, is.vector, logical(1)))) {
-        stop("Error: Each element in 'features' must be a vector.")
+        stop("Each element in 'features' must be a vector.")
     }
     if (length(features) < 2) {
         stop("Please provide at least two features.")
@@ -677,13 +677,13 @@ check_lmfeatGroup <- function(lmfeatGroup, numfeatures) {
     if (!is.null(lmfeatGroup)) {
         #
         if (!is.vector(lmfeatGroup)) {
-            stop("Error: 'lmfeatGroup' must be a character vector when provided.")
+            stop("'lmfeatGroup' must be a character vector when provided.")
         }
         
         #
         if (length(lmfeatGroup) != numfeatures) {
             stop(
-                "Error: Length of 'lmfeatGroup' must match the number of 'features' when 'lmfeatGroup' is not NULL."
+                "Length of 'lmfeatGroup' must match the number of 'features' when 'lmfeatGroup' is not NULL."
             )
         }
     }

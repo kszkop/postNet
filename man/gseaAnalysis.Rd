@@ -123,7 +123,7 @@ Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment anal
           termNames = gseaOut$Term[1],
           pdfName = tmp2)
           
-\dontrun{
+\donttest{
 
 # ------------------------------------------------------------------
 # Example 2: Running GSEA with MSigDB collections

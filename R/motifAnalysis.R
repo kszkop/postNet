@@ -89,12 +89,14 @@ motifAnalysis <- function(ptn,
                 minw = minwidth
             )
             if (nrow(streme_out) == 0) {
-                message("No motifs found in: ", paste(reg, names(resOut)[j], sep = "_"))
+              message("No motifs found in: ", paste(reg, names(resOut)[j], sep = "_"))
             }
             streme_out <- streme_out[streme_out$pval < stremeThreshold, ]
             if (nrow(streme_out) == 0) {
-                message("No motifs passed thresholds in: ",
-                                paste(reg, names(resOut)[j], sep = "_"))
+              message(
+                "No motifs passed thresholds in: ",
+                paste(reg, names(resOut)[j], sep = "_")
+              )
             }
             motifsTmpOut[[names(resOut)[j]]] <- streme_out
         }

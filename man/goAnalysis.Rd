@@ -91,7 +91,7 @@ S Xu, E Hu, Y Cai, Z Xie, X Luo, L Zhan, W Tang, Q Wang, B Liu, R Wang, W Xie, T
           size = "geneRatio", 
           pdfName = tmp2)
           
-\dontrun{
+\donttest{
 
 # ------------------------------------------------------------------
 # Example 2: Running GO term analysis with anota2seq results

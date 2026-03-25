@@ -29,12 +29,9 @@ rfPred <- function(ptn,
   if (!all(selFeat %in% names(predFeatures))) {
     missTmp <- setdiff(selFeat, names(predFeatures))
     stop(
-      paste(
-        "These features: ",
-        missTmp,
-        " are missing in the 'predFeatures' object. Please calculate and add them.",
-        sep = ""
-      )
+      "These features: ",
+      missTmp,
+      " are missing in the 'predFeatures' object. Please calculate and add them."
     )
   }
   if (length(predGeneList) != 2) {
@@ -48,13 +45,13 @@ rfPred <- function(ptn,
   tmpDf <- tmpDf[, colnames(tmpDf) %in% selFeat]
 
   featIn <- na.omit(tmpDf)
-  message(paste(nrow(tmpDf) - nrow(featIn), "genes removed because of NAs", sep = " "))
+  message(nrow(tmpDf) - nrow(featIn), " genes removed because of NAs")
 
   listSel <- as.character((unlist(predGeneList)))
   featInSel <- featIn[row.names(featIn) %in% listSel, ]
 
   featInSel$reg <- NA
-  for (i in 1:2) {
+  for (i in seq_len(2)) {
     cTmp <- predGeneList[[i]]
     regTmp <- c("A", "B")
     featInSel$reg[row.names(featInSel) %in% cTmp] <- regTmp[i]

@@ -77,7 +77,7 @@ Nystrom SL, McKay DJ (2021). "Memes: A motif analysis environment in R using too
 # create a fully executable example as this path will vary depending on many factors. An example of
 # how to run this function is provided below, and can be updated with the correct memePath argument. 
 
-\dontrun{
+\donttest{
 # load example data:
  data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
