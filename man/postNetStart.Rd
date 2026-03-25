@@ -256,7 +256,7 @@ annotation file. The \code{customFile} must be tab-delimited, with the headings:
    species = "human"
  )
 
-\donttest{
+\dontrun{
 
 # -----------------------------------------------------------------------
 # Example 2: Using an anota2seq object with built-in RefSeq annotations
