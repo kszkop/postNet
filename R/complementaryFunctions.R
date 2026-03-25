@@ -1375,17 +1375,17 @@ colourAssign <- function(group, colours = NULL) {
 
 
 runLM <- function(dataIn,
-                                    namesDf,
-                                    allFeat,
-                                    useCorel,
-                                    covarFilt,
-                                    nameOut,
-                                    NetModelSel,
-                                    coloursIn,
-                                    lmfeatGroup,
-                                    lmfeatGroupColour = NULL,
-                                    fdrUni,
-                                    stepP) {
+                  namesDf,
+                  allFeat,
+                  useCorel,
+                  covarFilt,
+                  nameOut,
+                  NetModelSel,
+                  coloursIn,
+                  lmfeatGroup,
+                  lmfeatGroupColour = NULL,
+                  fdrUni,
+                  stepP) {
     #
     fval <- list()
     pval <- list()
@@ -1559,7 +1559,7 @@ runLM <- function(dataIn,
             tsel_net <- lag(trow) - trow
             #
             colours[k, tsel_tab] <- "#FDE0C5"
-            linkIn[k, seq_len(tsel_net)] <- tsel_net
+            linkIn[k, seq_len(length(tsel_net)_] <- tsel_net
         }
     }
     
