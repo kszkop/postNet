@@ -141,7 +141,7 @@ Korotkevich G, Sukhov V, Sergushichev A (2019). “Fast gene set enrichment anal
  msigdb::listSubCollections(msigdbOut)
  
 # Initialize a postNetData object:
- postNetExample <- postNetParcel::postNetExample
+ data("postNetExample", package = "postNet")
  ptn <- postNetExample$ptn
 
 # Run GSEA on the C5 collection with GO:BP and specific terms:
