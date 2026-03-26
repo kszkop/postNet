@@ -1,86 +1,130 @@
-motifAnalysis <- function(ptn,
-                          stremeThreshold = 0.05,
-                          minwidth = 6,
-                          memePath = NULL,
-                          seqType = "dna",
-                          region,
-                          subregion = NULL,
-                          subregionSel = NULL) {
+motifAnalysis <- function(
+        ptn,
+        stremeThreshold = 0.05,
+        minwidth = 6,
+        memePath = NULL,
+        seqType = "dna",
+        region,
+        subregion = NULL,
+        subregionSel = NULL
+) {
     check_ptn(ptn)
     check_region(region)
+    
     if (is.null(ptn_background(ptn))) {
         stop("A background gene set must be provided to perform motif analysis.")
     }
+    
     if (!is.null(subregion) &&
             (!is.numeric(subregion) || !length(subregion) == 1)) {
         stop("The input for 'subregion' must be an integer.")
     }
+    
     if (!is.null(subregionSel) &&
             !subregionSel %in% c("select", "exclude")) {
-        stop("The input for 'subregionSel' must be either 'select' or 'exclude'.")
+        stop(
+            "The input for 'subregionSel' must be either 'select' or ",
+            "'exclude'."
+        )
     }
+    
     if (!check_number(stremeThreshold)) {
         stop(
-            "Please provide a value for 'stremeThreshold' to define the p-value threshold for motif selection."
+            "Please provide a value for 'stremeThreshold' to define the ",
+            "p-value threshold for motif selection."
         )
     }
+    
     if (!check_number(minwidth)) {
         stop(
-            "Please provide a positive integer for 'minwidth' to define the minimal width for motif selection."
+            "Please provide a positive integer for 'minwidth' to define ",
+            "the minimal width for motif selection."
         )
     }
+    
     if (is.null(memePath)) {
         stop(
-            "Please provide full file path to the STREME executables in meme/bin. Note that the MEME-Suite must be installed."
+            "Please provide full file path to the STREME executables in ",
+            "meme/bin. Note that the MEME-Suite must be installed."
         )
     }
+    
     if (!is_valid_seq_type(seqType)) {
-        stop("The input for 'seqType' must be either 'dna', 'rna', or 'protein'.")
+        stop(
+            "The input for 'seqType' must be either 'dna', 'rna', or ",
+            "'protein'."
+        )
     }
-    motifsOut <- new("postNetMotifs",
-                                     UTR5 = NULL,
-                                     CDS = NULL,
-                                     UTR3 = NULL)
+    
+    motifsOut <- new(
+        "postNetMotifs",
+        UTR5 = NULL,
+        CDS = NULL,
+        UTR3 = NULL
+    )
+    
     for (reg in region) {
         seqTmp <- ptn_sequences(ptn, region = reg)
         names(seqTmp) <- ptn_geneID(ptn, region = reg)
+        
         if (tolower(seqType) == "protein") {
             if (!is_by_3(seqTmp)) {
                 stop(
-                    "Not all sequences provided can be divided
-                    into codons (are multiples of 3) so cannot be translated into protein sequences."
+                    "Not all sequences provided can be divided into codons ",
+                    "(are multiples of 3) so cannot be translated into ",
+                    "protein sequences."
                 )
             }
-            proseqtmp <- vapply(seqTmp, function(x) {
-                seqinr::c2s(seqinr::translate(seqinr::s2c(x)))
-            }, character(1))
+            
+            proseqtmp <- vapply(
+                seqTmp,
+                function(x) {
+                    seqinr::c2s(seqinr::translate(seqinr::s2c(x)))
+                },
+                character(1)
+            )
+            
             seqTmp <- proseqtmp
         }
+        
         if (!is.null(subregion)) {
-          subSeq <- vapply(seqTmp, function(x) {
-            out <- subset_seq(x, pos = subregion, subregionSel = subregionSel)
-            if (is.logical(out) && length(out) == 1 && is.na(out)) {
-              NA_character_
-            } else {
-              as.character(out)
-            }
-          }, character(1))
-          
-          if (any(is.na(subSeq))) {
-            message(
-              "For some sequences, the selected subregion is longer than the reference sequence region. These sequences will be removed from the analysis."
+            subSeq <- vapply(
+                seqTmp,
+                function(x) {
+                    out <- subset_seq(
+                        x,
+                        pos = subregion,
+                        subregionSel = subregionSel
+                    )
+                    
+                    if (is.logical(out) && length(out) == 1 && is.na(out)) {
+                        NA_character_
+                    } else {
+                        as.character(out)
+                    }
+                },
+                character(1)
             )
-          }
-          seqTmp <- subSeq
+            
+            if (any(is.na(subSeq))) {
+                message(
+                    "For some sequences, the selected subregion is longer ",
+                    "than the reference sequence region. These sequences ",
+                    "will be removed from the analysis."
+                )
+            }
+            
+            seqTmp <- subSeq
         }
+        
         seqForAnalysis <- seqTmp[!is.na(seqTmp)]
         resOut <- resQuant(qvec = seqForAnalysis, ptn = ptn)
-        controlSeq <- resOut[[1]]
-        controlSeq <- Biostrings::DNAStringSet(controlSeq)
+        controlSeq <- Biostrings::DNAStringSet(resOut[[1]])
         motifsTmpOut <- list()
+        
         for (j in 2:length(resOut)) {
-            regSeq <- resOut[[j]]
-            regSeq <- Biostrings::DNAStringSet(regSeq)
+            regSeq <- Biostrings::DNAStringSet(resOut[[j]])
+            
             streme_out <- memes::runStreme(
                 input = regSeq,
                 control = controlSeq,
@@ -88,26 +132,40 @@ motifAnalysis <- function(ptn,
                 alph = tolower(seqType),
                 minw = minwidth
             )
+            
             if (nrow(streme_out) == 0) {
-              message(
-                "No motifs found in: ",
-                sprintf("%s_%s", reg, names(resOut)[j])
-              )
+                message(
+                    "No motifs found in: ",
+                    sprintf("%s_%s", reg, names(resOut)[j])
+                )
             }
+            
             streme_out <- streme_out[streme_out$pval < stremeThreshold, ]
+            
             if (nrow(streme_out) == 0) {
-              message(
-                "No motifs passed thresholds in: ",
-                sprintf("%s_%s", reg, names(resOut)[j])
-              )
+                message(
+                    "No motifs passed thresholds in: ",
+                    sprintf("%s_%s", reg, names(resOut)[j])
+                )
             }
+            
             motifsTmpOut[[names(resOut)[j]]] <- streme_out
         }
-        motifsStemeOut <- append(list(motifSelection = as.character(unlist(
-            lapply(motifsTmpOut, function(x) {
-                x$consensus
-            })
-        ))), motifsTmpOut)
+        
+        motifsStemeOut <- append(
+            list(
+                motifSelection = as.character(
+                    unlist(lapply(
+                        motifsTmpOut,
+                        function(x) {
+                            x$consensus
+                        }
+                    ))
+                )
+            ),
+            motifsTmpOut
+        )
+        
         if (reg == "UTR5") {
             motifsOut@UTR5 <- motifsStemeOut
         } else if (reg == "CDS") {
@@ -116,6 +174,8 @@ motifAnalysis <- function(ptn,
             motifsOut@UTR3 <- motifsStemeOut
         }
     }
+    
     ptn@analysis@motifs <- motifsOut
+    
     return(ptn)
 }

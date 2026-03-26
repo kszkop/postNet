@@ -1,47 +1,80 @@
-goAnalysis <- function(ptn,
-                       genesSlopeFiltOut = NULL,
-                       category,
-                       maxSize = 500,
-                       minSize = 10,
-                       counts = 10,
-                       FDR = 0.15,
-                       name = NULL) {
+goAnalysis <- function(
+        ptn,
+        genesSlopeFiltOut = NULL,
+        category,
+        maxSize = 500,
+        minSize = 10,
+        counts = 10,
+        FDR = 0.15,
+        name = NULL
+) {
     check_ptn(ptn)
     species <- ptn_species(ptn)
+    
     if (!species %in% c("human", "mouse")) {
-        stop("GO term analysis functionality is currently only available for human and mouse.")
+        stop(
+            "GO term analysis functionality is currently only available ",
+            "for human and mouse."
+        )
     }
+    
     check_category(category)
-    if (!check_number(maxSize) |
-        !check_number(minSize) |
-        !check_number(counts) | !check_number(FDR)) {
-        stop("The inputs for 'maxSize', 'minSize', 'counts', and 'FDR' must be numeric.")
+    
+    if (!check_number(maxSize) ||
+            !check_number(minSize) ||
+            !check_number(counts) ||
+            !check_number(FDR)) {
+        stop(
+            "The inputs for 'maxSize', 'minSize', 'counts', and 'FDR' ",
+            "must be numeric."
+        )
     }
-    if (minSize <= 0 | maxSize <= 0 | counts <= 0 | FDR < 0) {
-        stop("The inputs for 'maxSize', 'minSize', 'counts', and 'FDR' must be positive.")
+    
+    if (minSize <= 0 || maxSize <= 0 || counts <= 0 || FDR < 0) {
+        stop(
+            "The inputs for 'maxSize', 'minSize', 'counts', and 'FDR' ",
+            "must be positive."
+        )
     }
+    
     if (maxSize <= minSize) {
         stop("'maxSize' must be greater than 'minSize'.")
     }
+    
     GOout <- list()
     res <- ptn_geneList(ptn)
     bg <- unlist(ptn_background(ptn))
+    
     if (length(setdiff(bg, unique(unlist(res)))) == 0) {
         warning(
-            "All genes in the background gene set are regulated. Please check that you are using an appropriate background set."
+            "All genes in the background gene set are regulated. ",
+            "Please check that you are using an appropriate ",
+            "background set."
         )
     }
+    
     if (!is.null(genesSlopeFiltOut)) {
         bg <- bg[!bg %in% genesSlopeFiltOut]
-        res <- lapply(res, function(x) {
-            x[!x %in% genesSlopeFiltOut]
-        })
+        
+        res <- lapply(
+            res,
+            function(x) {
+                x[!x %in% genesSlopeFiltOut]
+            }
+        )
     }
+    
     bg_entrezID <- convertSymbolToEntrezID(geneList = bg, species = species)
-    res_entrezID <- lapply(res, function(x) {
-        convertSymbolToEntrezID(geneList = x, species = species)
-    })
+    
+    res_entrezID <- lapply(
+        res,
+        function(x) {
+            convertSymbolToEntrezID(geneList = x, species = species)
+        }
+    )
+    
     GoLists <- res_entrezID[!vapply(res_entrezID, is.null, logical(1))]
+    
     GOout <- new(
         "postNetGO",
         BP = NULL,
@@ -49,8 +82,10 @@ goAnalysis <- function(ptn,
         MF = NULL,
         KEGG = NULL
     )
+    
     for (sel in category) {
         resOut <- list()
+        
         if (sel == "KEGG") {
             for (i in seq_along(GoLists)) {
                 resTmp <- clusterProfiler::enrichKEGG(
@@ -67,9 +102,10 @@ goAnalysis <- function(ptn,
                     minGSSize = minSize,
                     maxGSSize = maxSize
                 )
+                
                 resOut[[names(GoLists)[i]]] <- resTmp
             }
-        } else if (sel == "BP" | sel == "MF" | sel == "CC") {
+        } else if (sel == "BP" || sel == "MF" || sel == "CC") {
             for (i in seq_along(GoLists)) {
                 resTmp <- clusterProfiler::enrichGO(
                     gene = GoLists[[i]],
@@ -88,35 +124,70 @@ goAnalysis <- function(ptn,
                     readable = TRUE,
                     pool = FALSE
                 )
+                
                 resOut[[names(GoLists)[i]]] <- resTmp
             }
         }
+        
         for (i in seq_along(resOut)) {
             tabTmp <- resOut[[i]]@result
             tabTmp <- tabTmp[tabTmp$Count >= counts, ]
+            
             if (nrow(tabTmp) > 0) {
-                tabTmp$p.adjust <- stats::p.adjust(tabTmp$pvalue, method = "BH")
+                tabTmp$p.adjust <- stats::p.adjust(
+                    tabTmp$pvalue,
+                    method = "BH"
+                )
             }
+            
             tabTmp <- tabTmp[tabTmp$p.adjust < FDR, ]
+            
             if (nrow(tabTmp) > 0) {
                 geneIDs_temp <- tabTmp$geneID
-                checkID <- check_id_type(seqinr::c2s(strsplit(geneIDs_temp[[1]], "/")[[1]][seq_len(5)]))
+                
+                checkID <- check_id_type(seqinr::c2s(
+                    strsplit(geneIDs_temp[[1]], "/")[[1]][seq_len(5)]
+                ))
+                
                 if (checkID == "entrezID") {
-                    tabTmp$geneID <- vapply(geneIDs_temp, function(x) {
-                        paste(
-                            sort(convertEntrezIDToSymbol(unlist(strsplit(x, "/")), species = species)),
-                            collapse = ":"
-                        )
-                    }, character(1), USE.NAMES = FALSE)
+                    tabTmp$geneID <- vapply(
+                        geneIDs_temp,
+                        function(x) {
+                            paste(
+                                sort(convertEntrezIDToSymbol(
+                                    unlist(strsplit(x, "/")),
+                                    species = species
+                                )),
+                                collapse = ":"
+                            )
+                        },
+                        character(1),
+                        USE.NAMES = FALSE
+                    )
                 } else {
-                    tabTmp$geneID <- vapply(geneIDs_temp, function(x) {
-                        paste(sort(unlist(strsplit(x, "/"))), collapse = ":")
-                    }, character(1), USE.NAMES = FALSE)
+                    tabTmp$geneID <- vapply(
+                        geneIDs_temp,
+                        function(x) {
+                            paste(
+                                sort(unlist(strsplit(x, "/"))),
+                                collapse = ":"
+                            )
+                        },
+                        character(1),
+                        USE.NAMES = FALSE
+                    )
                 }
             } else {
-                message("No significant results for ", sel, " in ", names(resOut)[i])
+                message(
+                    "No significant results for ",
+                    sel,
+                    " in ",
+                    names(resOut)[i]
+                )
             }
+            
             tabTmp$Size <- as.numeric(sub("\\/.*", "", tabTmp$BgRatio))
+            
             if (sel == "KEGG") {
                 tabTmp <- tabTmp[, c(
                     "ID",
@@ -140,24 +211,34 @@ goAnalysis <- function(ptn,
                     "geneID"
                 )]
             }
+            
             resOut[[i]]@result <- tabTmp
         }
-        resWrite <- lapply(resOut, function(x) {
-            x@result
-        })
+        
+        resWrite <- lapply(
+            resOut,
+            function(x) {
+                x@result
+            }
+        )
+        
         nameOut <- ifelse(
             is.null(name),
             paste("GO_", sel, ".xlsx", sep = ""),
             paste(name, "_GO_", sel, ".xlsx", sep = "")
         )
+        
         WriteXLS::WriteXLS(
             resWrite,
             SheetNames = names(resWrite),
             ExcelFileName = nameOut,
             row.names = FALSE
         )
+        
         slot(GOout, sel) <- resOut
     }
+    
     ptn@analysis@GO <- GOout
+    
     return(ptn)
 }

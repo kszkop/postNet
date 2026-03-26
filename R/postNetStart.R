@@ -1,562 +1,717 @@
-postNetStart <- function(ads = NULL,
-                         regulation = NULL,
-                         contrast = NULL,
-                         regulationGen = NULL,
-                         contrastSel = NULL,
-                         geneList = NULL,
-                         geneListcolours = NULL,
-                         customBg = NULL,
-                         effectMeasure = NULL,
-                         source,
-                         species = NULL,
-                         customFile = NULL,
-                         fastaFile = NULL,
-                         posFile = NULL,
-                         rna_gbff_file = NULL,
-                         rna_fa_file = NULL,
-                         genomic_gff_file = NULL,
-                         selection = "random",
-                         setSeed = NULL,
-                         adjObj = NULL,
-                         region_adj = NULL,
-                         excl = FALSE,
-                         keepAll = FALSE) {
-  #
-  if (!is.null(ads) && !is.null(geneList)) {
-    stop("Please provide either an anota2seq object or a gene list, not both.")
-  }
-  if (!is.null(ads)) {
-    check_ads(ads)
-
-    if (!is.null(regulation) &&
-      !is.character(regulation) &&
-      !regulation %in% c(
-        "translationUp",
-        "translationDown",
-        "translatedmRNAUp",
-        "translatedmRNADown",
-        "bufferingmRNAUp",
-        "bufferingmRNADown",
-        "mRNAAbundanceUp",
-        "mRNAAbundanceDown",
-        "totalmRNAUp",
-        "totalmRNADown"
-      )) {
-      stop(
-        "'regulation' should be a character vector chosen from translationUp,translationDown,translatedmRNAUp,translatedmRNADown,bufferingmRNAUp,bufferingmRNADown,mRNAAbundanceUp,mRNAAbundanceDown,totalmRNAUp,totalmRNADown"
-      )
-    }
-    if (!is.null(regulation)) {
-      if (!is.null(contrast) &&
-        !is.numeric(contrast) &&
-        !length(contrast) == length(regulation) &&
-        !contrast %in% seq(1, ncol(ads@contrasts), 1)) {
+postNetStart <- function(
+        ads = NULL,
+        regulation = NULL,
+        contrast = NULL,
+        regulationGen = NULL,
+        contrastSel = NULL,
+        geneList = NULL,
+        geneListcolours = NULL,
+        customBg = NULL,
+        effectMeasure = NULL,
+        source,
+        species = NULL,
+        customFile = NULL,
+        fastaFile = NULL,
+        posFile = NULL,
+        rna_gbff_file = NULL,
+        rna_fa_file = NULL,
+        genomic_gff_file = NULL,
+        selection = "random",
+        setSeed = NULL,
+        adjObj = NULL,
+        region_adj = NULL,
+        excl = FALSE,
+        keepAll = FALSE
+) {
+    version <- NA_character_
+    
+    if (!is.null(ads) && !is.null(geneList)) {
         stop(
-          "The input for 'contrast' must be a numeric vector corresponding to the numbers of the anota2seq contrasts for each regulatory mode selected for comparison. Please see the anota2seq vignette for additional details on contrasts."
+            "Please provide either an anota2seq object or a gene list, ",
+            "not both."
         )
-      }
     }
-  }
-  if (is.null(ads)) {
-    if (is.null(geneList)) {
-      stop(
-        "Please provide either an anota2seq object with the 'ads' parameter, or a list of regulated genes with the 'geneList' parameter."
-      )
+    
+    if (!is.null(ads)) {
+        check_ads(ads)
+        
+        if (!is.null(regulation)) {
+            if (!is.character(regulation) ||
+                    !all(regulation %in% c(
+                        "translationUp",
+                        "translationDown",
+                        "translatedmRNAUp",
+                        "translatedmRNADown",
+                        "bufferingmRNAUp",
+                        "bufferingmRNADown",
+                        "mRNAAbundanceUp",
+                        "mRNAAbundanceDown",
+                        "totalmRNAUp",
+                        "totalmRNADown"
+                    ))) {
+                stop(
+                    "'regulation' should be a character vector chosen ",
+                    "from translationUp, translationDown, ",
+                    "translatedmRNAUp, translatedmRNADown, ",
+                    "bufferingmRNAUp, bufferingmRNADown, ",
+                    "mRNAAbundanceUp, mRNAAbundanceDown, ",
+                    "totalmRNAUp, totalmRNADown."
+                )
+            }
+        }
+        
+        if (!is.null(regulation) && !is.null(contrast)) {
+            if (!is.numeric(contrast) ||
+                    length(contrast) != length(regulation) ||
+                    !all(contrast %in% seq(1, ncol(ads@contrasts), 1))) {
+                stop(
+                    "The input for 'contrast' must be a numeric vector ",
+                    "corresponding to the numbers of the anota2seq ",
+                    "contrasts for each regulatory mode selected for ",
+                    "comparison. Please see the anota2seq vignette for ",
+                    "additional details on contrasts."
+                )
+            }
+        }
+    }
+    
+    if (is.null(ads)) {
+        if (is.null(geneList)) {
+            stop(
+                "Please provide either an anota2seq object with the ",
+                "'ads' parameter, or a list of regulated genes with the ",
+                "'geneList' parameter."
+            )
+        } else {
+            check_geneList(geneList)
+            
+            if (!is.null(geneListcolours)) {
+                if (!is.character(geneListcolours) ||
+                        length(geneListcolours) != length(geneList)) {
+                    stop(
+                        "The input for 'geneListcolours' should be a ",
+                        "character vector of the same length as ",
+                        "'geneList'. These colours will be used for ",
+                        "plotting in downstream analyses."
+                    )
+                }
+            }
+        }
+    }
+    
+    if (!is.null(customBg)) {
+        if (!is.character(customBg)) {
+            stop("The input for 'customBg' must be a character vector.")
+        }
+        
+        if (!length(setdiff(unlist(geneList), customBg)) == 0) {
+            stop(
+                "There are entries in 'geneList' that are not in ",
+                "'customBg'. Please ensure that all genes in your gene ",
+                "lists are included in the background."
+            )
+        }
+    }
+    
+    check_source(source)
+    check_selection(selection)
+    
+    check_input(
+        source,
+        customFile,
+        rna_gbff_file,
+        rna_fa_file,
+        genomic_gff_file,
+        posFile,
+        fastaFile
+    )
+    
+    if (!is.null(adjObj)) {
+        check_adjObj(adjObj)
+        
+        valid_regions <- c("UTR5", "UTR3")
+        
+        if (!all(region_adj %in% valid_regions)) {
+            stop(
+                "The input for 'region_adj' must be provided and can ",
+                "only include: 'UTR5', and/or 'UTR3'. It should also ",
+                "match the named entries in the list adjObj."
+            )
+        }
+        
+        if (!check_logical(excl)) {
+            stop("The input for 'excl' must be logical: TRUE or FALSE.")
+        }
+        
+        if (!check_logical(keepAll)) {
+            stop("The input for 'keepAll' must be logical: TRUE or FALSE.")
+        }
+    }
+    
+    if (source == "create") {
+        if (!is_valid_species(species)) {
+            stop(
+                "Please specify a species. Currently, 'human' or ",
+                "'mouse' are available."
+            )
+        }
+        
+        if (species == "human") {
+            url <- paste(
+                "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/",
+                "annotation/annotation_releases/current/",
+                sep = ""
+            )
+            
+            links_current <- getLink(url)
+            
+            if (is.null(links_current)) {
+                stop("Could not read current release directory")
+            }
+            
+            version <- gsub(
+                "/",
+                "",
+                links_current[grepl("GCF_000001405", links_current)]
+            )
+            
+            url_version <- paste(
+                "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/",
+                "annotation/annotation_releases/current",
+                version,
+                sep = "/"
+            )
+            
+            links_version <- getLink(url_version)
+            
+            if (is.null(links_version)) {
+                stop("Could not read version directory")
+            }
+            
+            fna <- links_version[grepl("_rna\\.fna\\.gz$", links_version)]
+            gbff <- links_version[grepl("_rna\\.gbff\\.gz$", links_version)]
+            gff <- links_version[grepl("_genomic\\.gff\\.gz$", links_version)]
+            
+            opts <- options(timeout = max(1000, getOption("timeout")))
+            on.exit(options(opts))
+            
+            download.file(
+                paste(url_version, fna, sep = "/"),
+                destfile = "customFasta.fa.gz"
+            )
+            download.file(
+                paste(url_version, gbff, sep = "/"),
+                destfile = "customAnnot.gbff.gz"
+            )
+            download.file(
+                paste(url_version, gff, sep = "/"),
+                destfile = "GeneRef.gff.gz"
+            )
+        }
+        
+        if (species == "mouse") {
+            url <- paste(
+                "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/",
+                "annotation_releases/current/",
+                sep = ""
+            )
+            
+            links_current <- getLink(url)
+            
+            if (is.null(links_current)) {
+                stop("Could not read current release directory")
+            }
+            
+            version <- gsub(
+                "/",
+                "",
+                links_current[grepl("GCF_000001635", links_current)]
+            )
+            
+            url_version <- paste(
+                "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/",
+                "annotation_releases/current",
+                version,
+                sep = "/"
+            )
+            
+            links_version <- getLink(url_version)
+            
+            if (is.null(links_version)) {
+                stop("Could not read version directory")
+            }
+            
+            fna <- links_version[grepl("_rna\\.fna\\.gz$", links_version)]
+            gbff <- links_version[grepl("_rna\\.gbff\\.gz$", links_version)]
+            gff <- links_version[grepl("_genomic\\.gff\\.gz$", links_version)]
+            
+            opts <- options(timeout = max(1000, getOption("timeout")))
+            on.exit(options(opts))
+            
+            download.file(
+                paste(url_version, fna, sep = "/"),
+                destfile = "customFasta.fa.gz"
+            )
+            download.file(
+                paste(url_version, gbff, sep = "/"),
+                destfile = "customAnnot.gbff.gz"
+            )
+            download.file(
+                paste(url_version, gff, sep = "/"),
+                destfile = "GeneRef.gff.gz"
+            )
+        }
+        
+        R.utils::gunzip("customAnnot.gbff.gz")
+        R.utils::gunzip("customFasta.fa.gz")
+        R.utils::gunzip("GeneRef.gff.gz")
+        
+        seqs <- seqinr::read.fasta(file = "customFasta.fa", seqtype = "AA")
+        seqs <- data.frame(
+            id = sub("\\..*", "", names(seqs)),
+            seq = t(as.data.frame(lapply(
+                seqs,
+                function(x) {
+                    paste(x, collapse = "")
+                }
+            ))),
+            row.names = NULL,
+            stringsAsFactors = FALSE
+        )
+        
+        perl_script <- switch(
+            species,
+            "human" = "AnnotFromgbff_human.pl",
+            "mouse" = "AnnotFromgbff_mouse.pl"
+        )
+        
+        script_path <- file.path(
+            system.file("perl", package = "postNet"),
+            perl_script
+        )
+        
+        system2("perl", args = script_path)
+        
+        annot <- read.delim("customAnnot.txt", stringsAsFactors = FALSE)
+        colnames(annot) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
+        
+        annotSeq <- merge(annot, seqs, by = "id")
+        annotSeq <- extractRegSeq(annotSeq)
+        
+        gff <- gffRead("GeneRef.gff")
+        bed <- extGff(gff)
+        
+        outDB <- merge(
+            bed[, c(1, 7)],
+            annotSeq[, c(1, 6, 7, 8)],
+            by = "id"
+        )
+        
+        outDB <- outDB[grepl("NM_", outDB$id), ]
+        
+        write.table(
+            outDB,
+            file = "customDB.txt",
+            col.names = TRUE,
+            row.names = FALSE,
+            sep = "\t",
+            quote = FALSE
+        )
+    } else if (source == "createFromSourceFiles") {
+        if (!is_valid_species(species)) {
+            stop(
+                "Please specify a species. Currently, 'human' or ",
+                "'mouse' are available."
+            )
+        }
+        
+        source_files_tmp <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
+        source_files <- gsub(".gz", "", source_files_tmp)
+        filenames <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
+        
+        for (i in seq_along(source_files_tmp)) {
+            R.utils::gunzip(source_files_tmp[i], remove = FALSE)
+            file.rename(source_files[i], filenames[i])
+        }
+        
+        seqs <- seqinr::read.fasta(file = "customFasta.fa", seqtype = "AA")
+        seqs <- data.frame(
+            id = sub("\\..*", "", names(seqs)),
+            seq = t(as.data.frame(lapply(
+                seqs,
+                function(x) {
+                    paste(x, collapse = "")
+                }
+            ))),
+            row.names = NULL,
+            stringsAsFactors = FALSE
+        )
+        
+        perl_script <- switch(
+            species,
+            "human" = "AnnotFromgbff_human.pl",
+            "mouse" = "AnnotFromgbff_mouse.pl"
+        )
+        
+        script_path <- file.path(
+            system.file("perl", package = "postNet"),
+            perl_script
+        )
+        
+        system2("perl", args = script_path)
+        
+        annot <- read.delim("customAnnot.txt", stringsAsFactors = FALSE)
+        colnames(annot) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
+        
+        annotSeq <- merge(annot, seqs, by = "id")
+        annotSeq <- extractRegSeq(annotSeq)
+        
+        gff <- gffRead("GeneRef.gff")
+        bed <- extGff(gff)
+        
+        outDB <- merge(
+            bed[, c(1, 7)],
+            annotSeq[, c(1, 6, 7, 8)],
+            by = "id"
+        )
+        
+        outDB <- outDB[grepl("NM_", outDB$id), ]
+        
+        write.table(
+            outDB,
+            file = "customDB.txt",
+            col.names = TRUE,
+            row.names = FALSE,
+            sep = "\t",
+            quote = FALSE
+        )
+        
+        filesToRm <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
+        
+        for (i in seq_along(filesToRm)) {
+            if (file.exists(filesToRm[i])) {
+                file.remove(filesToRm[i])
+            }
+        }
+    } else if (source == "load") {
+        if (!is_valid_species(species)) {
+            stop(
+                "Please specify a species. Currently, 'human' or ",
+                "'mouse' are available."
+            )
+        }
+        
+        currTmp <- c("human", "mouse")
+        
+        if (!species %in% currTmp) {
+            stop(
+                "This option is currently only available for species: ",
+                "'human' and 'mouse'. Please use the 'custom' and ",
+                "'customFile' parameters to provide annotations for ",
+                "other species."
+            )
+        }
+        
+        if (species == "human") {
+            outDB <- get_reference_data(file = "humanDB_refSeq.txt.gz")
+            version <- "ver_40.202408"
+        }
+        
+        if (species == "mouse") {
+            outDB <- get_reference_data(file = "mouseDB_refSeq.txt.gz")
+            version <- "ver_27.202402"
+        }
+    } else if (source == "custom") {
+        outDB <- read.delim(customFile, stringsAsFactors = FALSE)
+        colnames(outDB) <- c("id", "geneID", "UTR5_seq", "CDS_seq", "UTR3_seq")
+    } else if (source == "createFromFasta") {
+        posTmp <- read.delim(posFile, stringsAsFactors = FALSE)
+        colnames(posTmp) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
+        
+        seqs <- seqinr::read.fasta(fastaFile, seqtype = "AA")
+        seqs <- data.frame(
+            id = sub("\\..*", "", names(seqs)),
+            seq = t(as.data.frame(lapply(
+                seqs,
+                function(x) {
+                    paste(x, collapse = "")
+                }
+            ))),
+            row.names = NULL,
+            stringsAsFactors = FALSE
+        )
+        
+        annotSeq <- merge(posTmp, seqs, by = "id")
+        annotSeq <- extractRegSeq(annotSeq)
+        
+        if (is.null(genomic_gff_file)) {
+            if (!is_valid_species(species)) {
+                stop(
+                    "Please specify a species. Currently, 'human' or ",
+                    "'mouse' are available. For use with other species ",
+                    "annotations, please use the 'custom' parameter, ",
+                    "and provide an annotation file using the ",
+                    "'customFile' parameter."
+                )
+            }
+            
+            if (species == "human") {
+                url <- paste(
+                    "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/",
+                    "annotation/annotation_releases/current/",
+                    sep = ""
+                )
+                
+                links_current <- getLink(url)
+                
+                if (is.null(links_current)) {
+                    stop("Could not read current release directory")
+                }
+                
+                version <- gsub(
+                    "/",
+                    "",
+                    links_current[grepl("GCF_000001405", links_current)]
+                )
+                
+                url_version <- paste(
+                    "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/",
+                    "annotation/annotation_releases/current",
+                    version,
+                    sep = "/"
+                )
+                
+                links_version <- getLink(url_version)
+                
+                if (is.null(links_version)) {
+                    stop("Could not read version directory")
+                }
+                
+                gff <- links_version[grepl("_genomic\\.gff\\.gz", links_version)]
+                
+                opts <- options(timeout = max(1000, getOption("timeout")))
+                on.exit(options(opts))
+                
+                download.file(
+                    paste(url_version, gff, sep = "/"),
+                    destfile = "GeneRef.gff.gz"
+                )
+            }
+            
+            if (species == "mouse") {
+                url <- paste(
+                    "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/",
+                    "annotation_releases/current/",
+                    sep = ""
+                )
+                
+                links_current <- getLink(url)
+                
+                if (is.null(links_current)) {
+                    stop("Could not read current release directory")
+                }
+                
+                version <- gsub(
+                    "/",
+                    "",
+                    links_current[grepl("GCF_000001635", links_current)]
+                )
+                
+                url_version <- paste(
+                    "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/",
+                    "annotation_releases/current",
+                    version,
+                    sep = "/"
+                )
+                
+                links_version <- getLink(url_version)
+                
+                if (is.null(links_version)) {
+                    stop("Could not read version directory")
+                }
+                
+                gff <- links_version[grepl("_genomic\\.gff\\.gz", links_version)]
+                
+                opts <- options(timeout = max(1000, getOption("timeout")))
+                on.exit(options(opts))
+                
+                download.file(
+                    paste(url_version, gff, sep = "/"),
+                    destfile = "GeneRef.gff.gz"
+                )
+            }
+            
+            R.utils::gunzip("GeneRef.gff.gz")
+            gff <- gffRead("GeneRef.gff")
+            
+            filesToRm <- c("GeneRef.gff")
+            
+            if (file.exists(filesToRm)) {
+                file.remove(filesToRm)
+            }
+        } else {
+            gff <- gffRead(genomic_gff_file)
+        }
+        
+        bed <- extGff(gff)
+        
+        outDB <- merge(
+            bed[, c(1, 7)],
+            annotSeq[, c(1, 6, 7, 8)],
+            by = "id"
+        )
+        
+        outDB <- outDB[grepl("NM_", outDB$id), ]
+        
+        write.table(
+            outDB,
+            file = "customDB.txt",
+            col.names = TRUE,
+            row.names = FALSE,
+            sep = "\t",
+            quote = FALSE
+        )
     } else {
-      check_geneList(geneList)
-
-      if (!is.null(geneListcolours) &&
-        !is.character(geneListcolours) &&
-        !length(geneListcolours) == length(geneList)) {
         stop(
-          "The input for 'geneListcolours' should be a character vector of the same length as 'geneList'. These colours will be used for plotting in \ downstream analyses."
+            "Please select one of: 'custom', 'create', ",
+            "'createFromFasta', and 'createFromSourceFiles' for the ",
+            "'source' parameter. See the help page and vignette for ",
+            "additional details on sequence annotations."
         )
-      }
     }
-  }
-  if (!is.null(customBg)) {
-    if (!is.character(customBg)) {
-      stop("The input for 'customBg' must be a character vector.")
-    }
-    if (!length(setdiff(unlist(geneList), customBg)) == 0) {
-      stop(
-        "There are entries in 'geneList' that are not in 'customBg'. Please ensure that all genes in your gene lists are included in the background."
-      )
-    }
-  }
-  check_source(source)
-  check_selection(selection)
-  check_input(
-    source,
-    customFile,
-    rna_gbff_file,
-    rna_fa_file,
-    genomic_gff_file,
-    posFile,
-    fastaFile
-  )
-
-  if (!is.null(adjObj)) {
-    check_adjObj(adjObj)
-    valid_regions <- c("UTR5", "UTR3")
-    if (!all(region_adj %in% valid_regions)) {
-      stop(
-        "The input for 'region_adj' must be provided and can only include: 'UTR5', and/or 'UTR3'. It should also match the named entries in the list adjObj."
-      )
-    }
-    if (!check_logical(excl)) {
-      stop("The input for 'excl' must be logical: TRUE or FALSE.")
-    }
-    if (!check_logical(keepAll)) {
-      stop("The input for 'keepAll' must be logical: TRUE or FALSE.")
-    }
-  }
-  #
-  if (source == "create") {
-    if (!is_valid_species(species)) {
-      stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
-    }
-    #
-    if (species == "human") {
-      url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/"
-
-      links_current <- getLink(url)
-
-      if (is.null(links_current)) {
-        stop("Could not read current release directory")
-      }
-
-      version <- gsub("/", "", links_current[grepl("GCF_000001405", links_current)])
-
-      url_version <- paste(
-        "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current",
-        version,
-        sep = "/"
-      )
-
-      links_version <- getLink(url_version)
-      if (is.null(links_version)) {
-        stop("Could not read version directory")
-      }
-
-      fna <- links_version[grepl("_rna\\.fna\\.gz$", links_version)]
-      gbff <- links_version[grepl("_rna\\.gbff\\.gz$", links_version)]
-      gff <- links_version[grepl("_genomic\\.gff\\.gz$", links_version)]
-
-      #
-      opts <- options(timeout = max(1000, getOption("timeout")))
-      on.exit(options(opts))
-
-      download.file(paste(url_version, fna, sep = "/"), destfile = "customFasta.fa.gz")
-      download.file(paste(url_version, gbff, sep = "/"), destfile = "customAnnot.gbff.gz")
-      download.file(paste(url_version, gff, sep = "/"), destfile = "GeneRef.gff.gz")
-    }
-
-    if (species == "mouse") {
-      url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/"
-
-      links_current <- getLink(url)
-
-      if (is.null(links_current)) {
-        stop("Could not read current release directory")
-      }
-
-      version <- gsub("/", "", links_current[grepl("GCF_000001635", links_current)])
-
-      #
-      url_version <- paste(
-        "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current",
-        version,
-        sep = "/"
-      )
-
-      fna <- links_version[grepl("_rna\\.fna\\.gz$", links_version)]
-      gbff <- links_version[grepl("_rna\\.gbff\\.gz$", links_version)]
-      gff <- links_version[grepl("_genomic\\.gff\\.gz$", links_version)]
-
-      #
-      opts <- options(timeout = max(1000, getOption("timeout")))
-      on.exit(options(opts))
-
-      download.file(paste(url_version, fna, sep = "/"), destfile = "customFasta.fa.gz")
-      download.file(paste(url_version, gbff, sep = "/"), destfile = "customAnnot.gbff.gz")
-      download.file(paste(url_version, gff, sep = "/"), destfile = "GeneRef.gff.gz")
-    }
-    R.utils::gunzip("customAnnot.gbff.gz")
-    R.utils::gunzip("customFasta.fa.gz")
-    R.utils::gunzip("GeneRef.gff.gz")
-
-    #
-    seqs <- seqinr::read.fasta(file = "customFasta.fa", seqtype = "AA")
-    seqs <- data.frame(
-      id = sub("\\..*", "", names(seqs)),
-      seq = t(as.data.frame(lapply(seqs, function(x) {
-        paste(x, collapse = "")
-      }))),
-      row.names = NULL,
-      stringsAsFactors = FALSE
+    
+    annotBg <- gSel(
+        annot = outDB,
+        ads = ads,
+        customBg = customBg,
+        geneList = geneList
     )
-
-    #
-    perl_script <- switch(species,
-      "human" = "AnnotFromgbff_human.pl",
-      "mouse" = "AnnotFromgbff_mouse.pl"
-    )
-    #
-    script_path <- file.path(system.file("perl", package = "postNet"), perl_script)
-    system2("perl", args = script_path)
-
-    #
-    annot <- read.delim("customAnnot.txt", stringsAsFactors = FALSE)
-    colnames(annot) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
-
-    annotSeq <- merge(annot, seqs, by = "id")
-    annotSeq <- extractRegSeq(annotSeq)
-
-    gff <- gffRead("GeneRef.gff")
-    bed <- extGff(gff)
-
-    outDB <- merge(bed[, c(1, 7)], annotSeq[, c(1, 6, 7, 8)], by = "id")
-    outDB <- outDB[grepl("NM_", outDB$id), ]
-
-    write.table(
-      outDB,
-      file = "customDB.txt",
-      col.names = TRUE,
-      row.names = FALSE,
-      sep = "\t",
-      quote = FALSE
-    )
-  } else if (source == "createFromSourceFiles") {
-    if (!is_valid_species(species)) {
-      stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
-    }
-    #
-    source_files_tmp <- c(rna_gbff_file, rna_fa_file, genomic_gff_file)
-    source_files <- gsub(".gz", "", source_files_tmp)
-    filenames <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
-    for (i in seq_along(source_files_tmp)) {
-      R.utils::gunzip(source_files_tmp[i], remove = FALSE)
-      file.rename(source_files[i], filenames[i])
-    }
-
-    #
-    seqs <- seqinr::read.fasta(file = "customFasta.fa", seqtype = "AA")
-    seqs <- data.frame(
-      id = sub("\\..*", "", names(seqs)),
-      seq = t(as.data.frame(lapply(seqs, function(x) {
-        paste(x, collapse = "")
-      }))),
-      row.names = NULL,
-      stringsAsFactors = FALSE
-    )
-
-    perl_script <- switch(species,
-      "human" = "AnnotFromgbff_human.pl",
-      "mouse" = "AnnotFromgbff_mouse.pl"
-    )
-    #
-    script_path <- file.path(system.file("perl", package = "postNet"), perl_script)
-    system2("perl", args = script_path)
-
-    #
-    annot <- read.delim("customAnnot.txt", stringsAsFactors = FALSE)
-    colnames(annot) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
-
-    annotSeq <- merge(annot, seqs, by = "id")
-    annotSeq <- extractRegSeq(annotSeq)
-
-    #
-    gff <- gffRead("GeneRef.gff")
-    bed <- extGff(gff)
-
-    outDB <- merge(bed[, c(1, 7)], annotSeq[, c(1, 6, 7, 8)], by = "id")
-    outDB <- outDB[grepl("NM_", outDB$id), ]
-
-    write.table(
-      outDB,
-      file = "customDB.txt",
-      col.names = TRUE,
-      row.names = FALSE,
-      sep = "\t",
-      quote = FALSE
-    )
-
-    #
-    filesToRm <- c("customAnnot.gbff", "customFasta.fa", "GeneRef.gff")
-    for (i in seq_along(filesToRm)) {
-      if (file.exists(filesToRm[i])) {
-        file.remove(filesToRm[i])
-      }
-    }
-  } else if (source == "load") {
-    if (!is_valid_species(species)) {
-      stop("Please specify a species. Currently, 'human' or 'mouse' are available.")
-    }
-    currTmp <- c("human", "mouse")
-
-    if (!species %in% currTmp) {
-      stop(
-        "This option is currently only available for species: 'human' and 'mouse'. Please use the 'custom' and 'customFile' parameters \ to provide annotations for other species."
-      )
-    }
-
-    if (species == "human") {
-      outDB <- get_reference_data(file = "humanDB_refSeq.txt.gz")
-      version <- "ver_40.202408"
-    }
-    if (species == "mouse") {
-      outDB <- get_reference_data(file = "mouseDB_refSeq.txt.gz")
-      version <- "ver_27.202402"
-    }
-  } else if (source == "custom") {
-    outDB <- read.delim(customFile, stringsAsFactors = FALSE)
-    colnames(outDB) <- c("id", "geneID", "UTR5_seq", "CDS_seq", "UTR3_seq")
-  } else if (source == "createFromFasta") {
-    posTmp <- read.delim(posFile, stringsAsFactors = FALSE)
-    colnames(posTmp) <- c("id", "UTR5_len", "CDS_stop", "Total_len")
-
-    seqs <- seqinr::read.fasta(fastaFile, seqtype = "AA")
-    seqs <- data.frame(
-      id = sub("\\..*", "", names(seqs)),
-      seq = t(as.data.frame(lapply(seqs, function(x) {
-        paste(x, collapse = "")
-      }))),
-      row.names = NULL,
-      stringsAsFactors = FALSE
-    )
-
-    annotSeq <- merge(posTmp, seqs, by = "id")
-    annotSeq <- extractRegSeq(annotSeq)
-
-    #
-    if (is.null(genomic_gff_file)) {
-      if (!is_valid_species(species)) {
+    
+    if (nrow(annotBg) == 0) {
         stop(
-          "Please specify a species. Currently, 'human' or 'mouse' are available. For use with other species annotations, please use the 'custom' parameter, \ and provide an annotation file using the 'customFile' parameter."
+            "The gene IDs in the annotation are not compatible with ",
+            "gene IDs in the background."
         )
-      }
-      #
-      if (species == "human") {
-        url <- "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current/"
-
-        links_current <- getLink(url)
-        if (is.null(links_current)) {
-          stop("Could not read current release directory")
-        }
-
-        version <- gsub("/", "", links_current[grepl("GCF_000001405", links_current)])
-
-        #
-        url_version <- paste(
-          "https://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/annotation_releases/current",
-          version,
-          sep = "/"
-        )
-
-        links_version <- getLink(url_version)
-        if (is.null(links_version)) {
-          stop("Could not read version directory")
-        }
-
-        gff <- links_version[grepl("_genomic\\.gff\\.gz", links_version)]
-        #
-        opts <- options(timeout = max(1000, getOption("timeout")))
-        on.exit(options(opts))
-
-        download.file(paste(url_version, gff, sep = "/"), destfile = "GeneRef.gff.gz")
-      }
-
-      if (species == "mouse") {
-        url <- "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current/"
-
-        links_current <- getLink(url)
-        if (is.null(links_current)) {
-          stop("Could not read current release directory")
-        }
-
-        version <- gsub("/", "", links_current[grepl("GCF_000001635", links_current)])
-
-        #
-        url_version <- paste(
-          "https://ftp.ncbi.nlm.nih.gov/refseq/M_musculus/annotation_releases/current",
-          version,
-          sep = "/"
-        )
-        if (is.null(links_version)) {
-          stop("Could not read version directory")
-        }
-
-        gff <- links_version[grepl("_genomic\\.gff\\.gz", links_version)]
-
-        #
-        opts <- options(timeout = max(1000, getOption("timeout")))
-        on.exit(options(opts))
-
-        download.file(paste(url_version, gff, sep = "/"), destfile = "GeneRef.gff.gz")
-      }
-
-      R.utils::gunzip("GeneRef.gff.gz")
-      gff <- gffRead("GeneRef.gff")
-
-      #
-      filesToRm <- c("GeneRef.gff")
-      if (file.exists(filesToRm)) {
-        file.remove(filesToRm)
-      }
-    } else {
-      gff <- gffRead(genomic_gff_file)
     }
-
-    bed <- extGff(gff)
-
-    outDB <- merge(bed[, c(1, 7)], annotSeq[, c(1, 6, 7, 8)], by = "id")
-    outDB <- outDB[grepl("NM_", outDB$id), ]
-
-    write.table(
-      outDB,
-      file = "customDB.txt",
-      col.names = TRUE,
-      row.names = FALSE,
-      sep = "\t",
-      quote = FALSE
-    )
-  } else {
-    stop(
-      "Please select one of: 'custom', 'create', 'createFromFasta', and 'createFromSourceFiles' for the 'source' parameter. \ See the help page and vignette for additional details on sequence annotations."
-    )
-  }
-
-  ####
-  annotBg <- gSel(
-    annot = outDB,
-    ads = ads,
-    customBg = customBg,
-    geneList = geneList
-  )
-  if (nrow(annotBg) == 0) {
-    stop("The gene IDs in the annotation are not compatible with gene IDs in the background.")
-  }
-  if (length(setdiff(customBg, outDB$geneID)) > 0) {
-    warning(
-      "There are ",
-      length(setdiff(customBg, outDB$geneID)),
-      " genes in the background that are not present in the selected annotation."
-    )
-  }
-
-  #
-  if (!is.null(adjObj)) {
-    annotBg <- adjustSeq(
-      annot = annotBg,
-      region_adj = region_adj,
-      adjObj = adjObj,
-      keepAll = keepAll,
-      excl = excl
-    )
-  }
-
-  annot <- new(
-    "postNetAnnot",
-    UTR5 = NULL,
-    CDS = NULL,
-    UTR3 = NULL,
-    CCDS = NULL
-  )
-
-  for (reg in c("UTR5", "CDS", "UTR3")) {
-    annotTmp <- regSel(annot = annotBg, region = reg)
-    annotBgSelTmp <- isoSel(
-      annot = annotTmp,
-      method = selection,
-      setSeed = setSeed
-    )
-
-    RegionTmp <- new(
-      "postNetRegion",
-      id = annotBgSelTmp$id,
-      geneID = annotBgSelTmp$geneID,
-      sequences = annotBgSelTmp$seqTmp
-    )
-
-    if (reg == "UTR5") {
-      annot@UTR5 <- RegionTmp
-    } else if (reg == "CDS") {
-      annot@CDS <- RegionTmp
-    } else if (reg == "UTR3") {
-      annot@UTR3 <- RegionTmp
+    
+    if (!is.null(customBg) && length(setdiff(customBg, outDB$geneID)) > 0) {
+        warning(
+            "There are ",
+            length(setdiff(customBg, outDB$geneID)),
+            " genes in the background that are not present in the ",
+            "selected annotation."
+        )
     }
-  }
-
-  ##
-  genesIn <- resSel(
-    ads = ads,
-    regulation = regulation,
-    contrast = contrast,
-    geneList = geneList
-  )
-
-  if (length(setdiff(as.character(unlist(genesIn)), outDB$geneID)) > 0) {
-    warning(
-      "There are ",
-      length(setdiff(as.character(
-        unlist(genesIn)
-      ), outDB$geneID)),
-      " genes in the geneList or anota2seq object that are not present in the selected annotation. "
+    
+    if (!is.null(adjObj)) {
+        annotBg <- adjustSeq(
+            annot = annotBg,
+            region_adj = region_adj,
+            adjObj = adjObj,
+            keepAll = keepAll,
+            excl = excl
+        )
+    }
+    
+    annot <- new(
+        "postNetAnnot",
+        UTR5 = NULL,
+        CDS = NULL,
+        UTR3 = NULL,
+        CCDS = NULL
     )
-  }
-
-
-  coloursIn <- coloursSel(
-    ads = ads,
-    genesIn = genesIn,
-    geneList = geneList,
-    geneListcolours = geneListcolours
-  )
-  effIn <- effectSel(
-    ads = ads,
-    regulationGen = regulationGen,
-    contrastSel = contrastSel,
-    effectMeasure = effectMeasure
-  )
-  bgIn <- getBg(
-    ads = ads,
-    customBg = customBg,
-    geneList = geneList
-  )
-  #
-  dataIn <- new(
-    "postNetDataIn",
-    background = bgIn,
-    geneList = genesIn,
-    effect = effIn,
-    colours = coloursIn
-  )
-
-  analysis <- new(
-    "postNetAnalysis",
-    featureIntegration = NULL,
-    motifs = NULL,
-    codons = NULL,
-    GO = NULL,
-    GSEA = NULL,
-    GAGE = NULL,
-    miRNA = NULL
-  )
-
-  #
-  postNetData <- new(
-    "postNetData",
-    version = version,
-    species = species,
-    selection = selection,
-    seed = setSeed,
-    annot = annot,
-    dataIn = dataIn,
-    features = NULL,
-    analysis = analysis
-  )
-
-
-  return(postNetData)
+    
+    for (reg in c("UTR5", "CDS", "UTR3")) {
+        annotTmp <- regSel(annot = annotBg, region = reg)
+        
+        annotBgSelTmp <- isoSel(
+            annot = annotTmp,
+            method = selection,
+            setSeed = setSeed
+        )
+        
+        RegionTmp <- new(
+            "postNetRegion",
+            id = annotBgSelTmp$id,
+            geneID = annotBgSelTmp$geneID,
+            sequences = annotBgSelTmp$seqTmp
+        )
+        
+        if (reg == "UTR5") {
+            annot@UTR5 <- RegionTmp
+        } else if (reg == "CDS") {
+            annot@CDS <- RegionTmp
+        } else if (reg == "UTR3") {
+            annot@UTR3 <- RegionTmp
+        }
+    }
+    
+    genesIn <- resSel(
+        ads = ads,
+        regulation = regulation,
+        contrast = contrast,
+        geneList = geneList
+    )
+    
+    if (length(setdiff(as.character(unlist(genesIn)), outDB$geneID)) > 0) {
+        warning(
+            "There are ",
+            length(setdiff(as.character(unlist(genesIn)), outDB$geneID)),
+            " genes in the geneList or anota2seq object that are not ",
+            "present in the selected annotation."
+        )
+    }
+    
+    coloursIn <- coloursSel(
+        ads = ads,
+        genesIn = genesIn,
+        geneList = geneList,
+        geneListcolours = geneListcolours
+    )
+    
+    effIn <- effectSel(
+        ads = ads,
+        regulationGen = regulationGen,
+        contrastSel = contrastSel,
+        effectMeasure = effectMeasure
+    )
+    
+    bgIn <- getBg(
+        ads = ads,
+        customBg = customBg,
+        geneList = geneList
+    )
+    
+    dataIn <- new(
+        "postNetDataIn",
+        background = bgIn,
+        geneList = genesIn,
+        effect = effIn,
+        colours = coloursIn
+    )
+    
+    analysis <- new(
+        "postNetAnalysis",
+        featureIntegration = NULL,
+        motifs = NULL,
+        codons = NULL,
+        GO = NULL,
+        GSEA = NULL,
+        GAGE = NULL,
+        miRNA = NULL
+    )
+    
+    postNetData <- new(
+        "postNetData",
+        version = version,
+        species = species,
+        selection = selection,
+        seed = setSeed,
+        annot = annot,
+        dataIn = dataIn,
+        features = NULL,
+        analysis = analysis
+    )
+    
+    return(postNetData)
 }
