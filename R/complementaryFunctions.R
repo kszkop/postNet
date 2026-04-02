@@ -2735,7 +2735,7 @@ get_reference_data <- function(file) {
     cache_dir <- tools::R_user_dir("postNet", which = "cache")
     bfc <- BiocFileCache::BiocFileCache(cache_dir, ask = FALSE)
     url <- paste0("https://zenodo.org/records/18357379/files/", file)
-    res <- BiocFileCache::bfcquery(bfc, query = file, field = "rname", exact = TRUE)
+    res <- bfcquery_exact(bfc, query = file, field = "rname")
     
     if (nrow(res) == 0) {
         if (!curl::has_internet()) {
@@ -2753,7 +2753,7 @@ get_reference_data <- function(file) {
             }
         )
         # Re-query after adding — never use bfcadd's return value with bfcrpath
-        res <- BiocFileCache::bfcquery(bfc, query = file, field = "rname", exact = TRUE)
+        res <- bfcquery_exact(bfc, query = file, field = "rname")
     }
     
     fileIn <- BiocFileCache::bfcrpath(bfc, rids = res$rid[1])
@@ -2770,7 +2770,7 @@ cached_download <- function(url, destfile) {
     cache_dir <- tools::R_user_dir("postNet", which = "cache")
     bfc <- BiocFileCache::BiocFileCache(cache_dir, ask = FALSE)
     
-    res <- BiocFileCache::bfcquery(bfc, query = url, field = "rname", exact = TRUE)
+    res <- bfcquery_exact(bfc, query = url, field = "rname")
     
     if (nrow(res) > 0) {
         message("Using cached file for: ", basename(url))
@@ -2796,6 +2796,24 @@ cached_download <- function(url, destfile) {
             }
         )
     }
+}
+
+bfcquery_exact <- function(bfc, query, field = "rname") {
+    tryCatch(
+        BiocFileCache::bfcquery(
+            bfc,
+            query = query,
+            field = field,
+            exact = TRUE
+        ),
+        error = function(e) {
+            if (!grepl("unused argument \\(exact = TRUE\\)", conditionMessage(e))) {
+                stop(e)
+            }
+            
+            BiocFileCache::bfcquery(bfc, query = query, field = field)
+        }
+    )
 }
 
 clear_postNet_cache <- function(cache_dir = NULL) {

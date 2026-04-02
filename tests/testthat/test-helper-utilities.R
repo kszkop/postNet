@@ -114,7 +114,7 @@ test_that("plot_fmap and cache/web helpers can be exercised with mocks", {
 
     testthat::local_mocked_bindings(
         BiocFileCache = function(cache_dir, ask = FALSE) "bfc",
-        bfcquery = function(bfc, query, field = "rname") data.frame(rid = "RID1"),
+        bfcquery = function(bfc, query, field = "rname", exact = TRUE) data.frame(rid = "RID1"),
         bfcrpath = function(bfc, rids = NULL, rid = NULL) tmp_gz,
         .package = "BiocFileCache"
     )
@@ -185,23 +185,20 @@ test_that("plotting and modeling helpers can run on compact synthetic inputs", {
         plot.igraph = function(...) NULL,
         .package = "igraph"
     )
-    expect_warning(
-        lm_out <- suppressMessages(postNet:::runLM(
-            dataIn = dataIn,
-            namesDf = namesDf,
-            allFeat = TRUE,
-            useCorel = FALSE,
-            covarFilt = 20,
-            nameOut = "runlm",
-            NetModelSel = "adjusted",
-            coloursIn = c("red", "blue"),
-            lmfeatGroup = NULL,
-            lmfeatGroupColour = NULL,
-            fdrUni = 1,
-            stepP = 1
-        )),
-        "deprecated"
-    )
+    lm_out <- suppressMessages(postNet:::runLM(
+        dataIn = dataIn,
+        namesDf = namesDf,
+        allFeat = TRUE,
+        useCorel = FALSE,
+        covarFilt = 20,
+        nameOut = "runlm",
+        NetModelSel = "adjusted",
+        coloursIn = c("red", "blue"),
+        lmfeatGroup = NULL,
+        lmfeatGroupColour = NULL,
+        fdrUni = 1,
+        stepP = 1
+    ))
     expect_s4_class(lm_out, "postNetFeatureIntegration_lm")
     expect_true(file.exists(file.path(out_dir, "runlm_FinalModel.pdf")))
     expect_true(file.exists(file.path(out_dir, "runlm_network.pdf")))

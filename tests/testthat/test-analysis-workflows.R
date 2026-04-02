@@ -2791,6 +2791,7 @@ test_that("postNetStart covers remaining create, load, fasta, and adjustment bra
             }
         },
         download.file = function(url, destfile, ...) file.create(destfile),
+        cached_download = function(url, destfile) file.create(destfile),
         .package = "postNet"
     )
     testthat::local_mocked_bindings(
@@ -2907,6 +2908,7 @@ test_that("postNetStart validates inputs and can build from mocked create mode",
             }
         },
         download.file = function(url, destfile, ...) file.create(destfile),
+        cached_download = function(url, destfile) file.create(destfile),
         gffRead = function(gffFile) data.frame(dummy = 1),
         extGff = function(gff) data.frame(
             id = c("NM_001", "NM_002"),
@@ -3011,6 +3013,7 @@ test_that("postNetStart handles ads-based inputs and mouse create mode", {
             }
         },
         download.file = function(url, destfile, ...) file.create(destfile),
+        cached_download = function(url, destfile) file.create(destfile),
         gffRead = function(gffFile) data.frame(dummy = 1),
         extGff = function(gff) data.frame(
             id = c("NM_001", "NM_002"),
