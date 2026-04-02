@@ -49,7 +49,7 @@ codonUsage <- function(
         
         if (sourceSeq == "create") {
             if (species == "human") {
-                download.file(
+                cached_download(
                     "ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/CCDS.current.txt",
                     destfile = "CCDS_human.txt"
                 )
@@ -74,7 +74,7 @@ codonUsage <- function(
                 unlink("CCDS_human.txt")
                 ccds$ccds_id_cl <- gsub("\\..*", "", ccds$ccds_id)
                 
-                download.file(
+                cached_download(
                     paste(
                         "ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/",
                         "CCDS_nucleotide.current.fna.gz",
@@ -146,7 +146,7 @@ codonUsage <- function(
                 
                 ptn@annot@CCDS <- annot
             } else if (species == "mouse") {
-                download.file(
+                cached_download(
                     "ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_mouse/CCDS.current.txt",
                     destfile = "CCDS_mouse.txt"
                 )
@@ -171,7 +171,7 @@ codonUsage <- function(
                 unlink("CCDS_mouse.txt")
                 ccds$ccds_id_cl <- gsub("\\..*", "", ccds$ccds_id)
                 
-                download.file(
+                cached_download(
                     paste(
                         "ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_mouse/",
                         "CCDS_nucleotide.current.fna.gz",

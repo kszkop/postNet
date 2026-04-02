@@ -2677,14 +2677,21 @@ plot_fmap <- function(fMap, colVec, remExtreme = NULL, name) {
 }
 
 getLink <- function(url) {
+    if (!curl::has_internet()) {
+        warning("No internet connection available. Cannot fetch: ", url)
+        return(NULL)
+    }
+    
     responseTmp <- tryCatch(
         {
-            httr2::request(url) %>%
-                httr2::req_perform() %>%
+            httr2::request(url) |>
+                httr2::req_timeout(60) |>
+                httr2::req_retry(max_tries = 3, backoff = ~ 2) |>
+                httr2::req_perform() |>
                 httr2::resp_check_status()
         },
         error = function(e) {
-            warning("Failed to fetch the URL: ", conditionMessage(e))
+            warning("Failed to fetch URL: ", url, "\n  Reason: ", conditionMessage(e))
             return(NULL)
         }
     )
@@ -2693,11 +2700,11 @@ getLink <- function(url) {
         return(NULL)
     }
     
-    pageTmp <- httr2::resp_body_string(responseTmp) %>%
+    pageTmp <- httr2::resp_body_string(responseTmp) |>
         rvest::read_html()
     
-    linksTmp <- pageTmp %>%
-        rvest::html_nodes("a") %>%
+    linksTmp <- pageTmp |>
+        rvest::html_nodes("a") |>
         rvest::html_attr("href")
     
     return(linksTmp)
@@ -2760,6 +2767,38 @@ get_reference_data <- function(file) {
     )
     
     return(annotIn)
+}
+
+cached_download <- function(url, destfile) {
+    cache_dir <- tools::R_user_dir("postNet", which = "cache")
+    bfc <- BiocFileCache::BiocFileCache(cache_dir, ask = FALSE)
+    
+    res <- BiocFileCache::bfcquery(bfc, query = url, field = "rname", exact = TRUE)
+    
+    if (nrow(res) > 0) {
+        message("Using cached file for: ", basename(url))
+        file.copy(BiocFileCache::bfcrpath(bfc, rids = res$rid), destfile, overwrite = TRUE)
+    } else {
+        if (!curl::has_internet()) {
+            stop(
+                "No internet connection and '", basename(url), "' is not in cache.\n",
+                "Please connect to the internet to download required data.",
+                call. = FALSE
+            )
+        }
+        tryCatch(
+            {
+                rid <- BiocFileCache::bfcadd(bfc, rname = url, fpath = url)
+                file.copy(BiocFileCache::bfcrpath(bfc, rid), destfile, overwrite = TRUE)
+            },
+            error = function(e) {
+                stop(
+                    "Failed to download '", basename(url), "': ", e$message,
+                    call. = FALSE
+                )
+            }
+        )
+    }
 }
 
 clear_postNet_cache <- function(cache_dir = NULL) {

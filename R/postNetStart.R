@@ -195,15 +195,15 @@ postNetStart <- function(
             opts <- options(timeout = max(1000, getOption("timeout")))
             on.exit(options(opts))
             
-            download.file(
+            cached_download(
                 paste(url_version, fna, sep = "/"),
                 destfile = "customFasta.fa.gz"
             )
-            download.file(
+            cached_download(
                 paste(url_version, gbff, sep = "/"),
                 destfile = "customAnnot.gbff.gz"
             )
-            download.file(
+            cached_download(
                 paste(url_version, gff, sep = "/"),
                 destfile = "GeneRef.gff.gz"
             )
@@ -248,15 +248,15 @@ postNetStart <- function(
             opts <- options(timeout = max(1000, getOption("timeout")))
             on.exit(options(opts))
             
-            download.file(
+            cached_download(
                 paste(url_version, fna, sep = "/"),
                 destfile = "customFasta.fa.gz"
             )
-            download.file(
+            cached_download(
                 paste(url_version, gbff, sep = "/"),
                 destfile = "customAnnot.gbff.gz"
             )
-            download.file(
+            cached_download(
                 paste(url_version, gff, sep = "/"),
                 destfile = "GeneRef.gff.gz"
             )
@@ -492,7 +492,7 @@ postNetStart <- function(
                 opts <- options(timeout = max(1000, getOption("timeout")))
                 on.exit(options(opts))
                 
-                download.file(
+                cached_download(
                     paste(url_version, gff, sep = "/"),
                     destfile = "GeneRef.gff.gz"
                 )
@@ -535,7 +535,7 @@ postNetStart <- function(
                 opts <- options(timeout = max(1000, getOption("timeout")))
                 on.exit(options(opts))
                 
-                download.file(
+                cached_download(
                     paste(url_version, gff, sep = "/"),
                     destfile = "GeneRef.gff.gz"
                 )
