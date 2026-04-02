@@ -2735,11 +2735,9 @@ get_reference_data <- function(file) {
     cache_dir <- tools::R_user_dir("postNet", which = "cache")
     bfc <- BiocFileCache::BiocFileCache(cache_dir, ask = FALSE)
     url <- paste0("https://zenodo.org/records/18357379/files/", file)
-    res <- BiocFileCache::bfcquery(bfc, query = file, field = "rname")
+    res <- BiocFileCache::bfcquery(bfc, query = file, field = "rname", exact = TRUE)
     
-    if (nrow(res) > 0) {
-        fileIn <- BiocFileCache::bfcrpath(bfc, rids = res$rid)
-    } else {
+    if (nrow(res) == 0) {
         if (!curl::has_internet()) {
             stop(
                 "File not found in cache and no internet connection ",
@@ -2748,24 +2746,23 @@ get_reference_data <- function(file) {
                 call. = FALSE
             )
         }
-        
-        fileIn <- tryCatch(
-            {
-                rid <- BiocFileCache::bfcadd(bfc, rname = file, fpath = url)
-                BiocFileCache::bfcrpath(bfc, rid)
-            },
+        tryCatch(
+            BiocFileCache::bfcadd(bfc, rname = file, fpath = url),
             error = function(e) {
-                stop("Failed to download or cache file: ", e$message)
+                stop("Failed to download or cache file: ", e$message, call. = FALSE)
             }
         )
+        # Re-query after adding — never use bfcadd's return value with bfcrpath
+        res <- BiocFileCache::bfcquery(bfc, query = file, field = "rname", exact = TRUE)
     }
+    
+    fileIn <- BiocFileCache::bfcrpath(bfc, rids = res$rid[1])
     
     annotIn <- read.delim(
         gzfile(fileIn),
         header = TRUE,
         stringsAsFactors = FALSE
     )
-    
     return(annotIn)
 }
 
