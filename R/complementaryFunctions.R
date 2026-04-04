@@ -1005,26 +1005,6 @@ calc_motif <- function(x, motifIn, dist, unit) {
     return(nMot)
 }
 
-calc_g4 <- function(x, min_score, unit) {
-    seqTmp <- Biostrings::DNAString(x)
-    predTmp <- pqsfinder::pqsfinder(seqTmp, min_score = min_score, strand = "+")
-    
-    if (nrow(predTmp@elementMetadata) > 0) {
-        if (unit == "number") {
-            nMot <- nrow(predTmp@elementMetadata)
-        } else if (unit == "position") {
-            nMot <- list()
-            nMot[["start"]] <- as.numeric(predTmp@ranges@start)
-            nMot[["end"]] <- as.numeric(predTmp@ranges@start) +
-                as.numeric(predTmp@ranges@width) - 1
-        }
-    } else {
-        nMot <- ifelse(unit == "number", 0, NA)
-    }
-    
-    return(nMot)
-}
-
 find_gquadruplexes <- function(sequence,
                                min_score = 26L,
                                return = c("position", "number")) {
@@ -1062,15 +1042,21 @@ find_gquadruplexes <- function(sequence,
 }
 
 calc_g4 <- function(x, min_score, unit) {
-  predTmp <- find_gquadruplexes(x, min_score = min_score, return = "number")
-  
-  if (nrow(predTmp) > 0) {
+  predTmp <- find_gquadruplexes(x, min_score = min_score, return = "position")
+
+  if (is.data.frame(predTmp) && nrow(predTmp) > 0) {
     if (unit == "number") {
       nMot <- nrow(predTmp)
     } else if (unit == "position") {
       nMot <- list()
       nMot[["start"]] <- as.numeric(predTmp$start)
       nMot[["end"]] <- as.numeric(predTmp$end)
+    }
+  } else if (!is.data.frame(predTmp) && length(predTmp) == 1L && is.numeric(predTmp)) {
+    if (unit == "number") {
+      nMot <- as.integer(predTmp)
+    } else {
+      nMot <- NA
     }
   } else {
     nMot <- ifelse(unit == "number", 0, NA)

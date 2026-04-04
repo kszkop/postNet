@@ -134,12 +134,11 @@ inline int score_run_defects(
     features_t &f,
     const scoring &sc)
 {
-  int mismatches = 0, bulges = 0, perfects = 0;
+  int mismatches = 0, bulges = 0;
   int score = 0;
   
   for (int i = 0; i < RUN_CNT; ++i) {
     if (w[i] == w[pi] && g[i] == g[pi]) {
-      ++perfects;
     } else if ((w[i] == w[pi] && g[i] == g[pi] - 1)) {
       ++mismatches;
     } else if (w[i] > w[pi] && g[i] >= g[pi]) {
@@ -506,7 +505,7 @@ void find_all_runs(
     if (show_progress && !opts.verbose) {
       search_progress_t sp = search_progress(start, ref, len, s_time);
       char buffer[10];
-      sprintf(buffer, "%02d:%02d:%02d", sp.hours, sp.minutes, sp.seconds);
+      snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d", sp.hours, sp.minutes, sp.seconds);
       Rcerr << "Search status: " << sp.percents << "% ETTC " << string(buffer) << "\n" << flush;
     }
   }
@@ -789,7 +788,6 @@ void find_pqs(
 //' pv
 //' elementMetadata(pv)
 //'
-// [[Rcpp::export]]
 SEXP pqsfinder(
     SEXP subject,
     std::string strand = "*",
