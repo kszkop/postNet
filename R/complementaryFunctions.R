@@ -1006,7 +1006,7 @@ calc_motif <- function(x, motifIn, dist, unit) {
 }
 
 calc_g4 <- function(x, min_score, unit) {
-    seqTmp <- DNAString(x)
+    seqTmp <- Biostrings::DNAString(x)
     predTmp <- pqsfinder::pqsfinder(seqTmp, min_score = min_score, strand = "+")
     
     if (nrow(predTmp@elementMetadata) > 0) {
@@ -1024,6 +1024,61 @@ calc_g4 <- function(x, min_score, unit) {
     
     return(nMot)
 }
+
+find_gquadruplexes <- function(sequence,
+                               min_score = 26L,
+                               return = c("position", "number")) {
+  return <- match.arg(return)
+  
+  if (!is.character(sequence) || length(sequence) != 1L || is.na(sequence)) {
+    stop("`sequence` must be a single non-missing character string.")
+  }
+  
+  min_score <- as.integer(min_score[[1]])
+  if (is.na(min_score)) {
+    stop("`min_score` must be a single non-missing integer-like value.")
+  }
+  
+  sequence <- toupper(gsub("\\s+", "", sequence, perl = TRUE))
+  sequence <- chartr("U", "T", sequence)
+  
+  hits <- .Call(
+    "_postNet_find_gquadruplexes_cpp",
+    PACKAGE = "postNet",
+    Biostrings::DNAString(sequence),
+    min_score
+  )
+  
+  positions <- data.frame(
+    start = as.integer(hits$start),
+    end = as.integer(hits$end)
+  )
+  
+  if (return == "number") {
+    as.integer(nrow(positions))
+  } else {
+    positions
+  }
+}
+
+calc_g4 <- function(x, min_score, unit) {
+  predTmp <- find_gquadruplexes(x, min_score = min_score, return = "number")
+  
+  if (nrow(predTmp) > 0) {
+    if (unit == "number") {
+      nMot <- nrow(predTmp)
+    } else if (unit == "position") {
+      nMot <- list()
+      nMot[["start"]] <- as.numeric(predTmp$start)
+      nMot[["end"]] <- as.numeric(predTmp$end)
+    }
+  } else {
+    nMot <- ifelse(unit == "number", 0, NA)
+  }
+  
+  return(nMot)
+}
+
 
 convertIUPAC <- function(motif) {
     tmpConv <- toupper(motif)

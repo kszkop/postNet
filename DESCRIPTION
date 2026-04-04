@@ -14,8 +14,8 @@ Depends:
 Imports:
   dplyr,
   plyr,
-  pqsfinder,
   Biostrings,
+  Rcpp,
   data.table,
   gridExtra,
   seqinr,
@@ -59,6 +59,9 @@ Imports:
   tools,
   BiocFileCache,
   curl
+LinkingTo:
+  Rcpp,
+  BH
 Suggests: 
     knitr,
     rmarkdown,
