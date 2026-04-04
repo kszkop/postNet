@@ -4,3 +4,9 @@
 .Ruserdata
 postNet.Rproj
 .DS_Store
+src/*.o
+src/*.so
+src/*.a
+src/boost_regex/*.o
+src/boost_regex/*.so
+src/boost_regex/*.a

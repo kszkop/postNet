@@ -1,2 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^src/.*\.(o|so|a)$
+^src/boost_regex/.*\.(o|so|a)$
+^cleanup$

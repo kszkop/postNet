@@ -1,8 +1,0 @@
-#!/bin/sh
-
-rm -f src/*.o
-rm -f src/*.so
-rm -f src/*.a
-rm -f src/boost_regex/*.o
-rm -f src/boost_regex/*.so
-rm -f src/boost_regex/*.a
