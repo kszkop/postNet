@@ -15,7 +15,6 @@ Imports:
   dplyr,
   plyr,
   Biostrings,
-  Rcpp,
   data.table,
   gridExtra,
   seqinr,
