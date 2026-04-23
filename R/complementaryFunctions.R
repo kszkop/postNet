@@ -1559,10 +1559,22 @@ prepFeatures <- function(ptn, features) {
 }
 
 normalizeLayout <- function(layout) {
-    layout[, 1] <- (layout[, 1] - min(layout[, 1])) /
-        (max(layout[, 1]) - min(layout[, 1])) * 2 - 1
-    layout[, 2] <- (layout[, 2] - min(layout[, 2])) /
-        (max(layout[, 2]) - min(layout[, 2])) * 2 - 1
+    xrange <- max(layout[, 1], na.rm = TRUE) - min(layout[, 1], na.rm = TRUE)
+    yrange <- max(layout[, 2], na.rm = TRUE) - min(layout[, 2], na.rm = TRUE)
+    
+    if (is.finite(xrange) && xrange > 0) {
+        layout[, 1] <- (layout[, 1] - min(layout[, 1], na.rm = TRUE)) /
+            xrange * 2 - 1
+    } else {
+        layout[, 1] <- 0
+    }
+    
+    if (is.finite(yrange) && yrange > 0) {
+        layout[, 2] <- (layout[, 2] - min(layout[, 2], na.rm = TRUE)) /
+            yrange * 2 - 1
+    } else {
+        layout[, 2] <- seq(-1, 1, length.out = nrow(layout))
+    }
     
     return(layout)
 }
@@ -1971,19 +1983,30 @@ runLM <- function(
         linkOut[[i - 1]] <- tmpOut
     }
     
-    linkOut <- as.data.frame(unlist(linkOut))
-    linkOut <- with(linkOut, cbind(
-        linkOut,
-        reshape2::colsplit(
-            row.names(linkOut),
-            pattern = "\\_",
-            names = c("from", "to")
-        )
-    ))
+    linkOut <- unlist(linkOut)
     
-    rownames(linkOut) <- NULL
-    colnames(linkOut)[1] <- "weight"
-    linkOut <- linkOut[, c(2, 3, 1)]
+    if (length(linkOut) > 0) {
+        linkOut <- as.data.frame(linkOut)
+        linkOut <- with(linkOut, cbind(
+            linkOut,
+            reshape2::colsplit(
+                row.names(linkOut),
+                pattern = "\\_",
+                names = c("from", "to")
+            )
+        ))
+        
+        rownames(linkOut) <- NULL
+        colnames(linkOut)[1] <- "weight"
+        linkOut <- linkOut[, c(2, 3, 1)]
+    } else {
+        linkOut <- data.frame(
+            from = character(),
+            to = character(),
+            weight = numeric(),
+            stringsAsFactors = FALSE
+        )
+    }
     
     if (isTRUE(useCorel) && nrow(linkOut) > 0) {
         for (i in seq_len(nrow(linkOut))) {
@@ -1994,6 +2017,7 @@ runLM <- function(
             corOut <- cor(f1dat, f2dat)
             linkOut$weight[i] <- corOut
         }
+        linkOut <- linkOut[!is.na(linkOut$weight), , drop = FALSE]
         
         tb5Out <- linkOut
         tb5Out$weight <- round(tb5Out$weight, 2)
@@ -2168,24 +2192,30 @@ runLM <- function(
     igraph::E(net)$color <- ecolor
     
     if (!is.null(lmfeatGroup)) {
-        igraph::E(net)$weight <- 1
-        
         igraph::V(net)$Group <- as.vector(
             lmfeatGroup[match(igraph::V(net)$name, names(lmfeatGroup))]
         )
         
+        netForLayout <- net
+        igraph::E(netForLayout)$weight <- 1
+        
         for (i in unique(igraph::V(net)$Group)) {
             GroupV <- which(igraph::V(net)$Group == i)
-            net <- igraph::add_edges(net, combn(GroupV, 2), attr = list(weight = 5))
+            
+            if (length(GroupV) > 1) {
+                netForLayout <- igraph::add_edges(
+                    netForLayout,
+                    combn(GroupV, 2),
+                    attr = list(weight = 5)
+                )
+            }
         }
         
-        layOut <- igraph::layout.fruchterman.reingold(
-            net,
-            weights = igraph::E(net)$weight
-        )
+        layOut <- layoutCalc(netForLayout, n = 2)
+    } else {
+        layOut <- layoutCalc(net, n = 2)
     }
     
-    layOut <- layoutCalc(net, n = 2)
     layOut <- normalizeLayout(layOut)
     
     pdf(
