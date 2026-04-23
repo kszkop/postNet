@@ -117,21 +117,34 @@ uorfAnalysis <- function(
             USE.NAMES = FALSE
         )
     } else {
-        uorfOut <- vapply(
-            seqTmp,
-            function(x) {
-                calc_uORF(
-                    x,
-                    ext = NULL,
-                    context = context,
-                    unit = tolower(unitOut)
-                )
-            },
-            numeric(1),
-            USE.NAMES = FALSE
-        )
+        if (tolower(unitOut) == "number") {
+            uorfOut <- vapply(
+                seqTmp,
+                function(x) {
+                    calc_uORF(
+                        x,
+                        ext = NULL,
+                        context = context,
+                        unit = tolower(unitOut)
+                    )
+                },
+                numeric(1),
+                USE.NAMES = FALSE
+            )
+        } else {
+            uorfOut <- lapply(
+                seqTmp,
+                function(x) {
+                    calc_uORF(
+                        x,
+                        ext = NULL,
+                        context = context,
+                        unit = tolower(unitOut)
+                    )
+                }
+            )
+        }
     }
-    
     names(uorfOut) <- ptn_geneID(ptn, region = "UTR5")
     
     if (tolower(unitOut) == "number" && isTRUE(plotOut)) {
