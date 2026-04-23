@@ -2252,7 +2252,7 @@ runLM <- function(
             rep(grDevices::adjustcolor("#F40009", alpha.f = 0.2), 2),
             rep(grDevices::adjustcolor("#1C39BB", alpha.f = 0.2), 2)
         ),
-        title = ifelse(isTRUE(useCorel), "Correlation", "Co-variance"),
+        title = ifelse(isTRUE(useCorel), "Correlation", "Association"),
         c("+", "", "", "-"),
         bty = "n",
         xpd = TRUE

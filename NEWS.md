@@ -9,6 +9,10 @@
       the selected feature nodes without unintended default igraph edges, and
       grouped-layout helper edges are used only for layout calculation rather than
       being retained in the plotted network.
+      
+    - Fixed `uorfAnalysis()` position output when `onlyUTR5 = TRUE` and
+      `unitOut = "position"`, allowing genes with multiple uORFs to return
+      start and end positions without vector-length errors.
 
 --------------------------
 
