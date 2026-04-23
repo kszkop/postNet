@@ -1966,46 +1966,28 @@ runLM <- function(
     
     tg3 <- gridExtra::tableGrob(tb3out, rows = NULL)
     
-    linkOut <- list()
+    linkOut <- data.frame(
+        from = character(),
+        to = character(),
+        weight = numeric(),
+        stringsAsFactors = FALSE
+    )
     
     for (i in seq.int(2, ncol(linkIn))) {
         tmpIn <- linkIn[, i]
-        tmpOut <- as.numeric(tmpIn)[which(!is.na(tmpIn))]
+        keep <- which(!is.na(tmpIn))
         
-        if (length(tmpOut) > 0) {
-            names(tmpOut) <- paste(
-                row.names(linkIn)[i - 1],
-                names(tmpIn)[which(tmpIn != 0)],
-                sep = "_"
+        if (length(keep) > 0) {
+            linkOut <- rbind(
+                linkOut,
+                data.frame(
+                    from = row.names(linkIn)[i - 1],
+                    to = names(tmpIn)[keep],
+                    weight = as.numeric(tmpIn[keep]),
+                    stringsAsFactors = FALSE
+                )
             )
         }
-        
-        linkOut[[i - 1]] <- tmpOut
-    }
-    
-    linkOut <- unlist(linkOut)
-    
-    if (length(linkOut) > 0) {
-        linkOut <- as.data.frame(linkOut)
-        linkOut <- with(linkOut, cbind(
-            linkOut,
-            reshape2::colsplit(
-                row.names(linkOut),
-                pattern = "\\_",
-                names = c("from", "to")
-            )
-        ))
-        
-        rownames(linkOut) <- NULL
-        colnames(linkOut)[1] <- "weight"
-        linkOut <- linkOut[, c(2, 3, 1)]
-    } else {
-        linkOut <- data.frame(
-            from = character(),
-            to = character(),
-            weight = numeric(),
-            stringsAsFactors = FALSE
-        )
     }
     
     if (isTRUE(useCorel) && nrow(linkOut) > 0) {
@@ -2020,6 +2002,7 @@ runLM <- function(
         
         linkOut <- linkOut[!is.na(linkOut$weight), , drop = FALSE]
     }
+    
     if (isTRUE(useCorel) && nrow(linkOut) > 0) {
         tb5Out <- linkOut
         tb5Out$weight <- round(tb5Out$weight, 2)
