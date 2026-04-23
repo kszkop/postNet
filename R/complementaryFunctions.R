@@ -2017,8 +2017,10 @@ runLM <- function(
             corOut <- cor(f1dat, f2dat)
             linkOut$weight[i] <- corOut
         }
-        linkOut <- linkOut[!is.na(linkOut$weight), , drop = FALSE]
         
+        linkOut <- linkOut[!is.na(linkOut$weight), , drop = FALSE]
+    }
+    if (isTRUE(useCorel) && nrow(linkOut) > 0) {
         tb5Out <- linkOut
         tb5Out$weight <- round(tb5Out$weight, 2)
         tb5Out$from <- namesDf$originalNames[match(tb5Out$from, namesDf$newNames)]
